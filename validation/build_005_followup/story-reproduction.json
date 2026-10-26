@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "command": [
+    "/tmp/g1_native_005_followup_hostbuild/g1_session_playthrough_probe",
+    "--archive",
+    "/workspace/scratch/cba553aafa20/g1_port/research/assets/iphone.big",
+    "--terrain-tables",
+    "/workspace/scratch/cba553aafa20/g1_port/research/native_terrain/terrain_visual_tables.bin",
+    "--output",
+    "/tmp/g1-native-005-followup-story",
+    "--strategy",
+    "native-planner-tactical",
+    "--followup-policy",
+    "aggressive",
+    "--group",
+    "0",
+    "--start-mission",
+    "0",
+    "--seed",
+    "0x4741",
+    "--max-missions",
+    "17",
+    "--max-ticks",
+    "200000",
+    "--max-human-turns",
+    "150",
+    "--max-seconds",
+    "120"
+  ],
+  "inputs": {
+    "pilot": {
+      "path": "/tmp/g1_native_005_followup_hostbuild/g1_session_playthrough_probe",
+      "bytes": 980408,
+      "sha256": "46bda8afc2589d976242048d1627f32a7e361b8c7efe6d0c3b8a49c6c1ab37cc"
+    },
+    "archive": {
+      "path": "/workspace/scratch/cba553aafa20/g1_port/research/assets/iphone.big",
+      "bytes": 6994213,
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+    },
+    "terrain_tables": {
+      "path": "/workspace/scratch/cba553aafa20/g1_port/research/native_terrain/terrain_visual_tables.bin",
+      "bytes": 480,
+      "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8"
+    }
+  },
+  "returncode": 0,
+  "stdout": "Outcome native_campaign_ending; native handoffs 17; ticks 17422; human moves 373; attacks 199; captures 23\n",
+  "stderr": "",
+  "native_gameplay_core_used": true,
+  "original_executable_executed": false,
+  "gameplay_state_forced": false,
+  "presentation_feedback": "synthetic; no rendered/GPU/audio/device validation",
+  "result": {
+    "path": "/tmp/g1-native-005-followup-story/result.json",
+    "bytes": 5166,
+    "sha256": "e52174ea93d49e6ee9c2d7756de9e701a323965569825bc8993e7c583f6c356a"
+  },
+  "events": {
+    "path": "/tmp/g1-native-005-followup-story/events.jsonl",
+    "bytes": 840169,
+    "sha256": "fa43728c1bed9ce58f0eaad2c1c28d4db7b434019d1d26956403bd5d6b72ec38"
+  },
+  "observed": {
+    "outcome": "native_campaign_ending",
+    "error": "",
+    "continuous_story_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "profile_file_writes": 17,
+    "checkpoint_file_writes": 0,
+    "in_memory_checkpoint_matches": 797,
+    "full_story_headless_completed": true,
+    "full_device_playthrough_verified": false
+  }
+}

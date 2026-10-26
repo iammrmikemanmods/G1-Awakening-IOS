@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "source_commit": "c75306907ecea8f2fb1926a5ba3228e3094a0fdf",
+  "run_id": 40365634564,
+  "run_url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40365634564",
+  "apple_job_id": 121722436174,
+  "job_conclusion": "failure",
+  "iphoneos_arm64_app_compile": "passed",
+  "exact_iphoneos_runtime_m3g_shader_compile": "passed",
+  "portable_macos_tests": {
+    "passed": 52,
+    "total": 53,
+    "failed": [
+      "m3g_camera_contract"
+    ]
+  },
+  "failure": "original camera projection bits differ",
+  "boundary_finding": "The original camera oracle explicitly used host Linux libm tanf; its historical iOS libm bit identity flag is false. The existing test treated those external-boundary bytes as universal.",
+  "metal_pixel_probes": "not run because the preceding portable-test step failed",
+  "current_checkpoint_ipa_created": false,
+  "physical_device_tested": false,
+  "job_log_sha256": "3e8f5e94d4fc7867d5833c787a64077b5e4f82302f8578880d567f2ce4c45dc5",
+  "followup": "Retain exact original projection arithmetic checks while representing the captured external tanf boundary explicitly. Current follow-up also adds validated mission/menu music maintenance and a complete headless Story pilot."
+}

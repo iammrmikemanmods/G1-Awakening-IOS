@@ -17,10 +17,10 @@ repository file except that manifest itself.
 
 The source connects native gameplay, enemy turns, campaign handoffs, saves,
 all three terrain styles and ordinary animated 3D battles. The current host
-pilot wins fourteen consecutive Story missions, then loses the next mission.
-Its presentation feedback is synthetic. That result is not a complete campaign
-or device playthrough. Current Apple compilation, Metal output, remaining
-support-fire/audio/original-presentation work and physical XR checks remain.
+pilot completes all seventeen Story missions and persists the campaign ending.
+Its presentation feedback is synthetic. That result is a complete headless Story path, not a rendered
+or device playthrough. Updated Apple/Metal validation, remaining support-fire,
+sound-event and original-presentation work, and physical XR checks remain.
 
 ## Hosted code artifact and eventual IPA
 

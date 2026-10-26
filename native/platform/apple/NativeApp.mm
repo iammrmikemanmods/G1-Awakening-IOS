@@ -7,6 +7,8 @@
 #include "MetalRenderer.hpp"
 #include "MetalM3GRenderer.hpp"
 #include "g1/M3GBattlePresentation.hpp"
+#include "g1/AudioMaintenance.hpp"
+#include "g1/MenuMusic.hpp"
 #include "g1/SpriteAnimation.hpp"
 #include "g1/InitialPresentation.hpp"
 #include "g1/GameSession.hpp"
@@ -187,13 +189,14 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena };
+enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena, arena_opponent };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
 - (void)installSession:(std::unique_ptr<g1::GameSession>)session;
 - (void)rebuildScene:(BOOL)resetPlayback;
 - (void)prepareBattle;
+- (void)maintainMusicAfterStep:(g1::MusicMaintenanceSite)site;
 - (void)finishBattleFrame:(const NativePresentedFrame::Battle&)frame;
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame;
 - (void)deliverPresentation:(std::shared_ptr<NativePresentationDelivery>)delivery;
@@ -201,6 +204,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)chooseArenaFaction:(std::int32_t)index;
 - (void)chooseArenaOpponent:(std::int32_t)index faction:(std::uint8_t)faction;
 - (void)chooseCampaign:(std::uint8_t)group;
+- (void)maintainMenuMusic;
 - (void)selectProductionType:(std::uint8_t)type mode:(g1::ProductionMode)mode
     session:(std::uint64_t)session producer:(std::size_t)producer spawn:(std::uint64_t)spawn;
 - (BOOL)productionTileAllowed:(g1::WorldCoordinate)tile;
@@ -244,6 +248,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     UIStackView* _campaignButtons;
     NSLayoutConstraint* _campaignCanvasHeight;
     G1AppleAudio* _audio;
+    NSTimer* _menuMusicTimer;
     std::shared_ptr<const g1::Archive> _archive;
     g1::Bytes _terrainTableBytes;
     std::unique_ptr<g1::MetalRenderer> _renderer;
@@ -566,6 +571,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             soundEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1SoundEnabled"]];
         for (std::int32_t group=0;group<3;++group)
             [_audio request:g1::MissionAudioRequest{0,group}];
+        // UIKit menus also exist before the Metal scene/display loop starts.
+        // Poll the real any-voice state at the existing 30-ms simulation step;
+        // this never schedules a loop or guesses an audio duration.
+        __weak G1ViewController* weakSelf=self;
+        _menuMusicTimer=[NSTimer timerWithTimeInterval:static_cast<NSTimeInterval>(g1::SimulationClock::step_ms)/1000.0
+            repeats:YES block:^(NSTimer* timer){(void)timer;[weakSelf maintainMenuMusic];}];
+        [NSRunLoop.mainRunLoop addTimer:_menuMusicTimer forMode:NSRunLoopCommonModes];
         [self.view layoutIfNeeded];
         [self loadCampaignMenu];
     } catch (const std::exception& error) {
@@ -614,6 +626,29 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [self clearCampaignButtons];
     [self.view layoutIfNeeded];
     [self updateCampaignLayout];
+    [self maintainMenuMusic];
+}
+
+- (void)maintainMenuMusic {
+    if(_failed || !_audio || UIApplication.sharedApplication.applicationState!=UIApplicationStateActive)return;
+    // The original main menu is a root even when entered from Pause. Arena
+    // follows map list -> faction -> opponent; only opponent is excluded.
+    static const g1::MenuMusicNode mainMenu{}, missionList{&mainMenu}, faction{&missionList};
+    static const g1::MenuMusicNode enableSounds{}, pause{}, unitActions{}, opponent{&faction};
+    const g1::MenuMusicNode* current=nullptr;
+    switch(_panelPurpose) {
+    case NativePanel::startup: case NativePanel::menu: current=&mainMenu;break;
+    case NativePanel::arena: current=&faction;break;
+    case NativePanel::arena_opponent: current=&opponent;break;
+    case NativePanel::pause: current=&pause;break;
+    default:return; // Gameplay/loading/results/messages have separate owners.
+    }
+    const g1::MenuMusicContext context{[_audio musicEnabled]!=NO,10,current,
+                                      &enableSounds,&pause,&opponent,&unitActions};
+    if(!g1::menu_music_queries_playing(context))return;
+    ++_audioRequests;
+    const bool playing=[_audio request:g1::MissionAudioRequest{6,0}];
+    if(!playing)if(const auto request=g1::idle_menu_music(context))[self dispatchAudio:*request];
 }
 
 - (void)hidePanel {
@@ -766,7 +801,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)chooseArenaOpponent:(std::int32_t)index faction:(std::uint8_t)faction {
     _pendingArenaIndex=index;_pendingArenaFaction=faction;
-    [self showPanel:NativePanel::arena title:[self originalText:1190]
+    [self showPanel:NativePanel::arena_opponent title:[self originalText:1190]
         body:@"Choose the other player." token:++_localPanelToken];
     [self addCampaignButton:@"Computer" action:@selector(arenaComputer)];
     [self addCampaignButton:[self originalText:690] action:@selector(arenaHuman)];
@@ -835,7 +870,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     const BOOL enabled=![_audio musicEnabled];
     [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1MusicEnabled"];
     [_audio setMusicEnabled:enabled soundEnabled:[_audio soundEnabled]];
-    if(enabled && _lastMapMusic)[self dispatchAudio:*_lastMapMusic];
+    if(enabled && _panelPurpose==NativePanel::pause && _lastMapMusic)
+        [self dispatchAudio:*_lastMapMusic];
     if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
 }
 - (void)toggleSound {
@@ -1165,7 +1201,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     ++_contentGeneration;
 }
 
-- (void)dealloc { [[NSNotificationCenter defaultCenter] removeObserver:self]; }
+- (void)dealloc { [_menuMusicTimer invalidate]; [[NSNotificationCenter defaultCenter] removeObserver:self]; }
 
 - (void)fail:(NSString*)message {
     _failed = true;
@@ -1859,6 +1895,24 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [_audio request:request];
 }
 
+- (void)maintainMusicAfterStep:(g1::MusicMaintenanceSite)site {
+    if (!_loaded || _failed || !_session || _panelPurpose!=NativePanel::none || _typeListOpen ||
+        _session->mission().stop!=g1::MissionStop::none) return;
+    if ((site==g1::MusicMaintenanceSite::map_update && _session->battle()) ||
+        (site==g1::MusicMaintenanceSite::ordinary_battle && !_session->battle())) return;
+    // Native active-session dispatch corresponds to the original app mode100.
+    // Results, menus and pending campaign handoffs are excluded above; they
+    // must not restart terrain music while their own presentation is active.
+    const auto plan=g1::plan_music_maintenance({site,[_audio musicEnabled]!=NO,
+        _session->mission().interaction_mode,100},_session->world().style);
+    if (!plan.query_playing) return;
+    ++_audioRequests;
+    // Query actual output after this update's sound events. Any active voice,
+    // including an effect, postpones the original terrain-music request.
+    const bool playing=[_audio request:g1::MissionAudioRequest{6,0}];
+    if (!playing && plan.when_idle) [self dispatchAudio:*plan.when_idle];
+}
+
 - (NSString*)messageText:(std::uint32_t)resource {
     if((resource&0xffff0000U)==0x21ff0000U)
         return [self originalText:static_cast<std::uint16_t>(resource)];
@@ -2134,6 +2188,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                 !_battlePresentation->status().complete) {
                 _battlePresentation->advance(g1::SimulationClock::step_ms);
                 for (const auto request:_battlePresentation->take_audio_requests()) [self dispatchAudio:request];
+                [self maintainMusicAfterStep:g1::MusicMaintenanceSite::ordinary_battle];
                 ++_battlePresentationTicks; ++_contentGeneration;
             }
             continue;
@@ -2169,6 +2224,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         [self advanceSprites:g1::SimulationClock::step_ms];
         [self showNextMessage];
         if(_panelPurpose!=NativePanel::none)break;
+        [self maintainMusicAfterStep:g1::MusicMaintenanceSite::map_update];
     }
     if(_panelPurpose!=NativePanel::none || _typeListOpen)return;
     [self advanceCamera:0];

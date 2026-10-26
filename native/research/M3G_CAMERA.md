@@ -99,8 +99,47 @@ constructors, the copy routine, and the original ARMv6 libgcc arithmetic.
 Platform `tanf` is a real host libm single-precision boundary; external
 `memcpy` and nonthrowing unwind bookkeeping are also explicit boundaries.
 Main and libgcc instruction regions are checked unchanged after every call.
-Historical iOS libm bit identity is not claimed. An Apple-side numerical
-difference must be attributed before changing this exact comparison gate.
+Historical iOS libm bit identity is not claimed. The first hosted macOS
+ARM64 run failed the old all-scalar comparison after the iPhone app and
+iPhoneOS shader compiled: that fixture included the GNU host's `tanf`
+result, even though the original iOS library had never been executed.
+The failure log did not report its case or differing bits, so a particular
+Apple/GNU rounding difference is not inferred from that log alone.
+
+The portable gate now separates this explicit library boundary from the
+original arithmetic. The historical GNU-host report remains unchanged.
+For each of the six captured original `tanf` arguments, the development
+oracle uses exact rational alternating sine/cosine series, with a remainder
+bounded by a next term below `2^-256`. Positive interval division encloses
+the true tangent. Exact rational comparisons then prove that the entire
+interval lies between two adjacent binary32 values. This proof uses no
+host transcendental function; its fixture domain is `(0, 1.5)` radians.
+
+The original ARM instructions and libgcc are executed twice more for each
+perspective case, once with each of those two explicit boundary results.
+Each replay checks that the original argument is still identical. This
+adds 12 unchanged-original executions / 192 recorded matrix scalars.
+The target test queries its actual `std::tan(float)` at that captured
+argument through a volatile function pointer to prevent constant folding.
+It requires that result to equal one of the two proven adjacent floats,
+then compares all 16 matrix scalars to that result's original replay
+**bit for bit**. Parallel projections keep their historical exact matrix
+gate. No projection element uses a tolerance; no production camera math,
+floating-point flags, or platform library is replaced.
+
+This is a faithful-rounding numerical requirement on six sampled target
+libm calls, not a claim of historical iOS bit identity or a proof for every
+possible field of view. A result outside either adjacent float fails.
+Failure diagnostics identify the case, parameters, captured argument,
+historical and target boundary bits, allowed bracket, matrix element and
+expected/actual bits. Successful output records all six target boundary
+results so an Apple-host difference can be attributed directly.
+
+The revised focused GNU test passes 12 cases / 192 exact matrix comparisons
+and 40 native contracts, with six explicit target-library checks. Local
+link substitutions also pass all-lower and all-upper boundary results;
+an out-of-bracket result and a one-ULP matrix mutation are both rejected.
+Those substitutions are development checks, not alternate product libraries.
 
 The native body decoder separately passed all 27 model/scene files in the
 independent corpus audit: **73 Cameras / 365 exact type-and-parameter
@@ -112,7 +151,11 @@ assets are not silently included in the claim.
 Evidence files:
 
 - `m3g_validation/original_camera_projection.json`: original synthetic
-  projection calls and explicit host-math boundaries.
+  projection calls and explicit historical GNU host-math boundaries,
+  preserved unchanged.
+- `m3g_validation/original_camera_projection_boundaries.json`: captured
+  arguments, exact rational tangent brackets and unchanged-original matrix
+  replays for both permitted boundary outputs.
 - `m3g_validation/camera_projection_native.json`: native focused comparison.
 - `m3g_validation/camera_corpus_native.json`: actual asset decoder parity.
 - `m3g_validation/battle_corpus_coverage.json`: independent metadata source.

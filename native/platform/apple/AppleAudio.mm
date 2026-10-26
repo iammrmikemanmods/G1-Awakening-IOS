@@ -301,7 +301,10 @@ std::runtime_error audio_error(NSString* operation, NSError* error) {
                 _interrupted = false;
                 const auto options = [notification.userInfo[AVAudioSessionInterruptionOptionKey] unsignedIntegerValue];
                 if (options & AVAudioSessionInterruptionOptionShouldResume) [self startEngineAndResume];
-                else [self stopAll]; // No replay is invented when resumption is not permitted.
+                // Stop retained buffers when resumption was not suggested.
+                // Fresh active-game requests can still start audio afterward;
+                // Apple's shouldResume contract explicitly permits this for games.
+                else [self stopAll];
             }
         } catch (const std::exception& error) { [self recordFailure:audio_string(error.what())]; }
     } @catch (NSException* exception) { [self recordFailure:exception.reason ?: @"Audio interruption exception"]; }

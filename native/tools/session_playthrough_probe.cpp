@@ -44,6 +44,9 @@ int distance(g1::WorldCoordinate a,g1::WorldCoordinate b) {
 
 struct Options {
     std::string archive,tables,output;
+    std::string resume_checkpoint,resume_profile;
+    std::int32_t capture_mission{-1};
+    std::string followup_policy{"baseline"};
     std::string strategy{"direct"};
     std::uint8_t group{};
     std::int32_t start{};
@@ -62,6 +65,10 @@ Options parse(int argc,char** argv) {
         else if(key=="--terrain-tables")result.tables=value;
         else if(key=="--output")result.output=value;
         else if(key=="--strategy")result.strategy=value;
+        else if(key=="--resume-checkpoint")result.resume_checkpoint=value;
+        else if(key=="--resume-profile")result.resume_profile=value;
+        else if(key=="--capture-mission")result.capture_mission=std::stoi(value);
+        else if(key=="--followup-policy")result.followup_policy=value;
         else if(key=="--group") {
             const auto number=std::stoul(value);if(number>2)throw std::runtime_error("Invalid group");
             result.group=static_cast<std::uint8_t>(number);
@@ -83,6 +90,12 @@ Options parse(int argc,char** argv) {
             "--output NEW_DIRECTORY [--strategy direct --group 0 --start-mission 0 --seed 0x4741 "
             "--max-missions 17 --max-ticks 200000 --max-human-turns 500 --max-seconds 90]");
     (void)g1::mission_resource_for_campaign(result.group,result.start);
+    if(result.resume_checkpoint.empty()!=result.resume_profile.empty())
+        throw std::runtime_error("A resume requires both the actual native checkpoint and profile");
+    if(result.followup_policy!="baseline" && result.followup_policy!="cohesive_right" &&
+       result.followup_policy!="cohesive_left" && result.followup_policy!="combat" &&
+       result.followup_policy!="capture_right" && result.followup_policy!="ranged" &&
+       result.followup_policy!="aggressive" && result.followup_policy!="defensive")throw std::runtime_error("Unknown follow-up input policy");
     if(result.strategy!="direct" && result.strategy!="economy" &&
        result.strategy!="coordinated" && result.strategy!="coordinated-economy" &&
        result.strategy!="native-planner" && result.strategy!="native-planner-search" &&
@@ -292,11 +305,27 @@ public:
         std::filesystem::create_directories(output_);
         events_.open(output_/"events.jsonl");
         if(!events_)throw std::runtime_error("Cannot create event log");
+        if(!options_.resume_checkpoint.empty()) {
+            const auto profile=g1::read_file(options_.resume_profile);
+            (void)g1::decode_campaign_profile(profile);
+            const auto wrote=g1::write_native_save_atomic((output_/"campaign.g1native").string(),profile);
+            if(!wrote.succeeded)throw g1::FormatError("Cannot copy checked native profile: "+wrote.error);
+            const auto saved=g1::read_file(options_.resume_checkpoint);
+            const auto decoded=g1::decode_session_checkpoint(archive_,saved,&tables_);
+            session_=g1::GameSession::restore_checkpoint(archive_,decoded);
+            options_.group=decoded.campaign.group;options_.start=decoded.campaign.mission_index;
+            model_feedback(*session_);
+            if(!session_->checkpoint_available() || g1::encode_session_checkpoint(session_->make_checkpoint())!=saved)
+                throw g1::FormatError("Native saved-objective restore changed its serialized gameplay state");
+            event("restored_live_checkpoint","\"input\":"+quote(options_.resume_checkpoint)+
+                ",\"encoded_bytes_equal\":true,\"counterfactual_state_installed\":false");
+        } else {
+            g1::CampaignContext context;context.group=options_.group;context.mission_index=options_.start;
+            const g1::GameRandom random(options_.seed);
+            session_=std::make_unique<g1::GameSession>(archive_,
+                g1::bootstrap_campaign(archive_,context,random,false,&tables_),context);
+        }
         controller_=std::make_unique<g1::CampaignController>((output_/"campaign.g1native").string());
-        g1::CampaignContext context;context.group=options_.group;context.mission_index=options_.start;
-        const g1::GameRandom random(options_.seed);
-        session_=std::make_unique<g1::GameSession>(archive_,
-            g1::bootstrap_campaign(archive_,context,random,false,&tables_),context);
         last_player_=session_->current_player();started_=Clock::now();
         event("started","\"presentation_feedback\":\"synthetic\",\"seed\":"+std::to_string(options_.seed));
     }
@@ -311,6 +340,19 @@ public:
                 }
                 log_transition();
                 synthetic_feedback();
+                if(session_->campaign_context().mission_index==options_.capture_mission &&
+                   session_->mission().gate==g1::MissionGate::objective &&
+                   session_->current_player()==0 && session_->checkpoint_available()) {
+                    const auto saved=g1::encode_session_checkpoint(session_->make_checkpoint());
+                    const auto write=g1::write_native_save_atomic((output_/"captured-objective.g1native").string(),saved);
+                    if(!write.succeeded)throw g1::FormatError("Actual objective checkpoint write failed: "+write.error);
+                    const auto profile=g1::read_file((output_/"campaign.g1native").string());
+                    const auto profile_write=g1::write_native_save_atomic((output_/"captured-profile.g1native").string(),profile);
+                    if(!profile_write.succeeded)throw g1::FormatError("Actual objective profile write failed: "+profile_write.error);
+                    event("real_objective_checkpoint_captured","\"bytes\":"+std::to_string(saved.size())+
+                          ",\"counterfactual_state_installed\":false");
+                    ++counts_.checkpoints;outcome="live_checkpoint_captured";break;
+                }
                 if(session_->mission().stop==g1::MissionStop::campaign_handoff_required) {
                     const auto result=handoff();
                     if(!result.empty()){outcome=result;break;}
@@ -885,8 +927,32 @@ private:
         return false;
     }
 
-    static double tactical_score(const g1::GameSession& model,const std::vector<Goal>& goals) {
+    bool followup_active(const g1::GameSession& model) const {
+        return options_.followup_policy!="baseline" && model.campaign_context().group==0 &&
+               model.campaign_context().mission_index>=14;
+    }
+
+    std::vector<Goal> tactical_goals(const g1::GameSession& model) const {
+        auto goals=goals_for(model);
+        if(!followup_active(model) || goals.empty())return goals;
+        const bool right=options_.followup_policy!="cohesive_left";
+        const bool capture=goals.front().capture;
+        // A test-input objective priority, never a change to the actual goal.
+        // The whole squad approaches one defended station/target together.
+        std::stable_sort(goals.begin(),goals.end(),[&](const auto& a,const auto& b){
+            if(capture && a.tile.x!=b.tile.x)return right ? a.tile.x>b.tile.x : a.tile.x<b.tile.x;
+            int da{},db{};
+            for(const auto& unit:model.combat_units())if(unit.active && unit.owner==0) {
+                da+=distance({unit.x,unit.y},a.tile);db+=distance({unit.x,unit.y},b.tile);
+            }
+            return da<db;
+        });
+        goals.resize(1);return goals;
+    }
+
+    double tactical_score(const g1::GameSession& model,const std::vector<Goal>& goals) const {
         double score{};int own_count{},enemy_count{};
+        const bool followup=followup_active(model);
         for(const auto& unit:model.combat_units()) {
             if(!unit.active)continue;
             const auto& definition=model.world().unit_definitions[unit.type];
@@ -896,13 +962,19 @@ private:
                 0.6*std::max(robot.defense,vehicle.defense)+
                 8.0*std::max(signed_byte(definition.forms[0][0]),signed_byte(definition.forms[1][0]));
             const auto value=power*(0.25+0.75*unit.health/100.0);
-            if(unit.owner==0){++own_count;score+=value;}
-            else {++enemy_count;score-=value*1.15;}
+            const bool late=followup && model.campaign_context().mission_index>=15;
+            const double own_weight=late && options_.followup_policy=="defensive" ? 6.0 : followup ? 3.0 : 1.0;
+            const double enemy_weight=late && options_.followup_policy=="aggressive" ? 4.0 : followup ? 2.0 : 1.15;
+            if(unit.owner==0){++own_count;score+=value*own_weight;}
+            else {++enemy_count;score-=value*enemy_weight;}
         }
         if(own_count==0)return -1.0e9;
         if(enemy_count==0)return 1.0e8+score;
         for(const auto& site:model.sites()) {
-            score+=site.state==0 ? 1800.0 : (site.state==1 ? -900.0 : 0.0);
+            const double owner_value=!followup || options_.followup_policy=="capture_right" ? 1800.0 :
+                (options_.followup_policy=="combat" || options_.followup_policy=="ranged" ||
+                 options_.followup_policy=="aggressive" || options_.followup_policy=="defensive") ? 30.0 : 600.0;
+            score+=site.state==0 ? owner_value : (site.state==1 ? -owner_value/2.0 : 0.0);
             for(const auto& group:site.item_states)for(auto owner:group)
                 score+=owner==0 ? 300.0 : (owner==1 ? -150.0 : 0.0);
         }
@@ -920,6 +992,35 @@ private:
                 nearest=std::min(nearest,double(distance({unit.x,unit.y},goal.tile)));
             }
             score-=22.0*nearest;
+        }
+        if(followup && !goals.empty()) {
+            for(std::size_t i=0;i<model.combat_units().size();++i) {
+                const auto& unit=model.combat_units()[i];if(!unit.active || unit.owner!=0)continue;
+                const auto& def=model.world().unit_definitions[unit.type];
+                if(signed_byte(def.forms[0][0])>0 || signed_byte(def.forms[1][0])>0)
+                    score-=9.0*distance({unit.x,unit.y},goals.front().tile);
+                for(std::size_t j=i+1;j<model.combat_units().size();++j) {
+                    const auto& other=model.combat_units()[j];if(!other.active || other.owner!=0)continue;
+                    score-=5.0*std::max(0,distance({unit.x,unit.y},{other.x,other.y})-3);
+                }
+            }
+        }
+        if(followup && model.campaign_context().mission_index>=15 && options_.followup_policy!="combat" &&
+           options_.followup_policy!="cohesive_left" && options_.followup_policy!="cohesive_right") {
+            for(const auto& unit:model.combat_units()) {
+                if(!unit.active || unit.owner!=0)continue;
+                const auto& def=model.world().unit_definitions[unit.type];
+                const auto& robot=def.forms[0];
+                int closest=100;
+                for(const auto& enemy:model.combat_units())if(enemy.active && enemy.owner!=0)
+                    closest=std::min(closest,distance({unit.x,unit.y},{enemy.x,enemy.y}));
+                const int minimum=signed_byte(robot[1]),maximum=signed_byte(robot[2]);
+                if(signed_byte(robot[3])>0) {
+                    if(closest<minimum)score-=250.0*(minimum-closest);
+                    else if(closest>maximum)score-=12.0*(closest-maximum);
+                }
+                if(unit.form==1 && signed_byte(def.forms[1][3])==0)score-=4.0;
+            }
         }
         return score;
     }
@@ -984,19 +1085,29 @@ private:
             const g1::WorldCoordinate tile{static_cast<std::uint8_t>(x),static_cast<std::uint8_t>(y)};
             int nearest=100;for(const auto& goal:goals)nearest=std::min(nearest,distance(tile,goal.tile));
             double value=-5.0*nearest;
+            const bool ranged_followup=followup_active(model) && model.campaign_context().mission_index>=15 &&
+                (options_.followup_policy=="ranged" || options_.followup_policy=="aggressive" || options_.followup_policy=="defensive");
+            int closest_enemy=100;
             for(const auto& enemy:model.combat_units())if(enemy.active && enemy.owner!=unit.owner) {
-                const int d=distance(tile,{enemy.x,enemy.y});
+                const int d=distance(tile,{enemy.x,enemy.y});closest_enemy=std::min(closest_enemy,d);
                 if(signed_byte(form[3])>0 && d>=signed_byte(form[1]) && d<=signed_byte(form[2]))
                     value+=25.0+(100-enemy.health)*0.1;
                 const auto& opposing=model.world().unit_definitions[enemy.type].forms[enemy.form];
                 if(signed_byte(opposing[3])>0 && d<=signed_byte(opposing[2])+signed_byte(opposing[0]))value-=8.0;
+            }
+            if(ranged_followup) {
+                const auto& robot=model.world().unit_definitions[unit.type].forms[0];
+                const int minimum=signed_byte(robot[1]),maximum=signed_byte(robot[2]);
+                if(closest_enemy<minimum)value-=100.0*(minimum-closest_enemy);
+                else if(closest_enemy<=maximum)value+=35.0;
             }
             for(const auto& goal:goals)if(goal.capture && distance(tile,goal.tile)==0)value+=100.0;
             choices.push_back({tile,value});
         }
         std::stable_sort(choices.begin(),choices.end(),[](const auto& a,const auto& b){return a.score>b.score;});
         std::vector<g1::WorldCoordinate> result;
-        for(const auto& choice:choices){result.push_back(choice.tile);if(result.size()==7)break;}
+        const std::size_t destination_limit=followup_active(model) && model.campaign_context().mission_index>=15 ? 16U : 7U;
+        for(const auto& choice:choices){result.push_back(choice.tile);if(result.size()==destination_limit)break;}
         for(unsigned side=0;side<4 && !choices.empty();++side) {
             const auto best=std::min_element(choices.begin(),choices.end(),[side](const auto& a,const auto& b){
                 const int av=side<2 ? a.tile.x : a.tile.y,bv=side<2 ? b.tile.x : b.tile.y;
@@ -1011,7 +1122,7 @@ private:
         if(!session_->checkpoint_available() || !session_->mission().mission_objective)return false;
         const auto initial_command=session_->mission().command_index;
         const auto objective=*session_->mission().mission_objective;
-        const auto goals=goals_for(*session_);const auto began=Clock::now();
+        const auto goals=tactical_goals(*session_);const auto began=Clock::now();
         std::size_t evaluated{},accepted{},settle_bounds{};
         std::array<std::size_t,8> accepted_kinds{};
         const auto available=[&](){return evaluated<8000 && elapsed()<options_.max_seconds &&
@@ -1386,6 +1497,9 @@ private:
             <<"\"device_or_rendered_playthrough\":false,\n\"gameplay_state_forced\":false,\n"
             <<"\"strategy\":\"public human commands chosen by the named test-input strategy; real native opponent AI\",\n"
             <<"\"strategy_variant\":"<<quote(options_.strategy)<<",\n"
+            <<"\"followup_policy\":"<<quote(options_.followup_policy)<<",\n"
+            <<"\"start_mode\":"<<quote(options_.resume_checkpoint.empty() ? "fresh_campaign" : "actual_native_checkpoint")<<",\n"
+            <<"\"resume_input\":"<<quote(options_.resume_checkpoint)<<",\n"
             <<"\"seed\":"<<options_.seed<<",\n\"start_group\":"<<unsigned(options_.group)
             <<",\n\"start_mission\":"<<options_.start<<",\n\"outcome\":"<<quote(outcome)
             <<",\n\"error\":"<<quote(error)<<",\n\"wall_seconds\":"<<elapsed()

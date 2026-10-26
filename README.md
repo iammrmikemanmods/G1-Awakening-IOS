@@ -14,20 +14,22 @@ battles. The battle path uses the real models, forms, texture replacements,
 cameras, animation clips, shot/hit/destruction effects and completion sequence.
 The new Apple build and physical iPhone XR validation are still pending.
 Earlier tactical support-fire presentation, original HUD/site-marker/tactical
-camera/font fidelity and remaining audio coverage also remain release work.
+camera/font fidelity and remaining sound-event coverage also remain release work.
+Mission, battle and menu music maintenance are now connected with the original
+playing-state queries and menu exclusions.
 
 ## Current implementation
 
 | Component | Implemented | Remaining integration or verification |
 | --- | --- | --- |
 | Original data | Archive,559 verified payloads,140 PNGs,24 Vorbis files,511 localized strings | Original data stays outside Git |
-| Missions | All 30 streams / 803 commands, actual world operations and four objective kinds; bounded host pilot completes 14 consecutive Story missions | Remaining continuous campaign/mode traversal and rendered playthrough |
+| Missions | All 30 streams / 803 commands, actual world operations and four objective kinds; bounded host pilot completes all 17 Story missions through the campaign ending | Remaining Showdown/Arena traversal and rendered playthrough |
 | Human actions | Movement, capture, transformation, Undo, attack, upgrade, heal, production and carrier/tape transitions | Original control/presentation parity |
 | Enemy | Continuous production, movement, attack, capture and repair through actual native actions; turn reset/income | Broad gameplay and mission-balance verification |
 | Combat | Original damage/counterattack/death rules and connected animated M3G battles; actual controller health, ordered effects and presented-frame completion | Apple/GPU/device output; earlier tactical support-fire sequence |
 | Rendering | All 23 unit descriptors and21 actual map/style pairs; native Metal sprites/terrain; all three styles' session-owned decoration; ordinary original 3D scene/model/effect assets | Visual/device validation and original tactical artwork/camera/font fidelity |
 | Modes | Story, Showdown and Cybertron Arena with profile gates and explicit Arena faction/opponent choices | Actual end-to-end results, unlock and ending validation |
-| Audio | Original event dispatcher, battle shot/hit cues and native AVAudioEngine; persisted Music/Sound preferences | Shared background-music maintenance, remaining coverage and device output |
+| Audio | Original event dispatcher, battle shot/hit cues, native AVAudioEngine, active mission/battle and menu music maintenance; persisted Music/Sound preferences | Remaining sound-event coverage and device output |
 | Saving | Atomic profile/results/handoff; format 3 checkpoints preserve all gameplay, RNG and terrain/sprite clocks; cold Continue | Physical-device lifecycle testing; busy actions resume from the last durable boundary |
 | Timing | Separate 30 ms simulation and up to 60 Hz interpolated tactical/battle display; XR camera aspect adaptation preserves vertical field of view | Sustained physical-XR performance and complete timing validation |
 
@@ -45,31 +47,38 @@ Apple ARM64 app build and macOS profile-file tests in
 Six offscreen Metal pixel checks ran on the hosted Apple GPU. See
 `validation/APPLE_NATIVE_INTERACTION_BUILD.json` for exact source/artifact data.
 That successful run predates the current continuous-play, resume and animated
-battle code. A new recorded Apple run is required. The previous attempt to
-commit the prepared campaign checkpoint returned `user rejected MCP tool call`;
-no commit or branch update succeeded. The current source is prepared locally
-for review, with publication awaiting renewed approval.
+battle code. Publication subsequently succeeded at
+`c75306907ecea8f2fb1926a5ba3228e3094a0fdf`. Its
+[first Apple run](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40365634564)
+compiled the ARM64 iPhone app and exact runtime iPhoneOS Metal shader. It passed
+52 of 53 Apple portable suites; a camera test incorrectly treated its captured
+GNU-host `tanf` results as universal platform-library bytes. The follow-up
+separates that boundary while retaining exact matrix comparisons and unchanged
+production camera code. Updated Apple/GPU validation is required before an IPA
+from this follow-up is packaged.
 
-The exact staged source passes all 53 portable CTest suites. The final build,
-test, mission-entry, battle and continuous-pilot records are collected in
-`validation/NATIVE_COMPLETE_HOST_CHECKPOINT.json`, with a separate inventory
-of the tested code, fixtures and build files. No implementation bytes were
-changed after this staged build. The 74 session-save
+The follow-up passes all 55 portable CTest suites, including recovered
+mission/battle and menu music maintenance. Current host records are collected
+in `validation/NATIVE_GAME_005_FOLLOWUP_HOST.json`. The preceding 53-suite
+snapshot remains separately recorded in
+`validation/NATIVE_COMPLETE_HOST_CHECKPOINT.json`. The 74 session-save
 checks include actual closed files and fresh sessions, followed by identical
 terrain activity, random state and combat results for all three styles. All 30
 mission scripts reach their first objective and round-trip their checkpoints;
 both faction orders and both opponent settings in Arena produce 45 entries and
 540 real world operations. Entry checks do not complete the missions.
 
-The improved bounded input pilot separately completes 14 consecutive Story
-missions, indices 0–13, then loses 14 normally. It uses ordinary public player
-commands and real native AI, with 689 byte-identical in-memory checkpoint
-comparisons after replaying searched command sequences, plus 15 checked
-profile-file writes. This pilot writes no checkpoint files; the separate
-74-check save suite and 45 cold-entry round trips cover checkpoint persistence.
-It never transplants a winning state. Its world/dialogue/battle/results feedback
-is synthetic. Missions 15–16
-were not reached in that continuous attempt, so it is not a full Story result.
+The improved bounded input pilot completes all 17 Story missions, indices
+0–16, from a fresh start and reaches the native campaign ending. It uses
+ordinary public player commands and real native AI, with 797 byte-identical
+in-memory checkpoint comparisons after replaying searched command sequences,
+plus 17 checked profile-file writes. The persisted Story completion flag is
+true. This pilot writes no checkpoint files; the separate 74-check save suite
+and 45 cold-entry round trips cover checkpoint persistence. It never
+transplants a winning state or changes gameplay rules. Its world, dialogue,
+battle and results feedback is synthetic, so this is a complete headless
+Story path, not a rendered/device playthrough. See
+`native/research/COMPLETE_STORY_HEADLESS.md` for the input policy and evidence.
 
 The native battle controller matches 1,225 original updates and 159 original
 draw plans. The connected asset adapter exercises 47 bounded model/form/style
@@ -103,8 +112,9 @@ The [workflow](.github/workflows/native-core.yml) builds a real unsigned
 system dependencies, runs all portable tests on macOS, compiles the exact M3G
 runtime shader for iPhoneOS, and runs separate tactical and M3G offscreen Metal
 pixel probes when a GPU is available. A skipped GPU test is recorded as a skip.
-Original game data is packaged locally, outside the cloud artifact. The new
-M3G Apple checks are prepared and have not yet run.
+Original game data is packaged locally, outside the cloud artifact. The first
+M3G Apple pixel checks were blocked by the preceding camera-test failure;
+the follow-up rerun must record their actual results.
 
 After a successful run, package the matching code artifact with the original
 local IPA:
@@ -144,7 +154,7 @@ retained only on `archive/compatibility-experiment` and is not the requested
 native deliverable. This project does not use the GTA repository.
 
 A full-game completion estimate is not established. The outstanding release
-work includes the earlier tactical support-fire presentation, remaining audio
+work includes the earlier tactical support-fire presentation, remaining sound events
 and original UI/artwork fidelity, complete mission/campaign traversal, and
 actual XR testing of installation, saves/resume, native resolution and sustained
 60 Hz presentation.

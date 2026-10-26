@@ -183,6 +183,14 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
         target_link_libraries(g1_audio_events_tests PRIVATE g1_resources)
         add_test(NAME audio_dispatch_original_function_vectors COMMAND g1_audio_events_tests
                  "${CMAKE_CURRENT_SOURCE_DIR}/tests/audio_event_original_vectors.txt")
+        add_executable(g1_audio_maintenance_tests tests/audio_maintenance_test.cpp)
+        target_link_libraries(g1_audio_maintenance_tests PRIVATE g1_resources)
+        add_test(NAME audio_maintenance_original_function_vectors COMMAND g1_audio_maintenance_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/audio_maintenance_cases.txt")
+        add_executable(g1_menu_music_tests tests/menu_music_test.cpp)
+        target_link_libraries(g1_menu_music_tests PRIVATE g1_resources)
+        add_test(NAME menu_music_original_function_vectors COMMAND g1_menu_music_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/menu_music_cases.txt")
         add_executable(g1_save_store_tests tests/save_store_test.cpp)
         target_link_libraries(g1_save_store_tests PRIVATE g1_resources)
         add_test(NAME native_profile_atomic_file COMMAND g1_save_store_tests)

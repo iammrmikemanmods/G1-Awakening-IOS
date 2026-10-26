@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-26T17:21:14.932766+00:00",
+  "scope": "Native build 005 follow-up host evidence; no Apple or device execution claim.",
+  "base_commit": "c75306907ecea8f2fb1926a5ba3228e3094a0fdf",
+  "source_inventory": "validation/NATIVE_GAME_005_FOLLOWUP_TESTED_SOURCE.json",
+  "source_inventory_sha256": "9751fa3f1b88685b5b6239987f1fa3a41f49cefd0f06dfa1164e920fc02f7063",
+  "portable_ctest": {
+    "passed": 55,
+    "total": 55,
+    "failed": 0,
+    "skipped": 0
+  },
+  "camera": {
+    "production_source_changed": false,
+    "original_cases": 12,
+    "exact_matrix_comparisons": 192,
+    "target_libm_boundary_checks": 6,
+    "historical_ios_libm_identity_claimed": false,
+    "all_lower_and_all_upper_boundary_substitutions_passed": true,
+    "outside_boundary_and_one_ulp_matrix_error_rejected": true
+  },
+  "mission_battle_music": {
+    "original_cases": 1280,
+    "scalar_comparisons": 2752,
+    "host_connected": true
+  },
+  "menu_music": {
+    "original_cases": 10608,
+    "scalar_comparisons": 17392,
+    "host_connected": true
+  },
+  "fresh_continuous_story": {
+    "outcome": "native_campaign_ending",
+    "success_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "ticks": 17422,
+    "human_commands": 1140,
+    "profile_file_writes": 17,
+    "checkpoint_file_writes": 0,
+    "in_memory_checkpoint_matches": 797,
+    "persisted_profile": {
+      "completed": [
+        true,
+        false
+      ],
+      "highest_unlocked": [
+        17,
+        0
+      ]
+    },
+    "gameplay_state_forced": false,
+    "state_transplanted": false,
+    "presentation_feedback": "Synthetic world/camera/dialogue/focus/transform/battle/results/menu/ending acknowledgements.",
+    "battle_acknowledgements": 476,
+    "headless_story_completed": true,
+    "physical_device_playthrough_verified": false
+  },
+  "evidence": {
+    "validation/build_005_followup/ctest.xml": {
+      "bytes": 15632,
+      "sha256": "066a7630955115ecb3fca48845fcf5dbbf00bf1a5b19150e5a51e253822ba63f"
+    },
+    "validation/build_005_followup/ctest.log": {
+      "bytes": 7944,
+      "sha256": "107f58ba5dfdec52997fed85750fcc9a6829948d1f685035a8217ba65c529916"
+    },
+    "validation/build_005_followup/build.log": {
+      "bytes": 3461,
+      "sha256": "18b2ce1823cd7fdc810ac7fcaaf43bc1a5c74cd26dc6a6ce374595e2987f7c03"
+    },
+    "validation/build_005_followup/story-result.json": {
+      "bytes": 5166,
+      "sha256": "e52174ea93d49e6ee9c2d7756de9e701a323965569825bc8993e7c583f6c356a"
+    },
+    "validation/build_005_followup/story-reproduction.json": {
+      "bytes": 2563,
+      "sha256": "6c2e97b6b09e510f003afe329ea2e904957dd53bd80ba74009efb71f7b0adeb9"
+    },
+    "validation/build_005_followup/story-events.jsonl": {
+      "bytes": 840169,
+      "sha256": "fa43728c1bed9ce58f0eaad2c1c28d4db7b434019d1d26956403bd5d6b72ec38"
+    }
+  },
+  "remaining": [
+    "Updated Apple compilation and GPU checks",
+    "New matching IPA",
+    "Earlier tactical support presentation and remaining original UI/sound fidelity",
+    "Complete Showdown/Arena traversal",
+    "Actual XR installation/save lifecycle/resolution/frame pacing and full playthrough"
+  ]
+}

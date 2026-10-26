@@ -1,0 +1,81 @@
+-- Configuring done (0.0s)
+-- Generating done (0.2s)
+-- Build files have been written to: /tmp/g1_native_005_followup_hostbuild
+[  1%] Built target g1_png
+[  2%] Built target g1_vorbis
+[ 30%] Built target g1_resources
+[ 31%] Built target m3g_probe
+[ 32%] Built target m3g_scene_probe
+[ 33%] Built target m3g_material_probe
+[ 34%] Built target g1_asset_probe
+[ 35%] Built target m3g_battle_session_probe
+[ 36%] Built target m3g_battle_presentation_probe
+[ 37%] Built target mission_probe
+[ 37%] Built target atlas_probe
+[ 38%] Built target terrain_probe
+[ 40%] Built target world_probe
+[ 40%] Built target image_probe
+[ 41%] Built target scene_probe
+[ 42%] Built target scene_catalog_probe
+[ 43%] Built target world_commands_probe
+[ 44%] Built target session_campaign_probe
+[ 45%] Built target g1_session_playthrough_probe
+[ 46%] Built target audio_probe
+[ 47%] Built target mission_execution_probe
+[ 48%] Built target g1_m3g_scene_tests
+[ 49%] Built target g1_m3g_animation_tests
+[ 50%] Built target g1_m3g_spline_tests
+[ 51%] Built target g1_m3g_scene_pose_tests
+[ 51%] Building CXX object CMakeFiles/g1_m3g_camera_tests.dir/tests/m3g_camera_test.cpp.o
+[ 52%] Built target g1_m3g_battle_timeline_tests
+[ 53%] Built target g1_m3g_render_asset_tests
+[ 54%] Built target g1_m3g_bindings_tests
+[ 55%] Built target g1_m3g_render_frame_tests
+[ 56%] Built target g1_m3g_battle_camera_tests
+[ 57%] Built target g1_m3g_runtime_state_tests
+[ 58%] Built target g1_m3g_sprite3d_tests
+[ 59%] Built target g1_m3g_material_overrides_tests
+[ 60%] Built target g1_m3g_battle_controller_tests
+[ 61%] Built target g1_movement_tests
+[ 62%] Built target g1_mission_tests
+[ 63%] Built target g1_movement_arrival_tests
+[ 64%] Built target g1_movement_action_tests
+[ 65%] Built target g1_text_tests
+[ 66%] Built target g1_mission_execution_tests
+[ 67%] Built target g1_capture_action_tests
+[ 68%] Built target g1_transform_action_tests
+[ 69%] Built target g1_combat_tests
+[ 70%] Built target g1_game_session_tests
+[ 71%] Built target g1_mission_progression_tests
+[ 72%] Built target g1_turn_tests
+[ 73%] Built target g1_mission_objectives_tests
+[ 74%] Built target g1_ai_site_tests
+[ 75%] Built target g1_ai_attack_tests
+[ 76%] Built target g1_atlas_tests
+[ 78%] Built target g1_sprite_geometry_tests
+[ 78%] Built target g1_image_tests
+[ 79%] Built target g1_terrain_tests
+[ 80%] Built target g1_world_tests
+[ 81%] Built target g1_sprite_animation_tests
+[ 82%] Built target g1_sprite_placement_tests
+[ 83%] Built target g1_audio_tests
+[ 84%] Built target g1_initial_presentation_tests
+[ 85%] Built target g1_audio_events_tests
+[ 85%] Building CXX object CMakeFiles/g1_menu_music_tests.dir/tests/menu_music_test.cpp.o
+[ 86%] Built target g1_audio_maintenance_tests
+[ 87%] Built target g1_save_store_tests
+[ 88%] Built target g1_unit_spawn_tests
+[ 89%] Built target g1_unit_actions_tests
+[ 90%] Built target g1_ai_execution_tests
+[ 91%] Built target g1_world_commands_tests
+[ 92%] Built target g1_campaign_controller_tests
+[ 93%] Built target g1_session_save_tests
+[ 94%] Built target g1_unit_interactions_tests
+[ 95%] Built target g1_unit_commands_tests
+[ 96%] Built target g1_terrain_decorations_tests
+[ 97%] Built target g1_terrain_animated_tests
+[ 98%] Built target g1_terrain_sprite_decorations_tests
+[ 99%] Linking CXX executable g1_menu_music_tests
+[ 99%] Built target g1_menu_music_tests
+[100%] Linking CXX executable g1_m3g_camera_tests
+[100%] Built target g1_m3g_camera_tests

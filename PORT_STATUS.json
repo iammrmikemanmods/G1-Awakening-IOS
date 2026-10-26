@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-10-26T15:54:21.352541+00:00",
+  "updated_utc": "2026-10-26T17:21:14.932766+00:00",
   "goal": {
     "game": "Transformers G1 Awakening 1.1.3",
     "device": "iPhone XR",
@@ -29,10 +29,10 @@
     "movement_rules": "Movement/arrival/capture/transform and transform-aware Undo with exact friendly-selection locks, human production and carrier/tape actions connected.",
     "tactical_renderer": "All 21 map/style pairs and 23 unit descriptors load. All three terrain styles now own their decorative simulation/RNG in GameSession; host reads geometry only. Physical and original-artwork/camera fidelity pending.",
     "combat": "Native combat rules feed actual resolved exchanges into the original M3G ordinary battle controller and asset graph. Natural completion waits for matching successful Metal presentation and HUD draw. Earlier tactical support-fire sequence remains.",
-    "ai": "Continuous native AI production/movement/attack/capture/heal actions and turn loop connected; full campaign/device behavior unverified.",
+    "ai": "Continuous native AI production/movement/attack/capture/heal and turn loop connected; complete headless Story path verified. Device and broader mode coverage remain.",
     "native_saves": "Format3 persists complete gameplay, shared RNG, style1 pools and style0/2 sprite playback/attachments. 74 actual-file/session checks and 45 actual mission-entry cold round trips pass; XR lifecycle testing pending.",
-    "audio": "Original dispatcher, all 24 decoded Vorbis resources, native AVAudioEngine and battle event cues connected. Shared background-music maintenance, full event coverage and device output remain.",
-    "campaign_execution": "A bounded legal-command host pilot completes 14 consecutive Story missions (indices 0–13), then loses index 14 normally. Fifteen profile-file writes and 689 in-memory checkpoint comparisons are checked. Synthetic presentation; full Story/device result unverified.",
+    "audio": "Original dispatcher, all 24 decoded Vorbis resources, native AVAudioEngine, battle event cues and exact active map/battle/menu music maintenance connected. Remaining sound-event coverage and actual device output require verification.",
+    "campaign_execution": "Fresh legal-command native host pilot completes all 17 Story missions in order and reaches the campaign ending, with 17 checked profile-file writes and 797 in-memory replay checkpoint matches. Game rules are unchanged; presentation acknowledgements are synthetic. Showdown/Arena completion and rendered/device playthrough remain separate.",
     "sprite_descriptors": "Original geometry, normalized UV, type factory, initial placement/model transform and millisecond animation implemented",
     "world_bootstrap": "All 30 mission scripts and 45 mode/faction/opponent entries reach first objectives. Both terrain initialization stages execute before following unit spawns; all styles retain the shared RNG.",
     "png_decoder": "Native LodePNG;140sourceimages/12222652RGBAbytes match Pillow",
@@ -55,8 +55,8 @@
     "current_checkpoint_apple_compile": false,
     "current_m3g_gpu_pixels_verified": false
   },
-  "ci_scope": "Prepared: native ARM64 app and exact runtime Metal shader compilation, all portable tests on Linux and Apple ARM64, actual files/campaign handoff, separate tactical/M3G GPU probes. New workflow not submitted; no physical XR/full-game proof.",
-  "completion_eta": "Not established. Next Apple build requires renewed publication approval; remaining presentation/audio and complete device/playthrough validation still apply.",
+  "ci_scope": "Native ARM64 app and exact runtime shader compilation, 55 portable suites on Linux/Apple ARM64, actual filesystem/campaign checks and tactical/M3G GPU probes. Follow-up Apple run required after first camera-fixture failure; physical XR acceptance remains.",
+  "completion_eta": "Not established. Updated hosted Apple validation and package creation are in progress; remaining presentation/sound and physical-device acceptance still apply.",
   "retired_approach": {
     "archive_branch": "archive/compatibility-experiment",
     "workflow_run_id": 40268562956,
@@ -65,8 +65,8 @@
     "retirement_commit": "dba8521ff61f961755169f83715bfc796a4a3045"
   },
   "local_native_tests": {
-    "cmake_ctest_suites_passed": 53,
-    "cmake_ctest_suites_total": 53,
+    "cmake_ctest_suites_passed": 55,
+    "cmake_ctest_suites_total": 55,
     "mission_original_streams": 30,
     "mission_original_commands": 803,
     "mission_malformed_rejections": 855,
@@ -75,7 +75,7 @@
     "atlas_contract_checks": 71,
     "resource_payload_hashes": 559,
     "m3g_container_inventory_matches": 36,
-    "scope": "Exact final staged source: all 53 host suites, 45 entry round trips, actual-session battle and continuous 14-success Story pilot rerun passed their recorded checks. Synthetic presentation; no Apple/GPU/device/full-campaign claim.",
+    "scope": "Exact follow-up host build: 55 suites and fresh complete 17-mission Story path. Original camera matrices remain bit-exact after explicit target-libm boundary selection. No GPU/device/playthrough claim.",
     "atlas_original_descriptors": 38,
     "atlas_original_quad_comparisons": 3639,
     "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded",
@@ -111,14 +111,18 @@
     "real_session_battle_updates": 534,
     "real_session_battle_prepared_frames": 217,
     "real_session_battle_rng_unchanged": true,
-    "consecutive_story_successes": 14,
-    "continuous_story_terminal_loss_index": 14,
+    "consecutive_story_successes": 17,
+    "continuous_story_terminal_loss_index": null,
     "full_playthrough_verified": false,
-    "final_staged_report": "validation/NATIVE_COMPLETE_HOST_CHECKPOINT.json",
-    "continuous_story_profile_file_writes": 15,
+    "final_staged_report": "validation/NATIVE_GAME_005_FOLLOWUP_HOST.json",
+    "continuous_story_profile_file_writes": 17,
     "continuous_story_checkpoint_file_writes": 0,
-    "continuous_story_in_memory_checkpoint_comparisons": 689,
-    "final_staged_code_inventory_sha256": "7b8dbb83dc33334f28c664180b78b2ec50b04cbfd393cd60dec175e1ba244a86"
+    "continuous_story_in_memory_checkpoint_comparisons": 797,
+    "full_headless_story_completed": true,
+    "music_maintenance_original_cases": 1280,
+    "music_maintenance_scalar_comparisons": 2752,
+    "menu_music_original_cases": 10608,
+    "menu_music_scalar_comparisons": 17392
   },
   "prior_native_cloud_validation": {
     "source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
@@ -150,7 +154,7 @@
     "recovered_native_gameplay_source": false,
     "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
   },
-  "next_work": "Publish the concrete reviewed checkpoint after renewed approval, run the prepared Apple gates, fix actual failures and package the matching new code with the local original data. Finish remaining support/audio presentation and verify full gameplay/save-resume/60Hz on iPhone XR.",
+  "next_work": "Run the reviewed follow-up Apple gates, fix concrete failures and package matching ARM64 code with the local original assets. Complete remaining support-fire/presentation/sound coverage, Showdown/Arena paths and actual XR full-playthrough/save-resume/60-Hz checks.",
   "native_scene_test_ipa": {
     "file_name": "G1_Awakening_Native_Scene_Test_002.ipa",
     "bytes": 7106909,
@@ -198,11 +202,17 @@
     "scope": "Earlier component checkpoint; new touch/battle/audio app compilation is not covered."
   },
   "current_campaign_cloud_validation": {
-    "status": "publication_blocked",
-    "blocked_action": "GitHub create_commit",
-    "tool_response": "user rejected MCP tool call",
-    "branch_updated": false,
-    "new_run_submitted": false,
+    "status": "followup_prepared_after_first_apple_test_failure",
+    "published_source_commit": "c75306907ecea8f2fb1926a5ba3228e3094a0fdf",
+    "run_id": 40365634564,
+    "iphoneos_arm64_app_compiled": true,
+    "iphoneos_runtime_shader_compiled": true,
+    "apple_host_test_passes": 52,
+    "apple_host_test_total": 53,
+    "failed_test": "m3g_camera_contract",
+    "correction": "Fixture now models the recorded external tanf boundary explicitly while preserving exact original matrix comparisons; production camera code unchanged.",
+    "branch_updated": true,
+    "new_run_submitted": true,
     "device_tested": false
   },
   "validation_layers": {
@@ -214,7 +224,22 @@
     "native_battle_controller_original_vectors": true,
     "native_battle_actual_session_cpu_integration": true,
     "native_battle_metal_execution": false,
-    "native_story_continuous_successes": 14,
-    "native_story_full_completion": false
-  }
+    "native_story_continuous_successes": 17,
+    "native_story_full_completion": true,
+    "native_story_full_completion_scope": "Headless legal-input run with synthetic presentation; no physical device claim.",
+    "mission_battle_music_original_policy": true,
+    "menu_music_original_policy": true
+  },
+  "publication_history": [
+    {
+      "action": "Earlier GitHub create_commit",
+      "outcome": "user rejected MCP tool call",
+      "branch_updated": false
+    },
+    {
+      "action": "Publication after user Resume",
+      "outcome": "success",
+      "commit": "c75306907ecea8f2fb1926a5ba3228e3094a0fdf"
+    }
+  ]
 }

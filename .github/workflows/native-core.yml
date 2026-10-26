@@ -32,7 +32,13 @@ jobs:
         with:
           persist-credentials: false
       - name: Install native build dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build g++ zlib1g-dev
+        run: |
+          if command -v cmake && command -v ninja && command -v g++ && test -f /usr/include/zlib.h; then
+            echo 'Native build tools and zlib headers are already installed.'
+          else
+            sudo apt-get update
+            sudo apt-get install -y cmake ninja-build g++ zlib1g-dev
+          fi
       - name: Configure
         run: cmake -S native -B build/native -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
       - name: Compile native core and tests

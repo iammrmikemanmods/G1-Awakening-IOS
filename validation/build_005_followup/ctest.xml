@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-c++"
+	tests="55"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="7875cb8e5c62"
+	time="0"
+	timestamp="2026-10-26T12:18:33"
+	>
+	<testcase name="m3g_scene_contract" classname="m3g_scene_contract" time="0.00298271" status="run">
+		<properties/>
+		<system-out>60 native M3G scene contracts passed
+</system-out>
+	</testcase>
+	<testcase name="m3g_animation_contract" classname="m3g_animation_contract" time="0.0370794" status="run">
+		<properties/>
+		<system-out>43 native M3G animation contracts passed
+</system-out>
+	</testcase>
+	<testcase name="m3g_spline_contract" classname="m3g_spline_contract" time="0.00332335" status="run">
+		<properties/>
+		<system-out>{"original_sequences":19,"original_samples":290,"prepared_scalar_comparisons":546,"sample_scalar_comparisons":987,"prepared_binary32_identical":546,"sample_binary32_identical":987,"maximum_host_math_error":0,"host_math_tolerance":0.000002,"native_contracts":10,"passed":true}
+</system-out>
+	</testcase>
+	<testcase name="m3g_scene_pose_contract" classname="m3g_scene_pose_contract" time="0.0990304" status="run">
+		<properties/>
+		<system-out>{"checks":590,"original_field_comparisons":365,"accepted_direct":60,"accepted_dispatch":10,"native_rejections_of_original_diagnostics":20}
+</system-out>
+	</testcase>
+	<testcase name="m3g_camera_contract" classname="m3g_camera_contract" time="0.00541998" status="run">
+		<properties/>
+		<system-out>{"original_cases":12,"projection_comparisons":192,"native_contracts":40,"target_tanf_cases":6,"historical_host_tanf_differences":0,"tanf_boundaries":[{"case":0,"input_bits":1048971922,"target_output_bits":1049178275,"historical_output_bits":1049178275,"lower_bits":1049178275,"upper_bits":1049178276},{"case":1,"input_bits":1057360530,"target_output_bits":1058262331,"historical_output_bits":1058262331,"lower_bits":1058262330,"upper_bits":1058262331},{"case":2,"input_bits":1061752795,"target_output_bits":1065353216,"historical_output_bits":1065353216,"lower_bits":1065353216,"upper_bits":1065353217},{"case":3,"input_bits":1007614517,"target_output_bits":1007614755,"historical_output_bits":1007614755,"lower_bits":1007614754,"upper_bits":1007614755},{"case":4,"input_bits":1065749138,"target_output_bits":1071494104,"historical_output_bits":1071494104,"lower_bits":1071494104,"upper_bits":1071494105},{"case":5,"input_bits":1053364187,"target_output_bits":1054086093,"historical_output_bits":1054086093,"lower_bits":1054...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="m3g_battle_timeline_contract" classname="m3g_battle_timeline_contract" time="0.00224357" status="run">
+		<properties/>
+		<system-out>{"original_cases":54,"reference_comparisons":186,"native_contracts":58,"reference_sha256":"15baf7f0794896bd5815f46b7721c3099a94fea28201eb8b3eba74ad3f2b8c4a","passed":true}
+</system-out>
+	</testcase>
+	<testcase name="m3g_render_asset_contract" classname="m3g_render_asset_contract" time="0.0264096" status="run">
+		<properties/>
+		<system-out>14 native M3G render-asset contracts passed
+</system-out>
+	</testcase>
+	<testcase name="m3g_render_frame_contract" classname="m3g_render_frame_contract" time="0.00240847" status="run">
+		<properties/>
+		<system-out>{"checks":167,"classification_cases":51,"original_classification_fields":153}
+</system-out>
+	</testcase>
+	<testcase name="m3g_bindings_contract" classname="m3g_bindings_contract" time="0.0214947" status="run">
+		<properties/>
+		<system-out>{"checks":83,"original_hash_cases":34,"original_tree_cases":6,"original_comparisons":40,"contract_checks":43}
+</system-out>
+	</testcase>
+	<testcase name="m3g_battle_camera_contract" classname="m3g_battle_camera_contract" time="0.00256976" status="run">
+		<properties/>
+		<system-out>{"checks":9668,"original_cases":221,"original_field_comparisons":9645,"native_contracts":23}
+</system-out>
+	</testcase>
+	<testcase name="m3g_runtime_state_contract" classname="m3g_runtime_state_contract" time="0.00317774" status="run">
+		<properties/>
+		<system-out>26 native M3G runtime-state contracts passed
+</system-out>
+	</testcase>
+	<testcase name="m3g_sprite3d_original_function_vectors" classname="m3g_sprite3d_original_function_vectors" time="0.00263038" status="run">
+		<properties/>
+		<system-out>{"renderer_cases":142,"draws":47,"queue_sequences":4,"queue_entries":26,"original_value_checks":1557,"contract_checks":30,"passed":true}
+</system-out>
+	</testcase>
+	<testcase name="m3g_material_overrides_original_vectors" classname="m3g_material_overrides_original_vectors" time="0.0255701" status="run">
+		<properties/>
+		<system-out>{"original_cases":40,"original_checks":272,"contract_checks":37,"checks":309,"all_passed":true}
+</system-out>
+	</testcase>
+	<testcase name="m3g_battle_controller_original_vectors" classname="m3g_battle_controller_original_vectors" time="0.015596" status="run">
+		<properties/>
+		<system-out>{"original_updates":1225,"original_draws":159,"checks":82600}
+</system-out>
+	</testcase>
+	<testcase name="mission_format_contract" classname="mission_format_contract" time="0.0173539" status="run">
+		<properties/>
+		<system-out>Passed 64 mission framing contract checks; no gameplay execution.
+</system-out>
+	</testcase>
+	<testcase name="movement_original_function_vectors" classname="movement_original_function_vectors" time="0.00388568" status="run">
+		<properties/>
+		<system-out>Passed 256 original-execution cases, 9092 scalar comparisons, and 4 separate malformed-input checks.
+</system-out>
+	</testcase>
+	<testcase name="movement_action_contract" classname="movement_action_contract" time="0.0018808" status="run">
+		<properties/>
+		<system-out>movement action contracts: 47 passed
+</system-out>
+	</testcase>
+	<testcase name="movement_arrival_contract" classname="movement_arrival_contract" time="0.00137813" status="run">
+		<properties/>
+		<system-out>movement arrival contracts: 11 passed
+</system-out>
+	</testcase>
+	<testcase name="text_original_function_vectors" classname="text_original_function_vectors" time="0.00215246" status="run">
+		<properties/>
+		<system-out>text: 1048 checks; 972 original switch cases
+</system-out>
+	</testcase>
+	<testcase name="mission_execution_original_function_vectors" classname="mission_execution_original_function_vectors" time="0.00281198" status="run">
+		<properties/>
+		<system-out>mission execution: 794 checks; 476 original dialogue, 164 capture, 48 clock cases
+</system-out>
+	</testcase>
+	<testcase name="capture_action_contract" classname="capture_action_contract" time="0.00239375" status="run">
+		<properties/>
+		<system-out>capture action contracts: 20 passed
+</system-out>
+	</testcase>
+	<testcase name="transform_action_contract" classname="transform_action_contract" time="0.00235321" status="run">
+		<properties/>
+		<system-out>transform action contracts: 17 passed
+</system-out>
+	</testcase>
+	<testcase name="combat_original_function_vectors" classname="combat_original_function_vectors" time="0.00836411" status="run">
+		<properties/>
+		<system-out>{"rng_cases":6,"stat_cases":36,"health_cases":64,"battle_cases":192,"direct_strike_cases":16,"checks":23845,"all_passed":true}
+</system-out>
+	</testcase>
+	<testcase name="native_session_integration" classname="native_session_integration" time="0.00316343" status="run">
+		<properties/>
+		<system-out>86 native session/clock integration checks passed; synthetic mission, not a playthrough
+</system-out>
+	</testcase>
+	<testcase name="mission_progression_original_function_vectors" classname="mission_progression_original_function_vectors" time="0.00324736" status="run">
+		<properties/>
+		<system-out>{"all_passed":true,"original_reference_rows":738,"native_checks":10843}
+</system-out>
+	</testcase>
+	<testcase name="turn_original_function_vectors" classname="turn_original_function_vectors" time="0.00737571" status="run">
+		<properties/>
+		<system-out>192 original turn cases / 43084 state comparisons passed
+</system-out>
+	</testcase>
+	<testcase name="mission_objectives_original_function_vectors" classname="mission_objectives_original_function_vectors" time="0.0053036" status="run">
+		<properties/>
+		<system-out>{"all_passed":true,"original_cases":400,"native_checks":3217}
+</system-out>
+	</testcase>
+	<testcase name="ai_attack_original_function_vectors" classname="ai_attack_original_function_vectors" time="0.010488" status="run">
+		<properties/>
+		<system-out>{"cases":192,"checks":6479,"passed":true}
+</system-out>
+	</testcase>
+	<testcase name="ai_planner_original_function_vectors" classname="ai_planner_original_function_vectors" time="0.00636298" status="run">
+		<properties/>
+		<system-out>{"cases":137,"checks":8050,"passed":true}
+</system-out>
+	</testcase>
+	<testcase name="ai_turn_admission_original_function_vectors" classname="ai_turn_admission_original_function_vectors" time="0.0148692" status="run">
+		<properties/>
+		<system-out>{"cases":201,"checks":15633,"passed":true}
+</system-out>
+	</testcase>
+	<testcase name="ai_site_original_function_vectors" classname="ai_site_original_function_vectors" time="0.00840312" status="run">
+		<properties/>
+		<system-out>{"cases":256,"checks":5073,"passed":true}
+</system-out>
+	</testcase>
+	<testcase name="atlas_format_geometry_contract" classname="atlas_format_geometry_contract" time="0.0158018" status="run">
+		<properties/>
+		<system-out>Passed 71 atlas framing / geometry contract checks; no GPU rendering.
+</system-out>
+	</testcase>
+	<testcase name="png_rgba_contract" classname="png_rgba_contract" time="0.00268763" status="run">
+		<properties/>
+		<system-out>RGBA row/channel/straight-alpha round trip and five malformed cases passed.
+</system-out>
+	</testcase>
+	<testcase name="sprite_geometry_contract" classname="sprite_geometry_contract" time="0.001797" status="run">
+		<properties/>
+		<system-out>Passed 21 sprite geometry checks; no GPU/device execution.
+</system-out>
+	</testcase>
+	<testcase name="terrain_original_function_vectors" classname="terrain_original_function_vectors" time="0.0040573" status="run">
+		<properties/>
+		<system-out>Passed 128 original-execution cases, 256 quads, 5760 scalar comparisons and 41 format/API contracts.
+</system-out>
+	</testcase>
+	<testcase name="world_bootstrap_contract" classname="world_bootstrap_contract" time="0.0028609" status="run">
+		<properties/>
+		<system-out>Compared 552 original loader/debit vectors.
+Passed 1203 world bootstrap contract checks; synthetic data only.
+</system-out>
+	</testcase>
+	<testcase name="sprite_animation_contract" classname="sprite_animation_contract" time="0.00173853" status="run">
+		<properties/>
+		<system-out>Passed 42 sprite animation checks; no original runtime required.
+</system-out>
+	</testcase>
+	<testcase name="sprite_placement_contract" classname="sprite_placement_contract" time="0.00160135" status="run">
+		<properties/>
+		<system-out>28 sprite placement checks passed
+</system-out>
+	</testcase>
+	<testcase name="initial_animation_table_contract" classname="initial_animation_table_contract" time="0.00235963" status="run">
+		<properties/>
+		<system-out>Animation table addressing and five malformed cases passed.
+</system-out>
+	</testcase>
+	<testcase name="vorbis_format_contract" classname="vorbis_format_contract" time="0.00189637" status="run">
+		<properties/>
+		<system-out>Three invalid Vorbis header contracts passed. Original audio corpus is tested separately.
+</system-out>
+	</testcase>
+	<testcase name="audio_dispatch_original_function_vectors" classname="audio_dispatch_original_function_vectors" time="0.00245545" status="run">
+		<properties/>
+		<system-out>512 original audio dispatch cases / 3706 scalar comparisons passed
+</system-out>
+	</testcase>
+	<testcase name="audio_maintenance_original_function_vectors" classname="audio_maintenance_original_function_vectors" time="0.00746852" status="run">
+		<properties/>
+		<system-out>1280 original music-maintenance cases / 2752 scalar comparisons passed
+</system-out>
+	</testcase>
+	<testcase name="menu_music_original_function_vectors" classname="menu_music_original_function_vectors" time="0.0136613" status="run">
+		<properties/>
+		<system-out>10608 original menu music cases / 17392 scalar comparisons passed
+</system-out>
+	</testcase>
+	<testcase name="native_profile_atomic_file" classname="native_profile_atomic_file" time="0.00578652" status="run">
+		<properties/>
+		<system-out>14 native profile/atomic file checks passed; iPhone cold reload remains untested
+</system-out>
+	</testcase>
+	<testcase name="unit_spawn_original_function_vectors" classname="unit_spawn_original_function_vectors" time="0.00247047" status="run">
+		<properties/>
+		<system-out>Passed 7685 unit activation comparisons/guards across 192 original-function cases.
+</system-out>
+	</testcase>
+	<testcase name="unit_actions_original_function_vectors" classname="unit_actions_original_function_vectors" time="0.0101279" status="run">
+		<properties/>
+		<system-out>{"cases":201,"checks":3552,"passed":true}
+</system-out>
+	</testcase>
+	<testcase name="ai_execution_original_function_vectors" classname="ai_execution_original_function_vectors" time="0.00181141" status="run">
+		<properties/>
+		<system-out>136 original plan-consumer cases / 681 checks passed
+</system-out>
+	</testcase>
+	<testcase name="world_commands_original_function_vectors" classname="world_commands_original_function_vectors" time="0.00289837" status="run">
+		<properties/>
+		<system-out>Compared 151 original world-command/RNG vectors; passed 1702 checks.
+</system-out>
+	</testcase>
+	<testcase name="campaign_actual_save_and_handoff" classname="campaign_actual_save_and_handoff" time="0.00767195" status="run">
+		<properties/>
+		<system-out>53 campaign orchestration checks passed with real filesystem writes/failures; no UI/device draw claimed.
+</system-out>
+	</testcase>
+	<testcase name="native_session_checkpoint_and_resume" classname="native_session_checkpoint_and_resume" time="0.00983145" status="run">
+		<properties/>
+		<system-out>74 native session checkpoint, actual file reload and deterministic continuation checks passed; synthetic host, not a playthrough
+</system-out>
+	</testcase>
+	<testcase name="unit_interactions_original_functions" classname="unit_interactions_original_functions" time="0.0290759" status="run">
+		<properties/>
+		<system-out>869 unchanged-original unit interaction cases matched (20601 scalars); 14 native guards passed.
+</system-out>
+	</testcase>
+	<testcase name="unit_commands_original_functions" classname="unit_commands_original_functions" time="0.00817726" status="run">
+		<properties/>
+		<system-out>1100 original command/undo vectors matched (11436 scalars); 17 native guards passed.
+</system-out>
+	</testcase>
+	<testcase name="terrain_decorations_original_function_vectors" classname="terrain_decorations_original_function_vectors" time="0.00560341" status="run">
+		<properties/>
+		<system-out>terrain decorations: 24 original cases, 408 snapshots, 38389 comparisons/contracts passed
+</system-out>
+	</testcase>
+	<testcase name="terrain_animated_original_function_vectors" classname="terrain_animated_original_function_vectors" time="0.00455512" status="run">
+		<properties/>
+		<system-out>animated terrain: 128 geometry and 64 clock cases, 7231 comparisons/contracts passed
+</system-out>
+	</testcase>
+	<testcase name="terrain_sprite_decorations_original_function_vectors" classname="terrain_sprite_decorations_original_function_vectors" time="0.00985449" status="run">
+		<properties/>
+		<system-out>terrain sprite decorations: 12 original cases, 216 snapshots, 146028 comparisons/contracts passed
+</system-out>
+	</testcase>
+</testsuite>
