@@ -60,6 +60,12 @@ public:
     // Last confirmed persisted profile (or the fresh default before first save).
     const CampaignProfile& profile() const noexcept { return profile_; }
 
+    // Native durability policy for the recovered one-time support message.
+    // May run only before a campaign handoff begins. Writes only this profile
+    // flag, without changing results, unlocks, session state, RNG or tokens.
+    // Failure keeps the last confirmed profile intact and permits retry.
+    SaveWriteResult consume_support_tutorial();
+
     // Requires the real stopped opcode10 gate, reads its signed next-index word,
     // snapshots actual counts/metrics/RNG, and attempts a real atomic save.
     // Failure retains the exact prepared bytes for explicit retry. It neither
@@ -94,6 +100,7 @@ public:
 
 private:
     std::string destination_;
+    Bytes legacy_profile_bytes_;
     CampaignProfile profile_;
     CampaignControllerState state_;
     std::optional<CampaignProfileUpdate> prepared_update_;
@@ -108,6 +115,7 @@ private:
 
     void require_gate(std::uint64_t,CampaignControllerGate) const;
     SaveWriteResult attempt_save();
+    SaveWriteResult preserve_legacy_profile();
     void request_handoff();
 };
 

@@ -1,25 +1,10 @@
 #pragma once
 
 #import <UIKit/UIKit.h>
+#include "NativeBitmapFont.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-
-@interface G1WorldTitleLabel : UILabel
-- (BOOL)currentTextDrawn;
-@end
-@implementation G1WorldTitleLabel {
-    NSUInteger _textRevision,_drawnTextRevision;
-}
-- (void)setText:(NSString*)text {
-    if([self.text isEqualToString:text])return;
-    [super setText:text];++_textRevision;[self setNeedsDisplay];
-}
-- (void)drawTextInRect:(CGRect)rect {
-    [super drawTextInRect:rect];_drawnTextRevision=_textRevision;
-}
-- (BOOL)currentTextDrawn { return _textRevision>0 && _textRevision==_drawnTextRevision; }
-@end
 
 // Native campaign/menu/results surface. A token is visible only after its
 // current text has actually drawn. This is not an original background or font.
