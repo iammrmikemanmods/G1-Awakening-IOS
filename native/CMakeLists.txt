@@ -12,7 +12,11 @@ target_compile_features(g1_vorbis PUBLIC cxx_std_17)
 add_library(g1_resources STATIC src/Archive.cpp src/M3G.cpp src/Mission.cpp src/Movement.cpp
     src/Atlas.cpp src/Image.cpp src/SpriteGeometry.cpp src/SpriteAnimation.cpp
     src/SpritePlacement.cpp src/Terrain.cpp src/World.cpp src/Scene.cpp src/InitialPresentation.cpp
-    src/Audio.cpp src/MovementAction.cpp src/MovementArrival.cpp src/Text.cpp src/MissionExecution.cpp)
+    src/Audio.cpp src/MovementAction.cpp src/MovementArrival.cpp src/Text.cpp src/MissionExecution.cpp
+    src/CaptureAction.cpp src/Combat.cpp src/TransformAction.cpp src/GameSession.cpp
+    src/MissionProgression.cpp src/MissionObjectives.cpp src/TurnProgression.cpp
+    src/AIIncome.cpp src/AI.cpp src/AISite.cpp src/AudioEvents.cpp src/SaveStore.cpp
+    src/UnitSpawn.cpp)
 target_include_directories(g1_resources PUBLIC include)
 target_compile_features(g1_resources PUBLIC cxx_std_17)
 target_link_libraries(g1_resources PUBLIC ZLIB::ZLIB g1_png g1_vorbis)
@@ -62,6 +66,43 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
                  "${CMAKE_CURRENT_SOURCE_DIR}/tests/dialogue_original_vectors.txt"
                  "${CMAKE_CURRENT_SOURCE_DIR}/tests/capture_original_vectors.txt"
                  "${CMAKE_CURRENT_SOURCE_DIR}/tests/mission_clock_original_vectors.txt")
+        add_executable(g1_capture_action_tests tests/capture_action_test.cpp)
+        target_link_libraries(g1_capture_action_tests PRIVATE g1_resources)
+        add_test(NAME capture_action_contract COMMAND g1_capture_action_tests)
+        add_executable(g1_transform_action_tests tests/transform_action_test.cpp)
+        target_link_libraries(g1_transform_action_tests PRIVATE g1_resources)
+        add_test(NAME transform_action_contract COMMAND g1_transform_action_tests)
+        add_executable(g1_combat_tests tests/combat_test.cpp)
+        target_link_libraries(g1_combat_tests PRIVATE g1_resources)
+        add_test(NAME combat_original_function_vectors COMMAND g1_combat_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/combat_cases.txt")
+        add_executable(g1_game_session_tests tests/game_session_test.cpp)
+        target_link_libraries(g1_game_session_tests PRIVATE g1_resources)
+        add_test(NAME native_session_integration COMMAND g1_game_session_tests)
+        add_executable(g1_mission_progression_tests tests/mission_progression_test.cpp)
+        target_link_libraries(g1_mission_progression_tests PRIVATE g1_resources)
+        add_test(NAME mission_progression_original_function_vectors COMMAND g1_mission_progression_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/mission_progression_original_vectors.txt")
+        add_executable(g1_turn_tests tests/turn_test.cpp)
+        target_link_libraries(g1_turn_tests PRIVATE g1_resources)
+        add_test(NAME turn_original_function_vectors COMMAND g1_turn_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/turn_original_vectors.txt")
+        add_executable(g1_mission_objectives_tests tests/mission_objectives_test.cpp)
+        target_link_libraries(g1_mission_objectives_tests PRIVATE g1_resources)
+        add_test(NAME mission_objectives_original_function_vectors COMMAND g1_mission_objectives_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/mission_objectives_original_vectors.txt")
+        add_executable(g1_ai_attack_tests tests/ai_attack_test.cpp)
+        target_link_libraries(g1_ai_attack_tests PRIVATE g1_resources)
+        add_test(NAME ai_attack_original_function_vectors COMMAND g1_ai_attack_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/ai_attack_cases.txt")
+        add_test(NAME ai_planner_original_function_vectors COMMAND g1_ai_attack_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/ai_planner_cases.txt")
+        add_test(NAME ai_turn_admission_original_function_vectors COMMAND g1_ai_attack_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/ai_turn_cases.txt")
+        add_executable(g1_ai_site_tests tests/ai_site_test.cpp)
+        target_link_libraries(g1_ai_site_tests PRIVATE g1_resources)
+        add_test(NAME ai_site_original_function_vectors COMMAND g1_ai_site_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/ai_site_cases.txt")
         add_executable(g1_atlas_tests tests/atlas_test.cpp)
         target_link_libraries(g1_atlas_tests PRIVATE g1_resources)
         add_test(NAME atlas_format_geometry_contract COMMAND g1_atlas_tests)
@@ -77,7 +118,8 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
                  "${CMAKE_CURRENT_SOURCE_DIR}/tests/terrain_cases.txt")
         add_executable(g1_world_tests tests/world_test.cpp)
         target_link_libraries(g1_world_tests PRIVATE g1_resources)
-        add_test(NAME world_bootstrap_contract COMMAND g1_world_tests)
+        add_test(NAME world_bootstrap_contract COMMAND g1_world_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/world_funds_original_vectors.txt")
         add_executable(g1_sprite_animation_tests tests/sprite_animation_test.cpp)
         target_link_libraries(g1_sprite_animation_tests PRIVATE g1_resources)
         add_test(NAME sprite_animation_contract COMMAND g1_sprite_animation_tests)
@@ -90,6 +132,17 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
         add_executable(g1_audio_tests tests/audio_test.cpp)
         target_link_libraries(g1_audio_tests PRIVATE g1_resources)
         add_test(NAME vorbis_format_contract COMMAND g1_audio_tests)
+        add_executable(g1_audio_events_tests tests/audio_events_test.cpp)
+        target_link_libraries(g1_audio_events_tests PRIVATE g1_resources)
+        add_test(NAME audio_dispatch_original_function_vectors COMMAND g1_audio_events_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/audio_event_original_vectors.txt")
+        add_executable(g1_save_store_tests tests/save_store_test.cpp)
+        target_link_libraries(g1_save_store_tests PRIVATE g1_resources)
+        add_test(NAME native_profile_atomic_file COMMAND g1_save_store_tests)
+        add_executable(g1_unit_spawn_tests tests/unit_spawn_test.cpp)
+        target_link_libraries(g1_unit_spawn_tests PRIVATE g1_resources)
+        add_test(NAME unit_spawn_original_function_vectors COMMAND g1_unit_spawn_tests
+                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/unit_spawn_original_vectors.txt")
     endif()
 endif()
 
@@ -103,9 +156,11 @@ if(APPLE)
     set_target_properties(g1_metal PROPERTIES OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED YES)
     if(CMAKE_SYSTEM_NAME STREQUAL "iOS" AND G1_BUILD_APP)
         set(G1_SOURCE_COMMIT "unknown" CACHE STRING "Source commit recorded in the test app")
-        add_executable(G1AwakeningNative MACOSX_BUNDLE platform/apple/NativeApp.mm)
+        add_executable(G1AwakeningNative MACOSX_BUNDLE platform/apple/NativeApp.mm
+            platform/apple/AppleAudio.mm)
         target_link_libraries(G1AwakeningNative PRIVATE g1_metal
-            "-framework UIKit" "-framework MetalKit" "-framework QuartzCore" "-framework CoreGraphics")
+            "-framework UIKit" "-framework MetalKit" "-framework QuartzCore" "-framework CoreGraphics"
+            "-framework AVFAudio")
         target_compile_options(G1AwakeningNative PRIVATE -fobjc-arc)
         set_target_properties(G1AwakeningNative PROPERTIES
             OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED YES

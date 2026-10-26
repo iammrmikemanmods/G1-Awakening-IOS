@@ -2,6 +2,8 @@
 
 #include "g1/Text.hpp"
 #include "g1/World.hpp"
+#include "g1/MissionProgression.hpp"
+#include "g1/MissionObjectives.hpp"
 
 namespace g1 {
 
@@ -41,32 +43,6 @@ DialogueUpdate advance_dialogue(const DialogueProgress&, const DialogueLayout&,
 // determines page clipping and whether all visible text has been drawn.
 std::int32_t dialogue_character_budget(const DialogueProgress&) noexcept;
 
-struct MissionSiteState {
-    std::int8_t state{-1};
-    std::vector<std::vector<std::int8_t>> item_states;
-};
-
-// Separate from site coordinates: map+0x3e8 is site state, map+0x3f8 is nested
-// item state, and opcode 7 initializes both to -1. A real capture action must
-// update these values; merely moving to a coordinate does not satisfy a goal.
-std::vector<MissionSiteState> initial_mission_site_states(const WorldBootstrap&);
-
-struct CapturedSiteObjective {
-    std::int16_t site{};
-    std::int16_t group{};
-    std::int16_t item{};
-    std::int16_t desired_state{};
-    std::int16_t text_index{};
-    std::uint16_t text_id{};
-};
-
-// Recovered kind-1 branch 0x55a90..0x55b6c. If ANY index is -1 the original
-// compares ALL sites and ALL items, including each site's own state; it does
-// not retain the other two index filters. Other negative/out-of-range indices
-// are rejected rather than reproducing the original unchecked pointer access.
-bool captured_site_objective_satisfied(const CapturedSiteObjective&,
-                                      const std::vector<MissionSiteState>&);
-
 struct MissionDialogue {
     std::int16_t speaker_type{}; // -1 is the original tutorial-heading branch.
     std::int16_t text_index{};
@@ -81,6 +57,8 @@ enum class MissionGate {
     delay,
     transition,
     captured_site_item,
+    objective,
+    completion_frame,
     advance_pending,
     stopped,
     end_of_stream,
@@ -113,6 +91,7 @@ struct MissionExecutionState {
     std::string stop_detail;
     bool phase_flag_225{};
     bool skip_following_dialogue{};
+    bool alternate_dialogue_variant{}; // Original map+0x231.
     std::int32_t transition_value{};
     std::int32_t remaining_delay_ms{};
     // Only the active gate should be presented. As in the original direct
@@ -120,6 +99,7 @@ struct MissionExecutionState {
     std::optional<MissionDialogue> dialogue;
     std::optional<WorldCameraRequest> camera;
     std::optional<CapturedSiteObjective> objective;
+    std::optional<MissionObjective> mission_objective; // All four original kinds.
     std::optional<std::uint16_t> pending_text_id;
 };
 
@@ -133,9 +113,10 @@ struct MissionTickResult {
     std::vector<MissionEffect> effects;
 };
 
-// Native control-flow continuation for the cold first-campaign bootstrap.
+// Native control-flow continuation from a decoded campaign dialogue boundary.
 // It owns no renderer, audio, combat, save system or original machine code.
-// It starts at the bootstrap's unconsumed cursor 9 and returns typed requests.
+// The one-argument constructor retains the cold first-campaign default; other
+// campaign tables require explicit matching context. It returns typed requests.
 // Clients must implement the returned effects; receiving an effect is not
 // evidence that its gameplay/UI work has been performed.
 //
@@ -143,11 +124,13 @@ struct MissionTickResult {
 // the following tick, without carrying unused delay time into another command.
 // Camera callbacks are explicit because 0x557f4 delegates completion to the
 // renderer. Goal observations are separate from clock ticks, as in the game.
-// Opcode 8 completion presentation and opcode 10 campaign handoff stop before
-// consumption. No API labels this partial flow as a completed mission.
+// Opcode 8 stops until begin_completion receives actual campaign/world state.
+// Opcode 10 stops for actual profile persistence and results/handoff handling
+// through MissionProgression. No API labels this partial flow as a playthrough.
 class MissionExecution {
 public:
     explicit MissionExecution(const WorldBootstrap&);
+    MissionExecution(const WorldBootstrap&, const CampaignContext&);
     const MissionExecutionState& state() const noexcept { return state_; }
     MissionTickResult tick(std::uint32_t delta_ms, const MissionTickInput& = {});
 
@@ -155,15 +138,32 @@ public:
     // later camera request. false retains the current camera gate.
     void report_camera(std::size_t command_index, bool reached);
 
-    // Implements the regular first-campaign goal branch. Player-loss/alternate
-    // campaign branches stop explicitly. These counts must come from real
-    // active units, and the item state from actual native capture behavior.
+    // Legacy first-campaign capture-only observation. Loss/alternate branches
+    // stop explicitly. Use the full-state overload below for recovered general
+    // behavior. Counts and item states must come from actual gameplay.
     MissionTickResult observe_objective(const std::vector<MissionSiteState>&,
                                        std::array<std::uint8_t, 2> active_unit_counts);
+
+    // Complete original objective/control-flow decision for all four kinds.
+    // Uses current native state, including inactive unit objects indexed by
+    // original type. The campaign group/index must match this script.
+    MissionTickResult observe_objective(const std::vector<MissionSiteState>&,
+        const std::vector<MissionObjectiveUnit>& units_by_type,
+        const CampaignContext&, std::uint8_t current_owner);
+
+    // Consumes only the currently stopped opcode-8 entry. Returns the original
+    // state-dependent audio/text requests, which the caller must implement.
+    // It is not a user acknowledgement or a way to satisfy a gameplay goal.
+    // Phase 8 becomes 99 on the next tick; the following tick dispatches the
+    // next command. The token rejects stale or repeated presentation entries.
+    CompletionPresentation begin_completion(std::size_t command_index,
+                                            const CampaignContext&);
 
 private:
     std::vector<MissionCommand> commands_;
     std::vector<std::uint16_t> raw_unit_name_indices_;
+    std::uint8_t campaign_group_{};
+    std::int32_t campaign_index_{};
     MissionExecutionState state_;
     void enter_current(std::vector<MissionEffect>&);
     void stop(MissionStop, const std::string&);

@@ -21,6 +21,11 @@ public:
                              std::int32_t repeat_count = -1, bool reverse = false);
     void reset(std::int32_t repeat_count = -1, bool reverse = false) noexcept;
 
+    // Original 0x72cb4 changes only the selected step when it is in range.
+    // Used by the action-used current-player pose; elapsed/repeats/completion
+    // are preserved, unlike reset(). Out-of-range requests do nothing.
+    void select_step(std::uint8_t step) noexcept;
+
     std::uint8_t current_frame() const noexcept { return steps_[state_.step_index].frame_index; }
     const SpriteAnimationState& state() const noexcept { return state_; }
 

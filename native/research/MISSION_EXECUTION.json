@@ -58,5 +58,17 @@
   "evidence": {
     "original_mission_execution_reference.json": "4811020b731986c364bcf0bc6b93e7a6269e74bbaa48cd510c51c761e5fbbe78",
     "native_mission_execution_validation.json": "df423ff9e8fd6a3d71a61488754cc4f9311d4ac9d3bef5ceeff8e011fd95c5cd"
+  },
+  "subsequent_progression_extension": {
+    "report": "MISSION_PROGRESSION.json",
+    "completion_entry": "begin_completion(command_index, actual CampaignContext)",
+    "updated_controller_checks": 724,
+    "earlier_resource_probe_remains_bounded_at_cursor": 26,
+    "opcode10_actual_persistence_required": true
+  },
+  "subsequent_general_objectives_extension": {
+    "report": "MISSION_OBJECTIVES.json",
+    "current_controller_checks": 731,
+    "prior_validation_is_historical_for_its_bounded_slice": true
   }
 }

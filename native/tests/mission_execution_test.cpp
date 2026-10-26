@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
         check(clock_rows.size() == 48U, "mission clock fixture count changed");
 
         auto seeded = world({{3, 11, 280}, {3, 1, 281}, {4, 5, 7, 0},
-            {12, 1, 245, 0, 0, 0, 0}, {5, 1000}, {3, 11, 288}, {1}, {8, 202}, {10, 1}});
+            {12, 1, 245, 0, 0, 0, 0}, {5, 1000}, {3, 11, 288}, {1}, {8, 202}, {5, 1000}, {10, 1}});
         seeded.sites.push_back({{5, 10}, -1, {{{5, 7}, {10, 7}}}});
         auto sites = g1::initial_mission_site_states(seeded);
         check(sites.size() == 1U && sites[0].state == -1 && sites[0].item_states[0] ==
@@ -197,6 +197,37 @@ int main(int argc, char** argv) {
               "completion presentation was silently consumed");
         (void)execution.tick(100000U, advance());
         check(execution.state().command_index == 7U, "unsupported completion advanced to campaign save");
+        g1::CampaignContext campaign;
+        campaign.active_unit_counts = {{1U, 1U}};
+        rejects([&] { (void)execution.begin_completion(6U, campaign); },
+                "stale completion token accepted");
+        rejects([&] { auto wrong = campaign; wrong.mission_index = 1;
+            (void)execution.begin_completion(7U, wrong); }, "wrong campaign context accepted");
+        const auto completion = execution.begin_completion(7U, campaign);
+        check(completion.original_phase == 8 && completion.selected_owner == 0U &&
+              !completion.text_resource_id && !completion.set_config_flag_44 &&
+              completion.audio_requests.size() == 2U &&
+              completion.audio_requests[0].operation == 1 && completion.audio_requests[0].argument == 0 &&
+              completion.audio_requests[1].operation == 5 && completion.audio_requests[1].argument == 21,
+              "ordinary first-campaign completion request differs from original");
+        check(execution.state().gate == g1::MissionGate::completion_frame &&
+              execution.state().original_phase == 8 && execution.state().command_index == 7U &&
+              execution.state().stop == g1::MissionStop::none && !execution.state().pending_text_id,
+              "completion entry skipped its original phase");
+        rejects([&] { (void)execution.begin_completion(7U, campaign); },
+                "completion requests emitted twice");
+        (void)execution.tick(10000U);
+        check(execution.state().gate == g1::MissionGate::advance_pending &&
+              execution.state().original_phase == 99 && execution.state().command_index == 7U,
+              "completion phase advanced cursor or required invented acknowledgement");
+        (void)execution.tick(10000U);
+        check(execution.state().command_index == 8U && execution.state().remaining_delay_ms == 1000,
+              "completion elapsed time leaked into subsequent wait");
+        (void)execution.tick(1000U);
+        (void)execution.tick(0U);
+        check(execution.state().command_index == 9U &&
+              execution.state().stop == g1::MissionStop::campaign_handoff_required,
+              "profile save/handoff was bypassed after completion");
 
         g1::MissionExecution skipped(world({{3, 11, 280}, {3, 1, 281}, {12, 1, 245, 0, 0, 0, 0}}));
         auto skip_input = advance(); skip_input.input_edges = 128U;
@@ -218,6 +249,49 @@ int main(int argc, char** argv) {
                 "unknown negative objective index accepted");
         rejects([] { (void)g1::advance_dialogue({}, {1, 0, 14, 3, 40, false}, 16, 16); },
                 "zero line height accepted");
+
+        auto next_world = world({{3, 11, 280}, {12, 2, 239, 65534},
+                                 {3, 1, 281}, {1}, {8, 202}, {10, 2}});
+        next_world.mission_resource_id = 326U;
+        auto next_campaign = campaign; next_campaign.mission_index = 1;
+        g1::MissionExecution next_execution(next_world, next_campaign);
+        (void)next_execution.tick(0U, advance());
+        (void)next_execution.tick(0U);
+        check(next_execution.state().gate == g1::MissionGate::objective &&
+              next_execution.state().mission_objective->kind == g1::MissionObjectiveKind::inactive_unit &&
+              !next_execution.state().objective, "generic objective entry was treated as capture");
+        std::vector<g1::MissionObjectiveUnit> live_units(23U);
+        live_units[11].active = true;
+        live_units[19].active = true; live_units[19].owner = 1U;
+        (void)next_execution.tick(100000U, advance());
+        const auto still_waiting = next_execution.observe_objective({}, live_units, next_campaign, 0U);
+        check(still_waiting.effects.empty() && next_execution.state().command_index == 1U &&
+              next_execution.state().gate == g1::MissionGate::objective,
+              "generic goal accepted time/input instead of live unit state");
+        rejects([&] { auto wrong = next_campaign; wrong.mission_index = 0;
+            (void)next_execution.observe_objective({}, live_units, wrong, 0U); },
+            "objective callback from different campaign accepted");
+        live_units[19].active = false; next_campaign.active_unit_counts[1] = 0U;
+        const auto defeated = next_execution.observe_objective({}, live_units, next_campaign, 0U);
+        check(defeated.effects == std::vector<g1::MissionEffect>{
+                  g1::MissionEffect::reset_current_player_actions, g1::MissionEffect::return_to_script_mode} &&
+              next_execution.state().original_phase == 99 && next_execution.state().command_index == 1U,
+              "real inactive-unit goal failed to request script resumption");
+        (void)next_execution.tick(0U);
+        check(next_execution.state().command_index == 2U &&
+              next_execution.state().gate == g1::MissionGate::dialogue, "generic success skipped dialogue");
+
+        next_campaign.active_unit_counts = {{1U, 1U}};
+        g1::MissionExecution lost(next_world, next_campaign);
+        (void)lost.tick(0U, advance()); (void)lost.tick(0U);
+        live_units[11].active = false; live_units[19].active = true;
+        next_campaign.active_unit_counts[0] = 0U;
+        (void)lost.observe_objective({}, live_units, next_campaign, 0U);
+        check(lost.state().original_phase == 99 && lost.state().command_index == 2U,
+              "loss branch did not seek last later transition");
+        (void)lost.tick(0U);
+        check(lost.state().command_index == 3U && lost.state().original_phase == 1 &&
+              lost.state().gate == g1::MissionGate::transition, "loss branch dispatch mismatch");
         std::cout << "mission execution: " << checks << " checks; " << dialogue_rows.size()
                   << " original dialogue, " << capture_rows.size() << " capture, "
                   << clock_rows.size() << " clock cases\n";

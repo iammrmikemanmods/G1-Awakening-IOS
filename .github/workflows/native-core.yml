@@ -1,4 +1,4 @@
-name: Build native scene test
+name: Build native game test
 
 on:
   workflow_dispatch:
@@ -80,7 +80,9 @@ jobs:
       - name: Compile macOS offscreen Metal probe
         run: |
           cmake -S native -B build/macos -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
-          cmake --build build/macos --target g1_metal_probe --parallel 2
+          cmake --build build/macos --target g1_metal_probe g1_save_store_tests --parallel 2
+      - name: Check native profile persistence on macOS
+        run: ctest --test-dir build/macos -R '^native_profile_atomic_file$' --output-on-failure --no-tests=error
       - name: Check actual offscreen Metal pixels when a device is available
         shell: bash
         run: |
@@ -102,14 +104,14 @@ jobs:
           cp native/third_party/lodepng/LICENSE artifacts/G1AwakeningNative.app/Licenses/LodePNG-Zlib.txt
           cp native/third_party/stb/LICENSE artifacts/G1AwakeningNative.app/Licenses/STB-MIT-Public-Domain.txt
           cp docs/README_MEMORY_ZIP_POLICY.md artifacts/README_MEMORY_ZIP_POLICY.md
-      - name: Preserve native scene code and evidence
+      - name: Preserve native game code and evidence
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: G1-native-scene-unsigned-code
+          name: G1-native-game-unsigned-code
           path: artifacts/
           retention-days: 14
           if-no-files-found: error
       - name: Record validation boundary
         run: |
-          echo '## Native first-mission scene test' >> "$GITHUB_STEP_SUMMARY"
+          echo '## Native interaction test' >> "$GITHUB_STEP_SUMMARY"
           echo 'Builds new ARM64 app code for iPhone XR on iOS 17.5. Original assets are packaged locally. A successful build does not verify iPhone XR execution, full gameplay, saves, sustained 60 FPS, or campaign completion.' >> "$GITHUB_STEP_SUMMARY"

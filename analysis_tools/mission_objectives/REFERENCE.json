@@ -1,0 +1,25 @@
+{
+  "original_executable_sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd",
+  "support_sha256": "f0505848b34b88b6653cbb8ebe5f74fa8fd5394f4e1727fa93f0b3f2c18374ad",
+  "generator_sha256": "c339ef33b4757331a3e83e566baa885a5096eb3e63b3e3f29a683c58bf47755a",
+  "unicorn_version": "2.1.4",
+  "complete_original_functions_executed": [
+    "0x559b4",
+    "0x558e4",
+    "0x430fc"
+  ],
+  "external_boundaries_replaced": [],
+  "cases": 400,
+  "cases_by_kind": [
+    80,
+    80,
+    160,
+    80
+  ],
+  "original_function_fixtures_sha256": "6e070197d3455bdc3dbd13f7f366a51ce93e571f9bdae83315dbac507b74df0c",
+  "limits": [
+    "Synthetic independent world observations, not a live campaign playthrough.",
+    "Original CPU and proprietary executable are development-only inputs, not native app dependencies.",
+    "The native API returns control-flow/action-reset requests; real world mutation remains the caller's duty."
+  ]
+}

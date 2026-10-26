@@ -8,8 +8,8 @@
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>G1AwakeningNative</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.2.0</string>
-    <key>CFBundleVersion</key><string>2</string>
+    <key>CFBundleShortVersionString</key><string>0.3.0</string>
+    <key>CFBundleVersion</key><string>3</string>
     <key>CFBundleSupportedPlatforms</key><array><string>iPhoneOS</string></array>
     <key>MinimumOSVersion</key><string>17.5</string>
     <key>UIDeviceFamily</key><array><integer>1</integer></array>
@@ -23,5 +23,6 @@
     <key>UILaunchScreen</key><dict/>
     <key>ITSAppUsesNonExemptEncryption</key><false/>
     <key>G1SourceCommit</key><string>@G1_SOURCE_COMMIT@</string>
-    <key>G1ArtifactKind</key><string>Native first-mission scene test; unfinished gameplay</string>
+    <key>G1ArtifactKind</key><string>Native interaction test; unfinished campaign</string>
+    <key>G1FeatureScope</key><string>Native terrain, sprites, dialogue, movement, capture, transformation and audio; complete turns and campaign integration remain unfinished</string>
 </dict></plist>

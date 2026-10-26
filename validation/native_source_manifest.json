@@ -1,1019 +1,321 @@
 {
-  "schema": 2,
-  "scope": "Native gameplay components checkpoint; cloud and packaged-scene evidence refers only to source4b5708924b8aa51bf01faec470c33623d1dbb5c0. New Apple compilation required.",
-  "prior_main": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
-  "contains_original_executable": false,
-  "contains_game_assets": false,
-  "files": [
-    {
-      "path": ".gitattributes",
-      "bytes": 84,
-      "sha256": "ff6a34edd4c5c4704138b75c42bb48cf3cc34f67f06e2475b9053c8d44c3f5ca"
-    },
-    {
-      "path": ".github/workflows/native-core.yml",
-      "bytes": 4967,
-      "sha256": "1e78a8d76a339f1c41bb15d1d41f204dd26748dda364372e356411675a2255f8"
-    },
-    {
-      "path": ".gitignore",
-      "bytes": 122,
-      "sha256": "242234391f1792d304676e7349eae6f44cd013bfcda67d04e6e147926856c109"
-    },
-    {
-      "path": "LICENSE",
-      "bytes": 16727,
-      "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
-    },
-    {
-      "path": "PORT_STATUS.json",
-      "bytes": 7255,
-      "sha256": "586394112e42532df1848d9f9fe2ef0cb8152764308a1d13e86b83b373b3c8fc"
-    },
-    {
-      "path": "README.md",
-      "bytes": 6995,
-      "sha256": "058e83d640fba52210259df522f5eb3ec38d5f0f6ca4c35c7ad07461a2a90632"
-    },
-    {
-      "path": "analysis_tools/PRESERVATION.json",
-      "bytes": 2192,
-      "sha256": "37efd877a885ba4c6d07149c5fb195e1e4d5d5cc2f9882d776c900e62a6b8b43"
-    },
-    {
-      "path": "analysis_tools/README.md",
-      "bytes": 3552,
-      "sha256": "e8bb0d9b0f547ebdedc9c3a84d5d35b15a75433ede067927484a28aed3e9d7e5"
-    },
-    {
-      "path": "analysis_tools/atlas/ATLAS_FREEZE.json",
-      "bytes": 1631,
-      "sha256": "bd6d7f7e432d605f7fbb9a4f9154dae4ee02638f02a199d55ec8668deb7717f8"
-    },
-    {
-      "path": "analysis_tools/atlas/quad_oracle_frozen.py",
-      "bytes": 9197,
-      "sha256": "7daa9ed55617d34867549fa0d75656eef07734bb6e65893a33dd840ece4a89d2"
-    },
-    {
-      "path": "analysis_tools/inspect_assets.py",
-      "bytes": 21092,
-      "sha256": "8c2e133dfdb6c5cca2cf2d5331090f024d8d4d0724a7e9819f2a4a03e36c2d99"
-    },
-    {
-      "path": "analysis_tools/inspect_game_data.py",
-      "bytes": 8850,
-      "sha256": "e9a03e9a7bc7b851dea5c801e8a1b7748428d9f7bcf332b50baff96754ac9925"
-    },
-    {
-      "path": "analysis_tools/mission_execution/README.md",
-      "bytes": 4531,
-      "sha256": "914e7451ab2f5be8dacfa2a26007fddd5a248f0308b96755da91020a15e02fad"
-    },
-    {
-      "path": "analysis_tools/mission_execution/REFERENCE.json",
-      "bytes": 851,
-      "sha256": "30ba2643d1c120c11cb41a83061fb9195e130be765775b7d6d24cb2c7d3da7e4"
-    },
-    {
-      "path": "analysis_tools/mission_execution/oracle.py",
-      "bytes": 18550,
-      "sha256": "17c89000f86d327946602d621ba10729d5a6880a80e0140dc5592f5532bf0c8f"
-    },
-    {
-      "path": "analysis_tools/mission_execution/requirements.txt",
-      "bytes": 15,
-      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
-    },
-    {
-      "path": "analysis_tools/mission_execution/validate_resources.py",
-      "bytes": 6533,
-      "sha256": "f32f83cffced3a2159ec2747477041f98fd87aba00665ba78c0e1a0529a663ca"
-    },
-    {
-      "path": "analysis_tools/movement/cases.json",
-      "bytes": 350558,
-      "sha256": "8339a517a8757e70a25adc42e7b0ce2b164b8da062b3e7529aea944de3899bae"
-    },
-    {
-      "path": "analysis_tools/movement/make_cases.py",
-      "bytes": 5927,
-      "sha256": "abc56504d92482a1dd227431238bd811c3f06f30940b4964847add5201e9d1fa"
-    },
-    {
-      "path": "analysis_tools/movement/oracle.py",
-      "bytes": 10551,
-      "sha256": "ded6e06bc41c9bb6c8189b5f84e8636053d4ae296f925160de978660e61946a0"
-    },
-    {
-      "path": "analysis_tools/movement/original_results.json",
-      "bytes": 158376,
-      "sha256": "61add36fcbbea0ae6a1f8a0c2d0abc4a4b13171c0fab02cdef5e194e2d7a19f5"
-    },
-    {
-      "path": "analysis_tools/movement_action/README.md",
-      "bytes": 2258,
-      "sha256": "73e1873dd897ac133ae427a959af0a333e2b7d1daacfbcb84b1bc79a202c1265"
-    },
-    {
-      "path": "analysis_tools/movement_action/arrival_oracle.py",
-      "bytes": 8044,
-      "sha256": "9da989eb736d824f97591e6565d15adc90d3a192e890d09a465d9f9f03aa7e6a"
-    },
-    {
-      "path": "analysis_tools/movement_action/arrival_probe.cpp",
-      "bytes": 1807,
-      "sha256": "24c57a3fc4e8b551c70675ee547688f3ff6467d558ca4c66a91b20245e9eeabd"
-    },
-    {
-      "path": "analysis_tools/movement_action/oracle.py",
-      "bytes": 10795,
-      "sha256": "7bcecdcf7f890643f8700e23d979c99ff03092a6062da0611e984572c157aa15"
-    },
-    {
-      "path": "analysis_tools/movement_action/probe.cpp",
-      "bytes": 3447,
-      "sha256": "1d21de8e95fa83a4167b88aa96f0243716d36a3b3c411cb9eb7c3c08275d9c25"
-    },
-    {
-      "path": "analysis_tools/pc_reference/PC_REUSE_FINDINGS.md",
-      "bytes": 8212,
-      "sha256": "d84222f193c5fb64791d0ea4d06e631d17b48011fb5116187b428587ccf6e4de"
-    },
-    {
-      "path": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json",
-      "bytes": 67877,
-      "sha256": "bbb2a021780d652e8db909fe6e166a46b9d8ab1ecec3987209fc86dad2c2c762"
-    },
-    {
-      "path": "analysis_tools/pc_reference/inspect_pc_package.py",
-      "bytes": 11538,
-      "sha256": "543194afc3b1a679f5cf31010fa2666c5943ec3ed63c0e50191cb52f0ac73f40"
-    },
-    {
-      "path": "analysis_tools/scene_reference/README.md",
-      "bytes": 732,
-      "sha256": "5d77b724c9881fe311838045afbe1c851e52ab5439402b191d16e3abd8e55e04"
-    },
-    {
-      "path": "analysis_tools/scene_reference/render.py",
-      "bytes": 10512,
-      "sha256": "9b270ad9f03aa307a17cc0ec3f5fe3a15d32d9691752f45c6954fbea231f0af3"
-    },
-    {
-      "path": "analysis_tools/sprite/README.md",
-      "bytes": 4110,
-      "sha256": "bf7eba337401312b6da6142029ec69a75335f39ae2b8627937df338b207b3176"
-    },
-    {
-      "path": "analysis_tools/sprite/animation_oracle.py",
-      "bytes": 10553,
-      "sha256": "055c46dbfc8b13fc7c63278e214d1c04c9ca61035d9513bad9dffa84f9dbf79b"
-    },
-    {
-      "path": "analysis_tools/sprite/animation_probe.cpp",
-      "bytes": 2113,
-      "sha256": "9ed6bb55dd04e7240bd0be5ed319665903183d1972c599336f4fb963e970d283"
-    },
-    {
-      "path": "analysis_tools/sprite/matrix_oracle.py",
-      "bytes": 7517,
-      "sha256": "678dd059c857de98c2a9aadcb0f7be3be65b273c6772893be0963ec1f5ef57d4"
-    },
-    {
-      "path": "analysis_tools/sprite/placement_oracle.py",
-      "bytes": 8148,
-      "sha256": "940f7010add66ec3188886f4b96147c1c4c16cbf8720c89f6d369b8682b85325"
-    },
-    {
-      "path": "analysis_tools/sprite/placement_probe.cpp",
-      "bytes": 1824,
-      "sha256": "a4c0b34ac1385e446da75c21aa0638f949ac32e431079f1b6a08a0ad2175d2a1"
-    },
-    {
-      "path": "analysis_tools/sprite/render_oracle.py",
-      "bytes": 13657,
-      "sha256": "f3fa8b4d3df77c82bfc3d249109f650e3ec6e9c5421fd29dcf81adb3d3e1124c"
-    },
-    {
-      "path": "analysis_tools/terrain/camera_oracle.py",
-      "bytes": 10408,
-      "sha256": "6f9f58ec84de10bf775268648520ca5d3c96f38d11e3b8bb06a29fac964abf59"
-    },
-    {
-      "path": "analysis_tools/terrain/geometry_oracle.py",
-      "bytes": 8923,
-      "sha256": "b6dee3a66421bd251cf9841c97129c10854e772a88bb09d6a609fe2d0a28d68d"
-    },
-    {
-      "path": "analysis_tools/terrain/map_oracle.py",
-      "bytes": 7323,
-      "sha256": "bdb206e5455a5246a064361e6648bf565464487e399249ce656d87554a9fc919"
-    },
-    {
-      "path": "analysis_tools/timing/trace_summary.py",
-      "bytes": 6230,
-      "sha256": "b2d019d92d2cd87958f594fc32444d32743991cc7135c16fbc490dab6e4362fc"
-    },
-    {
-      "path": "analysis_tools/world/README.md",
-      "bytes": 2555,
-      "sha256": "f65a83066673d4906cd3a63c2a7595cbbc5dca8882257172bc6fe6bcc2a04206"
-    },
-    {
-      "path": "analysis_tools/world/REFERENCE.json",
-      "bytes": 1031,
-      "sha256": "fa44a30b51f883008cc61cac8a24038feabbb68a5ae6d9174268e93ef51c4262"
-    },
-    {
-      "path": "analysis_tools/world/world_oracle.py",
-      "bytes": 20643,
-      "sha256": "2c1fc1e53e27c8c0a16a248b4d724f6225f9fdcba05456a9d840cc21d1bc6a79"
-    },
-    {
-      "path": "docs/NATIVE_SCENE_TEST.md",
-      "bytes": 2408,
-      "sha256": "e90adb02758451b39ac17495e76039e17ee16bcddc02f705a26f9ae01ca5d424"
-    },
-    {
-      "path": "docs/README_MEMORY_ZIP_POLICY.md",
-      "bytes": 1421,
-      "sha256": "2f90499f5ab125f9e1baa8982135525bb97f907dd2bbb0e1bd348d92af0525d4"
-    },
-    {
-      "path": "docs/TIMING_REQUIREMENT.md",
-      "bytes": 3887,
-      "sha256": "92703185a8111c51e2c70d9f21ac3d99af0fa6c12c394c1451a443c8f8b3710e"
-    },
-    {
-      "path": "native/CMakeLists.txt",
-      "bytes": 8106,
-      "sha256": "77ecea930ef53139b523aa207658a2a834f625a4aca79677a07df39f327ecb53"
-    },
-    {
-      "path": "native/include/g1/Archive.hpp",
-      "bytes": 1617,
-      "sha256": "a53b2b30f456bad82d644996c92c5f3d630df1b6e8778b4be446765be41657f5"
-    },
-    {
-      "path": "native/include/g1/Atlas.hpp",
-      "bytes": 3325,
-      "sha256": "7306580534598d1d1de640ae66e96dd05810fe1eef87d8a06b78864bd2f1381f"
-    },
-    {
-      "path": "native/include/g1/Audio.hpp",
-      "bytes": 521,
-      "sha256": "8b690383d255e4f08a2d99d41f799e563cfa6fbe8088654fbfb963b496c8453f"
-    },
-    {
-      "path": "native/include/g1/Image.hpp",
-      "bytes": 412,
-      "sha256": "b7a19e7f2473190d19fbc46380a5cfd288e5d2f08db9b1a41983a63627e79804"
-    },
-    {
-      "path": "native/include/g1/InitialPresentation.hpp",
-      "bytes": 758,
-      "sha256": "2031c931ea7dcfc388d13eb554df1deace1db70294c0603a47c642f4112b2dde"
-    },
-    {
-      "path": "native/include/g1/M3G.hpp",
-      "bytes": 1006,
-      "sha256": "03069196d3475c6f5dd910fa9202504d4dd4a8ee7f84f4c144cbb21cedb5ff7d"
-    },
-    {
-      "path": "native/include/g1/Mission.hpp",
-      "bytes": 1448,
-      "sha256": "3580e5d74e2c2250302b996c13b92f61f592c7763fb4c233ac08c80d16b85efa"
-    },
-    {
-      "path": "native/include/g1/MissionExecution.hpp",
-      "bytes": 6628,
-      "sha256": "22d7eb9909cacc5a0d55ee6592fdeec45b53613eff4eb42e61fe35e3470b2ffc"
-    },
-    {
-      "path": "native/include/g1/Movement.hpp",
-      "bytes": 2996,
-      "sha256": "3d6ae42658f6be7a10685e5153ec168b3f32d71b76db2468499fa832ce45f438"
-    },
-    {
-      "path": "native/include/g1/MovementAction.hpp",
-      "bytes": 4008,
-      "sha256": "4de89a3a714fd9cfc570e2fadf539c7b2728d05b255e1617df1a1ec2b9539992"
-    },
-    {
-      "path": "native/include/g1/MovementArrival.hpp",
-      "bytes": 1369,
-      "sha256": "4d2f2cd05b78ad730c08184b9f13ea7b64d4e321f83c2ac86c0bdc7ee38ad3d3"
-    },
-    {
-      "path": "native/include/g1/Scene.hpp",
-      "bytes": 1281,
-      "sha256": "26dda9945692d72f663909b427d745f93bd5c9e61cf72b6cbc22d69462c968d4"
-    },
-    {
-      "path": "native/include/g1/SpriteAnimation.hpp",
-      "bytes": 1669,
-      "sha256": "d73a3c7fe2f4075d8cc007acaa7c0eef0543893949cb3e8225eadaddc6eb140d"
-    },
-    {
-      "path": "native/include/g1/SpriteGeometry.hpp",
-      "bytes": 1700,
-      "sha256": "1356de05761e44485e90300083fcd99eaaecf5055c777530cd9f5430511611ac"
-    },
-    {
-      "path": "native/include/g1/SpritePlacement.hpp",
-      "bytes": 1267,
-      "sha256": "be73567877ec77644328abcbe73629526b0e1f12d4d1753d687c218083eb555d"
-    },
-    {
-      "path": "native/include/g1/Terrain.hpp",
-      "bytes": 4201,
-      "sha256": "23f270aa8360b59674c44925afbcdae25d146aeea81099db69143ca8c431bcc6"
-    },
-    {
-      "path": "native/include/g1/Text.hpp",
-      "bytes": 1373,
-      "sha256": "7e78e6b25dfe6e65ed7b98ec47809b1a0560428145a8e8d32ec5ea40b5134df0"
-    },
-    {
-      "path": "native/include/g1/World.hpp",
-      "bytes": 3835,
-      "sha256": "b7fd4bb861ff3419989e55db5ddb31015f3a7888178c62c0a905f72b09f6d210"
-    },
-    {
-      "path": "native/platform/apple/Info.plist.in",
-      "bytes": 1639,
-      "sha256": "24631ccdd0e357dd92d8f2416e55263e21295d22cdfeade61d8f5d40f211350a"
-    },
-    {
-      "path": "native/platform/apple/MetalProbe.mm",
-      "bytes": 5857,
-      "sha256": "1643bd1db4b52e53530f6690d37a7c7d836a0dd52118d8319f30b6072da6eed3"
-    },
-    {
-      "path": "native/platform/apple/MetalRenderer.hpp",
-      "bytes": 1033,
-      "sha256": "4cd575225d20c1d456188b8fb2c00d293f5dccf9ad4550f3a1f2d7f6f37eae81"
-    },
-    {
-      "path": "native/platform/apple/MetalRenderer.mm",
-      "bytes": 7126,
-      "sha256": "3dc396a183761c9420392144f4e6d661ff64d03741bf5006059523dc59d9e1df"
-    },
-    {
-      "path": "native/platform/apple/NativeApp.mm",
-      "bytes": 23288,
-      "sha256": "9c335dcb03760152a591777b9d5c4fa8a403a724f77ec4f9fa24786ae83ff53b"
-    },
-    {
-      "path": "native/research/APP_SOURCE_REVIEW.json",
-      "bytes": 5057,
-      "sha256": "d3653b053b1006be3e0b5f9d6ad973575a72b1fc0a4373cdce192df5beb8dab3"
-    },
-    {
-      "path": "native/research/ATLAS_DECODER.md",
-      "bytes": 10294,
-      "sha256": "8b77c30d48169c2f5a3c0811b93e40f96e7d7f8ed53c1d76e4c65064679897c8"
-    },
-    {
-      "path": "native/research/AUDIO_DECODING.md",
-      "bytes": 3094,
-      "sha256": "4d084f390035d1fcc8c451bd89c417ece611b02da3d053d10e20b962b5334e5f"
-    },
-    {
-      "path": "native/research/CAMERA_RECOVERY.md",
-      "bytes": 5321,
-      "sha256": "3d27dd469867ca68b16201b0778fb7e8ec15419e074e06594f3d52212faf35de"
-    },
-    {
-      "path": "native/research/MISSION_DECODER.md",
-      "bytes": 9403,
-      "sha256": "6384bfa5ae662bff83963b8e959838aec25a188daa388a442ce61187f82be9cd"
-    },
-    {
-      "path": "native/research/MISSION_EXECUTION.json",
-      "bytes": 3417,
-      "sha256": "fa50e547c23fd61aa5af0cbac4f904717c1207ea4c01302f10fd8945b88355a7"
-    },
-    {
-      "path": "native/research/MISSION_EXECUTION.md",
-      "bytes": 14005,
-      "sha256": "ebfd735be70405688d6b986a4dbb4dd07d39d2a1ecc2ad97967295505809b976"
-    },
-    {
-      "path": "native/research/MOVEMENT_ACTION.json",
-      "bytes": 2320,
-      "sha256": "b352c8eb8e7d61f459bbd46384b2e43df4e214193df9490894010f09981d5e5d"
-    },
-    {
-      "path": "native/research/MOVEMENT_ACTION.md",
-      "bytes": 11004,
-      "sha256": "69dada926769d8446f44aae5278015e9f9231c0dae539f4911ec877446af3895"
-    },
-    {
-      "path": "native/research/MOVEMENT_ARRIVAL.json",
-      "bytes": 2066,
-      "sha256": "1533888ad355b56d62ac4d64e075155f91c494b805ecec9830027ba248b89e2e"
-    },
-    {
-      "path": "native/research/MOVEMENT_ARRIVAL.md",
-      "bytes": 6875,
-      "sha256": "582b33220c3e63d705140e0ff9baf615a50aa2af9f0e48e83471b97815973d5e"
-    },
-    {
-      "path": "native/research/MOVEMENT_RECOVERY.json",
-      "bytes": 3313,
-      "sha256": "dc8af2ce1a8ff94b75ba83ca2c64ad9daa27b98b0c7b556415a30971195b8c38"
-    },
-    {
-      "path": "native/research/MOVEMENT_RECOVERY.md",
-      "bytes": 8974,
-      "sha256": "b3d5fa8883af45d2860dd193c9623d9d39a60b2ac052ccf4a5c238a48fa80c87"
-    },
-    {
-      "path": "native/research/SCENE_REFERENCE.md",
-      "bytes": 5566,
-      "sha256": "0cbebe5888e19bc73dfd2b1478c3e747fdbb0a01d61bb73f759189e1c08cd511"
-    },
-    {
-      "path": "native/research/SPRITE_RENDERING.json",
-      "bytes": 5239,
-      "sha256": "bdaaa1588c98cb76cd664e5cb41995a1607353ba25f5a0882b944cecca3f7c2e"
-    },
-    {
-      "path": "native/research/SPRITE_RENDERING.md",
-      "bytes": 16001,
-      "sha256": "ac643637a10c20eedf835098adf8a4cd329fd61cb54fb7dfab97a4b6362fb730"
-    },
-    {
-      "path": "native/research/TERRAIN_DECODER.md",
-      "bytes": 9031,
-      "sha256": "fbc389c203731090e160cebbb2917b90651cc8f9ddebe8ac108af8bdf1e63078"
-    },
-    {
-      "path": "native/research/TIMER_RUNTIME_OBSERVATION.md",
-      "bytes": 5119,
-      "sha256": "dcd3c3ec96bbe5bf6f2fc3999065ffa18521f55d04392fa253bb8416c97add23"
-    },
-    {
-      "path": "native/research/WORLD_BOOTSTRAP.json",
-      "bytes": 6804,
-      "sha256": "65a7badb34d3eb5e24d9cfcd00a7472f1c937021644c23bd2533e8875d4c4602"
-    },
-    {
-      "path": "native/research/WORLD_BOOTSTRAP.md",
-      "bytes": 10672,
-      "sha256": "887125491e7490414777560fb7de4d06dd68dbccf6249d6d11af3230e9ccdd96"
-    },
-    {
-      "path": "native/research/atlas_validation/native_atlas_validation.json",
-      "bytes": 40297,
-      "sha256": "47688d06d6621bbc5eb29df7ca3668d75b18edde90b966b3d5cf166515ac50d1"
-    },
-    {
-      "path": "native/research/atlas_validation/original_quad_oracle.json",
-      "bytes": 8720,
-      "sha256": "2822faa4884e297ad8655c9b05a75e031dfd8c67ad5d308bfc5183035ecf11f1"
-    },
-    {
-      "path": "native/research/audio_decode_validation.json",
-      "bytes": 18065,
-      "sha256": "d4db1bcd0564c088070cf518e9d8ab31568dad261fd61583b6232a0fc0105d3f"
-    },
-    {
-      "path": "native/research/image_validation/native_png_pixels.json",
-      "bytes": 40570,
-      "sha256": "49a4f6256a08bd8b0c8acff34ecdb92a742c17e795d4bcbab9d061b12b5e037b"
-    },
-    {
-      "path": "native/research/mission_execution_validation/native_mission_execution_validation.json",
-      "bytes": 4756,
-      "sha256": "df423ff9e8fd6a3d71a61488754cc4f9311d4ac9d3bef5ceeff8e011fd95c5cd"
-    },
-    {
-      "path": "native/research/mission_execution_validation/original_mission_execution_reference.json",
-      "bytes": 2450,
-      "sha256": "4811020b731986c364bcf0bc6b93e7a6269e74bbaa48cd510c51c761e5fbbe78"
-    },
-    {
-      "path": "native/research/mission_validation/MISSION_CHECKPOINT.json",
-      "bytes": 2956,
-      "sha256": "a438ef30a23890e6293caf5aca6509ae2510866dc4e897c9a96c19f8ac03d398"
-    },
-    {
-      "path": "native/research/mission_validation/cmake_validation.json",
-      "bytes": 6999,
-      "sha256": "b92d9e26a0d9dd879c98ffccf8209b67215947492de61f5f67357d2055030bcd"
-    },
-    {
-      "path": "native/research/mission_validation/native_mission_validation.json",
-      "bytes": 144390,
-      "sha256": "55b70ec3e3bf800421f048ba64e28010e27b1788358e05ea466d84b563713a01"
-    },
-    {
-      "path": "native/research/mission_validation_opcode7/native_mission_validation.json",
-      "bytes": 144341,
-      "sha256": "afcf32c2afcc92f57ca051bc82457e7ca91b35cab3cab35501c9989ba12ff148"
-    },
-    {
-      "path": "native/research/mission_validation_opcode7/reference_refresh.json",
-      "bytes": 591,
-      "sha256": "9708209f47afbb39f19a7c0327b40c6eb43be17c6cd1b2cb6e65de3bfc68b463"
-    },
-    {
-      "path": "native/research/movement_action_validation/original_actions.json",
-      "bytes": 1779791,
-      "sha256": "4be274515da01e656109614e10bedeeb0bc60642c2ba1bc03df07d2fa5a5236d"
-    },
-    {
-      "path": "native/research/movement_action_validation/original_arrival_facing.json",
-      "bytes": 256361,
-      "sha256": "32af51d9c98020354e86c897e9716c6302df3e5f34f06f824f95f4809ea4b08b"
-    },
-    {
-      "path": "native/research/resource_validation/native_resource_inventory.tsv",
-      "bytes": 24879,
-      "sha256": "c82184845563e87a25699577bb8c287b91ba5eea6d7fcbf023c980c7156cf274"
-    },
-    {
-      "path": "native/research/resource_validation/native_validation.json",
-      "bytes": 3464,
-      "sha256": "013bb2278366070de243752ed27dfef4c15910e73ae2be87cce4d5e915c1ad71"
-    },
-    {
-      "path": "native/research/scene_reference_validation.json",
-      "bytes": 17166,
-      "sha256": "f39c05a24b22412a339f4e405b4c80c956aa3e5d3f513a7522a537f150f4ceb7"
-    },
-    {
-      "path": "native/research/scene_validation/first_scene_load.json",
-      "bytes": 909,
-      "sha256": "86de5da7bdb13fd44ef80141b80e1e1b351e9349992e639924478355fb46becf"
-    },
-    {
-      "path": "native/research/scene_validation/local_scene_validation.json",
-      "bytes": 1665,
-      "sha256": "54e78f90b490bf64f20bc0c0dc9807f80bc1841237fa87a31ef73959fd95c660"
-    },
-    {
-      "path": "native/research/sprite_validation/original_animation.json",
-      "bytes": 5946,
-      "sha256": "98a4635b26aa7577f6e0c1e14b5926c877167706c125e9ef9e0b3444a35b8832"
-    },
-    {
-      "path": "native/research/sprite_validation/original_matrix.json",
-      "bytes": 3933,
-      "sha256": "4b8177654819afab875ce908bcc737730f6d45e12742c40e7d6ea2c465a1a712"
-    },
-    {
-      "path": "native/research/sprite_validation/original_placement.json",
-      "bytes": 2340,
-      "sha256": "078c965d01611f8a498310fddd630978b0b51a3e11986ad5176c20fb56fbd99d"
-    },
-    {
-      "path": "native/research/sprite_validation/original_render_setup.json",
-      "bytes": 11820,
-      "sha256": "082428b9f9e232141b4eaa8753015f7a3897e2d6bd650e945528bf5abce25074"
-    },
-    {
-      "path": "native/research/terrain_validation/TERRAIN_CHECKPOINT.json",
-      "bytes": 2941,
-      "sha256": "06ab4748d3684ac789c97b11d5b618bc9dcc6f90b4aa80d3044d8da3b62428da"
-    },
-    {
-      "path": "native/research/terrain_validation/native_terrain_validation.json",
-      "bytes": 28497,
-      "sha256": "57722e6cc7835473056b495c7b17182454997bbeb3d81d7ea4a7218675743c61"
-    },
-    {
-      "path": "native/research/terrain_validation/original_camera_setup.json",
-      "bytes": 12750,
-      "sha256": "e1b7292f7b09607e40ecbbe1429634795050c63f237c0d10cb25f3d1728241f8"
-    },
-    {
-      "path": "native/research/terrain_validation/original_first_grid_oracle.json",
-      "bytes": 1801,
-      "sha256": "c1fdd81a0d5ebc17a706a8046141a433a4a62da4b4ab94f520e1fa4b1475bacb"
-    },
-    {
-      "path": "native/research/terrain_validation/original_terrain_oracle.json",
-      "bytes": 42906,
-      "sha256": "06ea8a192abc6e717a9022d28bce9867e2eebfaae6343e97c6ca8073dc166133"
-    },
-    {
-      "path": "native/research/timer_runtime_observation.json",
-      "bytes": 3968,
-      "sha256": "34cd5ab672a2c4515200df8b6a66dbf1d12c15eae668e07bc92776146236c2b4"
-    },
-    {
-      "path": "native/research/world_validation/original_world_oracle.json",
-      "bytes": 7040,
-      "sha256": "ddfa2c079e2b156ea240dc8f53c3377210a94ae8715e04de09c3f74b91b4a0f8"
-    },
-    {
-      "path": "native/src/Archive.cpp",
-      "bytes": 7849,
-      "sha256": "a19a7576c9b9e793a5e2171d0096b7aba68e3951d28f4bb794494466905f8d87"
-    },
-    {
-      "path": "native/src/Atlas.cpp",
-      "bytes": 7960,
-      "sha256": "5224165172d03bd54c7d8033c1d2e6ee44ce7ca1fa03526d74b61d1b1e156749"
-    },
-    {
-      "path": "native/src/Audio.cpp",
-      "bytes": 2713,
-      "sha256": "297a62c64cfcb9f1ef5af80c7e8c2bc1b1d0e74d034473e24bbc8af6eb2bfc52"
-    },
-    {
-      "path": "native/src/Image.cpp",
-      "bytes": 2645,
-      "sha256": "a3f4d8e18f82699138ef6948bbd72e7402c98e2e4973c6cba5096cb220564e4f"
-    },
-    {
-      "path": "native/src/InitialPresentation.cpp",
-      "bytes": 2586,
-      "sha256": "dd992341007b3d19bc43c4a88c994d5f3581cbe6132528e3f83d5ad91fe7b62e"
-    },
-    {
-      "path": "native/src/M3G.cpp",
-      "bytes": 4130,
-      "sha256": "5a80cf51465903ec076bd18173235b801b90fe61217cb67d410060d6f17ba9ff"
-    },
-    {
-      "path": "native/src/Mission.cpp",
-      "bytes": 5199,
-      "sha256": "8cfd2d9a7faf9c8b3ad89816d6220eeae29119d754b0bf371543d9c6ca116cf2"
-    },
-    {
-      "path": "native/src/MissionExecution.cpp",
-      "bytes": 14745,
-      "sha256": "5f705097c45aa339b8eae52384a5026699c4ff2a892d2fa9e587ce56c7c0cbf2"
-    },
-    {
-      "path": "native/src/Movement.cpp",
-      "bytes": 8163,
-      "sha256": "20de5fe30ac8b69803b149bdc0a1a019a480c70d412f1bd0e474e6b1f70dbf04"
-    },
-    {
-      "path": "native/src/MovementAction.cpp",
-      "bytes": 8400,
-      "sha256": "4c519b8c7c1cb75a8cb696f9852452f6f7bae60e855f0cc26b5fe1ab558ae4f9"
-    },
-    {
-      "path": "native/src/MovementArrival.cpp",
-      "bytes": 2057,
-      "sha256": "a929d215d24ceaceba6e5ae0a9492f2834400d117e7b9ca6c8c5789db68fae23"
-    },
-    {
-      "path": "native/src/Scene.cpp",
-      "bytes": 2662,
-      "sha256": "20205229fbcc8ad80c8bf306f93f2006696d451687d48335771b4797f6140705"
-    },
-    {
-      "path": "native/src/SpriteAnimation.cpp",
-      "bytes": 3764,
-      "sha256": "af666ad4afd0e728ec1930020fab1ec36496038c7636635f34271764ed6c060f"
-    },
-    {
-      "path": "native/src/SpriteGeometry.cpp",
-      "bytes": 1942,
-      "sha256": "ad8bb1b6b324bcd39f1ce23b7e45cfa18d8d20b95a3a7afdf1da801a0d0c5f39"
-    },
-    {
-      "path": "native/src/SpritePlacement.cpp",
-      "bytes": 2598,
-      "sha256": "7615da12e273eb5bf5c6cb18707655b73b547c2dce0f7306f074619a37bb7ed0"
-    },
-    {
-      "path": "native/src/Terrain.cpp",
-      "bytes": 9589,
-      "sha256": "2baa7dbe5503e90379aa5950f5f5898a072a0e53cbec560612c7953c4582ef43"
-    },
-    {
-      "path": "native/src/Text.cpp",
-      "bytes": 5439,
-      "sha256": "77f0edbdf3a6f9b9979a89175ce7a2efe3068c2039394cdc9b33b70e0fa17058"
-    },
-    {
-      "path": "native/src/TextIndexMap.inc",
-      "bytes": 4814,
-      "sha256": "cfdb86ff805a4a75b65aa1f79c943bb4f671d18e47d40dfe1b02561709201ad4"
-    },
-    {
-      "path": "native/src/World.cpp",
-      "bytes": 15309,
-      "sha256": "4c8501b4712a69cdde6920d7fcc981d6336149f18197ad6fdf059f6e09f8a064"
-    },
-    {
-      "path": "native/tests/atlas_reference.json",
-      "bytes": 25805,
-      "sha256": "56fc4b6637852f51a0377b2a6583e1ad62503501af2b636ad34e381ea73d9adf"
-    },
-    {
-      "path": "native/tests/atlas_test.cpp",
-      "bytes": 7090,
-      "sha256": "b66a127f098faada423a51149e43d2438f2e2a388164138948e4a2efc6e50f6f"
-    },
-    {
-      "path": "native/tests/audio_test.cpp",
-      "bytes": 496,
-      "sha256": "ea594168a918d6e298e41f226595aba82a0c4a0f98caba74651ad7375396d25d"
-    },
-    {
-      "path": "native/tests/capture_original_vectors.txt",
-      "bytes": 7378,
-      "sha256": "e31a5a7359ef7a29da6359d993d8ee19328e9728d56a7242a8857ad0eb5acb8f"
-    },
-    {
-      "path": "native/tests/dialogue_original_vectors.txt",
-      "bytes": 28801,
-      "sha256": "4254fffddd56e8c4c6be760b614ea71df0838f56abb1d7350f5bfc804134bf41"
-    },
-    {
-      "path": "native/tests/generate_atlas_reference.py",
-      "bytes": 9377,
-      "sha256": "1cda792238f2967a973206af136283bb9568e9d7d6dff38ec2cecb8a10a44dbb"
-    },
-    {
-      "path": "native/tests/generate_mission_reference.py",
-      "bytes": 6280,
-      "sha256": "3022d02273db82675701a12a2050ad92dab123a92076d40de9ed35c01071ae14"
-    },
-    {
-      "path": "native/tests/generate_terrain_reference.py",
-      "bytes": 8135,
-      "sha256": "9a5bccfa856356c281ba1440bd007d59325b80051132aa8c4f9b5037b218ba33"
-    },
-    {
-      "path": "native/tests/image_test.cpp",
-      "bytes": 1452,
-      "sha256": "05bfdbe80f59ebeb9815c1744b3ea5eb907dd0612e65533be8d24dcf06368ec8"
-    },
-    {
-      "path": "native/tests/initial_presentation_test.cpp",
-      "bytes": 1271,
-      "sha256": "7955f27f95a41b61853e121222d5a65fab460b04145e9e7a8f5c806d8365d1b2"
-    },
-    {
-      "path": "native/tests/mission_clock_original_vectors.txt",
-      "bytes": 1219,
-      "sha256": "d2d5007a408aee4d9289bd8d64cc9611fd1b8afa446cec54c78f6fdadf69a1d0"
-    },
-    {
-      "path": "native/tests/mission_execution_test.cpp",
-      "bytes": 13060,
-      "sha256": "a7c1364f3f62a52f7c2c54907932f4d11529412ea631ea69da0b00a9de217084"
-    },
-    {
-      "path": "native/tests/mission_reference.json",
-      "bytes": 28663,
-      "sha256": "76b465dadb42c4a55c7b3d0bb5082a88ee8590ab207989ad1a8a76276b7df9d7"
-    },
-    {
-      "path": "native/tests/mission_test.cpp",
-      "bytes": 4939,
-      "sha256": "a7c4df5a354d9775c1335a9da92381375b20be5d6d6c79e151fbfc8f5b66f21e"
-    },
-    {
-      "path": "native/tests/movement_action_test.cpp",
-      "bytes": 8578,
-      "sha256": "38fe7b67b0b18f73e0bb5cb3859fd6c114dac3861b75af132a3306fe5465ba6b"
-    },
-    {
-      "path": "native/tests/movement_arrival_test.cpp",
-      "bytes": 2908,
-      "sha256": "0d053b16109499cc3af12160fc80e48f7c636b359ef0bcddb4531427eace28c7"
-    },
-    {
-      "path": "native/tests/movement_cases.txt",
-      "bytes": 65806,
-      "sha256": "ba6b138459a4016101f8ad22e35564faafa6635defc75437695d26408e0425d3"
-    },
-    {
-      "path": "native/tests/movement_test.cpp",
-      "bytes": 5614,
-      "sha256": "4dbe03624ab5e378c5e19f63b93ba337afd5357a6c493afae87c9a656ce22dc6"
-    },
-    {
-      "path": "native/tests/resource_reference.json",
-      "bytes": 182450,
-      "sha256": "ba6ee933649e511ac917b7018a1313d32f39f2fbd7700ee7d84b22045ac479c7"
-    },
-    {
-      "path": "native/tests/sprite_animation_test.cpp",
-      "bytes": 4609,
-      "sha256": "e70a9e94c200a4b9d163f42323befda2dead98ef0547d5005460b882d8701baa"
-    },
-    {
-      "path": "native/tests/sprite_geometry_test.cpp",
-      "bytes": 4166,
-      "sha256": "62ef35a3933f7ad3a58d1978075f9e7335bdd5ff7edcab7b1e30d21225eb21e4"
-    },
-    {
-      "path": "native/tests/sprite_placement_test.cpp",
-      "bytes": 3142,
-      "sha256": "9e59f47a53049811d3e2631bf8062ce341ebcc9b8ffe585af37c213cf1fc5ed6"
-    },
-    {
-      "path": "native/tests/terrain_cases.txt",
-      "bytes": 29303,
-      "sha256": "5791215629f391e3400075ce012a4168a65931ea50fc8581f4c30e8d11c64345"
-    },
-    {
-      "path": "native/tests/terrain_reference.json",
-      "bytes": 14887,
-      "sha256": "e1d5940bc9acd1d1d89e475650e85f83fd9fdad7364b4ef1eec3a0f2fb7bee87"
-    },
-    {
-      "path": "native/tests/terrain_test.cpp",
-      "bytes": 7672,
-      "sha256": "91b8f0b9cf82012759180cb9c46c71e415ef7b68a80af5a187b5adde2d7dd28f"
-    },
-    {
-      "path": "native/tests/text_index_original_vectors.txt",
-      "bytes": 9880,
-      "sha256": "cd329716c58c072847af3a476a6abd6ed7792301cbc1663f952c22100585daac"
-    },
-    {
-      "path": "native/tests/text_test.cpp",
-      "bytes": 6028,
-      "sha256": "d4252e42c8a4fc98d3054bd2d12c81ff00e4a2a677309b479be036b4192d864c"
-    },
-    {
-      "path": "native/tests/verify_atlas.py",
-      "bytes": 6322,
-      "sha256": "5ab4a5b8774082254f801e80aa98587c5d03d5d5fe5110975b4294be27871f08"
-    },
-    {
-      "path": "native/tests/verify_audio.py",
-      "bytes": 8626,
-      "sha256": "8f95d8d960b118623d35b60eee86863a867c58914780b2888849ba8ac603dc8c"
-    },
-    {
-      "path": "native/tests/verify_images.py",
-      "bytes": 3292,
-      "sha256": "f3ab6b9c13c43998eb7fe72735604fd45e30759e49fd4f5667016d524909fc4c"
-    },
-    {
-      "path": "native/tests/verify_missions.py",
-      "bytes": 12247,
-      "sha256": "de8f32da9479ed2a70b2ee49d1529c6d1218e110404867e5f8d3bbe320c16469"
-    },
-    {
-      "path": "native/tests/verify_resources.py",
-      "bytes": 8261,
-      "sha256": "025799d510e7ccba2882ef875f0249755fa03b2f4c3cb063da863793ddccf1a9"
-    },
-    {
-      "path": "native/tests/verify_terrain.py",
-      "bytes": 8427,
-      "sha256": "851f7a94494e73f301223e8a46f5d8edd33107f21b0cd42db10d9592eafaa6f9"
-    },
-    {
-      "path": "native/tests/world_test.cpp",
-      "bytes": 12758,
-      "sha256": "07002542b4f132b318cee218843332141eadeaaedb68247c3d336d58beaee601"
-    },
-    {
-      "path": "native/third_party/lodepng/LICENSE",
-      "bytes": 886,
-      "sha256": "bdafa318b8e637d600ca1b60545e894881977a16a16b74809c95e805701621e3"
-    },
-    {
-      "path": "native/third_party/lodepng/UPSTREAM.json",
-      "bytes": 639,
-      "sha256": "cb2940d282b1bace1f30d5031dd0d4b436f67a37acbddd7d8c724b072d8453fe"
-    },
-    {
-      "path": "native/third_party/lodepng/lodepng.cpp",
-      "bytes": 312689,
-      "sha256": "6aec876971ec860527859458d3095220fc5ee1258ec37eb59e1e7dd9cf136a81"
-    },
-    {
-      "path": "native/third_party/lodepng/lodepng.h",
-      "bytes": 108843,
-      "sha256": "9a1fca0238c38333bdc8545336961b73fd0b76957bbacf033186991be9d7cf85"
-    },
-    {
-      "path": "native/third_party/stb/LICENSE",
-      "bytes": 2510,
-      "sha256": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63"
-    },
-    {
-      "path": "native/third_party/stb/UPSTREAM.json",
-      "bytes": 727,
-      "sha256": "f49725da5c0866f601db30578ebedc9b8d4da22729e4da61344059420b816a1d"
-    },
-    {
-      "path": "native/third_party/stb/stb_vorbis.c",
-      "bytes": 192790,
-      "sha256": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636"
-    },
-    {
-      "path": "native/tools/atlas_probe.cpp",
-      "bytes": 4042,
-      "sha256": "a79260305f11fd65764a7b5b2d37e7d4067c82e015772422ffbac1334cd05e15"
-    },
-    {
-      "path": "native/tools/audio_probe.cpp",
-      "bytes": 1008,
-      "sha256": "e553a793ac72af426ff8080d3e3db00f53a23b8c0003dde1a9ce684b5cb6e75d"
-    },
-    {
-      "path": "native/tools/extract_terrain_tables.py",
-      "bytes": 6845,
-      "sha256": "bca928d01ef4dc25f335b75d761266fbb6750bb721efd2a8fa93d60511c2e9b0"
-    },
-    {
-      "path": "native/tools/g1_asset_probe.cpp",
-      "bytes": 1899,
-      "sha256": "873af09ec06d65a14bec3ab30c0022df2f401c75262f266aca487ba4760ba5ac"
-    },
-    {
-      "path": "native/tools/image_probe.cpp",
-      "bytes": 768,
-      "sha256": "7ad7e4d5a7f0315438153d8f7b75a118c46865c0b61bc18356e270108e6cfea5"
-    },
-    {
-      "path": "native/tools/m3g_probe.cpp",
-      "bytes": 569,
-      "sha256": "42b628462dbdba1f589e8e0c517aea97d881386d2f37e375979da662e42960f7"
-    },
-    {
-      "path": "native/tools/mission_execution_probe.cpp",
-      "bytes": 6946,
-      "sha256": "30202022383afff7b4a96d9e16c7a2a212de12cac3ac63bac98919148bb185ce"
-    },
-    {
-      "path": "native/tools/mission_probe.cpp",
-      "bytes": 2533,
-      "sha256": "689ff449ce11f633a7d66c7fb8237501780d127af02c05e891efe6eb90042e46"
-    },
-    {
-      "path": "native/tools/scene_export.cpp",
-      "bytes": 8854,
-      "sha256": "0363e4e69deea5b25131dd326ea9406af4841f92ed8ed79ff50c1c20efadb053"
-    },
-    {
-      "path": "native/tools/scene_probe.cpp",
-      "bytes": 3031,
-      "sha256": "4ac7bf4026dae41475dcb3a6af1c77f8a3e3ce848fcf2d2c96e4c08b13c9fecb"
-    },
-    {
-      "path": "native/tools/terrain_probe.cpp",
-      "bytes": 4333,
-      "sha256": "f7d7013fda5001de7b6ed01da0873827345ce82b2b0d67833337fff0d7398a38"
-    },
-    {
-      "path": "native/tools/world_probe.cpp",
-      "bytes": 8226,
-      "sha256": "11d336a0211f90f35e54e9f0f1cd303b5017c0cc7c2d618957e454be87671820"
-    },
-    {
-      "path": "scripts/package-native-scene.py",
-      "bytes": 8258,
-      "sha256": "699fce51a37d2f0f9acb647d4123c1b73b87b191a03ee77fa6427c8df336934c"
-    },
-    {
-      "path": "scripts/verify-native-app.py",
-      "bytes": 4785,
-      "sha256": "475c8731ef75711038b67d9dfe9a535defa72558cbf99d5b45831e434667e207"
-    },
-    {
-      "path": "scripts/verify-native-archive.py",
-      "bytes": 4215,
-      "sha256": "a830660e024f3ffbd0320bde22a0f3e51a43b5ac13f89a31f03501b2d9ebf6bb"
-    },
-    {
-      "path": "validation/APPLE_NATIVE_CORE_BUILD.json",
-      "bytes": 2984,
-      "sha256": "3e845d2a639bf8da660486cfb10887d0f710db4e1a0e7c55ce27e0bc38ea880c"
-    },
-    {
-      "path": "validation/APPLE_NATIVE_SCENE_BUILD.json",
-      "bytes": 7536,
-      "sha256": "69766d7600331c8702b3bf241f6f7bc14be69e8fcabd9f9b6ee46d1dc4f2d2d2"
-    },
-    {
-      "path": "validation/LOCAL_NATIVE_GAMEPLAY_COMPONENTS.json",
-      "bytes": 4177,
-      "sha256": "55918fcf4282ee6d878fafab3a93ecd251ee1bfad41b092355926e498c155de1"
-    },
-    {
-      "path": "validation/NATIVE_SCENE_BUILD_001.json",
-      "bytes": 806,
-      "sha256": "08032de58ede929ebc0b847b046a7d4e70573975e27eb781655841fc520f77a1"
-    },
-    {
-      "path": "validation/NATIVE_SCENE_IPA_002.json",
-      "bytes": 6021,
-      "sha256": "1649a6cf81d462056d8f90399da8dbefe73787ae24fc9962f265fb57114ff39c"
-    },
-    {
-      "path": "validation/native_workflow_local_validation.json",
-      "bytes": 557,
-      "sha256": "65f29d76d2798064dc69c006ed46927855035fa5aef7deda08275b0c9a80d5dc"
-    }
-  ]
+  "schema": 1,
+  "purpose": "Point-in-time native interaction source manifest; excludes itself and original game assets.",
+  "files": {
+    ".gitattributes": "ff6a34edd4c5c4704138b75c42bb48cf3cc34f67f06e2475b9053c8d44c3f5ca",
+    ".github/workflows/native-core.yml": "c0e5e6489d1144bc52b752bebc66da7c4362d51aa86633c5e2a84b73538b5058",
+    ".gitignore": "242234391f1792d304676e7349eae6f44cd013bfcda67d04e6e147926856c109",
+    "LICENSE": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172",
+    "PORT_STATUS.json": "9746629dc65edac66623a9f5b0f22a6a965a2109424aabc13e00f9a492a55cf7",
+    "README.md": "4206ed40ceeec5d575d3d9263f7f45d9dc151c433fbce62ed101539ce8817e2c",
+    "analysis_tools/PRESERVATION.json": "37efd877a885ba4c6d07149c5fb195e1e4d5d5cc2f9882d776c900e62a6b8b43",
+    "analysis_tools/README.md": "e8bb0d9b0f547ebdedc9c3a84d5d35b15a75433ede067927484a28aed3e9d7e5",
+    "analysis_tools/ai/README.md": "5b17e920cdba2f22b71a98ee7bbb0922aa79ca165c72a1f09cc9c899612e83a2",
+    "analysis_tools/ai/oracle.py": "6d0b51cf6c32fa415024028737578833ae7a4020c05a7ff9d5e8dc416e47bed8",
+    "analysis_tools/ai/planner_oracle.py": "60759be4e2109882daafa12e7d540d1f014baf65c8b789d4734e1ebb27170376",
+    "analysis_tools/ai/site_oracle.py": "ebd784c90bf6387fe023514292dcc2fab4f2b16436b06644c38a00a7421b16b5",
+    "analysis_tools/ai/source_oracle.py": "2f681d12a45b313a431fb06648d09000f36e8691214def685c7ea7207832f34e",
+    "analysis_tools/ai/turn_oracle.py": "a5d4f0d24b85ec9617db9a71aad9281b16593c4cec9fbdc7ad11ca9e65279383",
+    "analysis_tools/atlas/ATLAS_FREEZE.json": "bd6d7f7e432d605f7fbb9a4f9154dae4ee02638f02a199d55ec8668deb7717f8",
+    "analysis_tools/atlas/quad_oracle_frozen.py": "7daa9ed55617d34867549fa0d75656eef07734bb6e65893a33dd840ece4a89d2",
+    "analysis_tools/audio/events_oracle.py": "a813a107487e3f2196dc6ff63102addafea4656406c979e687eb33d186bf0db1",
+    "analysis_tools/bootstrap_metadata/README.md": "e153229bb8e9b37101164728024ff39c0311686e67a13d1d313f4c0b3203f267",
+    "analysis_tools/bootstrap_metadata/REFERENCE.json": "23b26f71e89cf5d017ae0b4ec51d8d82e97f83af306323c9d72929b576ce4a85",
+    "analysis_tools/bootstrap_metadata/bootstrap_metadata_oracle.py": "36176feaec3dea876564cf2390a15f50d4394020a57ad89b93de48976aba99e2",
+    "analysis_tools/bootstrap_metadata/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
+    "analysis_tools/capture_action/README.md": "6adaf7e1625183506b2909371f409e263bf9ab9d31fad54955358607ca3eade2",
+    "analysis_tools/capture_action/oracle.py": "8368f9e6be9000c2435270e39d2bdb09414478faa34392fa17f1370308a8b4f3",
+    "analysis_tools/capture_action/probe.cpp": "fe47619563c2ba414d338e913f0cad7583a4e60c761321005f1ffe8dab451d69",
+    "analysis_tools/combat/oracle.py": "10c98c7fe6b2132fd8e70da527cb7f149e8c071975fae137404970d0dfd038e9",
+    "analysis_tools/inspect_assets.py": "8c2e133dfdb6c5cca2cf2d5331090f024d8d4d0724a7e9819f2a4a03e36c2d99",
+    "analysis_tools/inspect_game_data.py": "e9a03e9a7bc7b851dea5c801e8a1b7748428d9f7bcf332b50baff96754ac9925",
+    "analysis_tools/mission_execution/README.md": "914e7451ab2f5be8dacfa2a26007fddd5a248f0308b96755da91020a15e02fad",
+    "analysis_tools/mission_execution/REFERENCE.json": "30ba2643d1c120c11cb41a83061fb9195e130be765775b7d6d24cb2c7d3da7e4",
+    "analysis_tools/mission_execution/oracle.py": "17c89000f86d327946602d621ba10729d5a6880a80e0140dc5592f5532bf0c8f",
+    "analysis_tools/mission_execution/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
+    "analysis_tools/mission_execution/validate_resources.py": "f32f83cffced3a2159ec2747477041f98fd87aba00665ba78c0e1a0529a663ca",
+    "analysis_tools/mission_objectives/README.md": "8383e44c9f5f508ae9c8dbf1c4178e8b6132da88e46153197515cf2567919c84",
+    "analysis_tools/mission_objectives/REFERENCE.json": "fa677074226a420c14c7efb91fed9938345d397a55940ac09322df2cb138fc1e",
+    "analysis_tools/mission_objectives/objective_oracle.py": "c339ef33b4757331a3e83e566baa885a5096eb3e63b3e3f29a683c58bf47755a",
+    "analysis_tools/mission_objectives/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
+    "analysis_tools/mission_progression/README.md": "639408177f993acb5ba2a30c2017d077a850e2cda7012fd0642761067afc3108",
+    "analysis_tools/mission_progression/REFERENCE.json": "a6ba89615fe5108dfb2a10007befb614ccff25f4d8697f88bb26097f40f06c06",
+    "analysis_tools/mission_progression/oracle.py": "f0505848b34b88b6653cbb8ebe5f74fa8fd5394f4e1727fa93f0b3f2c18374ad",
+    "analysis_tools/mission_progression/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
+    "analysis_tools/movement/cases.json": "8339a517a8757e70a25adc42e7b0ce2b164b8da062b3e7529aea944de3899bae",
+    "analysis_tools/movement/make_cases.py": "abc56504d92482a1dd227431238bd811c3f06f30940b4964847add5201e9d1fa",
+    "analysis_tools/movement/oracle.py": "ded6e06bc41c9bb6c8189b5f84e8636053d4ae296f925160de978660e61946a0",
+    "analysis_tools/movement/original_results.json": "61add36fcbbea0ae6a1f8a0c2d0abc4a4b13171c0fab02cdef5e194e2d7a19f5",
+    "analysis_tools/movement_action/README.md": "73e1873dd897ac133ae427a959af0a333e2b7d1daacfbcb84b1bc79a202c1265",
+    "analysis_tools/movement_action/arrival_oracle.py": "9da989eb736d824f97591e6565d15adc90d3a192e890d09a465d9f9f03aa7e6a",
+    "analysis_tools/movement_action/arrival_probe.cpp": "24c57a3fc4e8b551c70675ee547688f3ff6467d558ca4c66a91b20245e9eeabd",
+    "analysis_tools/movement_action/oracle.py": "7bcecdcf7f890643f8700e23d979c99ff03092a6062da0611e984572c157aa15",
+    "analysis_tools/movement_action/probe.cpp": "1d21de8e95fa83a4167b88aa96f0243716d36a3b3c411cb9eb7c3c08275d9c25",
+    "analysis_tools/pc_reference/PC_REUSE_FINDINGS.md": "d84222f193c5fb64791d0ea4d06e631d17b48011fb5116187b428587ccf6e4de",
+    "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json": "bbb2a021780d652e8db909fe6e166a46b9d8ab1ecec3987209fc86dad2c2c762",
+    "analysis_tools/pc_reference/inspect_pc_package.py": "543194afc3b1a679f5cf31010fa2666c5943ec3ed63c0e50191cb52f0ac73f40",
+    "analysis_tools/scene_reference/README.md": "5d77b724c9881fe311838045afbe1c851e52ab5439402b191d16e3abd8e55e04",
+    "analysis_tools/scene_reference/render.py": "9b270ad9f03aa307a17cc0ec3f5fe3a15d32d9691752f45c6954fbea231f0af3",
+    "analysis_tools/sprite/README.md": "bf7eba337401312b6da6142029ec69a75335f39ae2b8627937df338b207b3176",
+    "analysis_tools/sprite/animation_oracle.py": "055c46dbfc8b13fc7c63278e214d1c04c9ca61035d9513bad9dffa84f9dbf79b",
+    "analysis_tools/sprite/animation_probe.cpp": "9ed6bb55dd04e7240bd0be5ed319665903183d1972c599336f4fb963e970d283",
+    "analysis_tools/sprite/matrix_oracle.py": "678dd059c857de98c2a9aadcb0f7be3be65b273c6772893be0963ec1f5ef57d4",
+    "analysis_tools/sprite/placement_oracle.py": "940f7010add66ec3188886f4b96147c1c4c16cbf8720c89f6d369b8682b85325",
+    "analysis_tools/sprite/placement_probe.cpp": "a4c0b34ac1385e446da75c21aa0638f949ac32e431079f1b6a08a0ad2175d2a1",
+    "analysis_tools/sprite/render_oracle.py": "f3fa8b4d3df77c82bfc3d249109f650e3ec6e9c5421fd29dcf81adb3d3e1124c",
+    "analysis_tools/terrain/camera_oracle.py": "6f9f58ec84de10bf775268648520ca5d3c96f38d11e3b8bb06a29fac964abf59",
+    "analysis_tools/terrain/geometry_oracle.py": "b6dee3a66421bd251cf9841c97129c10854e772a88bb09d6a609fe2d0a28d68d",
+    "analysis_tools/terrain/map_oracle.py": "bdb206e5455a5246a064361e6648bf565464487e399249ce656d87554a9fc919",
+    "analysis_tools/timing/trace_summary.py": "b2d019d92d2cd87958f594fc32444d32743991cc7135c16fbc490dab6e4362fc",
+    "analysis_tools/transform_action/README.md": "f0649e07f11667dc13603cb3f99d9680c507a1dbbd83e71119cffd64a506f945",
+    "analysis_tools/transform_action/oracle.py": "6db2c2f19bf6e332f7b60114da57a4ed58612e385e15fc57419088789e255b02",
+    "analysis_tools/transform_action/probe.cpp": "8e18b0452ad51e86ff3c192fe3bc07030dc6ba5744a7f0627489f8c45e0eb875",
+    "analysis_tools/turns/README.md": "a95229588851b91305cb737e5b4acb13a139ceca049d2aa02ebe748eaff5b845",
+    "analysis_tools/turns/oracle.py": "5ba40f91b504d0b124f3ecda9ca276fece32acdb360e001916c78310ccf7ed0c",
+    "analysis_tools/unit_spawn/README.md": "fac565ca44e952ebad30c935d7258c47e912a326c71f7d6bd9272f6240929d2b",
+    "analysis_tools/unit_spawn/REFERENCE.json": "19f42299423931e8e828f1ff111e9d1c331d88005c2c56535ad186370bb65985",
+    "analysis_tools/unit_spawn/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
+    "analysis_tools/unit_spawn/unit_spawn_oracle.py": "aaab3684fb98d3ff0333700d1edbc729260afa743ecdf73b985c1070442140af",
+    "analysis_tools/world/README.md": "f65a83066673d4906cd3a63c2a7595cbbc5dca8882257172bc6fe6bcc2a04206",
+    "analysis_tools/world/REFERENCE.json": "fa44a30b51f883008cc61cac8a24038feabbb68a5ae6d9174268e93ef51c4262",
+    "analysis_tools/world/world_oracle.py": "2c1fc1e53e27c8c0a16a248b4d724f6225f9fdcba05456a9d840cc21d1bc6a79",
+    "docs/NATIVE_SCENE_TEST.md": "e90adb02758451b39ac17495e76039e17ee16bcddc02f705a26f9ae01ca5d424",
+    "docs/README_MEMORY_ZIP_POLICY.md": "2f90499f5ab125f9e1baa8982135525bb97f907dd2bbb0e1bd348d92af0525d4",
+    "docs/TIMING_REQUIREMENT.md": "92703185a8111c51e2c70d9f21ac3d99af0fa6c12c394c1451a443c8f8b3710e",
+    "native/CMakeLists.txt": "a9a19d4bcd1df02df90a6ec9352351370ef4ca75f91ee80ba978687564656d9c",
+    "native/include/g1/AI.hpp": "ea45901ace1318be438de171d27a3aa78f9d2779ac2c9d92c91b99ff2b74bf91",
+    "native/include/g1/AIIncome.hpp": "3e78f1300b3a54fda0a0f697ec100b4323a7e24f241e40410a03552658a68160",
+    "native/include/g1/Archive.hpp": "a53b2b30f456bad82d644996c92c5f3d630df1b6e8778b4be446765be41657f5",
+    "native/include/g1/Atlas.hpp": "7306580534598d1d1de640ae66e96dd05810fe1eef87d8a06b78864bd2f1381f",
+    "native/include/g1/Audio.hpp": "8b690383d255e4f08a2d99d41f799e563cfa6fbe8088654fbfb963b496c8453f",
+    "native/include/g1/AudioEvents.hpp": "98a2872b108889ab093c28d718dc41ec631e4155ab7144cf407cf32e135f4471",
+    "native/include/g1/CaptureAction.hpp": "9d198f8d61ff07beeea26264776ac4ba2514b4c2d572c17190ee07612135621b",
+    "native/include/g1/Combat.hpp": "b82553f85b90e7794140903d8a6cdf2310c232dbde2339a8d7208d70a0b30a17",
+    "native/include/g1/GameSession.hpp": "66851b5cb8789cfc7e86917e78fe2c128fd82fdb4f03849cb0e42c82a660c286",
+    "native/include/g1/Image.hpp": "b7a19e7f2473190d19fbc46380a5cfd288e5d2f08db9b1a41983a63627e79804",
+    "native/include/g1/InitialPresentation.hpp": "2031c931ea7dcfc388d13eb554df1deace1db70294c0603a47c642f4112b2dde",
+    "native/include/g1/M3G.hpp": "03069196d3475c6f5dd910fa9202504d4dd4a8ee7f84f4c144cbb21cedb5ff7d",
+    "native/include/g1/Mission.hpp": "3580e5d74e2c2250302b996c13b92f61f592c7763fb4c233ac08c80d16b85efa",
+    "native/include/g1/MissionExecution.hpp": "6d42d532228d7d90f24e7257eb93f778c8efbe2e919da90088590dc76a126419",
+    "native/include/g1/MissionObjectives.hpp": "b1774f766cd669f9a840b663698e0bea931bdede752ad1485f7007ace912e7df",
+    "native/include/g1/MissionProgression.hpp": "7da6229854fa0168ae1402e890f53eaf1241e1284bc07c1b167602101e12f2e9",
+    "native/include/g1/Movement.hpp": "a3a4b66db096e34c6de57642e01a41e2aa19c616aebeb4002eab279f809b6e75",
+    "native/include/g1/MovementAction.hpp": "4de89a3a714fd9cfc570e2fadf539c7b2728d05b255e1617df1a1ec2b9539992",
+    "native/include/g1/MovementArrival.hpp": "4d2f2cd05b78ad730c08184b9f13ea7b64d4e321f83c2ac86c0bdc7ee38ad3d3",
+    "native/include/g1/SaveStore.hpp": "bba8b7e69165d1d0d4a4059346082757e7f4f223186cc7a2feb4e61777a566fc",
+    "native/include/g1/Scene.hpp": "26dda9945692d72f663909b427d745f93bd5c9e61cf72b6cbc22d69462c968d4",
+    "native/include/g1/SpriteAnimation.hpp": "11ad554fa9bfe469fb49adb8b5b041d7e9801878f23cbb72be02c4b64cb82a70",
+    "native/include/g1/SpriteGeometry.hpp": "1356de05761e44485e90300083fcd99eaaecf5055c777530cd9f5430511611ac",
+    "native/include/g1/SpritePlacement.hpp": "be73567877ec77644328abcbe73629526b0e1f12d4d1753d687c218083eb555d",
+    "native/include/g1/Terrain.hpp": "23f270aa8360b59674c44925afbcdae25d146aeea81099db69143ca8c431bcc6",
+    "native/include/g1/Text.hpp": "7e78e6b25dfe6e65ed7b98ec47809b1a0560428145a8e8d32ec5ea40b5134df0",
+    "native/include/g1/TransformAction.hpp": "2a9f1738b07db5df60181b90d46cf624b31120b10e2f39ce75ee4cccd35f003e",
+    "native/include/g1/TurnProgression.hpp": "f82e327a22ef1c45c9bee832439215d9d9e962811ca554f5335f21c7a7cd9e61",
+    "native/include/g1/UnitSpawn.hpp": "ea2a2365909deaf668b78fcf0be2c4864f5defffc53ad163fb27265fb0d4d27f",
+    "native/include/g1/World.hpp": "39f6a78b4bbececf39d702bd95137fd30540bc2766febb24357b402e5869d07d",
+    "native/platform/apple/AppleAudio.hpp": "eacbb06584a93fffc07c9510df8c8c13fae950bf545b20a89896a5a34ea170fd",
+    "native/platform/apple/AppleAudio.mm": "c9ea90c338a429392d97b8316c8915bcefda32a60c39439017f54d72d63537f9",
+    "native/platform/apple/Info.plist.in": "bc80e3f123a6aa6b4640e1ca7de8a38f4376a01a5f68046537cdef69838ebf1e",
+    "native/platform/apple/MetalProbe.mm": "1643bd1db4b52e53530f6690d37a7c7d836a0dd52118d8319f30b6072da6eed3",
+    "native/platform/apple/MetalRenderer.hpp": "4cd575225d20c1d456188b8fb2c00d293f5dccf9ad4550f3a1f2d7f6f37eae81",
+    "native/platform/apple/MetalRenderer.mm": "3dc396a183761c9420392144f4e6d661ff64d03741bf5006059523dc59d9e1df",
+    "native/platform/apple/NativeApp.mm": "3b2e86456032a637793b4a5fe08f2dd443b41c9408e6034c7d1101cba4edf6a5",
+    "native/platform/apple/NativeBattle.hpp": "34ca6a80ac3ae8aca32124db9e94545b17c240a550e6d543200ad8e92c93f729",
+    "native/platform/apple/NativeDialogue.hpp": "ed05f1d832cab3d24e294ab5b802e6ecadfd4b077fc90ef45472e1932523bbfc",
+    "native/research/ACTION_ADMISSION.md": "b3106d4f3b96ba50c6834abd0e1952f0ff1b53eab6bc0337f0f1629d5f6c4ce9",
+    "native/research/AI_CAPTURE.json": "a8932ebbe1f6ebc6695bb44fd5afc260d11c4c8ec22b00bf6f396a6332281cc2",
+    "native/research/AI_CAPTURE.md": "fab35db7e6c7bd0cd01258879929e882798288b650868d8e1cee30ebb2a881e9",
+    "native/research/AI_RECOVERY.md": "1160c5aac92e97c8443df3792b033c2a075218bb7d049878bef22352bcfff840",
+    "native/research/APP_SOURCE_REVIEW.json": "d3653b053b1006be3e0b5f9d6ad973575a72b1fc0a4373cdce192df5beb8dab3",
+    "native/research/ATLAS_DECODER.md": "8b77c30d48169c2f5a3c0811b93e40f96e7d7f8ed53c1d76e4c65064679897c8",
+    "native/research/AUDIO_DECODING.md": "4d084f390035d1fcc8c451bd89c417ece611b02da3d053d10e20b962b5334e5f",
+    "native/research/AUDIO_EVENTS.md": "14540fb86b049605392de38fd9aa672ea02da4904235afded9226b590652d3cd",
+    "native/research/CAMERA_RECOVERY.md": "3d27dd469867ca68b16201b0778fb7e8ec15419e074e06594f3d52212faf35de",
+    "native/research/CAPTURE_ACTION.json": "5ad271e9473db47ca174db596ea0fcb15c2b50eb770fb17d94de1a65fefdbc76",
+    "native/research/CAPTURE_ACTION.md": "80901d0edf2540f0fc3015669604ea0e14e2fba6fd888d1844e62db0e80ae820",
+    "native/research/COMBAT_RECOVERY.md": "848dae829c62e5b55404f42b5c3a20ca221bfc4123a7879e7288da318c745000",
+    "native/research/MISSION_DECODER.md": "6384bfa5ae662bff83963b8e959838aec25a188daa388a442ce61187f82be9cd",
+    "native/research/MISSION_EXECUTION.json": "db61e01e2f6b22d20f014c32b87f7d3c87778418eb8c9e04180b6d49c675a80f",
+    "native/research/MISSION_EXECUTION.md": "283af0a0421ba80fb628a99a89fbf65ec0c2f080eb866bbc162069cfe1c70962",
+    "native/research/MISSION_OBJECTIVES.json": "e2b2e5730276cc3d585c4cdafa1ca93836764e8e9d869dedf3d2eb0a4e366d8a",
+    "native/research/MISSION_OBJECTIVES.md": "15c0394613eae46c0cab3dc3f61b5779737933445c3bc38b0fd8b19587242aad",
+    "native/research/MISSION_PROGRESSION.json": "f86301ed5c5a20f57b2e44ab434eb3e811647bc78dcb13eba79b92b36423df38",
+    "native/research/MISSION_PROGRESSION.md": "840982355be02b392e64b653612f9af1dda2ec41c24240d7648300bf13c88f6f",
+    "native/research/MOVEMENT_ACTION.json": "b352c8eb8e7d61f459bbd46384b2e43df4e214193df9490894010f09981d5e5d",
+    "native/research/MOVEMENT_ACTION.md": "69dada926769d8446f44aae5278015e9f9231c0dae539f4911ec877446af3895",
+    "native/research/MOVEMENT_ARRIVAL.json": "1533888ad355b56d62ac4d64e075155f91c494b805ecec9830027ba248b89e2e",
+    "native/research/MOVEMENT_ARRIVAL.md": "582b33220c3e63d705140e0ff9baf615a50aa2af9f0e48e83471b97815973d5e",
+    "native/research/MOVEMENT_RECOVERY.json": "dc8af2ce1a8ff94b75ba83ca2c64ad9daa27b98b0c7b556415a30971195b8c38",
+    "native/research/MOVEMENT_RECOVERY.md": "b3d5fa8883af45d2860dd193c9623d9d39a60b2ac052ccf4a5c238a48fa80c87",
+    "native/research/NATIVE_AUDIO_OUTPUT.json": "2c5281e46b6aa8bb21f102b10804ec1f9c273a2d940b6a7bd98c3eba05c26bcb",
+    "native/research/NATIVE_AUDIO_OUTPUT.md": "058365e1d8a5654c97e08886393c164dfb845ee6ffc1bd82eb97d33664cfb847",
+    "native/research/NATIVE_BATTLE_PRESENTATION.md": "a8cf4196adf635ad5c42eec5ba1ad18393cb19b0d84b700cf2065a6c1bbd9c08",
+    "native/research/NATIVE_GAMEPLAY_UI.json": "d489bf28c7dbf52eb16b1775c59e73562e3fc45dabe0c22350e9fa574ff47e08",
+    "native/research/NATIVE_GAMEPLAY_UI.md": "017f739b162a69107418b0b55b85f358a88baac08fed3a304e85f1b3851537ca",
+    "native/research/NATIVE_PROFILE.md": "88601ff24b35575b46a0579221d291c62715d5627668a34e0ba1c9e9896807fd",
+    "native/research/SCENE_REFERENCE.md": "0cbebe5888e19bc73dfd2b1478c3e747fdbb0a01d61bb73f759189e1c08cd511",
+    "native/research/SPRITE_RENDERING.json": "d2020a9d29ab549d4638b7fe0319d0e37512cdb47007d1998ac5aae14ac2ea18",
+    "native/research/SPRITE_RENDERING.md": "0c26611e0468f67f11cdb2003d2ec14baf739177f83a7c0cae55b19ebdf405c1",
+    "native/research/TERRAIN_DECODER.md": "fbc389c203731090e160cebbb2917b90651cc8f9ddebe8ac108af8bdf1e63078",
+    "native/research/TIMER_RUNTIME_OBSERVATION.md": "dcd3c3ec96bbe5bf6f2fc3999065ffa18521f55d04392fa253bb8416c97add23",
+    "native/research/TRANSFORM_ACTION.json": "1c2cc0b55648727adc19cd6350c60c66966132c0e5cf10c8e905c65144d67a52",
+    "native/research/TRANSFORM_ACTION.md": "a0762ac3e58bc04fa200bbdfd0d9e6b17cc734a6f6003f1346d4f491fa6db9c3",
+    "native/research/TURN_PROGRESSION.md": "69cfa3d247af4b4c516ba31e4bfd999e7aebb4fc36fb92db414b13f0611b9744",
+    "native/research/UNIT_SPAWN.json": "f5fa0eb444307df0b310f0a57728405cba90286f3baa0544841aad6e4518553a",
+    "native/research/UNIT_SPAWN.md": "4f4abb800566407726a0b73bbe0d232cba5d7493ed3a37afa2518fd639bee5dd",
+    "native/research/WORLD_BOOTSTRAP.json": "65a7badb34d3eb5e24d9cfcd00a7472f1c937021644c23bd2533e8875d4c4602",
+    "native/research/WORLD_BOOTSTRAP.md": "887125491e7490414777560fb7de4d06dd68dbccf6249d6d11af3230e9ccdd96",
+    "native/research/WORLD_BOOTSTRAP_METADATA.json": "bb97e8962c26ab3b98cbb6ede14145490c763db1f06ede27bf2c57be002c5be4",
+    "native/research/WORLD_BOOTSTRAP_METADATA.md": "3e42f7d1f35b2c03c2e31469149b4585337de90104d8969bbb0e1cc6652b1ef9",
+    "native/research/ai_validation/native_ai_validation.json": "af606b29b60c45b2e24f36472a4552c57f68bdbd8e58a6eb39de1657353ab453",
+    "native/research/ai_validation/original_ai_oracle.json": "0e2b82e1157b1efdd13932789fa44f189c1a4f19ae7ac4972d3701321feac90c",
+    "native/research/atlas_validation/native_atlas_validation.json": "47688d06d6621bbc5eb29df7ca3668d75b18edde90b966b3d5cf166515ac50d1",
+    "native/research/atlas_validation/original_quad_oracle.json": "2822faa4884e297ad8655c9b05a75e031dfd8c67ad5d308bfc5183035ecf11f1",
+    "native/research/audio_decode_validation.json": "d4db1bcd0564c088070cf518e9d8ab31568dad261fd61583b6232a0fc0105d3f",
+    "native/research/image_validation/native_png_pixels.json": "49a4f6256a08bd8b0c8acff34ecdb92a742c17e795d4bcbab9d061b12b5e037b",
+    "native/research/mission_execution_validation/native_mission_execution_validation.json": "df423ff9e8fd6a3d71a61488754cc4f9311d4ac9d3bef5ceeff8e011fd95c5cd",
+    "native/research/mission_execution_validation/original_mission_execution_reference.json": "4811020b731986c364bcf0bc6b93e7a6269e74bbaa48cd510c51c761e5fbbe78",
+    "native/research/mission_validation/MISSION_CHECKPOINT.json": "a438ef30a23890e6293caf5aca6509ae2510866dc4e897c9a96c19f8ac03d398",
+    "native/research/mission_validation/cmake_validation.json": "b92d9e26a0d9dd879c98ffccf8209b67215947492de61f5f67357d2055030bcd",
+    "native/research/mission_validation/native_mission_validation.json": "55b70ec3e3bf800421f048ba64e28010e27b1788358e05ea466d84b563713a01",
+    "native/research/mission_validation_opcode7/native_mission_validation.json": "afcf32c2afcc92f57ca051bc82457e7ca91b35cab3cab35501c9989ba12ff148",
+    "native/research/mission_validation_opcode7/reference_refresh.json": "9708209f47afbb39f19a7c0327b40c6eb43be17c6cd1b2cb6e65de3bfc68b463",
+    "native/research/movement_action_validation/original_actions.json": "4be274515da01e656109614e10bedeeb0bc60642c2ba1bc03df07d2fa5a5236d",
+    "native/research/movement_action_validation/original_arrival_facing.json": "32af51d9c98020354e86c897e9716c6302df3e5f34f06f824f95f4809ea4b08b",
+    "native/research/resource_validation/native_resource_inventory.tsv": "c82184845563e87a25699577bb8c287b91ba5eea6d7fcbf023c980c7156cf274",
+    "native/research/resource_validation/native_validation.json": "013bb2278366070de243752ed27dfef4c15910e73ae2be87cce4d5e915c1ad71",
+    "native/research/scene_reference_validation.json": "f39c05a24b22412a339f4e405b4c80c956aa3e5d3f513a7522a537f150f4ceb7",
+    "native/research/scene_validation/first_scene_load.json": "86de5da7bdb13fd44ef80141b80e1e1b351e9349992e639924478355fb46becf",
+    "native/research/scene_validation/local_scene_validation.json": "54e78f90b490bf64f20bc0c0dc9807f80bc1841237fa87a31ef73959fd95c660",
+    "native/research/sprite_validation/original_animation.json": "98a4635b26aa7577f6e0c1e14b5926c877167706c125e9ef9e0b3444a35b8832",
+    "native/research/sprite_validation/original_matrix.json": "4b8177654819afab875ce908bcc737730f6d45e12742c40e7d6ea2c465a1a712",
+    "native/research/sprite_validation/original_placement.json": "078c965d01611f8a498310fddd630978b0b51a3e11986ad5176c20fb56fbd99d",
+    "native/research/sprite_validation/original_render_setup.json": "082428b9f9e232141b4eaa8753015f7a3897e2d6bd650e945528bf5abce25074",
+    "native/research/terrain_validation/TERRAIN_CHECKPOINT.json": "06ab4748d3684ac789c97b11d5b618bc9dcc6f90b4aa80d3044d8da3b62428da",
+    "native/research/terrain_validation/native_terrain_validation.json": "57722e6cc7835473056b495c7b17182454997bbeb3d81d7ea4a7218675743c61",
+    "native/research/terrain_validation/original_camera_setup.json": "e1b7292f7b09607e40ecbbe1429634795050c63f237c0d10cb25f3d1728241f8",
+    "native/research/terrain_validation/original_first_grid_oracle.json": "c1fdd81a0d5ebc17a706a8046141a433a4a62da4b4ab94f520e1fa4b1475bacb",
+    "native/research/terrain_validation/original_terrain_oracle.json": "06ea8a192abc6e717a9022d28bce9867e2eebfaae6343e97c6ca8073dc166133",
+    "native/research/timer_runtime_observation.json": "34cd5ab672a2c4515200df8b6a66dbf1d12c15eae668e07bc92776146236c2b4",
+    "native/research/world_validation/original_world_oracle.json": "ddfa2c079e2b156ea240dc8f53c3377210a94ae8715e04de09c3f74b91b4a0f8",
+    "native/src/AI.cpp": "e25b60c687596c6e5b817b6facb4b099348b354ece8492f9311099b6b051edf1",
+    "native/src/AIIncome.cpp": "3b663dab235207b1ac6e6cdcce0881f13eafd0277c5251e2f08f66fd6e2388e7",
+    "native/src/AISite.cpp": "abd1e3643b723ab01b1ea9bd7992dc3d7e44f4438fa06c2c8d6398b314cd3772",
+    "native/src/Archive.cpp": "a19a7576c9b9e793a5e2171d0096b7aba68e3951d28f4bb794494466905f8d87",
+    "native/src/Atlas.cpp": "5224165172d03bd54c7d8033c1d2e6ee44ce7ca1fa03526d74b61d1b1e156749",
+    "native/src/Audio.cpp": "297a62c64cfcb9f1ef5af80c7e8c2bc1b1d0e74d034473e24bbc8af6eb2bfc52",
+    "native/src/AudioEvents.cpp": "132fcbde0f734e79e0401877f2fb35bc39650c0311f433f4aa9eb8cc88868685",
+    "native/src/CaptureAction.cpp": "951bad97b69cdaad3b3788581c1f2f1379a4fbf0de1d8c1727d009d235312e14",
+    "native/src/Combat.cpp": "a54dbc005997313f1347c1d7e61c745d909c5fa330722a61b6dcea9b4b81eb9e",
+    "native/src/GameSession.cpp": "bedd09218491bbc94fd6f662d72892b3af8efddfd20dfc0d782f97e360f1db1c",
+    "native/src/Image.cpp": "a3f4d8e18f82699138ef6948bbd72e7402c98e2e4973c6cba5096cb220564e4f",
+    "native/src/InitialPresentation.cpp": "dd992341007b3d19bc43c4a88c994d5f3581cbe6132528e3f83d5ad91fe7b62e",
+    "native/src/M3G.cpp": "5a80cf51465903ec076bd18173235b801b90fe61217cb67d410060d6f17ba9ff",
+    "native/src/Mission.cpp": "8cfd2d9a7faf9c8b3ad89816d6220eeae29119d754b0bf371543d9c6ca116cf2",
+    "native/src/MissionExecution.cpp": "efda86bfc468304c6f218d18c6ee18c50890bfcbadbd3d31624fa64e0f5c6522",
+    "native/src/MissionObjectives.cpp": "317e1160344c6f02a98aad2280553b1abf94ccb21dab1eb8f4a1c3ff642bb993",
+    "native/src/MissionProgression.cpp": "8fe4883f3a6532a3254afa29919bb95e0137ac8cc585642b2d42aad2797fd203",
+    "native/src/Movement.cpp": "0cac89782a82b521ea12845c400caedbb680790432de17f6d8fbd51acdd64f9f",
+    "native/src/MovementAction.cpp": "4c519b8c7c1cb75a8cb696f9852452f6f7bae60e855f0cc26b5fe1ab558ae4f9",
+    "native/src/MovementArrival.cpp": "a929d215d24ceaceba6e5ae0a9492f2834400d117e7b9ca6c8c5789db68fae23",
+    "native/src/SaveStore.cpp": "fdae81f5f210ea2bd2606924eef67a268493d05ea15d980a4092611e5e955679",
+    "native/src/Scene.cpp": "20205229fbcc8ad80c8bf306f93f2006696d451687d48335771b4797f6140705",
+    "native/src/SpriteAnimation.cpp": "8469a57e5149757e9f531fe1e6f68f17d6281d535c94b155fe612ae8ef1df564",
+    "native/src/SpriteGeometry.cpp": "ad8bb1b6b324bcd39f1ce23b7e45cfa18d8d20b95a3a7afdf1da801a0d0c5f39",
+    "native/src/SpritePlacement.cpp": "7615da12e273eb5bf5c6cb18707655b73b547c2dce0f7306f074619a37bb7ed0",
+    "native/src/Terrain.cpp": "2baa7dbe5503e90379aa5950f5f5898a072a0e53cbec560612c7953c4582ef43",
+    "native/src/Text.cpp": "77f0edbdf3a6f9b9979a89175ce7a2efe3068c2039394cdc9b33b70e0fa17058",
+    "native/src/TextIndexMap.inc": "cfdb86ff805a4a75b65aa1f79c943bb4f671d18e47d40dfe1b02561709201ad4",
+    "native/src/TransformAction.cpp": "a51c0872e29238283da5eb371aa67362bc55342c3d2b14e6b71681615f95e7d3",
+    "native/src/TurnProgression.cpp": "dbedefb33651b22fa2acddce2d1ff423b04a11ce35e301210f83253c4c98b2bd",
+    "native/src/UnitSpawn.cpp": "1a6e77d6b1d57eaac69274d3fa76091b010c0412bf27ab1bb0c3ae44c18b64a4",
+    "native/src/World.cpp": "869906b089a72b0890a2ce0a1d31bb41e7a6e6a7ebb55cfb635692cdb9ca9a10",
+    "native/tests/ai_attack_cases.txt": "6831e4b0cb7f9eb8b83350dd8cde42db97b1faa09793e78ca9af28abc883dc00",
+    "native/tests/ai_attack_test.cpp": "5cedf4d24b5c57a965095c5d3d4025a4031e91ab10bafacb7f8c995f55dd8fe6",
+    "native/tests/ai_planner_cases.txt": "753d60ffd9fa11a33698493c6919f21df7c0b676160463a0f4a06d45f11eab1f",
+    "native/tests/ai_site_cases.txt": "66fb7aa04859b7f0fb6275cbe0d3afafe6d4ea7e2f67de609c9d236e2b935c91",
+    "native/tests/ai_site_test.cpp": "650adc1ff39e8316da185bd0d61864339a71f2630225f65798d7d22caeb104a9",
+    "native/tests/ai_turn_cases.txt": "9be9e90b6b24e0e2a26745759f595cd682b81f86e9bfc421a0f920e9108692a6",
+    "native/tests/atlas_reference.json": "56fc4b6637852f51a0377b2a6583e1ad62503501af2b636ad34e381ea73d9adf",
+    "native/tests/atlas_test.cpp": "b66a127f098faada423a51149e43d2438f2e2a388164138948e4a2efc6e50f6f",
+    "native/tests/audio_event_original_vectors.txt": "749a24ea8f0677019758cf5ab28e2318c36eb72ba5b95c5f9397065999c34a80",
+    "native/tests/audio_events_test.cpp": "bd91f823235b9e339b05ba1c0954ca237995bf537c2a37bb7ca2e994681f8602",
+    "native/tests/audio_test.cpp": "ea594168a918d6e298e41f226595aba82a0c4a0f98caba74651ad7375396d25d",
+    "native/tests/capture_action_test.cpp": "3ab201a77e1edb23f8a79ce2f6ad5beeb094c358bd9a22e8d102f10e1ba34c82",
+    "native/tests/capture_original_vectors.txt": "e31a5a7359ef7a29da6359d993d8ee19328e9728d56a7242a8857ad0eb5acb8f",
+    "native/tests/combat_cases.txt": "61ac20c9c674a082d4bce2bef0f6d5ffb9b7c9e78d5d2841b1dc32eba18894dc",
+    "native/tests/combat_test.cpp": "29c9e33c46064ead94de51a555c7e2c138636098f60d016f86c0907713132c66",
+    "native/tests/dialogue_original_vectors.txt": "4254fffddd56e8c4c6be760b614ea71df0838f56abb1d7350f5bfc804134bf41",
+    "native/tests/game_session_test.cpp": "e3232f49d384437583ff2bdee04c8c51841519c397e2dcc2bd4d30db4bb671df",
+    "native/tests/generate_atlas_reference.py": "1cda792238f2967a973206af136283bb9568e9d7d6dff38ec2cecb8a10a44dbb",
+    "native/tests/generate_mission_reference.py": "3022d02273db82675701a12a2050ad92dab123a92076d40de9ed35c01071ae14",
+    "native/tests/generate_terrain_reference.py": "9a5bccfa856356c281ba1440bd007d59325b80051132aa8c4f9b5037b218ba33",
+    "native/tests/image_test.cpp": "05bfdbe80f59ebeb9815c1744b3ea5eb907dd0612e65533be8d24dcf06368ec8",
+    "native/tests/initial_presentation_test.cpp": "7955f27f95a41b61853e121222d5a65fab460b04145e9e7a8f5c806d8365d1b2",
+    "native/tests/mission_clock_original_vectors.txt": "d2d5007a408aee4d9289bd8d64cc9611fd1b8afa446cec54c78f6fdadf69a1d0",
+    "native/tests/mission_execution_test.cpp": "5672cfe2f6ba786a381fe05a3cac9887f759f47c251e5dcae6d732c189fcfe14",
+    "native/tests/mission_objectives_original_vectors.txt": "6e070197d3455bdc3dbd13f7f366a51ce93e571f9bdae83315dbac507b74df0c",
+    "native/tests/mission_objectives_test.cpp": "693ef93ad585ef9b825ae7e30c17a9acc1a77504352cb0acb67218aa92df5096",
+    "native/tests/mission_progression_original_vectors.txt": "a120950902b56f7a339f774f44f0c7e489f082e533500c24b579c65f78421aa5",
+    "native/tests/mission_progression_test.cpp": "6bef39fe778757cdcfd9e0fbf1432c45d4448153b0cd869fb6892032d25009a9",
+    "native/tests/mission_reference.json": "76b465dadb42c4a55c7b3d0bb5082a88ee8590ab207989ad1a8a76276b7df9d7",
+    "native/tests/mission_test.cpp": "a7c4df5a354d9775c1335a9da92381375b20be5d6d6c79e151fbfc8f5b66f21e",
+    "native/tests/movement_action_test.cpp": "38fe7b67b0b18f73e0bb5cb3859fd6c114dac3861b75af132a3306fe5465ba6b",
+    "native/tests/movement_arrival_test.cpp": "0d053b16109499cc3af12160fc80e48f7c636b359ef0bcddb4531427eace28c7",
+    "native/tests/movement_cases.txt": "ba6b138459a4016101f8ad22e35564faafa6635defc75437695d26408e0425d3",
+    "native/tests/movement_test.cpp": "4dbe03624ab5e378c5e19f63b93ba337afd5357a6c493afae87c9a656ce22dc6",
+    "native/tests/resource_reference.json": "ba6ee933649e511ac917b7018a1313d32f39f2fbd7700ee7d84b22045ac479c7",
+    "native/tests/save_store_test.cpp": "fc74ebb99553d495dca847061470f32d48ce85d6073eba7a4097f044155c1fec",
+    "native/tests/sprite_animation_test.cpp": "81b426bfedf725b383ff339ebc2d8884f55f1a98a7a1f957db18798358a12ac3",
+    "native/tests/sprite_geometry_test.cpp": "62ef35a3933f7ad3a58d1978075f9e7335bdd5ff7edcab7b1e30d21225eb21e4",
+    "native/tests/sprite_placement_test.cpp": "9e59f47a53049811d3e2631bf8062ce341ebcc9b8ffe585af37c213cf1fc5ed6",
+    "native/tests/terrain_cases.txt": "5791215629f391e3400075ce012a4168a65931ea50fc8581f4c30e8d11c64345",
+    "native/tests/terrain_reference.json": "e1d5940bc9acd1d1d89e475650e85f83fd9fdad7364b4ef1eec3a0f2fb7bee87",
+    "native/tests/terrain_test.cpp": "91b8f0b9cf82012759180cb9c46c71e415ef7b68a80af5a187b5adde2d7dd28f",
+    "native/tests/text_index_original_vectors.txt": "cd329716c58c072847af3a476a6abd6ed7792301cbc1663f952c22100585daac",
+    "native/tests/text_test.cpp": "d4252e42c8a4fc98d3054bd2d12c81ff00e4a2a677309b479be036b4192d864c",
+    "native/tests/transform_action_test.cpp": "48edfffa767ae14b0f009be77d4a5965d692515befcbe2ac49175cde4489abfa",
+    "native/tests/turn_original_vectors.txt": "2a44165d4e7691f6884e3a215f0e9385f50ec1dc96a18942a87ee5f16dd14bcc",
+    "native/tests/turn_test.cpp": "ee447394cf96d6e233ace12f3b0014f012a460dbcf5e4eaae390e6adbdef45a2",
+    "native/tests/unit_spawn_original_vectors.txt": "f5b518a31e605ba8f254fe8ad96079d5eaa42c7a9bbb4591c3ab8a13ab6dcf88",
+    "native/tests/unit_spawn_test.cpp": "67464ec71bb1be61ca8113476fe7092fba302b0b74e24fa62d99225ca7eb4571",
+    "native/tests/verify_atlas.py": "5ab4a5b8774082254f801e80aa98587c5d03d5d5fe5110975b4294be27871f08",
+    "native/tests/verify_audio.py": "8f95d8d960b118623d35b60eee86863a867c58914780b2888849ba8ac603dc8c",
+    "native/tests/verify_images.py": "f3ab6b9c13c43998eb7fe72735604fd45e30759e49fd4f5667016d524909fc4c",
+    "native/tests/verify_missions.py": "de8f32da9479ed2a70b2ee49d1529c6d1218e110404867e5f8d3bbe320c16469",
+    "native/tests/verify_resources.py": "025799d510e7ccba2882ef875f0249755fa03b2f4c3cb063da863793ddccf1a9",
+    "native/tests/verify_terrain.py": "851f7a94494e73f301223e8a46f5d8edd33107f21b0cd42db10d9592eafaa6f9",
+    "native/tests/world_funds_original_vectors.txt": "3848fe0e43133b777ae13a4e4860c79dae7b17a88a5d0ccd3c9afbc25e4cf637",
+    "native/tests/world_test.cpp": "3e42de60a11adb2e818d848ce40c6670e2188b82ee99206e90a17972ee37ac13",
+    "native/third_party/lodepng/LICENSE": "bdafa318b8e637d600ca1b60545e894881977a16a16b74809c95e805701621e3",
+    "native/third_party/lodepng/UPSTREAM.json": "cb2940d282b1bace1f30d5031dd0d4b436f67a37acbddd7d8c724b072d8453fe",
+    "native/third_party/lodepng/lodepng.cpp": "6aec876971ec860527859458d3095220fc5ee1258ec37eb59e1e7dd9cf136a81",
+    "native/third_party/lodepng/lodepng.h": "9a1fca0238c38333bdc8545336961b73fd0b76957bbacf033186991be9d7cf85",
+    "native/third_party/stb/LICENSE": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63",
+    "native/third_party/stb/UPSTREAM.json": "f49725da5c0866f601db30578ebedc9b8d4da22729e4da61344059420b816a1d",
+    "native/third_party/stb/stb_vorbis.c": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636",
+    "native/tools/atlas_probe.cpp": "a79260305f11fd65764a7b5b2d37e7d4067c82e015772422ffbac1334cd05e15",
+    "native/tools/audio_probe.cpp": "e553a793ac72af426ff8080d3e3db00f53a23b8c0003dde1a9ce684b5cb6e75d",
+    "native/tools/extract_terrain_tables.py": "bca928d01ef4dc25f335b75d761266fbb6750bb721efd2a8fa93d60511c2e9b0",
+    "native/tools/g1_asset_probe.cpp": "873af09ec06d65a14bec3ab30c0022df2f401c75262f266aca487ba4760ba5ac",
+    "native/tools/image_probe.cpp": "7ad7e4d5a7f0315438153d8f7b75a118c46865c0b61bc18356e270108e6cfea5",
+    "native/tools/m3g_probe.cpp": "42b628462dbdba1f589e8e0c517aea97d881386d2f37e375979da662e42960f7",
+    "native/tools/mission_execution_probe.cpp": "30202022383afff7b4a96d9e16c7a2a212de12cac3ac63bac98919148bb185ce",
+    "native/tools/mission_probe.cpp": "689ff449ce11f633a7d66c7fb8237501780d127af02c05e891efe6eb90042e46",
+    "native/tools/scene_export.cpp": "0363e4e69deea5b25131dd326ea9406af4841f92ed8ed79ff50c1c20efadb053",
+    "native/tools/scene_probe.cpp": "4ac7bf4026dae41475dcb3a6af1c77f8a3e3ce848fcf2d2c96e4c08b13c9fecb",
+    "native/tools/terrain_probe.cpp": "f7d7013fda5001de7b6ed01da0873827345ce82b2b0d67833337fff0d7398a38",
+    "native/tools/world_probe.cpp": "11d336a0211f90f35e54e9f0f1cd303b5017c0cc7c2d618957e454be87671820",
+    "scripts/package-native-scene.py": "43d6c4e7781f73d3b1e8f935cb0c0f4451b9a40ac3174069b74af3477e15b72a",
+    "scripts/verify-native-app.py": "9337f2979e85ce22f3c7dc4e4deed238a945581ef85ec05471fd42bd6cac7e50",
+    "scripts/verify-native-archive.py": "a830660e024f3ffbd0320bde22a0f3e51a43b5ac13f89a31f03501b2d9ebf6bb",
+    "validation/APPLE_GAMEPLAY_COMPONENT_BUILD.json": "91e7f6557c2593eebc8c203eacdec105faae368afb21ee82bc158f5be014af55",
+    "validation/APPLE_NATIVE_CORE_BUILD.json": "3e845d2a639bf8da660486cfb10887d0f710db4e1a0e7c55ce27e0bc38ea880c",
+    "validation/APPLE_NATIVE_SCENE_BUILD.json": "69766d7600331c8702b3bf241f6f7bc14be69e8fcabd9f9b6ee46d1dc4f2d2d2",
+    "validation/LOCAL_NATIVE_GAMEPLAY_COMPONENTS.json": "55918fcf4282ee6d878fafab3a93ecd251ee1bfad41b092355926e498c155de1",
+    "validation/NATIVE_INTERACTION_HOST_CHECK.json": "1ae8365a80a9eca2abe78eebc997e6dad0bc7e6eb276405a14749be7b6925004",
+    "validation/NATIVE_SCENE_BUILD_001.json": "08032de58ede929ebc0b847b046a7d4e70573975e27eb781655841fc520f77a1",
+    "validation/NATIVE_SCENE_IPA_002.json": "1649a6cf81d462056d8f90399da8dbefe73787ae24fc9962f265fb57114ff39c",
+    "validation/native_workflow_local_validation.json": "65f29d76d2798064dc69c006ed46927855035fa5aef7deda08275b0c9a80d5dc"
+  }
 }

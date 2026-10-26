@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "source_commit": "d11fa64e3a5d7dd62b0aded6e8f38f8d8e651efb",
+  "run_id": 40275688702,
+  "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40275688702",
+  "conclusion": "success",
+  "jobs": {
+    "host": 121417832353,
+    "apple": 121417832568
+  },
+  "host_suites": {
+    "passed": 15,
+    "total": 15
+  },
+  "toolchain": {
+    "xcode": "26.6",
+    "build": "17F113",
+    "apple_clang": "21.0.0.21000101",
+    "cmake": "4.4.4"
+  },
+  "apple_app": {
+    "architecture": "arm64",
+    "platform": "iphoneos",
+    "minimum_ios": "17.5",
+    "unsigned": true
+  },
+  "metal": {
+    "device": "Apple Paravirtual device",
+    "pixel_checks_passed": 6,
+    "channels_compared": 24,
+    "skipped": false
+  },
+  "artifact": {
+    "id": 12630326067,
+    "name": "G1-native-scene-unsigned-code",
+    "bytes": 173999,
+    "digest": "sha256:4225d947a71b3da2f8f5832494ffbac0f3672d63561001c02c41ab7e537975d7",
+    "expires_at": "2026-11-09T05:43:11Z"
+  },
+  "scope": "Original movement/dialogue/audio component checkpoint, preceding native interaction UI. No local IPA package from this artifact, physical device, sound output or full playthrough claim."
+}

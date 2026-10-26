@@ -73,4 +73,12 @@ std::int32_t movement_entry_cost(const MovementBoard&, const MovementProfile&,
 MovementRange compute_movement_range(const MovementBoard&, const MovementProfile&,
                                       std::int32_t origin_x, std::int32_t origin_y);
 
+// Same original 0x4a29c full-fill mode with its explicit signed register budget.
+// AI callers use a signed form budget or a larger board-search budget. The
+// selected form's original base remains in profile for the one-expensive-step
+// rule; it is not replaced by initial_budget. Negative budgets visit no cells.
+MovementRange compute_movement_range_with_budget(const MovementBoard&,
+    const MovementProfile&, std::int32_t origin_x, std::int32_t origin_y,
+    std::int32_t initial_budget);
+
 } // namespace g1

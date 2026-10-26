@@ -95,6 +95,13 @@ std::int32_t movement_entry_cost(const MovementBoard& board, const MovementProfi
 
 MovementRange compute_movement_range(const MovementBoard& board, const MovementProfile& profile,
                                       std::int32_t origin_x, std::int32_t origin_y) {
+    return compute_movement_range_with_budget(board, profile, origin_x, origin_y,
+                                              remaining_movement_budget(profile));
+}
+
+MovementRange compute_movement_range_with_budget(const MovementBoard& board,
+    const MovementProfile& profile, std::int32_t origin_x, std::int32_t origin_y,
+    std::int32_t initial_budget) {
     validate(board);
     if (!inside(board, origin_x, origin_y))
         throw std::invalid_argument("Movement origin is outside the board");
@@ -103,7 +110,7 @@ MovementRange compute_movement_range(const MovementBoard& board, const MovementP
                          std::vector<std::int32_t>(board.cells.size(), movement_unvisited), false};
     std::vector<PendingCell> pending;
     pending.reserve(board.cells.size());
-    pending.push_back({origin_x, origin_y, remaining_movement_budget(profile), -1});
+    pending.push_back({origin_x, origin_y, initial_budget, -1});
 
     // Original order is up, down, left, right. Reverse insertion into the LIFO
     // work list preserves that depth-first order without native stack recursion.

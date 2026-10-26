@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -95,7 +96,7 @@ g1::Bytes prefix() {
 }
 } // namespace
 
-int main() {
+int main(int argc, char** argv) {
     try {
         check(g1::campaign_mission_resource(0) == 315U &&
               g1::campaign_mission_resource(16) == 323U, "campaign table boundary mismatch");
@@ -153,6 +154,33 @@ int main() {
               world.commands.size() == 11U, "presentation command was consumed or later commands ran");
         check(world.title_text_index == 1234U && !world.flag_225 && world.last_phase_opcode == 2U,
               "phase/title state mismatch");
+        check(!world.flag_227 && world.initialization_effects.size() == 3U,
+              "bootstrap omitted initial turn/debit metadata");
+        const auto& turn = world.initialization_effects[0];
+        check(turn.kind == g1::WorldInitializationEffectKind::begin_current_player_turn &&
+              turn.command_index == 2U && turn.owner == 0U && turn.sites_at_turn_start.empty(),
+              "initial turn observed later site placement");
+        for (std::size_t i = 1; i < world.initialization_effects.size(); ++i) {
+            const auto& debit = world.initialization_effects[i];
+            check(debit.kind == g1::WorldInitializationEffectKind::debit_spawn_funds &&
+                  debit.command_index == i + 2U && debit.owner == i - 1U && debit.signed_cost == 7 &&
+                  debit.active_count_increment == 1U,
+                  "script placement debit order/cost changed");
+        }
+        check(world.units[0].spawn.health == 100U && !world.units[0].spawn.flag_18 &&
+              !world.units[0].spawn.damage_immune, "ordinary activation properties changed");
+        auto cost_definition = decoded;
+        cost_definition.scalar_fields[1] = 255;
+        check(g1::unit_spawn_cost(cost_definition) == -1, "spawn cost lost signed-byte semantics");
+        cost_definition.type = 21;
+        check(g1::unit_spawn_cost(cost_definition) == 40, "type21 loader cost override omitted");
+        check(g1::apply_spawn_funds_debit(1,17) == 0 &&
+              g1::apply_spawn_funds_debit(50,17) == 33 &&
+              g1::apply_spawn_funds_debit(0,-1) == 1,
+              "spawn debit clamp/sign mismatch");
+        const auto flag_on = g1::bootstrap_first_campaign(archive(resources(mission({{13}}))));
+        const auto flag_off = g1::bootstrap_first_campaign(archive(resources(mission({{13},{14}}))));
+        check(flag_on.flag_227 && !flag_off.flag_227, "opcode13/14 combat flag mismatch");
         check(world.units.size() == 2U && world.units[0].type == 11U &&
               world.units[0].owner == 0U && world.units[1].type == 19U &&
               world.units[1].owner == 1U && world.units[0].form == 0U &&
@@ -216,6 +244,28 @@ int main() {
         rejects([&] { (void)invalid_board.movement_board(); }, "empty tile movement rule invented");
         invalid_board = world; invalid_board.units[1].x = 0; invalid_board.units[1].y = 0;
         rejects([&] { (void)invalid_board.movement_board(); }, "overlapping active occupancy accepted");
+        if (argc > 2) throw std::runtime_error("usage: world_test [original_funds_fixture]");
+        if (argc == 2) {
+            std::ifstream input(argv[1]);
+            if (!input) throw std::runtime_error("cannot open original world funds fixture");
+            int type{}, raw{}, expected_cost{};
+            std::int32_t funds{}, expected_funds{};
+            std::size_t rows{};
+            while (input >> type >> raw >> funds >> expected_cost >> expected_funds) {
+                if (type < 0 || type >= 23 || raw < 0 || raw > 255)
+                    throw std::runtime_error("invalid original funds fixture row");
+                g1::UnitDefinition value;
+                value.type = static_cast<std::uint8_t>(type);
+                value.scalar_fields[1] = static_cast<std::uint8_t>(raw);
+                const auto cost = g1::unit_spawn_cost(value);
+                check(cost == expected_cost, "original loader cost differs");
+                check(g1::apply_spawn_funds_debit(funds,cost) == expected_funds,
+                      "original spawn funds differ");
+                ++rows;
+            }
+            if (!input.eof() || rows == 0) throw std::runtime_error("malformed/empty funds fixture");
+            std::cout << "Compared " << rows << " original loader/debit vectors.\n";
+        }
         std::cout << "Passed " << checks << " world bootstrap contract checks; synthetic data only.\n";
         return 0;
     } catch (const std::exception& error) {

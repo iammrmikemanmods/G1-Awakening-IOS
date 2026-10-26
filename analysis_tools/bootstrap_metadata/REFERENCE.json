@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "cases": 552,
+  "original_sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd",
+  "support_sha256": "f0505848b34b88b6653cbb8ebe5f74fa8fd5394f4e1727fa93f0b3f2c18374ad",
+  "oracle_sha256": "36176feaec3dea876564cf2390a15f50d4394020a57ad89b93de48976aba99e2",
+  "fixture_sha256": "3848fe0e43133b777ae13a4e4860c79dae7b17a88a5d0ccd3c9afbc25e4cf637",
+  "original_fragments": [
+    "0x5a8ce..0x5a8e0",
+    "0x54094..0x540ca"
+  ],
+  "executed_helpers": [
+    "0x2aa78",
+    "0x2b460"
+  ],
+  "replaced_external_calls": {},
+  "limits": [
+    "Original loader and spawn function-body fragments, not full game startup.",
+    "Synthetic type/cost/funds inputs; no proprietary data payload in fixture.",
+    "Turn credit/order and site snapshot separately established by dispatcher callsites.",
+    "No native session, Apple device, or campaign playthrough claim."
+  ]
+}

@@ -1,5 +1,8 @@
 # Native mission dialogue and control flow
 
+**Subsequent progression extension:** the original capture/dialogue validation below remains valid. `MissionExecution::begin_completion` now consumes the stopped opcode-8 entry using actual campaign state and preserves its phase-8 → 99 → next-command timing. The updated controller suite passes 724 checks; opcode 10 still requires actual persistence/results/handoff integration. See `MISSION_PROGRESSION.md` and its separate original-function fixtures. The earlier resource probe intentionally still reports its original cursor-26 boundary.
+
+
 ## Implemented boundary
 
 `Text` and `MissionExecution` are portable C++17 modules. They read original

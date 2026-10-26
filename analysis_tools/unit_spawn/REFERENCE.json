@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "cases": 192,
+  "original_sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd",
+  "support_sha256": "2c1fc1e53e27c8c0a16a248b4d724f6225f9fdcba05456a9d840cc21d1bc6a79",
+  "oracle_sha256": "aaab3684fb98d3ff0333700d1edbc729260afa743ecdf73b985c1070442140af",
+  "fixture_sha256": "f5b518a31e605ba8f254fe8ad96079d5eaa42c7a9bbb4591c3ab8a13ab6dcf88",
+  "complete_original_functions": [
+    "0x54016",
+    "0x4333a",
+    "0x4328a",
+    "0x430fc",
+    "0x43a54"
+  ],
+  "original_fragments": [
+    "0x5a8ce..0x5a8e0",
+    "0x56792..0x567f6"
+  ],
+  "external_boundaries": {
+    "0xba288": 672,
+    "0x60800": 192,
+    "0x60b70": 192,
+    "0x5ca7e": 192
+  },
+  "boundary_meanings": {
+    "0xba288": "imported signed division, exact arithmetic",
+    "0x60800": "funds string clear, output boundary",
+    "0x60b70": "funds number formatting request, recorded",
+    "0x5ca7e": "renderer spawn notification, recorded"
+  },
+  "extra_assertions": [
+    "Actual owner active count increments once; other owner unchanged.",
+    "Exactly one correct funds formatting and spawn renderer request.",
+    "Untouched animation byte2e retained171."
+  ],
+  "limits": [
+    "Synthetic state only; original executable is required locally and not included.",
+    "Renderer and number/string output are recorded, not drawn.",
+    "No production admission, campaign, Apple build, or device-playthrough claim."
+  ]
+}

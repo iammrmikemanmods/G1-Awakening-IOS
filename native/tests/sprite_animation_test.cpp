@@ -79,6 +79,18 @@ int main() {
         rejects([&] { a.advance_ms(std::uint32_t(std::numeric_limits<std::int32_t>::max())); },
                 "signed elapsed overflow accepted");
         check(a.current_frame() == 7U && a.state().elapsed_ms == 99, "overflow rejection changed state");
+        a.reset(2, true);
+        a.advance_ms(11);
+        const auto selected_before = a.state();
+        a.select_step(0);
+        check(a.state().step_index == 0 && a.state().elapsed_ms == selected_before.elapsed_ms &&
+              a.state().repeat_count == selected_before.repeat_count &&
+              a.state().reverse == selected_before.reverse &&
+              a.state().completed == selected_before.completed,
+              "original step selector preserves elapsed/repeat/reverse/completion");
+        a.select_step(255);
+        check(a.state().step_index == 0 && a.state().elapsed_ms == selected_before.elapsed_ms,
+              "out-of-range step selector preserves state");
         std::cout << "Passed " << checks << " sprite animation checks; no original runtime required.\n";
         return 0;
     } catch (const std::exception& error) {

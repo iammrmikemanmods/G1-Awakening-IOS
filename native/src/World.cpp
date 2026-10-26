@@ -150,6 +150,18 @@ std::uint32_t unit_definition_resource(std::uint8_t type) {
     return unit_resources[type];
 }
 
+std::int8_t unit_spawn_cost(const UnitDefinition& definition) {
+    require(definition.type < unit_resources.size(), "spawn cost has an invalid unit type");
+    return definition.type == 21U ? std::int8_t(40) : signed_byte(definition.scalar_fields[1]);
+}
+
+std::int32_t apply_spawn_funds_debit(std::int32_t funds, std::int8_t cost) noexcept {
+    const auto bits = static_cast<std::uint32_t>(funds) - static_cast<std::uint32_t>(cost);
+    const auto signed_result = bits <= 0x7fffffffU ? static_cast<std::int64_t>(bits) :
+        static_cast<std::int64_t>(bits) - 0x100000000LL;
+    return signed_result < 0 ? 0 : static_cast<std::int32_t>(signed_result);
+}
+
 std::uint32_t campaign_mission_resource(std::size_t index) {
     require(index < campaign_resources.size(), "campaign index is outside the original resource table");
     return campaign_resources[index];
@@ -264,6 +276,11 @@ WorldBootstrap bootstrap_first_campaign(const Archive& archive) {
             world.grid = decode_terrain_grid(resource(archive, world.grid_resource_id));
             world.effective_lookup = apply_mission_style(
                 decode_terrain_lookup(resource(archive, world.lookup_resource_id)), world.style);
+            // 0x56e38 ->0x4e80c. The original map loader has cleared sites at
+            // this point; recording the snapshot preserves that ordering.
+            world.initialization_effects.push_back({
+                WorldInitializationEffectKind::begin_current_player_turn,
+                command.instruction_index, 0, 0, world.sites});
             map_loaded = true;
             break;
         }
@@ -289,7 +306,11 @@ WorldBootstrap bootstrap_first_campaign(const Archive& archive) {
             world.units.push_back({type, faction,
                 static_cast<std::uint8_t>(owner - world.player_factions.begin()),
                 0, static_cast<std::uint8_t>(args[1]), static_cast<std::uint8_t>(args[2]),
-                0, true, command.instruction_index});
+                0, true, command.instruction_index, {}});
+            world.initialization_effects.push_back({
+                WorldInitializationEffectKind::debit_spawn_funds,
+                command.instruction_index, world.units.back().owner,
+                unit_spawn_cost(world.unit_definitions[type]), {}, 1});
             break;
         }
         case 7:
@@ -314,6 +335,12 @@ WorldBootstrap bootstrap_first_campaign(const Archive& archive) {
             argument_count(command, 0);
             world.flag_225 = false;
             world.last_phase_opcode = 2;
+            break;
+        case 13:
+        case 14:
+            argument_count(command, 0);
+            world.flag_227 = command.opcode == 13U;
+            world.last_phase_opcode = command.opcode;
             break;
         case 3:
             world.stop = BootstrapStop::presentation_required;

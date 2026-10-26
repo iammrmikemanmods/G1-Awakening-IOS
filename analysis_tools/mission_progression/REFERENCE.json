@@ -1,0 +1,80 @@
+{
+  "original_executable_sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd",
+  "unicorn_version": "2.1.4",
+  "generator_sha256": "f0505848b34b88b6653cbb8ebe5f74fa8fd5394f4e1727fa93f0b3f2c18374ad",
+  "reference_functions": {
+    "completion_body": [
+      "0x5648a",
+      "0x578e4"
+    ],
+    "text_conversion_body": [
+      "0x301de",
+      "0x3020e"
+    ],
+    "profile_complete_function": "0x4e5a6",
+    "record_complete_function": "0x44058",
+    "opcode10_body": [
+      "0x56ee2",
+      "0x578e4"
+    ],
+    "handoff_body": [
+      "0x57cca",
+      "0x57e26"
+    ],
+    "results_complete_function": "0x57e54"
+  },
+  "case_counts": {
+    "completion": 144,
+    "profile": 144,
+    "handoff": 288,
+    "save_dispatch": 6,
+    "results_update": 126,
+    "table_entries": 30
+  },
+  "external_boundaries": {
+    "0x2ad12": 144,
+    "0x2bd10": 2,
+    "0x2bdc0": 2,
+    "0x2fed8": 150,
+    "0x301aa": 115,
+    "0x3174e": 3,
+    "0x3c020": 102,
+    "0x46df2": 115,
+    "0x47094": 186,
+    "0x48cc2": 102,
+    "0x48e38": 102,
+    "0x52e90": 102,
+    "0x57a54": 102,
+    "0x57c98": 73,
+    "0x604b4": 115,
+    "0xba384": 54
+  },
+  "completion_phase8_clock_function_0x57914": [
+    {
+      "delta_ms": 0,
+      "phase": 99,
+      "cursor": 26,
+      "unchanged_wait_storage": 123
+    },
+    {
+      "delta_ms": 1,
+      "phase": 99,
+      "cursor": 26,
+      "unchanged_wait_storage": 123
+    },
+    {
+      "delta_ms": 10000,
+      "phase": 99,
+      "cursor": 26,
+      "unchanged_wait_storage": 123
+    }
+  ],
+  "fixture_sha256": "a120950902b56f7a339f774f44f0c7e489f082e533500c24b579c65f78421aa5",
+  "limitations": [
+    "Original executable is development input only, never shipped or executed in native app.",
+    "Persistence is an explicit supplied boundary result; no durable save was performed by this harness.",
+    "Rendering/audio/menu/world cleanup/script installation are recorded external requests.",
+    "Fragment references omit C++ unwind prologues/epilogues and do not test allocation/serialization.",
+    "No campaign playthrough, Apple device run or performance claim follows from these vectors."
+  ]
+}

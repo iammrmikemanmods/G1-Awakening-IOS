@@ -1,0 +1,129 @@
+{
+  "scope": "native source/function comparisons; no complete opponent turn, campaign, or iPhone test",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+  "strict_compile": {
+    "command": "g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I native/include native/src/AI.cpp native/src/AISite.cpp native/src/AIIncome.cpp native/src/CaptureAction.cpp native/src/Combat.cpp native/src/Movement.cpp native/tests/ai_attack_test.cpp -o research/native_ai/ai_planner_tests",
+    "exit_code": 0
+  },
+  "ubsan_compile": {
+    "command": "g++ -std=c++17 -O1 -g -fsanitize=undefined -fno-sanitize-recover=undefined -Wall -Wextra -Werror -pedantic -I native/include native/src/AI.cpp native/src/AISite.cpp native/src/AIIncome.cpp native/src/CaptureAction.cpp native/src/Combat.cpp native/src/Movement.cpp native/tests/ai_attack_test.cpp -o research/native_ai/ai_current_ubsan",
+    "exit_code": 0
+  },
+  "source_and_fixture_sha256": {
+    "native/include/g1/AI.hpp": "ea45901ace1318be438de171d27a3aa78f9d2779ac2c9d92c91b99ff2b74bf91",
+    "native/src/AI.cpp": "e25b60c687596c6e5b817b6facb4b099348b354ece8492f9311099b6b051edf1",
+    "native/include/g1/AIIncome.hpp": "3e78f1300b3a54fda0a0f697ec100b4323a7e24f241e40410a03552658a68160",
+    "native/src/AIIncome.cpp": "3b663dab235207b1ac6e6cdcce0881f13eafd0277c5251e2f08f66fd6e2388e7",
+    "native/src/AISite.cpp": "abd1e3643b723ab01b1ea9bd7992dc3d7e44f4438fa06c2c8d6398b314cd3772",
+    "native/include/g1/Movement.hpp": "a3a4b66db096e34c6de57642e01a41e2aa19c616aebeb4002eab279f809b6e75",
+    "native/src/Movement.cpp": "0cac89782a82b521ea12845c400caedbb680790432de17f6d8fbd51acdd64f9f",
+    "native/include/g1/Combat.hpp": "b82553f85b90e7794140903d8a6cdf2310c232dbde2339a8d7208d70a0b30a17",
+    "native/src/Combat.cpp": "a54dbc005997313f1347c1d7e61c745d909c5fa330722a61b6dcea9b4b81eb9e",
+    "native/include/g1/CaptureAction.hpp": "9d198f8d61ff07beeea26264776ac4ba2514b4c2d572c17190ee07612135621b",
+    "native/src/CaptureAction.cpp": "951bad97b69cdaad3b3788581c1f2f1379a4fbf0de1d8c1727d009d235312e14",
+    "native/tests/ai_attack_test.cpp": "5cedf4d24b5c57a965095c5d3d4025a4031e91ab10bafacb7f8c995f55dd8fe6",
+    "native/tests/ai_attack_cases.txt": "6831e4b0cb7f9eb8b83350dd8cde42db97b1faa09793e78ca9af28abc883dc00",
+    "native/tests/ai_planner_cases.txt": "753d60ffd9fa11a33698493c6919f21df7c0b676160463a0f4a06d45f11eab1f",
+    "native/tests/ai_turn_cases.txt": "9be9e90b6b24e0e2a26745759f595cd682b81f86e9bfc421a0f920e9108692a6"
+  },
+  "runs": [
+    {
+      "fixture": "native/tests/ai_attack_cases.txt",
+      "fixture_sha256": "6831e4b0cb7f9eb8b83350dd8cde42db97b1faa09793e78ca9af28abc883dc00",
+      "cases": 192,
+      "checks": 6479,
+      "contains_source_payloads_exclude_from_git": false,
+      "strict": {
+        "command": "research/native_ai/ai_planner_tests native/tests/ai_attack_cases.txt",
+        "exit_code": 0,
+        "passed": true
+      },
+      "ubsan": {
+        "command": "research/native_ai/ai_current_ubsan native/tests/ai_attack_cases.txt",
+        "exit_code": 0,
+        "passed": true,
+        "diagnostics": []
+      }
+    },
+    {
+      "fixture": "native/tests/ai_planner_cases.txt",
+      "fixture_sha256": "753d60ffd9fa11a33698493c6919f21df7c0b676160463a0f4a06d45f11eab1f",
+      "cases": 128,
+      "checks": 7582,
+      "contains_source_payloads_exclude_from_git": false,
+      "strict": {
+        "command": "research/native_ai/ai_planner_tests native/tests/ai_planner_cases.txt",
+        "exit_code": 0,
+        "passed": true
+      },
+      "ubsan": {
+        "command": "research/native_ai/ai_current_ubsan native/tests/ai_planner_cases.txt",
+        "exit_code": 0,
+        "passed": true,
+        "diagnostics": []
+      }
+    },
+    {
+      "fixture": "native/tests/ai_turn_cases.txt",
+      "fixture_sha256": "9be9e90b6b24e0e2a26745759f595cd682b81f86e9bfc421a0f920e9108692a6",
+      "cases": 192,
+      "checks": 14928,
+      "contains_source_payloads_exclude_from_git": false,
+      "strict": {
+        "command": "research/native_ai/ai_planner_tests native/tests/ai_turn_cases.txt",
+        "exit_code": 0,
+        "passed": true
+      },
+      "ubsan": {
+        "command": "research/native_ai/ai_current_ubsan native/tests/ai_turn_cases.txt",
+        "exit_code": 0,
+        "passed": true,
+        "diagnostics": []
+      }
+    },
+    {
+      "fixture": "research/native_ai/source_attack_cases.txt",
+      "fixture_sha256": "1d351c8fa7763bdf0d95f20a2ca5e88ec2605db9fa197b054da97849b29037f8",
+      "cases": 92,
+      "checks": 20718,
+      "contains_source_payloads_exclude_from_git": true,
+      "strict": {
+        "command": "research/native_ai/ai_planner_tests research/native_ai/source_attack_cases.txt",
+        "exit_code": 0,
+        "passed": true
+      },
+      "ubsan": {
+        "command": "research/native_ai/ai_current_ubsan research/native_ai/source_attack_cases.txt",
+        "exit_code": 0,
+        "passed": true,
+        "diagnostics": []
+      }
+    },
+    {
+      "fixture": "research/native_ai/source_planner_cases.txt",
+      "fixture_sha256": "0c4a85dc2d1d088c97dcfad4b83ca6a82bf2f09b4533f080046befe269c59304",
+      "cases": 8,
+      "checks": 1994,
+      "contains_source_payloads_exclude_from_git": true,
+      "strict": {
+        "command": "research/native_ai/ai_planner_tests research/native_ai/source_planner_cases.txt",
+        "exit_code": 0,
+        "passed": true
+      },
+      "ubsan": {
+        "command": "research/native_ai/ai_current_ubsan research/native_ai/source_planner_cases.txt",
+        "exit_code": 0,
+        "passed": true,
+        "diagnostics": []
+      }
+    }
+  ],
+  "existing_movement_regression": {
+    "cases": 256,
+    "comparisons": 9092,
+    "malformed_rejections": 4,
+    "passed": true,
+    "source_unchanged_since_prior_extension_gate": true
+  },
+  "original_ai_oracle_sha256": "0e2b82e1157b1efdd13932789fa44f189c1a4f19ae7ac4972d3701321feac90c"
+}

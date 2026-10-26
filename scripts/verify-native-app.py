@@ -78,7 +78,8 @@ def inspect_app(app):
     result = inspect_executable((app / info['CFBundleExecutable']).read_bytes())
     result.update({'source_commit': commit, 'bundle_identifier': info['CFBundleIdentifier'],
                    'version': info['CFBundleShortVersionString'],
-                   'artifact_kind': 'native first-mission scene test',
+                   'artifact_kind': info.get('G1ArtifactKind', 'native test app'),
+                   'feature_scope': info.get('G1FeatureScope', 'See source-specific validation'),
                    'original_assets_bundled': (app / 'GameData' / 'iphone.big').is_file(),
                    'device_execution_verified': False, 'full_playthrough_verified': False})
     return result

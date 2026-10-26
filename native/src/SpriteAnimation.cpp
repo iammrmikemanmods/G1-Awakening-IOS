@@ -30,6 +30,10 @@ void SpriteAnimation::reset(std::int32_t repeat_count, bool reverse) noexcept {
     }
 }
 
+void SpriteAnimation::select_step(std::uint8_t step) noexcept {
+    if (step < steps_.size()) state_.step_index = step;
+}
+
 bool SpriteAnimation::advance_ms(std::uint32_t delta_ms) {
     constexpr auto signed_max = std::numeric_limits<std::int32_t>::max();
     if (delta_ms > std::uint32_t(signed_max))

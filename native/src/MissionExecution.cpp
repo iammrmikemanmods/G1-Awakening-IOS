@@ -102,48 +102,17 @@ std::int32_t dialogue_character_budget(const DialogueProgress& progress) noexcep
     return static_cast<std::int32_t>(1000 + floor_div_65536(progress.reveal_offset));
 }
 
-std::vector<MissionSiteState> initial_mission_site_states(const WorldBootstrap& world) {
-    std::vector<MissionSiteState> result;
-    result.reserve(world.sites.size());
-    for (const auto& site : world.sites) {
-        MissionSiteState state;
-        state.state = site.state;
-        for (const auto& group : site.coordinate_groups)
-            state.item_states.emplace_back(group.size(), static_cast<std::int8_t>(-1));
-        result.push_back(std::move(state));
-    }
-    return result;
-}
-
-bool captured_site_objective_satisfied(const CapturedSiteObjective& objective,
-                                      const std::vector<MissionSiteState>& sites) {
-    if (objective.site < -1 || objective.group < -1 || objective.item < -1)
-        throw FormatError("unsupported negative capture-objective index");
-    if (objective.site == -1 || objective.group == -1 || objective.item == -1) {
-        for (const auto& site : sites) {
-            if (site.state != objective.desired_state) return false;
-            for (const auto& group : site.item_states)
-                for (const auto item : group)
-                    if (item != objective.desired_state) return false;
-        }
-        return true;
-    }
-    const auto site_index = static_cast<std::size_t>(objective.site);
-    const auto group_index = static_cast<std::size_t>(objective.group);
-    const auto item_index = static_cast<std::size_t>(objective.item);
-    if (site_index >= sites.size() || group_index >= sites[site_index].item_states.size() ||
-        item_index >= sites[site_index].item_states[group_index].size())
-        throw FormatError("capture-objective index exceeds native site state");
-    return sites[site_index].item_states[group_index][item_index] == objective.desired_state;
-}
-
 MissionExecution::MissionExecution(const WorldBootstrap& world)
-    : commands_(world.commands) {
-    if (world.mission_resource_id != 315U ||
+    : MissionExecution(world, CampaignContext{}) {}
+
+MissionExecution::MissionExecution(const WorldBootstrap& world, const CampaignContext& campaign)
+    : commands_(world.commands), campaign_group_(campaign.group),
+      campaign_index_(campaign.mission_index) {
+    if (world.mission_resource_id != mission_resource_for_campaign(campaign.group, campaign.mission_index) ||
         world.stop != BootstrapStop::presentation_required ||
         world.next_command_index >= commands_.size() ||
         commands_[world.next_command_index].opcode != 3U)
-        throw FormatError("mission continuation requires the cold first-campaign dialogue boundary");
+        throw FormatError("mission continuation requires a matching campaign dialogue boundary");
     raw_unit_name_indices_.reserve(world.unit_definitions.size());
     for (std::size_t type = 0; type < world.unit_definitions.size(); ++type) {
         const auto& definition = world.unit_definitions[type];
@@ -181,6 +150,7 @@ void MissionExecution::enter_current(std::vector<MissionEffect>& effects) {
     state_.dialogue.reset();
     state_.camera.reset();
     state_.objective.reset();
+    state_.mission_objective.reset();
     state_.pending_text_id.reset();
     const auto& args = command.argument_words_u16;
     switch (command.opcode) {
@@ -190,7 +160,7 @@ void MissionExecution::enter_current(std::vector<MissionEffect>& effects) {
         MissionDialogue dialogue;
         dialogue.speaker_type = signed16(args[0]);
         dialogue.text_index = signed16(args[1]);
-        dialogue.text_id = script_text_id(dialogue.text_index);
+        dialogue.text_id = script_text_id(dialogue.text_index, state_.alternate_dialogue_variant);
         if (dialogue.speaker_type == -1) dialogue.heading_text_id = 0x019dU;
         else {
             if (dialogue.speaker_type < 0 ||
@@ -226,17 +196,22 @@ void MissionExecution::enter_current(std::vector<MissionEffect>& effects) {
         state_.gate = MissionGate::transition;
         return;
     case 12: {
-        if (args.size() != 6U || args[0] != 1U) {
-            stop(MissionStop::unsupported_objective, "only original objective kind 1 is recovered here");
+        if (args.empty() || args[0] > 3U) {
+            stop(MissionStop::unsupported_objective, "unknown original objective kind");
             return;
         }
-        CapturedSiteObjective objective{signed16(args[2]), signed16(args[3]),
-            signed16(args[4]), signed16(args[5]), signed16(args[1]),
-            script_text_id(signed16(args[1]))};
-        if (objective.site < -1 || objective.group < -1 || objective.item < -1)
-            throw FormatError("unsupported negative objective index");
-        state_.objective = objective;
-        state_.gate = MissionGate::captured_site_item;
+        state_.mission_objective = decode_mission_objective(command);
+        if (state_.mission_objective->kind == MissionObjectiveKind::site_item_owner) {
+            const auto& objective = *state_.mission_objective;
+            const auto& parameters = objective.parameters;
+            if (parameters[0] < -1 || parameters[1] < -1 || parameters[2] < -1)
+                throw FormatError("unsupported negative objective index");
+            state_.objective = CapturedSiteObjective{parameters[0], parameters[1], parameters[2],
+                parameters[3], objective.text_index, objective.text_id};
+            state_.gate = MissionGate::captured_site_item;
+        } else {
+            state_.gate = MissionGate::objective;
+        }
         state_.interaction_mode = 0U;
         state_.skip_following_dialogue = false; // Original cold path 0x5744c.
         // 0x56f5e does not write map+0x1e0. Script ticks are suspended by mode 0.
@@ -252,7 +227,7 @@ void MissionExecution::enter_current(std::vector<MissionEffect>& effects) {
     case 10:
         require_words(command, 1U);
         stop(MissionStop::campaign_handoff_required,
-             "opcode 10 save/profile and campaign handoff are not implemented");
+             "opcode 10 requires actual profile persistence and results/campaign handoff");
         return;
     default:
         stop(MissionStop::unsupported_command, "mission command has no recovered continuation handler");
@@ -301,8 +276,12 @@ MissionTickResult MissionExecution::tick(std::uint32_t delta_ms, const MissionTi
         }
         break;
     }
+    case MissionGate::completion_frame:
+        mark_ready(state_); // Original 0x57914 phase 8 has no acknowledgement test.
+        break;
     case MissionGate::camera:
     case MissionGate::captured_site_item:
+    case MissionGate::objective:
     case MissionGate::stopped:
     case MissionGate::end_of_stream:
         break;
@@ -320,6 +299,8 @@ MissionTickResult MissionExecution::observe_objective(const std::vector<MissionS
                                                      std::array<std::uint8_t, 2> active_counts) {
     if (state_.gate != MissionGate::captured_site_item || !state_.objective)
         throw FormatError("objective observation without an active capture goal");
+    if (campaign_group_ != 0U || campaign_index_ != 0)
+        throw FormatError("legacy capture observation is limited to the first campaign mission");
     MissionTickResult result;
     if (active_counts[0] == 0U || active_counts[1] == 0U) {
         stop(MissionStop::unsupported_player_loss_branch,
@@ -332,6 +313,49 @@ MissionTickResult MissionExecution::observe_objective(const std::vector<MissionS
         result.effects.push_back(MissionEffect::reset_current_player_actions);
         result.effects.push_back(MissionEffect::return_to_script_mode);
     }
+    return result;
+}
+
+MissionTickResult MissionExecution::observe_objective(const std::vector<MissionSiteState>& sites,
+    const std::vector<MissionObjectiveUnit>& units, const CampaignContext& campaign,
+    std::uint8_t current_owner) {
+    if ((state_.gate != MissionGate::captured_site_item && state_.gate != MissionGate::objective) ||
+        !state_.mission_objective)
+        throw FormatError("objective observation without an active mission goal");
+    if (campaign.group != campaign_group_ || campaign.mission_index != campaign_index_)
+        throw FormatError("objective observation belongs to a different campaign mission");
+    const auto decision = evaluate_mission_objective(*state_.mission_objective,
+        {campaign, units, sites, commands_, state_.command_index, current_owner});
+    MissionTickResult result;
+    if (!decision.resume_script) return result;
+    if (decision.command_cursor < 0)
+        throw FormatError("objective transition search produced a negative controller cursor");
+    state_.command_index = static_cast<std::size_t>(decision.command_cursor);
+    state_.interaction_mode = 6U;
+    if (decision.set_alternate_dialogue_variant) state_.alternate_dialogue_variant = true;
+    mark_ready(state_);
+    if (decision.reset_current_player_actions)
+        result.effects.push_back(MissionEffect::reset_current_player_actions);
+    result.effects.push_back(MissionEffect::return_to_script_mode);
+    return result;
+}
+
+CompletionPresentation MissionExecution::begin_completion(std::size_t command_index,
+                                                          const CampaignContext& context) {
+    if (state_.gate != MissionGate::stopped ||
+        state_.stop != MissionStop::completion_presentation_required ||
+        command_index != state_.command_index || state_.opcode != 8U)
+        throw FormatError("completion entry does not match the pending mission command");
+    if (context.group != campaign_group_ || context.mission_index != campaign_index_)
+        throw FormatError("mission controller received a different campaign context");
+    const auto& command = commands_.at(command_index);
+    require_words(command, 1U);
+    auto result = mission_completion_presentation(context, signed16(command.argument_words_u16[0]));
+    state_.original_phase = 8;
+    state_.gate = MissionGate::completion_frame;
+    state_.stop = MissionStop::none;
+    state_.stop_detail.clear();
+    state_.pending_text_id.reset();
     return result;
 }
 

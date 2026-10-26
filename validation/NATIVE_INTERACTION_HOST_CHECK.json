@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "scope": "Portable component and integration tests on exact staged source; no Apple/device/full-game claim.",
+  "build": "Linux x86_64, GCC13.3.0, Release C++17",
+  "ctest": {
+    "passed": 29,
+    "total": 29,
+    "failed": 0
+  },
+  "ctest_log_sha256": "a1feb4dea76232edd71e7d2241adeb707c61b42a24e7ea93dfc75ba33ffe9dcd",
+  "workflow_actionlint": "passed",
+  "packaging_scripts_python_compile": "passed",
+  "game_session_source_sha256": "bedd09218491bbc94fd6f662d72892b3af8efddfd20dfc0d782f97e360f1db1c",
+  "cmake_source_sha256": "a9a19d4bcd1df02df90a6ec9352351370ef4ca75f91ee80ba978687564656d9c"
+}

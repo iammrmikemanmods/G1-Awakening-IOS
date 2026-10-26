@@ -26,18 +26,18 @@
     "archive_reader": "implemented; all559 payload hashes match",
     "m3g_container": "implemented; all36 object inventories match; renderer not implemented",
     "mission_stream": "Original nested opcode7 grammar corrected; all30 streams/803commands unchanged; bootstrap executes bounded initial prefix only",
-    "movement_rules": "Original movement costs, route reconstruction, per-tick move state, ordinary undo, and arrival target/facing implemented; broader arrival, capture and turn integration unfinished",
-    "tactical_renderer": "Native Metal/UIKit first-scene app compiled; actual macOS offscreenMetalpixelchecks pass; inspectioncamera/interiorterrain only; XR executionunverified",
-    "combat": "not implemented",
-    "ai": "not implemented",
-    "native_saves": "not implemented",
-    "audio": "Native Vorbis decoding verified against independent decoder for all24 source files; event selection, mixing and output playback unfinished",
-    "campaign_execution": "not implemented",
+    "movement_rules": "Original movement range, route, per-tick travel, ordinary undo and arrival implemented; human movement connected to native UI.",
+    "tactical_renderer": "Native Metal/UIKit app with actual session dialogue/move/capture/transform/attack and audio source; new Apple compilation pending at checkpoint; original camera/style1/3D and XR verification unfinished.",
+    "combat": "Native target/RNG/damage/counterattack/death core connected to GameSession and actual-result native UI; original 3D battle presentation unfinished.",
+    "ai": "Original attack/capture/fallback, owner slots, turn admission and production destination implemented; continuous action execution unfinished.",
+    "native_saves": "Versioned campaign profile and checked atomic file writer implemented; session snapshot/cold resume and campaign save integration unfinished.",
+    "audio": "All24 Vorbis files independently checked; original event dispatcher and native AVAudioEngine host connected for implemented actions; device output unverified.",
+    "campaign_execution": "All four objective kinds, completion/profile/results/handoff rules implemented as components; full world command and live campaign integration unfinished.",
     "sprite_descriptors": "Original geometry, normalized UV, type factory, initial placement/model transform and millisecond animation implemented",
-    "world_bootstrap": "Original cold-start mission315/map268/style0; two initialunits; stopped before cursor9/opcode3",
+    "world_bootstrap": "Cold-start world with ordered income, spawn debits, explicit activation counts and special placement properties; broader command execution underway.",
     "png_decoder": "Native LodePNG;140sourceimages/12222652RGBAbytes match Pillow",
     "sprite_animation": "1616original-function cases/124432scalar comparisons pass; full gameplay timing unverified",
-    "mission_continuation": "Native first-script dialogue, camera requests, timers, transitions and capture predicate; effects require gameplay integration; opcode8 completion and opcode10 handoff remain explicit boundaries",
+    "mission_continuation": "Dialogue, camera/timer/objective flow and completion connected to real GameSession state; general map changes and opcode10 actual save/handoff unfinished.",
     "localization": "All511 original UTF8 strings decoded; all486 script indices in both variants checked against original mapper"
   },
   "release_gates": {
@@ -53,7 +53,7 @@
     "native_scene_ipa_packaged": true,
     "native_gpu_probe_passed": true
   },
-  "ci_scope": "Compiles native ARM64 scene-testapp, inspects executable and runs macOSMetalpixelprobe ifGPUavailable. Originaldata packagedlocally. Doesnotverifydevice/fullgame.",
+  "ci_scope": "New ARM64 native interaction app, executable validation, portable tests, actual macOS profile file tests and offscreen Metal probe. Does not verify device/full campaign.",
   "completion_eta": "Not established; remaining reverse engineering and full game implementation are unresolved.",
   "retired_approach": {
     "archive_branch": "archive/compatibility-experiment",
@@ -63,8 +63,8 @@
     "retirement_commit": "dba8521ff61f961755169f83715bfc796a4a3045"
   },
   "local_native_tests": {
-    "cmake_ctest_suites_passed": 15,
-    "cmake_ctest_suites_total": 15,
+    "cmake_ctest_suites_passed": 29,
+    "cmake_ctest_suites_total": 29,
     "mission_original_streams": 30,
     "mission_original_commands": 803,
     "mission_malformed_rejections": 855,
@@ -73,7 +73,7 @@
     "atlas_contract_checks": 71,
     "resource_payload_hashes": 559,
     "m3g_container_inventory_matches": 36,
-    "scope": "Native Linux host component checks at this checkpoint. Cloud scene-build evidence below applies only to its recorded earlier source commit; no complete-game/device claim.",
+    "scope": "All29 host CTest suites passed on the fixed native interaction source snapshot. Original-function and synthetic integration tests do not establish a campaign or physical device result.",
     "atlas_original_descriptors": 38,
     "atlas_original_quad_comparisons": 3639,
     "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded",
@@ -84,7 +84,7 @@
     "sprite_animation_scalar_comparisons": 124432,
     "sprite_placement_original_cases": 130,
     "sprite_placement_matrix_comparisons": 2080,
-    "world_contract_checks": 90,
+    "world_contract_checks": 1203,
     "vorbis_files_compared": 24,
     "vorbis_pcm_samples_compared": 7261392,
     "movement_action_original_cases": 136,
@@ -93,7 +93,9 @@
     "text_mapper_original_cases": 972,
     "dialogue_original_cases": 476,
     "capture_predicate_original_cases": 164,
-    "mission_clock_original_cases": 48
+    "mission_clock_original_cases": 48,
+    "ai_synthetic_cases": 512,
+    "ai_synthetic_checks": 28989
   },
   "prior_native_cloud_validation": {
     "source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
@@ -106,6 +108,37 @@
     "ipa_produced": false
   },
   "native_cloud_validation": {
+    "status": "success",
+    "source_commit": "d11fa64e3a5d7dd62b0aded6e8f38f8d8e651efb",
+    "run_id": 40275688702,
+    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40275688702",
+    "host_ctest_suites_passed": 15,
+    "metal_pixel_checks_passed": 6,
+    "metal_pixel_channels_compared": 24,
+    "metal_device": "Apple Paravirtual device",
+    "iphone_execution_verified": false,
+    "ipa_produced_locally": false,
+    "scope": "Earlier component checkpoint; new touch/battle/audio app compilation is not covered."
+  },
+  "source_pc_reference": {
+    "uploaded_exe_sha256": "50dd5702e6cf6c0e79ec26757f84934c210be4576ff85a1d4d7303749b2e9cd7",
+    "architecture": "Windowsx64 launcher containingtouchHLE and unchangedoriginalARM32game",
+    "original_app_files_byte_matched": 9,
+    "recovered_native_gameplay_source": false,
+    "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
+  },
+  "next_work": "Integrate continuous enemy actions, general mission world commands, production/upgrade/heal, actual campaign save and next-map handoff; complete rendering and cold resume; verify full campaign and 60Hz presentation on XR.",
+  "native_scene_test_ipa": {
+    "file_name": "G1_Awakening_Native_Scene_Test_002.ipa",
+    "bytes": 7106909,
+    "sha256": "cfa6f6958eef39e634418af5b056e791d55ead86ad8d3a82ab0d294d738451a5",
+    "source_commit": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
+    "signed": false,
+    "full_gameplay_implemented": false,
+    "device_installation_verified": false,
+    "validation": "validation/NATIVE_SCENE_IPA_002.json"
+  },
+  "native_cloud_validation_previous_scene": {
     "status": "success",
     "source_commit": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
     "run_id": 40273944347,
@@ -122,22 +155,8 @@
     "iphone_execution_verified": false,
     "ipa_produced_locally": true
   },
-  "source_pc_reference": {
-    "uploaded_exe_sha256": "50dd5702e6cf6c0e79ec26757f84934c210be4576ff85a1d4d7303749b2e9cd7",
-    "architecture": "Windowsx64 launcher containingtouchHLE and unchangedoriginalARM32game",
-    "original_app_files_byte_matched": 9,
-    "recovered_native_gameplay_source": false,
-    "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
-  },
-  "next_work": "Integrate mission dialogue and movement into native gameplay; recover capture/transform, combat, turns/AI, completion/campaign and saves. Validate actual XR behavior and full campaign before release.",
-  "native_scene_test_ipa": {
-    "file_name": "G1_Awakening_Native_Scene_Test_002.ipa",
-    "bytes": 7106909,
-    "sha256": "cfa6f6958eef39e634418af5b056e791d55ead86ad8d3a82ab0d294d738451a5",
-    "source_commit": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
-    "signed": false,
-    "full_gameplay_implemented": false,
-    "device_installation_verified": false,
-    "validation": "validation/NATIVE_SCENE_IPA_002.json"
+  "current_interaction_cloud_validation": {
+    "status": "pending",
+    "device_tested": false
   }
 }

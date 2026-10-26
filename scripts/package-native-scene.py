@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Package actual cloud-built ARM64 code with locally verified original data.
 
-This makes an unsigned first-mission scene-test IPA, not a completed native game.
+This makes an unsigned native test IPA with its source-specific feature scope.
 No original executable is copied into the output. The user signs with Sideloadly.
 """
 import argparse
@@ -129,7 +129,7 @@ def main():
             for name, data in files.items():
                 if verification.read(output_prefix + name) != data:
                     raise ValueError('packaged bytes differ from verified input')
-        report = {'schema': 1, 'artifact_kind': 'native first-mission scene test',
+        report = {'schema': 1, 'artifact_kind': info.get('G1ArtifactKind', 'native test app'),
                   'source_commit': info['G1SourceCommit'], 'ipa_sha256': sha(staged.read_bytes()),
                   'ipa_bytes': staged.stat().st_size, 'code_artifact_sha256': sha(args.code_artifact.read_bytes()),
                   'native_executable': native, 'data': data_record,
@@ -140,7 +140,7 @@ def main():
                   'device_installation_verified': False, 'device_execution_verified': False,
                   'full_gameplay_implemented': False, 'full_playthrough_verified': False,
                   'sustained_60fps_verified': False,
-                  'scope': 'Recovered first terrain, initial sprites, native animation and range preview only'}
+                  'scope': info.get('G1FeatureScope', 'Recovered first terrain, initial sprites, native animation and range preview only')}
         staged.replace(args.out)
         args.report.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({k: report[k] for k in ('artifact_kind','source_commit','ipa_sha256','ipa_bytes',

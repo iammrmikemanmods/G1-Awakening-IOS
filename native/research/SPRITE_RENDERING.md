@@ -72,6 +72,10 @@ Native start/reset follows `0x72d80`; advance follows `0x72cc0`. The implementat
 
 The player owns its step sequence. Empty lists, more than 255 steps, zero durations, durations outside the original positive signed-16-bit range, and overflowing signed-32-bit time arithmetic are rejected before invalid state mutation. Large valid deltas use arithmetic cycle skipping while retaining the original results.
 
+The native `select_step(uint8_t)` method follows original `0x72cb4`: when the supplied step is below the sequence count, it stores that step index and preserves elapsed time, repeat count, reverse direction and completion. An out-of-range index leaves the state unchanged. The live-unit renderer calls this with zero at `0x6cea4..0x6cea8` when a current-player unit has action flag `+0x2c`, its current animation is not the row-eight special animation, and its step is nonzero. This is a pose selection, not a playback reset. Two focused contracts were added for state preservation and out-of-range rejection; all **26** current animation contracts pass. The earlier start/advance reference results remain unchanged; this small selector extension was instruction-reviewed and contract-tested rather than included in those earlier oracle counts.
+
+The native Apple unit-render loop also preserves the recovered scheduling order in `0x6cd20`: active types are visited in ascending type order. A pending form-change flag `+0x2e` is cleared immediately at `0x6cdc6`; the row-eight sequence is requested with one repetition and reverse enabled only for new form zero. Normal selection uses `form*4+facing` with repeat count -1. A changed sequence starts without advancing during that update. While the existing special sequence is incomplete, `0x6ce0e..0x6ce12` doubles the shared loop delta; later units inherit that doubled value. The generic player does not impose these unit-state decisions. The native application integration and its remaining rendering/UI limits are recorded separately in `NATIVE_GAMEPLAY_UI.md`.
+
 The original-function comparison covers all **170** original animations and **32** constructed sequences, four repeat-count choices in both directions: **1,616 cases, 17,776 recorded states and 124,432 scalar comparisons**, all passed. Original start and advance instructions execute unchanged. Only allocation/free, byte-buffer initialization and a geometry-refresh observer are substituted; no timing or playback-state calculation is mocked.
 
 ### First-mission idle selection
@@ -146,7 +150,7 @@ The matrix reference substitutes external `memcpy` and calls the host's `sinf`/`
 | Local check | Result |
 | --- | --- |
 | SpriteGeometry contracts | 21 passed. |
-| SpriteAnimation contracts | 24 passed. |
+| SpriteAnimation contracts | 26 passed. |
 | SpritePlacement contracts | 28 passed. |
 | Original render-setup calls | 10 cases passed. |
 | Original animation states | 1,616 cases / 17,776 states / 124,432 scalar comparisons passed. |
