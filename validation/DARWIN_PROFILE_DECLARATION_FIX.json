@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "source_commit": "68d6f731504c4fbfbe0b7e3df807b1a9b947fc60",
+  "run_id": 40280369974,
+  "overall_conclusion": "failure",
+  "iphoneos_arm64_app_compilation": "passed",
+  "host_suites_passed": 29,
+  "failure": "Darwin test still lacked the mkdtemp declaration; cstdlib was already included.",
+  "correction": "Include unistd.h, which declares mkdtemp on Darwin; keep cstdlib for Linux.",
+  "primary_header": "https://github.com/apple-oss-distributions/Libc/blob/main/include/unistd.h",
+  "validation_boundary": "Correction pending actual Apple compile; no claimed successful run."
+}

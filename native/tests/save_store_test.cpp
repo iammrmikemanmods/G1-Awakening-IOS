@@ -1,11 +1,10 @@
 #include "g1/SaveStore.hpp"
 
 #include <cstdlib>
-
-#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <limits>
+#include <unistd.h> // Darwin declares mkdtemp here; Linux declares it in stdlib.
 
 namespace {
 std::size_t checks=0;
