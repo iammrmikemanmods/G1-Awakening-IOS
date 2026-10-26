@@ -292,6 +292,64 @@ int main(int argc, char** argv) {
         (void)lost.tick(0U);
         check(lost.state().command_index == 3U && lost.state().original_phase == 1 &&
               lost.state().gate == g1::MissionGate::transition, "loss branch dispatch mismatch");
+
+        auto early_camera=world({{4,3,2,1},{6,11,1,2,0,0},{2},{3,11,280}});
+        early_camera.stop=g1::BootstrapStop::execution_required;
+        g1::MissionExecution early(early_camera);
+        check(early.state().gate==g1::MissionGate::camera && early.state().command_index==0 &&
+              early.take_initial_effects().empty(),"general empty-roster camera boundary rejected");
+        (void)early.tick(1000000,advance());
+        check(early.state().gate==g1::MissionGate::camera,"early camera completed from time/input");
+        early.report_camera(0,true);(void)early.tick(0);
+        check(early.state().gate==g1::MissionGate::world_command &&
+              early.pending_world_command().opcode==6,"later initial spawn was skipped");
+        (void)early.tick(1000000,advance());
+        check(early.state().command_index==1 && early.state().gate==g1::MissionGate::world_command,
+              "unapplied world command advanced from time/input");
+        rejects([&]{early.report_world_command_applied(0);},"stale world token accepted");
+        early.report_world_command_applied(1);
+        rejects([&]{early.report_world_command_applied(1);},"world command acknowledged twice");
+        rejects([&]{(void)early.pending_world_command();},"applied world command remained pending");
+        (void)early.tick(0);
+        check(early.state().gate==g1::MissionGate::transition && early.state().original_phase==2,
+              "world command bypassed subsequent transition");
+
+        for (const auto opcode:{0U,6U,7U,9U,13U,14U,15U,16U,17U,18U,19U,20U,21U}) {
+            auto entry=world({{static_cast<std::uint16_t>(opcode)},{3,11,280}});
+            auto& args=entry.commands[0].argument_words_u16;
+            if(opcode==6U)args={11,1,2,0,0};
+            else if(opcode==9U || opcode==18U || opcode==19U || opcode==20U)args={0,0};
+            else if(opcode==7U || opcode==15U || opcode==17U || opcode==21U)args={0};
+            else if(opcode==16U)args={208};
+            entry.commands[0].byte_size=2U+args.size()*2U;
+            entry.stop=g1::BootstrapStop::execution_required;
+            g1::MissionExecution pending(entry);
+            check(pending.state().gate==g1::MissionGate::world_command,
+                  "known world opcode has no application gate");
+            pending.report_world_command_applied(0);
+            const bool extra_frame=opcode==0U || opcode==13U || opcode==14U || opcode==16U ||
+                opcode==18U || opcode==19U || opcode==20U;
+            check(pending.state().gate==(extra_frame?g1::MissionGate::world_frame:g1::MissionGate::advance_pending),
+                  "world command lost original phase timing");
+            if(extra_frame) {
+                check(pending.state().original_phase==static_cast<std::int32_t>(opcode),
+                      "world command phase changed before its original next tick");
+                (void)pending.tick(1000000);
+                check(pending.state().original_phase==99 && pending.state().command_index==0,
+                      "world phase tick advanced cursor immediately");
+            }
+            (void)pending.tick(0);
+            check(pending.state().gate==g1::MissionGate::dialogue && pending.state().command_index==1,
+                  "world gate did not resume original next-command dispatch");
+        }
+        auto objective_entry=world({{12,2,239,65534},{1}});
+        objective_entry.stop=g1::BootstrapStop::execution_required;
+        g1::MissionExecution initial_goal(objective_entry);
+        check(initial_goal.state().gate==g1::MissionGate::objective &&
+              initial_goal.take_initial_effects()==std::vector<g1::MissionEffect>{g1::MissionEffect::enter_gameplay_mode} &&
+              initial_goal.take_initial_effects().empty(),"initial objective effects dropped or duplicated");
+        auto wrong_boundary=early_camera;wrong_boundary.stop=g1::BootstrapStop::presentation_required;
+        rejects([&]{g1::MissionExecution invalid(wrong_boundary);},"legacy dialogue boundary weakened");
         std::cout << "mission execution: " << checks << " checks; " << dialogue_rows.size()
                   << " original dialogue, " << capture_rows.size() << " capture, "
                   << clock_rows.size() << " clock cases\n";

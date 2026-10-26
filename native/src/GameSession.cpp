@@ -15,8 +15,14 @@ std::int32_t increment32(std::int32_t value) noexcept {
 } // namespace
 
 GameSession::GameSession(WorldBootstrap world, std::uint32_t random_seed, CampaignContext campaign)
+    : GameSession(std::move(world),GameRandom(random_seed),std::move(campaign),{}) {}
+
+GameSession::GameSession(WorldBootstrap world,GameRandom random,CampaignContext campaign,
+                         std::vector<UnitActivation> initial)
     : world_(std::move(world)), campaign_(std::move(campaign)), mission_(world_,campaign_),
-      captures_(initial_capture_network(world_.sites)), random_(random_seed) {
+      captures_(initial_capture_network(world_.sites)), random_(std::move(random)) {
+    if(!initial.empty() && initial.size()!=world_.units.size())
+        throw FormatError("campaign bootstrap activation count differs from the stable roster");
     // Original cold mission-start57b80..57b9a zeroes income and funds. The
     // network helper's recomputation baseline is not an initial payment.
     captures_.counters_68 = {{0,0}};
@@ -32,8 +38,19 @@ GameSession::GameSession(WorldBootstrap world, std::uint32_t random_seed, Campai
         auto combat=make_combat_unit(unit,world_.unit_definitions.at(unit.type));
         if (unit.spawn.health!=100) set_combat_health(combat,unit.spawn.health);
         combat.damage_immune=unit.spawn.damage_immune;
+        if(!initial.empty()) {
+            const auto& activation=initial.at(combat_.size());
+            if(activation.world.type!=unit.type || activation.world.owner!=unit.owner ||
+               activation.world.x!=unit.x || activation.world.y!=unit.y)
+                throw FormatError("campaign bootstrap activation identity differs from world state");
+            units_.back()=activation.movement;
+            combat=activation.combat;
+        }
         combat_.push_back(combat);
         animation_pending_.push_back(0);
+        transform_generation_.push_back(0);
+        transform_waiting_.push_back(false);
+        spawn_generation_.push_back(unit.active ? 1U : 0U);
     }
     for (const auto& effect:world_.initialization_effects) {
         if (effect.owner>1) throw FormatError("bootstrap economy request has an invalid owner");
@@ -50,6 +67,8 @@ GameSession::GameSession(WorldBootstrap world, std::uint32_t random_seed, Campai
                 active_counts_[effect.owner]+effect.active_count_increment);
         }
     }
+    initialize_upgrade_slots();
+    apply_mission_effects({0,mission_.take_initial_effects()});
 }
 
 CampaignContext GameSession::campaign_context() const {
@@ -80,10 +99,17 @@ std::vector<MissionObjectiveUnit> GameSession::objective_units() const {
 }
 
 bool GameSession::select(std::size_t index) {
-    if (moving_ || battle_ || mission_.state().interaction_mode != 0U || index >= units_.size() ||
+    if (moving_ || battle_ || world_presentation_ || focus_ || original_transform_gate_ ||
+        mission_.state().interaction_mode != 0U || mission_.state().stop!=MissionStop::none || index >= units_.size() ||
         !units_[index].active || world_.units[index].owner != turn_.current_player ||
         turn_.controllers[turn_.current_player] == 1)
         return false;
+    if(selected_ && *selected_!=index) {
+        const auto previous=*selected_;
+        lock_undo_on_friendly_selection_change(units_[previous],
+            world_.unit_definitions.at(world_.units[previous].type));
+        synchronize_unit(previous);
+    }
     selected_ = index;
     return true;
 }
@@ -93,7 +119,8 @@ void GameSession::clear_selection() noexcept {
 }
 
 std::optional<MovementRange> GameSession::selected_movement_range() const {
-    if (!selected_ || moving_ || battle_ || mission_.state().interaction_mode != 0U) return std::nullopt;
+    if (!selected_ || moving_ || battle_ || world_presentation_ || focus_ || original_transform_gate_ ||
+        mission_.state().interaction_mode != 0U || mission_.state().stop!=MissionStop::none) return std::nullopt;
     const auto index = *selected_;
     const auto& state = units_.at(index);
     const auto& unit = world_.units.at(index);
@@ -105,7 +132,8 @@ std::optional<MovementRange> GameSession::selected_movement_range() const {
 }
 
 MoveRequestResult GameSession::move_selected_to(WorldCoordinate destination) {
-    if (mission_.state().interaction_mode != 0U || battle_) return MoveRequestResult::script_controls_input;
+    if (mission_.state().interaction_mode != 0U || mission_.state().stop!=MissionStop::none ||
+        battle_ || world_presentation_ || focus_ || original_transform_gate_) return MoveRequestResult::script_controls_input;
     if (turn_.controllers[turn_.current_player] == 1) return MoveRequestResult::computer_controls_input;
     if (moving_) return MoveRequestResult::movement_in_progress;
     if (!selected_) return MoveRequestResult::no_selected_unit;
@@ -118,16 +146,19 @@ MoveRequestResult GameSession::move_selected_to(WorldCoordinate destination) {
     if (state.spent_budget) return MoveRequestResult::already_moved;
     if (destination.x >= world_.grid.width || destination.y >= world_.grid.height)
         return MoveRequestResult::outside_map;
-    for (const auto& other : world_.units)
-        if (other.active && other.x == destination.x && other.y == destination.y)
-            return MoveRequestResult::occupied_destination;
     const auto profile = world_.movement_profile(index);
     const auto range = compute_movement_range(world_.movement_board(),profile,state.tile_x,state.tile_y);
-    if (!range.has_unoccupied_destination || range.at(destination.x,destination.y) < 0 ||
-        range.at(destination.x,destination.y) == movement_reserved_cell)
-        return MoveRequestResult::no_route;
     auto route = choose_movement_route(range,{state.tile_x,state.tile_y},{destination.x,destination.y});
-    if (route.status != MovementRouteStatus::ready || route.steps.empty()) return MoveRequestResult::no_route;
+    const auto slots=ai_owner_slots(world_.unit_definitions,combat_,
+        {{signed_byte(world_.player_factions[0]),signed_byte(world_.player_factions[1])}});
+    const auto admission=friendly_destination_admission({world_.unit_definitions,combat_,units_,slots},
+        index,destination,false,route.status==MovementRouteStatus::ready && !route.steps.empty());
+    if(admission==FriendlyDestinationAdmission::enemy_occupied ||
+       admission==FriendlyDestinationAdmission::occupant_cannot_carry ||
+       admission==FriendlyDestinationAdmission::actor_cannot_board ||
+       admission==FriendlyDestinationAdmission::select_actor)return MoveRequestResult::occupied_destination;
+    if(admission!=FriendlyDestinationAdmission::move || !range.has_unoccupied_destination)
+        return MoveRequestResult::no_route;
     const auto& definition = world_.unit_definitions.at(unit.type);
     auto action = std::make_unique<MovementAction>(state,profile,range,std::move(route),
                                                   signed_byte(definition.forms.at(0).at(2)));
@@ -156,7 +187,7 @@ void GameSession::synchronize_unit(std::size_t index) {
 }
 
 bool GameSession::selected_can_capture() const {
-    if (!selected_ || moving_ || battle_ || mission_.state().interaction_mode != 0U ||
+    if (!selected_ || moving_ || battle_ || world_presentation_ || focus_ || original_transform_gate_ || mission_.state().interaction_mode != 0U ||
         mission_.state().stop != MissionStop::none) return false;
     const auto index = *selected_;
     const auto& state = units_.at(index);
@@ -188,7 +219,7 @@ CaptureResult GameSession::capture_selected() {
 }
 
 TransformEligibility GameSession::selected_transform_eligibility() const {
-    if (!selected_ || moving_ || battle_ || mission_.state().interaction_mode != 0U ||
+    if (!selected_ || moving_ || battle_ || world_presentation_ || focus_ || original_transform_gate_ || mission_.state().interaction_mode != 0U ||
         mission_.state().stop != MissionStop::none) return TransformEligibility::inactive;
     const auto index=*selected_;
     const auto& state=units_.at(index);
@@ -203,18 +234,47 @@ TransformEligibility GameSession::selected_transform_eligibility() const {
 
 std::optional<TransformResult> GameSession::transform_selected() {
     if (selected_transform_eligibility() != TransformEligibility::allowed) return std::nullopt;
-    const auto index=*selected_;
+    return apply_transform(*selected_);
+}
+
+TransformResult GameSession::apply_transform(std::size_t index,bool set_attack_gate) {
     auto result=transform_unit(units_.at(index),world_.unit_definitions.at(world_.units.at(index).type),
                                combat_.at(index).level,animation_pending_.at(index),true,true);
     units_[index]=result.unit;
     animation_pending_[index]=result.animation_pending_2e;
+    ++transform_generation_[index];
+    transform_waiting_[index]=true;
+    if (set_attack_gate) original_transform_gate_=true;
     combat_[index].stats=result.stats;
     synchronize_unit(index);
     return result;
 }
 
+void GameSession::report_transform_finished(std::size_t index,std::uint64_t generation) {
+    if (index>=units_.size() || !transform_waiting_[index] || generation==0 ||
+        generation!=transform_generation_[index])
+        throw FormatError("stale native transform presentation response");
+    transform_waiting_[index]=false;
+    // Original6ce42..6ce50 clears global map28 when ANY unit leaves its
+    // special sequence. There is no type comparison against the stored gate.
+    original_transform_gate_=false;
+}
+
+void GameSession::request_focus(WorldCoordinate tile,SessionFocusReason reason,
+                                std::optional<std::size_t> index) {
+    if (tile.x>=world_.grid.width || tile.y>=world_.grid.height ||
+        (index && *index>=units_.size())) throw FormatError("invalid native focus request");
+    focus_=SessionFocusRequest{next_focus_token_++,tile,index,reason,false};
+}
+
+void GameSession::report_focus_presented(std::uint64_t token) {
+    if (!focus_ || focus_->token!=token) throw FormatError("stale native focus response");
+    if (ai_ && ai_->focus_token==token) ai_->focus_presented=true;
+    focus_.reset();
+}
+
 bool GameSession::end_turn_available() const {
-    if (moving_ || battle_ || mission_.state().interaction_mode != 0U ||
+    if (moving_ || battle_ || world_presentation_ || focus_ || original_transform_gate_ || mission_.state().interaction_mode != 0U ||
         mission_.state().stop != MissionStop::none || turn_.controllers[turn_.current_player] == 1)
         return false;
     // The original input loop observes the goal after the capture action.
@@ -240,7 +300,7 @@ MissionRecord GameSession::mission_record() const noexcept {
 
 std::vector<std::size_t> GameSession::selected_attack_targets() const {
     std::vector<std::size_t> result;
-    if (!selected_ || moving_ || battle_ || mission_.state().interaction_mode!=0 ||
+    if (!selected_ || moving_ || battle_ || world_presentation_ || focus_ || original_transform_gate_ || mission_.state().interaction_mode!=0 ||
         mission_.state().stop!=MissionStop::none || turn_.controllers[turn_.current_player]==1)
         return result;
     const auto actor=*selected_;
@@ -274,6 +334,11 @@ void GameSession::begin_battle(std::size_t attacker,std::size_t defender) {
         units_[i].timer_ms=combat_[i].timer_30_ms;
         synchronize_unit(i);
     }
+    const auto slots=ai_owner_slots(world_.unit_definitions,combat_,
+        {{signed_byte(world_.player_factions[0]),signed_byte(world_.player_factions[1])}});
+    for (const auto& dead:presentation.exchange.destroyed)
+        upgrade_slots_.at(dead.owner)=upgrade_slot_after_removal(
+            {world_.unit_definitions,combat_,units_,slots},dead.owner,dead.type,upgrade_slots_.at(dead.owner));
     if (selected_ && !units_[*selected_].active) selected_.reset();
     battle_=std::move(presentation);
     ++next_battle_token_;
@@ -290,18 +355,28 @@ void GameSession::report_battle_finished(std::uint64_t token) {
     if (!battle_ || battle_->token!=token)
         throw FormatError("stale native battle presentation response");
     battle_.reset();
+    if (ai_ && ai_->battle_pending) clear_ai_action();
 }
 
 std::optional<TurnTransition> GameSession::end_turn() {
     if (!end_turn_available()) return std::nullopt;
+    return advance_turn();
+}
+
+TurnTransition GameSession::advance_turn() {
     const auto transition=advance_player_turn(world_.units,units_,captures_,
         {{signed_byte(world_.player_factions[0]),signed_byte(world_.player_factions[1])}},turn_);
     for (std::size_t index=0;index<units_.size();++index) synchronize_unit(index);
     clear_selection();
+    clear_ai_action();
+    if (transition.camera_focus) request_focus(*transition.camera_focus,SessionFocusReason::turn_start);
     return transition;
 }
 
-void GameSession::finish_ordinary_arrival(std::size_t index) {
+void GameSession::finish_ordinary_arrival(std::size_t index,SessionTick& result) {
+    moving_.reset();
+    action_.reset();
+    if (ai_ && ai_->actor==index) finish_ai_arrival(index,result);
     auto& state = units_.at(index);
     const auto& unit = world_.units.at(index);
     std::vector<ArrivalUnit> roster;
@@ -313,11 +388,8 @@ void GameSession::finish_ordinary_arrival(std::size_t index) {
     const auto arrival = choose_movement_arrival_facing(roster.at(index),roster,
         form.at(1),form.at(2),signed_byte(form.at(13)));
     if (arrival.writes_facing) state.facing = arrival.facing;
-    // Admission requires an empty destination, so the actor cannot enter the
-    // unresolved co-location/transport branch. No capture state is changed.
     synchronize_unit(index);
-    moving_.reset();
-    action_.reset();
+    finish_transport_arrival(index);
 }
 
 void GameSession::apply_mission_effects(const MissionTickResult& result) {
@@ -332,6 +404,9 @@ void GameSession::apply_mission_effects(const MissionTickResult& result) {
                 }
             break;
         case MissionEffect::return_to_script_mode:
+            clear_ai_action();
+            clear_selection();
+            break;
         case MissionEffect::enter_gameplay_mode:
             clear_selection();
             break;
@@ -345,7 +420,15 @@ void GameSession::apply_mission_effects(const MissionTickResult& result) {
 
 SessionTick GameSession::tick(std::uint32_t delta_ms, const MissionTickInput& input) {
     SessionTick result;
-    if (battle_) return result;
+    if (battle_ || world_presentation_) return result;
+    // Original59a7e visits every active unit, including stationary units.
+    // MovementAction ticks the travelling unit's timer itself, exactly once.
+    for(std::size_t i=0;i<units_.size();++i)
+        if(units_[i].active && (!moving_ || *moving_!=i) && units_[i].timer_ms!=-1) {
+            units_[i].timer_ms=static_cast<std::int32_t>(std::max(std::int64_t(0),
+                std::int64_t(units_[i].timer_ms)-delta_ms));
+            synchronize_unit(i);
+        }
     if (moving_) {
         const auto index = *moving_;
         const auto movement = action_->advance_tick(delta_ms);
@@ -353,12 +436,16 @@ SessionTick GameSession::tick(std::uint32_t delta_ms, const MissionTickInput& in
         synchronize_unit(index);
         result.world_changed = true;
         if (movement == MovementTickResult::completed) {
-            finish_ordinary_arrival(index);
+            finish_ordinary_arrival(index,result);
             result.movement_finished = true;
         }
     }
     result.mission = mission_.tick(delta_ms,input);
     apply_mission_effects(result.mission);
+    if(mission_.state().gate==MissionGate::world_command) {
+        process_world_command(result);
+        return result;
+    }
     if (!moving_ && (mission_.state().gate == MissionGate::captured_site_item ||
                     mission_.state().gate == MissionGate::objective)) {
         const auto observed = mission_.observe_objective(captures_.sites,objective_units(),
@@ -368,6 +455,12 @@ SessionTick GameSession::tick(std::uint32_t delta_ms, const MissionTickInput& in
     }
     if (mission_.state().stop == MissionStop::completion_presentation_required)
         result.completion=mission_.begin_completion(mission_.state().command_index,campaign_context());
+    if (!result.movement_finished && !moving_ &&
+        mission_.state().interaction_mode==0 && mission_.state().stop==MissionStop::none &&
+        turn_.controllers[turn_.current_player]==1) tick_ai(delta_ms,result);
+    // Gameplay/AI decisions precede the original terrain-owner update. Native
+    // battle/world presentation waits above pause this entire simulation.
+    tick_terrain(delta_ms,result);
     return result;
 }
 

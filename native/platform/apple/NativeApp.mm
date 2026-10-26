@@ -5,12 +5,19 @@
 #include <sys/utsname.h>
 
 #include "MetalRenderer.hpp"
+#include "MetalM3GRenderer.hpp"
+#include "g1/M3GBattlePresentation.hpp"
 #include "g1/SpriteAnimation.hpp"
 #include "g1/InitialPresentation.hpp"
 #include "g1/GameSession.hpp"
+#include "g1/SessionSave.hpp"
+#include "g1/CampaignController.hpp"
+#include "g1/TerrainDecorations.hpp"
+#include "g1/TerrainSpriteDecorations.hpp"
 #include "g1/SpritePlacement.hpp"
 #include "NativeDialogue.hpp"
 #include "NativeBattle.hpp"
+#include "NativeCampaign.hpp"
 #include "AppleAudio.hpp"
 
 #include <algorithm>
@@ -48,7 +55,7 @@ struct InspectionCamera {
     static constexpr float up_y = 0.7071067811865476F;
     static constexpr float up_z = -0.7071067811865476F;
 
-    void fit(const g1::FirstMissionScene& scene, CGSize size) {
+    void fit(const g1::MissionScene& scene, CGSize size) {
         if (size.width <= 0 || size.height <= 0) return;
         aspect = static_cast<float>(size.width / size.height);
         center_x = scene.world.grid.width * 0.16F;
@@ -142,14 +149,62 @@ bool inside_triangle(CGPoint p, CGPoint a, CGPoint b, CGPoint c) {
 }
 
 struct NativeCameraPan {
-    std::size_t command{};
+    std::uint64_t token{};
+    bool session_focus{};
     float from_x{}, from_z{}, to_x{}, to_z{};
     std::uint32_t elapsed{}, duration{360};
     bool reached{};
 };
+
+struct NativeTransformCompletion {
+    std::size_t unit_index{};
+    std::uint64_t transform_generation{}, spawn_generation{};
+};
+
+struct NativePresentedFrame {
+    struct Battle {
+        std::uint64_t token{},revision{};
+        bool complete{};
+        std::size_t queued_draws{};
+    };
+    std::uint64_t scene_revision{}, content_generation{};
+    std::optional<std::size_t> mission_camera;
+    std::optional<std::uint64_t> session_focus;
+    std::optional<std::uint64_t> world;
+    std::vector<NativeTransformCompletion> transforms;
+    std::optional<Battle> battle;
+};
+
+// Both asynchronous Metal facts are required before any core acknowledgement.
+// These members are touched only by blocks dispatched to the main queue.
+struct NativePresentationDelivery {
+    std::shared_ptr<const NativePresentedFrame> frame;
+    double presented_time{};
+    bool completed{},failed{},delivered{};
+};
+
+struct NativeWorldOverlay {
+    std::shared_ptr<g1::MetalMesh> mesh;
+    std::array<float,4> tint;
+};
+enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena };
 } // namespace
 
-@interface G1ViewController : UIViewController <MTKViewDelegate>
+@interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
+- (void)installSession:(std::unique_ptr<g1::GameSession>)session;
+- (void)rebuildScene:(BOOL)resetPlayback;
+- (void)prepareBattle;
+- (void)finishBattleFrame:(const NativePresentedFrame::Battle&)frame;
+- (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame;
+- (void)deliverPresentation:(std::shared_ptr<NativePresentationDelivery>)delivery;
+- (void)startCampaign:(std::uint8_t)group mission:(std::int32_t)index faction:(std::uint8_t)faction opponent:(std::int8_t)opponent;
+- (void)chooseArenaFaction:(std::int32_t)index;
+- (void)chooseArenaOpponent:(std::int32_t)index faction:(std::uint8_t)faction;
+- (void)chooseCampaign:(std::uint8_t)group;
+- (void)selectProductionType:(std::uint8_t)type mode:(g1::ProductionMode)mode
+    session:(std::uint64_t)session producer:(std::size_t)producer spawn:(std::uint64_t)spawn;
+- (BOOL)productionTileAllowed:(g1::WorldCoordinate)tile;
+- (std::optional<std::size_t>)unitAtPoint:(CGPoint)point padding:(CGFloat)padding;
 @end
 
 @implementation G1ViewController {
@@ -157,15 +212,23 @@ struct NativeCameraPan {
     id<MTLCommandQueue> _queue;
     NSMutableDictionary<NSNumber*, id<MTLTexture>>* _textures;
     id<MTLTexture> _white;
-    UILabel* _title;
+    G1WorldTitleLabel* _title;
     UILabel* _hint;
     UILabel* _fps;
+    UILabel* _worldLegend;
     UIButton* _reportButton;
     UIButton* _moveButton;
     UIButton* _captureButton;
     UIButton* _transformButton;
     UIButton* _attackButton;
-    UIButton* _battleDoneButton;
+    UIButton* _healButton;
+    UIButton* _upgradeButton;
+    UIButton* _endTurnButton;
+    UIButton* _buildButton;
+    UIButton* _deployButton;
+    UIButton* _undoButton;
+    UIButton* _menuButton;
+    UIButton* _panelContinueButton;
     UIButton* _backButton;
     UIButton* _nextButton;
     UIButton* _skipButton;
@@ -175,20 +238,50 @@ struct NativeCameraPan {
     G1DialogueCanvas* _dialogueCanvas;
     UIView* _battlePanel;
     G1BattleCanvas* _battleCanvas;
+    UIView* _campaignPanel;
+    UIScrollView* _campaignScroll;
+    G1CampaignCanvas* _campaignCanvas;
+    UIStackView* _campaignButtons;
+    NSLayoutConstraint* _campaignCanvasHeight;
     G1AppleAudio* _audio;
+    std::shared_ptr<const g1::Archive> _archive;
+    g1::Bytes _terrainTableBytes;
     std::unique_ptr<g1::MetalRenderer> _renderer;
-    std::unique_ptr<g1::FirstMissionScene> _scene;
+    std::unique_ptr<g1::MetalM3GRenderer> _m3gRenderer;
+    std::unique_ptr<g1::M3GBattlePresentation> _battlePresentation;
+    std::vector<std::shared_ptr<g1::MetalM3GModel>> _battleModels;
+    std::unique_ptr<g1::MissionScene> _scene;
     std::unique_ptr<g1::GameSession> _session;
+    std::unique_ptr<g1::CampaignController> _campaign;
     std::unique_ptr<g1::TextTable> _text;
-    std::shared_ptr<g1::MetalMesh> _terrain, _range, _cursor, _attackRange;
+    std::shared_ptr<g1::MetalMesh> _terrain, _animatedTerrain, _decorationTerrain, _range, _cursor, _attackRange, _healRange;
+    std::vector<NativeWorldOverlay> _worldOverlays;
+    std::vector<g1::TerrainQuad> _controlQuads;
+    std::vector<std::int32_t> _worldOverlaySignature;
+    g1::TerrainTables _terrainTables;
+    std::uint64_t _renderedTerrainGeneration,_renderedTerrainWorld;
+    std::map<std::uint32_t,std::vector<std::shared_ptr<g1::MetalMesh>>> _terrainSpriteMeshes;
+    std::vector<g1::TerrainSpriteDecorationDraw> _terrainSpriteDraws;
     std::vector<std::vector<std::vector<g1::SceneVertex>>> _spriteVertices;
     std::vector<std::vector<std::shared_ptr<g1::MetalMesh>>> _spriteMeshes;
-    std::vector<g1::SpriteAnimation> _animations;
+    std::vector<std::optional<g1::SpriteAnimation>> _animations;
     std::vector<std::int32_t> _animationIds;
+    std::vector<bool> _renderedActive;
+    std::vector<std::uint64_t> _playbackSpawnGenerations, _playbackTransformGenerations;
+    std::vector<std::optional<NativeTransformCompletion>> _pendingTransformCompletions;
     std::vector<g1::MovementUnitState> _previousUnits;
     std::vector<std::pair<std::size_t,g1::CompletionPresentation>> _pendingCompletionRequests;
     std::vector<g1::SessionBattle> _completedBattles;
     std::vector<std::size_t> _attackTargets;
+    std::vector<std::size_t> _healTargets;
+    std::optional<g1::ProductionMode> _productionMode;
+    std::optional<std::uint8_t> _productionType;
+    std::optional<g1::ProductionPlacement> _productionPlacement;
+    std::optional<g1::WorldCoordinate> _returnCursor;
+    std::shared_ptr<g1::MetalMesh> _productionRange;
+    bool _typeListOpen;
+    std::uint64_t _productionActions;
+    std::uint64_t _undoActions;
     g1::UnitAnimationTable _animationTable;
     std::vector<g1::Matrix4> _unitModels;
     g1::SimulationClock _simulationClock;
@@ -196,6 +289,25 @@ struct NativeCameraPan {
     std::optional<g1::WorldCoordinate> _pendingDestination;
     std::optional<g1::MovementRange> _previewRange;
     std::optional<std::size_t> _lastSelection;
+    std::optional<std::uint64_t> _preparedWorldToken;
+    std::optional<g1::MissionAudioRequest> _lastMapMusic;
+    g1::Bytes _lastCheckpointBytes;
+    NSString* _sessionSavePath;
+    NSString* _profilePath;
+    NSString* _checkpointError;
+    NSString* _campaignError;
+    NativePanel _panelPurpose;
+    std::uint64_t _panelToken;
+    std::uint64_t _localPanelToken;
+    std::uint32_t _resultsInputEdges;
+    std::int32_t _pendingArenaIndex;
+    std::uint8_t _pendingArenaFaction;
+    std::vector<std::uint32_t> _pendingMessageIds;
+    std::vector<std::uint32_t> _presentedMessageIds;
+    bool _campaignRetryRequired;
+    bool _checkpointRequested, _checkpointRetryRequired, _checkpointRetired;
+    bool _restoredCheckpoint, _healMode;
+    std::size_t _checkpointCommand;
     InspectionCamera _camera;
     FrameStats _frameStats;
     double _clockOrigin, _lastHudTime;
@@ -206,6 +318,13 @@ struct NativeCameraPan {
     std::uint64_t _lastPresentedContent, _cameraReports, _moveActions, _captureActions, _transformActions;
     std::uint64_t _audioRequests, _clampedClockIntervals;
     std::uint64_t _attackActions, _battlePresentationTicks, _battleAcknowledgements;
+    std::uint64_t _battlePresentedToken, _battlePreparedFrames, _battlePresentedFrames;
+    std::uint64_t _lastBattleFinalToken, _lastBattleFinalRevision, _battleQueuedDrawsPresented;
+    std::uint64_t _sceneRevision, _sceneRebuilds, _sessionInstalls;
+    std::uint64_t _focusReports, _transformReports, _spawnPlaybackResets;
+    std::uint64_t _worldReports, _checkpointWrites, _checkpointLoads, _checkpointRetirements;
+    std::uint64_t _healActions, _upgradeActions, _endTurnActions, _resultsReports, _endingReports;
+    std::uint64_t _staleGpuErrors;
     std::uint8_t _lastMissionMode;
     bool _clockStarted, _loaded, _failed, _moveMode, _attackMode, _rangeDirty;
     NSString* _failure;
@@ -219,6 +338,7 @@ struct NativeCameraPan {
 - (void)viewDidLoad {
     [super viewDidLoad];
     _dialogueCommand = std::numeric_limits<std::size_t>::max();
+    _checkpointCommand = std::numeric_limits<std::size_t>::max();
     _lastMissionMode = 255;
     self.view.backgroundColor = [UIColor colorWithRed:0.025 green:0.04 blue:0.065 alpha:1];
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
@@ -238,7 +358,7 @@ struct NativeCameraPan {
         [_metalView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
         [_metalView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]]];
 
-    _title = [UILabel new];
+    _title = [G1WorldTitleLabel new];
     _title.text = @"G1 Awakening";
     _title.font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
     _title.textColor = UIColor.whiteColor;
@@ -247,7 +367,11 @@ struct NativeCameraPan {
     _hint.font = [UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
     _hint.textColor = [UIColor colorWithWhite:0.85 alpha:1];
     _hint.numberOfLines = 2;
-    UIStackView* headings = [[UIStackView alloc] initWithArrangedSubviews:@[_title,_hint]];
+    _worldLegend=[UILabel new];
+    _worldLegend.font=[UIFont systemFontOfSize:10 weight:UIFontWeightMedium];
+    _worldLegend.textColor=[UIColor colorWithWhite:0.75 alpha:1];
+    _worldLegend.text=@"□ Site · ◇ Capture point · Gold/cyan: mission markers";
+    UIStackView* headings = [[UIStackView alloc] initWithArrangedSubviews:@[_title,_hint,_worldLegend]];
     headings.axis = UILayoutConstraintAxisVertical;
     headings.spacing = 4;
     headings.translatesAutoresizingMaskIntoConstraints = NO;
@@ -266,7 +390,10 @@ struct NativeCameraPan {
     _reportButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [_reportButton setTitle:@"Test report" forState:UIControlStateNormal];
     [_reportButton addTarget:self action:@selector(shareReport) forControlEvents:UIControlEventTouchUpInside];
-    UIStackView* buttons = [[UIStackView alloc] initWithArrangedSubviews:@[reset,_reportButton]];
+    _menuButton=[UIButton buttonWithType:UIButtonTypeSystem];
+    [_menuButton setTitle:@"Menu" forState:UIControlStateNormal];
+    [_menuButton addTarget:self action:@selector(openMenu) forControlEvents:UIControlEventTouchUpInside];
+    UIStackView* buttons = [[UIStackView alloc] initWithArrangedSubviews:@[reset,_menuButton,_reportButton]];
     buttons.spacing = 18;
     buttons.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:buttons];
@@ -284,8 +411,22 @@ struct NativeCameraPan {
     _captureButton = action_button(@"Capture",self,@selector(capture));
     _transformButton = action_button(@"Transform",self,@selector(transformUnit));
     _attackButton = action_button(@"Attack",self,@selector(beginAttack));
-    _commands = [[UIStackView alloc] initWithArrangedSubviews:@[_moveButton,_captureButton,_transformButton,_attackButton]];
-    _commands.spacing = 8;
+    _healButton = action_button(@"Repair",self,@selector(beginHeal));
+    _upgradeButton = action_button(@"Upgrade",self,@selector(upgradeUnit));
+    _endTurnButton = action_button(@"End turn",self,@selector(endTurn));
+    _buildButton = action_button(@"Activate unit",self,@selector(beginProduction));
+    _deployButton = action_button(@"Activate tape",self,@selector(beginDeploy));
+    _undoButton = action_button(@"Undo",self,@selector(undoAction));
+    _endTurnButton.hidden=NO;
+    UIStackView* primaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
+        @[_moveButton,_captureButton,_transformButton,_attackButton,_healButton]];
+    primaryCommands.spacing=8;
+    UIStackView* secondaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
+        @[_buildButton,_deployButton,_upgradeButton,_undoButton,_endTurnButton]];
+    secondaryCommands.spacing=8;
+    _commands = [[UIStackView alloc] initWithArrangedSubviews:@[primaryCommands,secondaryCommands]];
+    _commands.axis=UILayoutConstraintAxisVertical;_commands.alignment=UIStackViewAlignmentTrailing;
+    _commands.spacing = 6;
     _commands.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_commands];
     _dialoguePanel = [UIView new];
@@ -330,7 +471,7 @@ struct NativeCameraPan {
     _commands.hidden = YES;
 
     _battlePanel = [UIView new];
-    _battlePanel.backgroundColor = [UIColor colorWithRed:0.025 green:0.04 blue:0.065 alpha:0.97];
+    _battlePanel.backgroundColor = [UIColor colorWithRed:0.025 green:0.04 blue:0.065 alpha:0.76];
     _battlePanel.layer.cornerRadius = 14;
     _battlePanel.layer.borderWidth = 1;
     _battlePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.6].CGColor;
@@ -339,21 +480,55 @@ struct NativeCameraPan {
     _battleCanvas = [G1BattleCanvas new];
     _battleCanvas.translatesAutoresizingMaskIntoConstraints = NO;
     [_battlePanel addSubview:_battleCanvas];
-    _battleDoneButton = action_button(@"Continue",self,@selector(finishBattle));
-    _battleDoneButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [_battlePanel addSubview:_battleDoneButton];
     [NSLayoutConstraint activateConstraints:@[
         [_battlePanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:22],
         [_battlePanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-22],
-        [_battlePanel.centerYAnchor constraintEqualToAnchor:safe.centerYAnchor],
-        [_battlePanel.heightAnchor constraintEqualToConstant:234],
+        [_battlePanel.topAnchor constraintEqualToAnchor:safe.topAnchor constant:10],
+        [_battlePanel.heightAnchor constraintEqualToConstant:78],
         [_battleCanvas.leadingAnchor constraintEqualToAnchor:_battlePanel.leadingAnchor constant:12],
         [_battleCanvas.trailingAnchor constraintEqualToAnchor:_battlePanel.trailingAnchor constant:-12],
-        [_battleCanvas.topAnchor constraintEqualToAnchor:_battlePanel.topAnchor constant:12],
-        [_battleCanvas.bottomAnchor constraintEqualToAnchor:_battleDoneButton.topAnchor constant:-8],
-        [_battleDoneButton.trailingAnchor constraintEqualToAnchor:_battlePanel.trailingAnchor constant:-16],
-        [_battleDoneButton.bottomAnchor constraintEqualToAnchor:_battlePanel.bottomAnchor constant:-12]]];
+        [_battleCanvas.topAnchor constraintEqualToAnchor:_battlePanel.topAnchor constant:8],
+        [_battleCanvas.bottomAnchor constraintEqualToAnchor:_battlePanel.bottomAnchor constant:-8]]];
     _battlePanel.hidden = YES;
+
+    _campaignPanel=[UIView new];
+    _campaignPanel.backgroundColor=[UIColor colorWithRed:0.025 green:0.045 blue:0.075 alpha:0.99];
+    _campaignPanel.layer.cornerRadius=12;
+    _campaignPanel.clipsToBounds=YES;
+    _campaignPanel.translatesAutoresizingMaskIntoConstraints=NO;
+    [self.view addSubview:_campaignPanel];
+    _campaignScroll=[UIScrollView new];
+    _campaignScroll.translatesAutoresizingMaskIntoConstraints=NO;
+    [_campaignPanel addSubview:_campaignScroll];
+    _campaignCanvas=[G1CampaignCanvas new];
+    _campaignCanvas.translatesAutoresizingMaskIntoConstraints=NO;
+    [_campaignScroll addSubview:_campaignCanvas];
+    _campaignButtons=[UIStackView new];
+    _campaignButtons.axis=UILayoutConstraintAxisVertical;
+    _campaignButtons.alignment=UIStackViewAlignmentTrailing;
+    _campaignButtons.spacing=8;
+    _campaignButtons.translatesAutoresizingMaskIntoConstraints=NO;
+    [_campaignPanel addSubview:_campaignButtons];
+    _campaignCanvasHeight=[_campaignCanvas.heightAnchor constraintEqualToConstant:180];
+    [NSLayoutConstraint activateConstraints:@[
+        [_campaignPanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:18],
+        [_campaignPanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-18],
+        [_campaignPanel.topAnchor constraintEqualToAnchor:safe.topAnchor constant:12],
+        [_campaignPanel.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-42],
+        [_campaignScroll.leadingAnchor constraintEqualToAnchor:_campaignPanel.leadingAnchor],
+        [_campaignScroll.trailingAnchor constraintEqualToAnchor:_campaignPanel.trailingAnchor],
+        [_campaignScroll.topAnchor constraintEqualToAnchor:_campaignPanel.topAnchor],
+        [_campaignScroll.bottomAnchor constraintEqualToAnchor:_campaignButtons.topAnchor constant:-10],
+        [_campaignCanvas.leadingAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.leadingAnchor],
+        [_campaignCanvas.trailingAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.trailingAnchor],
+        [_campaignCanvas.topAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.topAnchor],
+        [_campaignCanvas.bottomAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.bottomAnchor],
+        [_campaignCanvas.widthAnchor constraintEqualToAnchor:_campaignScroll.frameLayoutGuide.widthAnchor],
+        _campaignCanvasHeight,
+        [_campaignButtons.trailingAnchor constraintEqualToAnchor:_campaignPanel.trailingAnchor constant:-14],
+        [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:14],
+        [_campaignButtons.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor constant:-12]]];
+    _campaignPanel.hidden=YES;
 
     [_metalView addGestureRecognizer:[[UITapGestureRecognizer alloc]
         initWithTarget:self action:@selector(tap:)]];
@@ -368,6 +543,7 @@ struct NativeCameraPan {
 
     try {
         _renderer = std::make_unique<g1::MetalRenderer>(device);
+        _m3gRenderer = std::make_unique<g1::MetalM3GRenderer>(device);
         _queue = [device newCommandQueue];
         if (!_queue) throw std::runtime_error("Metal command queue is unavailable");
         NSString* path = [NSBundle.mainBundle.bundlePath stringByAppendingPathComponent:@"GameData"];
@@ -375,56 +551,618 @@ struct NativeCameraPan {
         auto tableBytes = g1::read_file([[path stringByAppendingPathComponent:@"terrain-tables.bin"] UTF8String],480);
         verify_sha(archiveBytes, archive_sha);
         verify_sha(tableBytes, tables_sha);
-        const g1::Archive archive(std::move(archiveBytes));
-        _scene = std::make_unique<g1::FirstMissionScene>(archive,tableBytes);
+        _archive = std::make_shared<const g1::Archive>(std::move(archiveBytes));
+        _terrainTableBytes = std::move(tableBytes);
+        _terrainTables = g1::decode_terrain_tables(_terrainTableBytes);
+        const auto& archive = *_archive;
         _text = std::make_unique<g1::TextTable>(g1::load_text_table(archive));
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
         _randomSeed = static_cast<std::uint32_t>(std::time(nullptr));
-        _session = std::make_unique<g1::GameSession>(_scene->world,_randomSeed);
         _audio = [[G1AppleAudio alloc] initWithArchive:archive];
+        [NSUserDefaults.standardUserDefaults registerDefaults:@{@"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES}];
+        [_audio setMusicEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1MusicEnabled"]
+            soundEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1SoundEnabled"]];
         for (std::int32_t group=0;group<3;++group)
             [_audio request:g1::MissionAudioRequest{0,group}];
-        _previousUnits = _session->units();
-        _terrain = _renderer->mesh(g1::terrain_vertices(_scene->terrain));
-        _textures = [NSMutableDictionary new];
-        for (const auto& entry : _scene->textures)
-            _textures[@(entry.first)] = _renderer->texture(entry.second);
-        _white = _renderer->texture({1,1,{255,255,255,255}});
-        const auto presentation = g1::initial_presentations(archive,*_scene);
-        if (presentation.size() != _scene->sprites.size())
-            throw std::runtime_error("Initial sprite presentation count mismatch");
-        for (std::size_t i = 0; i < _scene->sprites.size(); ++i) {
-            const auto& sprite = _scene->sprites[i];
-            const auto& initial = presentation[i];
-            if (initial.animation >= sprite.descriptor.animations().size())
-                throw std::runtime_error("Initial sprite animation is outside descriptor");
-            _animations.emplace_back(sprite.descriptor.animations()[initial.animation],
-                                     initial.repeats,initial.reverse);
-            _animationIds.push_back(static_cast<std::int32_t>(initial.animation));
-            _unitModels.push_back(initial.model);
-            std::vector<std::vector<g1::SceneVertex>> frames;
-            std::vector<std::shared_ptr<g1::MetalMesh>> meshes;
-            for (std::size_t frame = 0; frame < sprite.descriptor.frames().size(); ++frame) {
-                frames.push_back(g1::sprite_vertices(sprite.descriptor,frame));
-                meshes.push_back(_renderer->mesh(frames.back()));
-            }
-            _spriteVertices.push_back(std::move(frames));
-            _spriteMeshes.push_back(std::move(meshes));
-        }
-        _loaded = true;
-        [self resetView];
-        if (_session->world().camera) {
-            _camera.center_x = (_session->world().camera->x + 0.5F) * 0.32F;
-            _camera.center_z = (_session->world().camera->y + 0.5F) * 0.32F;
-        }
         [self.view layoutIfNeeded];
-        [self refreshControls];
-        _metalView.paused = NO;
+        [self loadCampaignMenu];
     } catch (const std::exception& error) {
         [self fail:[NSString stringWithUTF8String:error.what()]];
     }
+}
+
+- (NSString*)originalText:(std::uint16_t)identifier {
+    return native_text(_text->at(identifier));
+}
+
+- (void)clearCampaignButtons {
+    for(UIView* view in [_campaignButtons.arrangedSubviews copy]) {
+        [_campaignButtons removeArrangedSubview:view];[view removeFromSuperview];
+    }
+}
+
+- (UIButton*)addCampaignButton:(NSString*)title action:(SEL)action {
+    UIStackView* row=(UIStackView*)_campaignButtons.arrangedSubviews.lastObject;
+    if(!row || row.arrangedSubviews.count>=4) {
+        row=[UIStackView new];row.spacing=8;row.distribution=UIStackViewDistributionFillEqually;
+        [_campaignButtons addArrangedSubview:row];
+    }
+    UIButton* button=action_button(title,self,action);[row addArrangedSubview:button];return button;
+}
+
+- (void)updateCampaignLayout {
+    if(_campaignPanel.hidden)return;
+    const CGFloat width=_campaignScroll.bounds.size.width;
+    if(width>32) {
+        const auto height=std::max(_campaignScroll.bounds.size.height,[_campaignCanvas heightForWidth:width]);
+        if(std::abs(_campaignCanvasHeight.constant-height)>0.5)_campaignCanvasHeight.constant=height;
+    }
+}
+
+- (void)showPanel:(NativePanel)purpose title:(NSString*)title body:(NSString*)body token:(std::uint64_t)token {
+    const bool changed=_panelPurpose!=purpose || _panelToken!=token;
+    _panelPurpose=purpose;_panelToken=token;
+    _panelContinueButton=nil;
+    _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
+    if(_session)_previousUnits=_session->units();
+    _campaignPanel.hidden=NO;
+    _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;
+    [_campaignCanvas showTitle:title body:body token:token];
+    if(changed)[_campaignScroll setContentOffset:CGPointZero animated:NO];
+    [self clearCampaignButtons];
+    [self.view layoutIfNeeded];
+    [self updateCampaignLayout];
+}
+
+- (void)hidePanel {
+    _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
+    _campaignPanel.hidden=YES;
+    [_campaignCanvas resetPresentation];
+    _inputEdges=0;_simulationClock.reset();_clockStarted=false;
+    if(_session)_previousUnits=_session->units();
+    if(_loaded && !_failed)_metalView.paused=NO;
+}
+
+- (void)loadCampaignMenu {
+    try {
+        if(!_profilePath) {
+            NSURL* parent=[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory
+                inDomains:NSUserDomainMask].firstObject;
+            if(!parent)throw std::runtime_error("Application Support directory is unavailable");
+            NSURL* folder=[parent URLByAppendingPathComponent:@"G1AwakeningNative" isDirectory:YES];
+            NSError* error=nil;
+            if(![NSFileManager.defaultManager createDirectoryAtURL:folder
+                withIntermediateDirectories:YES attributes:nil error:&error])
+                throw std::runtime_error(error.localizedDescription.UTF8String ?: "Cannot create native save directory");
+            _profilePath=[[folder URLByAppendingPathComponent:@"campaign.g1native"] path];
+            _sessionSavePath=[[folder URLByAppendingPathComponent:@"session.g1native"] path];
+        }
+        _campaign=std::make_unique<g1::CampaignController>(_profilePath.UTF8String);
+        _campaignError=nil;
+        [self showProfileMenu];
+    } catch(const std::exception& e) {
+        _campaignError=native_text(e.what());
+        [self showPanel:NativePanel::load_error title:@"Campaign profile could not be loaded"
+            body:_campaignError token:++_localPanelToken];
+        [self addCampaignButton:@"Retry" action:@selector(loadCampaignMenu)];
+    }
+}
+
+- (void)showProfileMenu {
+    if(!_campaign)return;
+    const auto& profile=_campaign->profile();
+    NSString* body=[NSString stringWithFormat:@"%@ · %@ %d / %zu\n%@\n%@",
+        [self originalText:617],[self originalText:1242],profile.highest_unlocked[0]+1,g1::campaign_mission_count(0),
+        profile.completed[0] ? [NSString stringWithFormat:@"%@ · %@ %d / %zu",[self originalText:1151],
+            [self originalText:1242],profile.highest_unlocked[1]+1,g1::campaign_mission_count(1)] : [self originalText:846],
+        profile.completed[1] ? [self originalText:1190] : [self originalText:527]];
+    const bool requested=_campaign->state().gate==g1::CampaignControllerGate::campaign_menu;
+    const auto token=requested ? _campaign->state().token : ++_localPanelToken;
+    [self showPanel:requested ? NativePanel::menu : NativePanel::startup
+        title:[self originalText:1169] body:body token:token];
+    if([NSFileManager.defaultManager fileExistsAtPath:_sessionSavePath])
+        [self addCampaignButton:[self originalText:771] action:@selector(continueCheckpoint)];
+    [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
+    [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
+    [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
+    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
+    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
+    if(_session && _campaign->state().gate==g1::CampaignControllerGate::idle)
+        [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
+}
+
+- (BOOL)retireCheckpoint {
+    if(!_sessionSavePath || ![NSFileManager.defaultManager fileExistsAtPath:_sessionSavePath]) {
+        _lastCheckpointBytes.clear();_checkpointRetired=true;return YES;
+    }
+    NSString* backup=[[_sessionSavePath stringByDeletingLastPathComponent]
+        stringByAppendingPathComponent:[NSString stringWithFormat:@"session-%@.retired",NSUUID.UUID.UUIDString]];
+    NSError* error=nil;
+    if(![NSFileManager.defaultManager moveItemAtPath:_sessionSavePath toPath:backup error:&error]) {
+        _checkpointError=error.localizedDescription ?: @"The previous checkpoint could not be retired.";
+        return NO;
+    }
+    ++_checkpointRetirements;
+    _checkpointRetired=true;_lastCheckpointBytes.clear();_checkpointError=nil;
+    return YES;
+}
+
+- (void)saveCheckpoint {
+    if(!_checkpointRequested || _checkpointRetryRequired || !_sessionSavePath || !_session ||
+       !_session->checkpoint_available())return;
+    try {
+        const auto bytes=g1::encode_session_checkpoint(_session->make_checkpoint());
+        if(bytes!=_lastCheckpointBytes || ![NSFileManager.defaultManager fileExistsAtPath:_sessionSavePath]) {
+            const auto written=g1::write_native_save_atomic(_sessionSavePath.UTF8String,bytes);
+            if(!written.succeeded)throw std::runtime_error(written.error);
+            _lastCheckpointBytes=bytes;++_checkpointWrites;
+        }
+        _checkpointCommand=_session->mission().command_index;
+        _checkpointRequested=false;_checkpointRetired=false;_checkpointError=nil;
+    } catch(const std::exception& e) {
+        _checkpointError=native_text(e.what());_checkpointRetryRequired=true;
+        _notice=@"Checkpoint could not be saved. Open Menu to retry.";_noticeUntil=CACurrentMediaTime()+8;
+    }
+}
+
+- (void)continueCheckpoint {
+    try {
+        auto bytes=g1::read_file(_sessionSavePath.UTF8String,g1::max_session_save_size);
+        const auto saved=g1::decode_session_checkpoint(*_archive,bytes,&_terrainTables);
+        auto session=g1::GameSession::restore_checkpoint(*_archive,saved);
+        auto campaign=std::make_unique<g1::CampaignController>(_profilePath.UTF8String);
+        [self installSession:std::move(session)];
+        _campaign=std::move(campaign);
+        _lastCheckpointBytes=std::move(bytes);_checkpointError=nil;_checkpointRetryRequired=false;
+        _checkpointRetired=false;_restoredCheckpoint=true;++_checkpointLoads;
+        [self hidePanel];[self refreshControls];
+    } catch(const std::exception& e) {
+        _checkpointError=native_text(e.what());
+        [self showPanel:NativePanel::load_error title:@"Checkpoint could not be loaded"
+            body:[NSString stringWithFormat:@"%@\n\nThe saved file has been kept.",_checkpointError]
+            token:++_localPanelToken];
+        [self addCampaignButton:@"Retry" action:@selector(continueCheckpoint)];
+        [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+    }
+}
+
+- (void)chooseStoryCampaign {
+    [self chooseCampaign:0];
+}
+- (void)chooseShowdown { if(_campaign && _campaign->profile().completed[0])[self chooseCampaign:1]; }
+- (void)chooseArena { if(_campaign && _campaign->profile().completed[1])[self chooseCampaign:2]; }
+
+- (void)chooseCampaign:(std::uint8_t)group {
+    if(!_campaign)return;
+    const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
+    const auto maximum=group==2 ? count-1 : std::min(count-1,_campaign->profile().highest_unlocked.at(group));
+    UIAlertController* menu=[UIAlertController alertControllerWithTitle:[self originalText:group==0 ? 617 : group==1 ? 1151 : 1190]
+        message:@"Choose an unlocked mission. A new mission replaces Continue when it starts."
+        preferredStyle:UIAlertControllerStyleActionSheet];
+    __weak G1ViewController* weakSelf=self;
+    for(std::int32_t index=0;index<=maximum;++index) {
+        NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2 ? 536 : 1242],index+1];
+        [menu addAction:[UIAlertAction actionWithTitle:label style:UIAlertActionStyleDefault
+            handler:^(UIAlertAction* action){(void)action;
+                if(group==2)[weakSelf chooseArenaFaction:index];
+                else [weakSelf startCampaign:group mission:index faction:0 opponent:1];}]];
+    }
+    [menu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    menu.popoverPresentationController.sourceView=_campaignButtons;
+    menu.popoverPresentationController.sourceRect=_campaignButtons.bounds;
+    [self presentViewController:menu animated:YES completion:nil];
+}
+
+- (void)chooseArenaFaction:(std::int32_t)index {
+    _pendingArenaIndex=index;
+    [self showPanel:NativePanel::arena title:[self originalText:1190]
+        body:@"Choose player one's faction." token:++_localPanelToken];
+    [self addCampaignButton:[self originalText:501] action:@selector(arenaAutobots)];
+    [self addCampaignButton:[self originalText:1315] action:@selector(arenaDecepticons)];
+    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+}
+
+- (void)chooseArenaOpponent:(std::int32_t)index faction:(std::uint8_t)faction {
+    _pendingArenaIndex=index;_pendingArenaFaction=faction;
+    [self showPanel:NativePanel::arena title:[self originalText:1190]
+        body:@"Choose the other player." token:++_localPanelToken];
+    [self addCampaignButton:@"Computer" action:@selector(arenaComputer)];
+    [self addCampaignButton:[self originalText:690] action:@selector(arenaHuman)];
+    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+}
+- (void)arenaAutobots { [self chooseArenaOpponent:_pendingArenaIndex faction:0]; }
+- (void)arenaDecepticons { [self chooseArenaOpponent:_pendingArenaIndex faction:1]; }
+- (void)arenaComputer { [self startCampaign:2 mission:_pendingArenaIndex faction:_pendingArenaFaction opponent:1]; }
+- (void)arenaHuman { [self startCampaign:2 mission:_pendingArenaIndex faction:_pendingArenaFaction opponent:0]; }
+
+- (void)startCampaign:(std::uint8_t)group mission:(std::int32_t)index faction:(std::uint8_t)faction opponent:(std::int8_t)opponent {
+    try {
+        if(!_campaign || group>2 || index<0 || std::size_t(index)>=g1::campaign_mission_count(group) ||
+           (group<2 && index>_campaign->profile().highest_unlocked[group]) ||
+           (group==1 && !_campaign->profile().completed[0]) || (group==2 && !_campaign->profile().completed[1]) ||
+           faction>1 || opponent<0 || opponent>1 || (group<2 && (faction!=0 || opponent!=1)))
+            throw g1::FormatError("Campaign mission has not been unlocked in the saved profile");
+        g1::CampaignContext context;context.group=group;context.mission_index=index;
+        context.player_factions={{faction,static_cast<std::uint8_t>(1-faction)}};
+        context.player_controllers={{0,opponent}};
+        _randomSeed=static_cast<std::uint32_t>(std::time(nullptr));
+        const g1::GameRandom random(_randomSeed);
+        auto bootstrap=g1::bootstrap_campaign(*_archive,context,random,false,&_terrainTables);
+        auto session=std::make_unique<g1::GameSession>(*_archive,std::move(bootstrap),context);
+        auto campaign=std::make_unique<g1::CampaignController>(_profilePath.UTF8String);
+        [self installSession:std::move(session)];
+        // Resource creation can throw. Keep Continue available until the
+        // replacement scene has actually been installed successfully.
+        if(![self retireCheckpoint])throw std::runtime_error(_checkpointError.UTF8String ?: "Checkpoint retirement failed");
+        _campaign=std::move(campaign);
+        _restoredCheckpoint=false;_checkpointRequested=true;_checkpointRetryRequired=false;
+        [self hidePanel];[self refreshControls];
+    } catch(const std::exception& e) {
+        _campaignError=native_text(e.what());
+        [self showPanel:NativePanel::load_error title:@"Mission could not be started"
+            body:_campaignError token:++_localPanelToken];
+        [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+    }
+}
+
+- (void)openMenu {
+    if(_typeListOpen)return;
+    if(!_session || _failed) { [self showProfileMenu];return; }
+    if(_panelPurpose!=NativePanel::none)return;
+    _checkpointRequested=true;[self saveCheckpoint];
+    [self showPauseMenu];
+}
+
+- (void)showPauseMenu {
+    NSString* detail=_checkpointError ? [NSString stringWithFormat:@"Checkpoint: %@",_checkpointError] :
+        _lastCheckpointBytes.empty() ? @"A checkpoint will be saved at the next completed objective boundary." :
+        @"Continue restores the last completed action at an active objective.";
+    [self showPanel:NativePanel::pause title:[self originalText:1162] body:detail token:++_localPanelToken];
+    [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
+    if(_checkpointRetryRequired)[self addCampaignButton:@"Retry save" action:@selector(retryCheckpoint)];
+    [self addCampaignButton:[self originalText:1169] action:@selector(showProfileMenu)];
+    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
+    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
+}
+
+- (void)resumeGame { if(_session && !_failed){[self hidePanel];[self refreshControls];} }
+- (void)retryCheckpoint {
+    _checkpointRetryRequired=false;_checkpointRequested=true;[self saveCheckpoint];[self showPauseMenu];
+}
+- (void)toggleMusic {
+    const BOOL enabled=![_audio musicEnabled];
+    [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1MusicEnabled"];
+    [_audio setMusicEnabled:enabled soundEnabled:[_audio soundEnabled]];
+    if(enabled && _lastMapMusic)[self dispatchAudio:*_lastMapMusic];
+    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+}
+- (void)toggleSound {
+    const BOOL enabled=![_audio soundEnabled];
+    [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1SoundEnabled"];
+    [_audio setMusicEnabled:[_audio musicEnabled] soundEnabled:enabled];
+    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+}
+
+- (void)installSession:(std::unique_ptr<g1::GameSession>)session {
+    if (!session) throw g1::FormatError("Cannot install an empty native session");
+    // A failed resource/GPU allocation leaves the menu retryable; it must not
+    // let a draw callback dereference the partially replaced scene.
+    _loaded=false;_metalView.paused=YES;
+    // Numeric dialogue indices, battle tokens and per-unit generations can
+    // repeat in a new session. Invalidate every old drawable callback before
+    // replacing it, and clear UIKit caches before showing the new requests.
+    ++_sceneRevision; ++_sessionInstalls;
+    _session = std::move(session);
+    _title.text=[self originalText:715];
+    _scene.reset(); _cameraPan.reset();
+    _preparedWorldToken.reset();_worldOverlaySignature.clear();_worldOverlays.clear();
+    _animatedTerrain.reset();_decorationTerrain.reset();
+    _terrainSpriteDraws.clear();
+    _renderedTerrainGeneration=0;_renderedTerrainWorld=0;
+    _animations.clear(); _animationIds.clear(); _renderedActive.clear();
+    _playbackSpawnGenerations.clear(); _playbackTransformGenerations.clear();
+    _pendingTransformCompletions.clear();
+    _spriteVertices.clear(); _spriteMeshes.clear(); _unitModels.clear();
+    _inputEdges = 0; _inputCommand = std::numeric_limits<std::size_t>::max();
+    _dialogueCommand = std::numeric_limits<std::size_t>::max();
+    _lastMissionMode = 255; _lastSelection.reset();
+    _pendingCompletionRequests.clear(); _completedBattles.clear();
+    _battlePresentation.reset(); _battleModels.clear(); _battlePresentedToken=0;
+    _presentedMessageIds.clear();
+    _notice = nil; _noticeUntil = 0;
+    _checkpointCommand=std::numeric_limits<std::size_t>::max();
+    _checkpointRequested=true;_checkpointRetryRequired=false;_pendingMessageIds.clear();
+    _campaignRetryRequired=false;
+    _healMode=false;_healTargets.clear();_healRange.reset();
+    _productionMode.reset();_productionType.reset();_productionPlacement.reset();_returnCursor.reset();
+    _productionRange.reset();_typeListOpen=false;_controlQuads.clear();
+    [_dialogueCanvas resetPresentation]; [_battleCanvas resetPresentation];
+    _dialoguePanel.hidden = YES; _battlePanel.hidden = YES;
+    _clockStarted = false; _simulationClock.reset(); _frameStats.times.clear();
+    [self rebuildScene:YES];
+    if (_session->world().camera) {
+        _camera.center_x = (_session->world().camera->x+0.5F)*0.32F;
+        _camera.center_z = (_session->world().camera->y+0.5F)*0.32F;
+    }
+    _loaded = true;
+    _failed=false;_failure=nil;
+}
+
+- (void)rebuildScene:(BOOL)resetPlayback {
+    const auto& world = _session->world();
+    const bool mapChanged = !_scene || !_scene->matches_map(world);
+    auto next = std::make_unique<g1::MissionScene>(*_archive,_terrainTableBytes,world);
+    auto terrain = mapChanged ? _renderer->mesh(g1::terrain_vertices(next->terrain)) : _terrain;
+    auto animated=mapChanged ? (next->terrain.animated_surface ?
+        _renderer->mesh(g1::terrain_vertices(next->terrain.animated_surface->quads,next->terrain.position_scale)) :
+        std::shared_ptr<g1::MetalMesh>{}) : _animatedTerrain;
+    auto controls=_controlQuads;
+    if(mapChanged) {
+        controls.clear();
+        for(std::uint16_t y=0;y<world.grid.height;++y)for(std::uint16_t x=0;x<world.grid.width;++x) {
+            const auto id=world.grid.tile_at(x,y);
+            if(id>=32)throw g1::FormatError("Native input grid contains an unsupported cell");
+            const auto height=std::int16_t(_terrainTables.at(world.style).at(id).height_steps*32);
+            const auto left=std::int16_t(x*32),right=std::int16_t((x+1)*32);
+            const auto top=std::int16_t(y*32),bottom=std::int16_t((y+1)*32);
+            g1::TerrainQuad quad{};quad.tile_x=x;quad.tile_y=y;quad.face=g1::TerrainFace::top;
+            quad.positions={{{{left,height,top}},{{right,height,top}},{{left,height,bottom}},{{right,height,bottom}}}};
+            controls.push_back(quad);
+        }
+    }
+    if (!_textures) _textures = [NSMutableDictionary new];
+    for (const auto& image : next->textures)
+        if (!_textures[@(image.first)]) _textures[@(image.first)] = _renderer->texture(image.second);
+    if (!_white) _white = _renderer->texture({1,1,{255,255,255,255}});
+
+    std::map<std::uint8_t,std::size_t> oldByType;
+    if (_scene) for (std::size_t i=0;i<_scene->sprites.size();++i)
+        oldByType.emplace(_scene->world.units.at(_scene->sprites[i].unit_index).type,i);
+    decltype(_spriteVertices) vertices;
+    decltype(_spriteMeshes) meshes;
+    decltype(_animations) animations;
+    decltype(_animationIds) animationIds;
+    decltype(_unitModels) models;
+    decltype(_renderedActive) active;
+    decltype(_playbackSpawnGenerations) spawnGenerations, transformGenerations;
+    decltype(_pendingTransformCompletions) completions;
+    std::vector<std::size_t> resetIndices;
+    for (const auto& sprite : next->sprites) {
+        const auto index = sprite.unit_index;
+        const auto type = world.units.at(index).type;
+        const auto found = oldByType.find(type);
+        const auto& unit = _session->units().at(index);
+        const bool reuse = !resetPlayback && !mapChanged && found != oldByType.end();
+        if (reuse) {
+            const auto old = found->second;
+            vertices.push_back(_spriteVertices.at(old)); meshes.push_back(_spriteMeshes.at(old));
+            animations.push_back(_animations.at(old)); animationIds.push_back(_animationIds.at(old));
+            active.push_back(_renderedActive.at(old)); models.push_back(_unitModels.at(old));
+            spawnGenerations.push_back(_playbackSpawnGenerations.at(old));
+            transformGenerations.push_back(_playbackTransformGenerations.at(old));
+            completions.push_back(_pendingTransformCompletions.at(old));
+        } else {
+            std::vector<std::vector<g1::SceneVertex>> frames;
+            std::vector<std::shared_ptr<g1::MetalMesh>> frameMeshes;
+            for (std::size_t frame=0;frame<sprite.descriptor.frames().size();++frame) {
+                frames.push_back(g1::sprite_vertices(sprite.descriptor,frame));
+                frameMeshes.push_back(_renderer->mesh(frames.back()));
+            }
+            vertices.push_back(std::move(frames)); meshes.push_back(std::move(frameMeshes));
+            animations.push_back(std::nullopt); animationIds.push_back(-1);
+            active.push_back(false); models.push_back(g1::identity_matrix());
+            spawnGenerations.push_back(0); transformGenerations.push_back(0);
+            completions.push_back(std::nullopt);
+        }
+        if (unit.active && (!animations.back() || !active.back() ||
+            spawnGenerations.back() != _session->unit_spawn_generation(index))) {
+            if (unit.form > 1 || unit.facing > 3) throw g1::FormatError("New unit has unsupported sprite form/facing");
+            const auto value = _animationTable.at(type).at(unit.form*4+unit.facing);
+            const int animation = value < 128 ? int(value) : int(value)-256;
+            if (animation < 0 || static_cast<std::size_t>(animation) >= sprite.descriptor.animations().size())
+                throw g1::FormatError("New unit's initial animation is not present in its descriptor");
+            animations.back().emplace(sprite.descriptor.animations()[animation],-1,false);
+            animationIds.back() = animation;
+            models.back() = unit_model(world,unit);
+            active.back() = true;
+            spawnGenerations.back() = _session->unit_spawn_generation(index);
+            transformGenerations.back() = 0;
+            completions.back().reset();
+            resetIndices.push_back(index);
+            ++_spawnPlaybackResets;
+        } else if (!unit.active) {
+            animations.back().reset(); animationIds.back() = -1; active.back() = false;
+            transformGenerations.back() = 0; completions.back().reset();
+        }
+    }
+    _scene = std::move(next); _terrain = std::move(terrain);_animatedTerrain=std::move(animated);
+    _controlQuads=std::move(controls);
+    _spriteVertices = std::move(vertices); _spriteMeshes = std::move(meshes);
+    _animations = std::move(animations); _animationIds = std::move(animationIds);
+    _unitModels = std::move(models); _renderedActive = std::move(active);
+    _playbackSpawnGenerations = std::move(spawnGenerations);
+    _playbackTransformGenerations = std::move(transformGenerations);
+    _pendingTransformCompletions = std::move(completions);
+    if (mapChanged || resetPlayback) _previousUnits = _session->units();
+    else while (_previousUnits.size() < _session->units().size())
+        _previousUnits.push_back(_session->units()[_previousUnits.size()]);
+    for (const auto index : resetIndices) _previousUnits.at(index) = _session->units().at(index);
+    _range.reset(); _cursor.reset(); _attackRange.reset();_healRange.reset(); _rangeDirty = true;
+    _moveMode = false; _attackMode = false;_healMode=false; _pendingDestination.reset();
+    _previewRange.reset(); _attackTargets.clear();_healTargets.clear(); _lastSelection.reset();
+    _productionMode.reset();_productionType.reset();_productionPlacement.reset();_productionRange.reset();
+    _returnCursor.reset();_typeListOpen=false;
+    _inputEdges = 0;
+    _dialogueCommand = std::numeric_limits<std::size_t>::max();
+    if (mapChanged) {
+        _cameraPan.reset(); _camera.fit(*_scene,_metalView.bounds.size);
+        _decorationTerrain.reset();_renderedTerrainGeneration=0;_renderedTerrainWorld=0;
+        _terrainSpriteDraws.clear();
+        _worldOverlaySignature.clear();
+    }
+    ++_sceneRevision; ++_sceneRebuilds; ++_contentGeneration;
+}
+
+- (void)synchronizeScene {
+    if (!_scene || !_scene->matches_map(_session->world()) ||
+        !_scene->matches_roster(_session->world().units)) [self rebuildScene:NO];
+}
+
+- (void)refreshWorldOverlays {
+    const auto& world=_session->world();
+    const auto& network=_session->captures();
+    if(world.sites.size()!=network.sites.size() || world.sites.size()!=network.item_links.size())
+        throw g1::FormatError("Visible site ownership differs from the current capture network");
+    std::vector<std::int32_t> signature{static_cast<std::int32_t>(world.grid_resource_id),world.style,
+        static_cast<std::int32_t>(world.sites.size())};
+    for(std::size_t i=0;i<world.sites.size();++i) {
+        const auto& site=world.sites[i];const auto& state=network.sites[i];
+        signature.insert(signature.end(),{site.position.x,site.position.y,state.state,
+            static_cast<std::int32_t>(site.coordinate_groups.size())});
+        if(site.coordinate_groups.size()!=state.item_states.size() ||
+           site.coordinate_groups.size()!=network.item_links[i].size())
+            throw g1::FormatError("Visible site group shape is inconsistent");
+        for(std::size_t g=0;g<site.coordinate_groups.size();++g) {
+            const auto& group=site.coordinate_groups[g];
+            if(group.size()!=state.item_states[g].size() || group.size()!=network.item_links[i][g].size())
+                throw g1::FormatError("Visible capture point shape is inconsistent");
+            signature.push_back(static_cast<std::int32_t>(group.size()));
+            for(std::size_t j=0;j<group.size();++j)
+                signature.insert(signature.end(),{group[j].x,group[j].y,state.item_states[g][j],network.item_links[i][g][j]});
+        }
+    }
+    signature.push_back(static_cast<std::int32_t>(world.site_points.size()));
+    for(const auto& point:world.site_points)
+        signature.insert(signature.end(),{point.point.x,point.point.y,point.point.state});
+    for(const auto& marker:{world.marker_254,world.marker_25c})
+        signature.insert(signature.end(),{marker[0],marker[1]});
+    if(signature==_worldOverlaySignature)return;
+    std::vector<NativeWorldOverlay> overlays;
+    const auto color=[](int owner) -> std::array<float,4> {
+        if(owner==0)return {{0.18F,0.70F,1.0F,0.88F}};
+        if(owner==1)return {{1.0F,0.27F,0.30F,0.88F}};
+        if(owner==-1)return {{0.85F,0.85F,0.85F,0.84F}};
+        throw g1::FormatError("Unknown displayed site owner");
+    };
+    const auto add=[&](int x,int y,int shape,std::array<float,4> tint,bool linked) {
+        if(x<0 || y<0 || x>=world.grid.width || y>=world.grid.height)
+            throw g1::FormatError("Visible world marker is outside its map");
+        const auto tile=world.grid.tile_at(static_cast<std::uint16_t>(x),static_cast<std::uint16_t>(y));
+        if(tile>=32)throw g1::FormatError("Visible marker uses an unsupported terrain cell");
+        const float px=(float(x)+0.5F)*0.32F,pz=(float(y)+0.5F)*0.32F;
+        const float height=float(_terrainTables.at(world.style).at(tile).height_steps)*0.32F+0.012F;
+        std::vector<g1::SceneVertex> vertices;
+        const auto line=[&](float ax,float az,float bx,float bz,float width) {
+            const float length=std::hypot(bx-ax,bz-az);
+            if(length<=0)return;
+            const float dx=(bz-az)*width/(2*length),dz=(ax-bx)*width/(2*length);
+            const std::array<std::array<float,2>,4> p{{{{ax-dx,az-dz}},{{bx-dx,bz-dz}},
+                {{ax+dx,az+dz}},{{bx+dx,bz+dz}}}};
+            for(const auto index:g1::sprite_triangle_indices)
+                vertices.push_back({{{px+p[index][0],height,pz+p[index][1],1}},{{0,0}}, {}});
+        };
+        const float r=shape==0 ? 0.135F : shape==1 ? 0.105F : 0.145F;
+        if(shape==0) {
+            line(-r,-r,r,-r,0.025F);line(r,-r,r,r,0.025F);
+            line(r,r,-r,r,0.025F);line(-r,r,-r,-r,0.025F);
+        } else if(shape==1 || shape==3) {
+            line(0,-r,r,0,0.025F);line(r,0,0,r,0.025F);
+            line(0,r,-r,0,0.025F);line(-r,0,0,-r,0.025F);
+        } else {
+            line(-r,0,r,0,0.025F);line(0,-r,0,r,0.025F);
+            if(shape==4){line(-r,-r,r,r,0.016F);line(-r,r,r,-r,0.016F);}
+        }
+        if(linked){line(-0.035F,0,0.035F,0,0.025F);line(0,-0.035F,0,0.035F,0.025F);}
+        overlays.push_back({_renderer->mesh(vertices),tint});
+    };
+    for(std::size_t i=0;i<world.sites.size();++i) {
+        const auto& site=world.sites[i];const auto& state=network.sites[i];
+        add(site.position.x,site.position.y,0,color(state.state),false);
+        for(std::size_t g=0;g<site.coordinate_groups.size();++g)
+            for(std::size_t j=0;j<site.coordinate_groups[g].size();++j) {
+                const auto p=site.coordinate_groups[g][j];
+                add(p.x,p.y,1,color(state.item_states[g][j]),network.item_links[i][g][j]!=0);
+            }
+    }
+    for(const auto& point:world.site_points)
+        if(point.point.state!=0)add(point.point.x,point.point.y,4,{{0.75F,0.4F,1,0.85F}},false);
+    if(world.marker_254[0]>=0 && world.marker_254[1]>=0)
+        add(world.marker_254[0],world.marker_254[1],2,{{1,0.83F,0.16F,0.9F}},false);
+    if(world.marker_25c[0]>=0 && world.marker_25c[1]>=0)
+        add(world.marker_25c[0],world.marker_25c[1],3,{{0.15F,1,0.85F,0.9F}},false);
+    _worldOverlays=std::move(overlays);_worldOverlaySignature=std::move(signature);
+    ++_contentGeneration;
+}
+
+- (void)prepareWorldPresentation {
+    if(!_session->world_presentation())return;
+    const auto& presentation=*_session->world_presentation();
+    if(_preparedWorldToken && *_preparedWorldToken==presentation.token)return;
+    [self synchronizeScene];[self refreshWorldOverlays];
+    for(const auto& plan:presentation.operations) {
+        if(const auto map=std::get_if<g1::WorldMapInstall>(&plan.data)) {
+            if(map->music_request){_lastMapMusic=map->music_request;[self dispatchAudio:*map->music_request];}
+            if(map->stop_music_if_config_a4_disabled && ![_audio musicEnabled])
+                [self dispatchAudio:g1::MissionAudioRequest{3,0}];
+        } else if(const auto phase=std::get_if<g1::WorldPhaseCommand>(&plan.data)) {
+            if(phase->title_text_id)_title.text=[self originalText:*phase->title_text_id];
+        }
+        // Core already applied these plans. Geometry/ownership/markers come
+        // from the actual current session, never from replaying a mutation.
+    }
+    _preparedWorldToken=presentation.token;
+    ++_sceneRevision;++_contentGeneration;
+}
+
+- (void)refreshTerrainDecorations {
+    if(_renderedTerrainGeneration==_session->terrain_generation() &&
+       _renderedTerrainWorld==_session->world_generation())return;
+    const auto* state=_session->terrain_state();
+    const auto* layout=_session->terrain_layout();
+    if(!_scene->terrain.animated_surface) {
+        if(state && !state->slots.empty())throw g1::FormatError("Renderable terrain slots lack their material");
+        _decorationTerrain.reset();
+    } else {
+        if(!state || !layout || !_session->terrain_tables())
+            throw g1::FormatError("Animated terrain lacks its session-owned runtime");
+        const auto quads=g1::terrain_decoration_quads(*layout,*state,_session->world().grid,*_session->terrain_tables());
+        _decorationTerrain=_renderer->mesh(g1::terrain_vertices(quads,_scene->terrain.position_scale));
+    }
+    std::vector<g1::TerrainSpriteDecorationDraw> sprites;
+    if(const auto* spriteState=_session->terrain_sprite_state()) {
+        const auto* spriteLayout=_session->terrain_sprite_layout();
+        const auto* bank=_session->terrain_sprite_animations();
+        if(!spriteLayout || !bank)throw g1::FormatError("Terrain sprite state has no decoded layout or animations");
+        sprites=g1::terrain_sprite_decoration_draws(*spriteLayout,*bank,*spriteState);
+        const auto read=[&](std::uint32_t id,std::uint32_t key) {
+            const auto found=_archive->find(id,key);
+            if(found.size()!=1)throw g1::FormatError("Terrain sprite resource is missing or ambiguous");
+            return _archive->read(found.front());
+        };
+        for(const auto& sprite:sprites) {
+            const auto& resource=sprite.resource;
+            if(!_textures[@(resource.image_id)]) {
+                const auto image=g1::decode_png(read(resource.image_id,resource.resource_key));
+                if(image.width!=512 || image.height!=512)
+                    throw g1::FormatError("Terrain sprite atlas dimensions differ from original512x512");
+                _textures[@(resource.image_id)]=_renderer->texture(image);
+            }
+            if(!_terrainSpriteMeshes.count(resource.descriptor_id)) {
+                const g1::AtlasDescriptor descriptor(read(resource.descriptor_id,resource.resource_key));
+                std::vector<std::shared_ptr<g1::MetalMesh>> frames;
+                for(std::size_t i=0;i<descriptor.frames().size();++i)
+                    frames.push_back(_renderer->mesh(g1::sprite_vertices(descriptor,i)));
+                _terrainSpriteMeshes.emplace(resource.descriptor_id,std::move(frames));
+            }
+            if(sprite.frame_index>=_terrainSpriteMeshes.at(resource.descriptor_id).size())
+                throw g1::FormatError("Terrain sprite frame is outside its actual descriptor");
+        }
+    }
+    _terrainSpriteDraws=std::move(sprites);
+    _renderedTerrainGeneration=_session->terrain_generation();_renderedTerrainWorld=_session->world_generation();
+    ++_contentGeneration;
 }
 
 - (void)dealloc { [[NSNotificationCenter defaultCenter] removeObserver:self]; }
@@ -434,15 +1172,21 @@ struct NativeCameraPan {
     _failure = [message copy];
     _metalView.paused = YES;
     _title.text = @"G1 Awakening — test stopped";
+    _title.hidden=NO; _hint.hidden=NO;
     _hint.text = message;
     _hint.textColor = [UIColor colorWithRed:1 green:0.6 blue:0.55 alpha:1];
     _commands.hidden = YES;
     _dialoguePanel.hidden = YES;
     _battlePanel.hidden = YES;
+    _campaignPanel.hidden=YES;_panelPurpose=NativePanel::none;
+    _typeListOpen=false;
+    if([self.presentedViewController isKindOfClass:UIAlertController.class])
+        [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void)inactive:(NSNotification*)notification {
     (void)notification;
+    _checkpointRequested=true;[self saveCheckpoint];
     _metalView.paused = YES;
     _clockStarted = false;
     _simulationClock.reset();
@@ -462,14 +1206,16 @@ struct NativeCameraPan {
 }
 
 - (void)resetView {
-    if (!_scene) return;
-    if (_session && (_session->mission().gate == g1::MissionGate::camera || _session->battle())) return;
+    if (!_scene || _panelPurpose!=NativePanel::none) return;
+    if (_session && (_session->mission().gate == g1::MissionGate::camera ||
+        _session->focus_request() || _session->battle())) return;
     _camera.fit(*_scene,_metalView.bounds.size);
     ++_contentGeneration;
 }
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    [self updateCampaignLayout];
     UIScreen* screen = self.view.window.screen ?: UIScreen.mainScreen;
     // Allocate the render target at the attached display's native pixel scale,
     // not the old game's 480x320 framebuffer size. UIKit controls stay in points.
@@ -490,7 +1236,9 @@ struct NativeCameraPan {
 }
 
 - (void)pan:(UIPanGestureRecognizer*)gesture {
-    if (!_loaded || _metalView.bounds.size.height <= 0 || _session->mission().interaction_mode != 0 || _session->battle()) return;
+    if (!_loaded || _typeListOpen || _panelPurpose!=NativePanel::none || _session->world_presentation() ||
+        _metalView.bounds.size.height <= 0 || _session->mission().interaction_mode != 0 ||
+        _session->focus_request() || _session->battle()) return;
     const CGPoint delta = [gesture translationInView:_metalView];
     const float scale = _camera.span / static_cast<float>(_metalView.bounds.size.height);
     _camera.center_x -= static_cast<float>(delta.x) * scale;
@@ -500,7 +1248,8 @@ struct NativeCameraPan {
 }
 
 - (void)pinch:(UIPinchGestureRecognizer*)gesture {
-    if (!_loaded || _session->mission().interaction_mode != 0 || _session->battle()) return;
+    if (!_loaded || _typeListOpen || _panelPurpose!=NativePanel::none || _session->world_presentation() ||
+        _session->mission().interaction_mode != 0 || _session->focus_request() || _session->battle()) return;
     if (gesture.scale > 0)
         _camera.span = std::clamp(_camera.span / static_cast<float>(gesture.scale),
                                   _camera.base_span * 0.2F, _camera.base_span * 3.0F);
@@ -508,17 +1257,42 @@ struct NativeCameraPan {
     ++_contentGeneration;
 }
 
+- (std::optional<std::size_t>)unitAtPoint:(CGPoint)point padding:(CGFloat)padding {
+    const auto size=_metalView.bounds.size;
+    std::optional<std::size_t> selected;
+    double best=std::numeric_limits<double>::max();
+    if(size.width<=0 || size.height<=0)return selected;
+    for(std::size_t i=0;i<_animations.size();++i) {
+        const auto index=_scene->sprites[i].unit_index;
+        if(!_session->units().at(index).active || !_animations[i])continue;
+        const auto matrix=g1::multiply_matrix(_camera.matrix(),_unitModels[i]);
+        CGRect bounds=CGRectNull;
+        for(const auto& vertex:_spriteVertices[i][_animations[i]->current_frame()]) {
+            const auto p=transform(matrix,vertex.position);
+            const double x=(p[0]/p[3]*0.5+0.5)*size.width,y=(0.5-p[1]/p[3]*0.5)*size.height;
+            bounds=CGRectUnion(bounds,CGRectMake(x,y,0.1,0.1));
+        }
+        if(!CGRectIsNull(bounds) && CGRectContainsPoint(CGRectInset(bounds,-padding,-padding),point)) {
+            const double distance=std::hypot(point.x-CGRectGetMidX(bounds),point.y-CGRectGetMidY(bounds));
+            if(distance<best){best=distance;selected=i;}
+        }
+    }
+    return selected;
+}
+
 - (void)tap:(UITapGestureRecognizer*)gesture {
-    if (!_loaded || _failed) return;
+    if (!_loaded || _failed || _typeListOpen || _panelPurpose!=NativePanel::none || _session->world_presentation()) return;
     try {
-        if (_session->mission().interaction_mode != 0 || _session->moving() || _session->battle()) return;
+        if (_session->mission().interaction_mode != 0 || _session->moving() ||
+            _session->focus_request() || _session->battle()) return;
         const auto point = [gesture locationInView:_metalView];
         const auto size = _metalView.bounds.size;
         if (size.width <= 0 || size.height <= 0) return;
+        const auto hitUnit=[self unitAtPoint:point padding:_moveMode ? 0 : 14];
         std::optional<g1::WorldCoordinate> tile;
         float closest = std::numeric_limits<float>::max();
         const auto camera = _camera.matrix();
-        for (const auto& quad : _scene->terrain.quads) {
+        for (const auto& quad : _controlQuads) {
             if (quad.face != g1::TerrainFace::top) continue;
             std::array<CGPoint,4> screen{};
             float depth = 0;
@@ -537,16 +1311,33 @@ struct NativeCameraPan {
                                           static_cast<std::uint8_t>(quad.tile_y)};
             }
         }
-        bool occupied = false;
-        if (tile) for (const auto& unit : _session->world().units)
-            occupied = occupied || (unit.active && unit.x == tile->x && unit.y == tile->y);
-        if (_moveMode && tile && !occupied && _previewRange &&
+        if(_moveMode && hitUnit) {
+            const auto& unit=_session->units().at(_scene->sprites[*hitUnit].unit_index);
+            tile=g1::WorldCoordinate{unit.tile_x,unit.tile_y};
+        }
+        if(_productionMode && _productionType && tile && [self productionTileAllowed:*tile]) {
+            if(_pendingDestination && _pendingDestination->x==tile->x && _pendingDestination->y==tile->y) {
+                const auto result=_session->produce_selected(*_productionMode,*_productionType,*tile,
+                    g1::ProductionConfirmation::direct_type_list);
+                if(result) {
+                    ++_productionActions;_checkpointRequested=true;
+                    [self dispatchAudio:g1::MissionAudioRequest{result->audio_operation,result->audio_argument}];
+                    [self synchronizeScene];
+                    _returnCursor=result->return_cursor;
+                    _notice=@"Unit activated.";_noticeUntil=CACurrentMediaTime()+3;
+                } else {_notice=@"That activation is not available.";_noticeUntil=CACurrentMediaTime()+3;}
+                _productionMode.reset();_productionType.reset();_productionPlacement.reset();_pendingDestination.reset();
+            } else {_pendingDestination=tile;_notice=@"Tap the same tile again to activate.";_noticeUntil=CACurrentMediaTime()+3;}
+            _rangeDirty=true;[self refreshControls];return;
+        }
+        if (_moveMode && tile && _previewRange &&
             _previewRange->at(tile->x,tile->y) >= 0 &&
             _previewRange->at(tile->x,tile->y) != g1::movement_reserved_cell) {
             if (_pendingDestination && _pendingDestination->x == tile->x && _pendingDestination->y == tile->y) {
                 const auto result = _session->move_selected_to(*tile);
                 if (result == g1::MoveRequestResult::started) {
                     ++_moveActions;
+                    _checkpointRequested=true;
                     _moveMode = false;
                     _pendingDestination.reset();
                     _rangeDirty = true;
@@ -563,31 +1354,32 @@ struct NativeCameraPan {
             [self refreshControls];
             return;
         }
-        NSInteger selected = -1;
-        double best = std::numeric_limits<double>::max();
-        for (std::size_t i = 0; i < _animations.size(); ++i) {
-            const auto unitIndex = _scene->sprites[i].unit_index;
-            if (!_session->units().at(unitIndex).active) continue;
-            const auto matrix = g1::multiply_matrix(_camera.matrix(),_unitModels[i]);
-            CGRect bounds = CGRectNull;
-            for (const auto& vertex : _spriteVertices[i][_animations[i].current_frame()]) {
-                const auto p = transform(matrix,vertex.position);
-                const double x = (p[0] / p[3] * 0.5 + 0.5) * size.width;
-                const double y = (0.5 - p[1] / p[3] * 0.5) * size.height;
-                bounds = CGRectUnion(bounds,CGRectMake(x,y,0.1,0.1));
-            }
-            if (!CGRectIsNull(bounds) && CGRectContainsPoint(CGRectInset(bounds,-14,-14),point)) {
-                const double distance = std::hypot(point.x - CGRectGetMidX(bounds),
-                                                    point.y - CGRectGetMidY(bounds));
-                if (distance < best) { best = distance; selected = static_cast<NSInteger>(i); }
-            }
-        }
+        const NSInteger selected=hitUnit ? static_cast<NSInteger>(*hitUnit) : -1;
         if (selected >= 0) {
             const auto index = _scene->sprites[static_cast<std::size_t>(selected)].unit_index;
+            if (_healMode) {
+                if(std::find(_healTargets.begin(),_healTargets.end(),index)!=_healTargets.end()) {
+                    const auto result=_session->heal_selected(index);
+                    if(result) {
+                        if(result->outcome==g1::HealOutcome::healed) {
+                            ++_healActions;_checkpointRequested=true;
+                            _notice=[NSString stringWithFormat:@"HP %u · Energy %d",
+                                unsigned(result->target.health),result->funds_after];
+                            _noticeUntil=CACurrentMediaTime()+3;
+                        }
+                        if(result->audio_event_in_group5)
+                            [self dispatchAudio:g1::MissionAudioRequest{5,*result->audio_event_in_group5}];
+                        if(result->message_id)_pendingMessageIds.push_back(*result->message_id);
+                    }
+                    _healMode=false;_rangeDirty=true;
+                } else {_notice=@"Select a highlighted friendly unit.";_noticeUntil=CACurrentMediaTime()+3;}
+                [self refreshControls];return;
+            }
             if (_attackMode) {
                 if (std::find(_attackTargets.begin(),_attackTargets.end(),index) != _attackTargets.end() &&
                     _session->attack_selected(index)) {
                     ++_attackActions;
+                    _checkpointRequested=true;
                     _attackMode = false;
                     _rangeDirty = true;
                     _notice = nil;
@@ -601,6 +1393,8 @@ struct NativeCameraPan {
             if (_session->select(index)) {
                 _moveMode = false;
                 _attackMode = false;
+                _healMode = false;
+                _productionMode.reset();_productionType.reset();_productionPlacement.reset();_returnCursor.reset();
                 _pendingDestination.reset();
                 _notice = nil;
                 _rangeDirty = true;
@@ -608,7 +1402,7 @@ struct NativeCameraPan {
                 _notice = @"Select one of your available units.";
                 _noticeUntil = CACurrentMediaTime()+3;
             }
-        } else if (!_moveMode && !_attackMode) {
+        } else if (!_moveMode && !_attackMode && !_healMode && !_productionMode) {
             _session->clear_selection();
             _rangeDirty = true;
         }
@@ -621,27 +1415,26 @@ struct NativeCameraPan {
 - (void)refreshRange {
     if (!_rangeDirty) return;
     _rangeDirty = false;
-    _range.reset(); _cursor.reset(); _attackRange.reset();
+    _range.reset(); _cursor.reset(); _attackRange.reset();_healRange.reset();_productionRange.reset();
     _previewRange = _session->selected_movement_range();
     _attackTargets = _session->selected_attack_targets();
+    _healTargets = _session->selected_heal_targets();
     if (!_previewRange) {
         _moveMode = false;
         _pendingDestination.reset();
     }
     if (_attackTargets.empty()) _attackMode = false;
+    if (_healTargets.empty()) _healMode=false;
     if (_moveMode && _previewRange) {
         g1::TerrainMesh selected;
         selected.position_scale = _scene->terrain.position_scale;
         g1::TerrainMesh cursor;
         cursor.position_scale = selected.position_scale;
-        for (const auto& quad : _scene->terrain.quads)
+        for (const auto& quad : _controlQuads)
             if (quad.face == g1::TerrainFace::top && _previewRange->at(quad.tile_x,quad.tile_y) >= 0 &&
                 _previewRange->at(quad.tile_x,quad.tile_y) != g1::movement_reserved_cell) {
-                bool occupied = false;
-                for (const auto& unit : _session->world().units)
-                    occupied = occupied || (unit.active && unit.x == quad.tile_x && unit.y == quad.tile_y);
-                if (!occupied) selected.quads.push_back(quad);
-                if (!occupied && _pendingDestination && _pendingDestination->x == quad.tile_x &&
+                selected.quads.push_back(quad);
+                if (_pendingDestination && _pendingDestination->x == quad.tile_x &&
                     _pendingDestination->y == quad.tile_y) cursor.quads.push_back(quad);
             }
         auto vertices = g1::terrain_vertices(selected);
@@ -654,7 +1447,7 @@ struct NativeCameraPan {
     if (_attackMode) {
         g1::TerrainMesh targets;
         targets.position_scale = _scene->terrain.position_scale;
-        for (const auto& quad : _scene->terrain.quads) if (quad.face == g1::TerrainFace::top)
+        for (const auto& quad : _controlQuads) if (quad.face == g1::TerrainFace::top)
             for (const auto index : _attackTargets) {
                 const auto& unit = _session->units().at(index);
                 if (unit.tile_x == quad.tile_x && unit.tile_y == quad.tile_y) {
@@ -666,14 +1459,76 @@ struct NativeCameraPan {
         for (auto& vertex : vertices) { vertex.position[1] += 0.006F; vertex.uv = {{0,0}}; }
         if (!vertices.empty()) _attackRange = _renderer->mesh(vertices);
     }
+    if(_healMode) {
+        g1::TerrainMesh targets;targets.position_scale=_scene->terrain.position_scale;
+        for(const auto& quad:_controlQuads)if(quad.face==g1::TerrainFace::top)
+            for(const auto index:_healTargets) {
+                const auto& unit=_session->units().at(index);
+                if(unit.tile_x==quad.tile_x && unit.tile_y==quad.tile_y){targets.quads.push_back(quad);break;}
+            }
+        auto vertices=g1::terrain_vertices(targets);
+        for(auto& vertex:vertices){vertex.position[1]+=0.006F;vertex.uv={{0,0}};}
+        if(!vertices.empty())_healRange=_renderer->mesh(vertices);
+    }
+    if(_productionMode && _productionType) {
+        _productionPlacement=_session->selected_production_placement(*_productionMode);
+        g1::TerrainMesh targets,cursor;targets.position_scale=cursor.position_scale=_scene->terrain.position_scale;
+        for(const auto& quad:_controlQuads)
+            if([self productionTileAllowed:g1::WorldCoordinate{static_cast<std::uint8_t>(quad.tile_x),static_cast<std::uint8_t>(quad.tile_y)}]) {
+                targets.quads.push_back(quad);
+                if(_pendingDestination && _pendingDestination->x==quad.tile_x && _pendingDestination->y==quad.tile_y)
+                    cursor.quads.push_back(quad);
+            }
+        auto vertices=g1::terrain_vertices(targets);
+        for(auto& vertex:vertices){vertex.position[1]+=0.006F;vertex.uv={{0,0}};}
+        if(!vertices.empty())_productionRange=_renderer->mesh(vertices);
+        vertices=g1::terrain_vertices(cursor);
+        for(auto& vertex:vertices){vertex.position[1]+=0.009F;vertex.uv={{0,0}};}
+        if(!vertices.empty())_cursor=_renderer->mesh(vertices);
+    } else if(_returnCursor && !_moveMode) {
+        g1::TerrainMesh cursor;cursor.position_scale=_scene->terrain.position_scale;
+        for(const auto& quad:_controlQuads)
+            if(quad.tile_x==_returnCursor->x && quad.tile_y==_returnCursor->y)cursor.quads.push_back(quad);
+        auto vertices=g1::terrain_vertices(cursor);
+        for(auto& vertex:vertices){vertex.position[1]+=0.006F;vertex.uv={{0,0}};}
+        if(!vertices.empty())_cursor=_renderer->mesh(vertices);
+    }
+    ++_contentGeneration;
+}
+
+- (void)prepareBattle {
+    if (!_session || !_session->battle()) return;
+    const auto& pending = *_session->battle();
+    if (_battlePresentation && _battlePresentation->status().token == pending.token) return;
+    g1::M3GBattleRequest request;
+    request.token=pending.token; request.terrain_style=_session->world().style;
+    request.attacker_before=pending.attacker_before; request.defender_before=pending.defender_before;
+    request.exchange=pending.exchange;
+    auto presentation=std::make_unique<g1::M3GBattlePresentation>(*_archive,std::move(request));
+    std::vector<std::shared_ptr<g1::MetalM3GModel>> models;
+    models.reserve(presentation->assets().size());
+    for (const auto& asset:presentation->assets()) models.push_back(_m3gRenderer->upload(asset.render));
+    // Publish only a complete original-asset/GPU set. Allocation or unsupported
+    // state failures preserve the pending gameplay token and stop visibly.
+    _battleModels=std::move(models); _battlePresentation=std::move(presentation);
+    _battlePresentedToken=0;
+    [_battleCanvas resetPresentation];
+    for (const auto request:_battlePresentation->take_audio_requests()) [self dispatchAudio:request];
+    // Asset-loading time is not a simulation catch-up interval. The first
+    // matching drawable must be shown before the 30ms battle clock advances.
+    _clockStarted=false; _simulationClock.reset();
     ++_contentGeneration;
 }
 
 - (void)refreshControls {
     if (!_session || _failed) return;
+    if(_panelPurpose!=NativePanel::none) {
+        _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;return;
+    }
     if (_lastMissionMode != _session->mission().interaction_mode) {
         _lastMissionMode = _session->mission().interaction_mode;
-        _moveMode = false; _attackMode = false;
+        _moveMode = false; _attackMode = false;_healMode=false;
+        _productionMode.reset();_productionType.reset();_productionPlacement.reset();
         _pendingDestination.reset(); _rangeDirty = true;
     }
     if (_lastSelection != _session->selected()) {
@@ -682,23 +1537,28 @@ struct NativeCameraPan {
         _pendingDestination.reset();
         _moveMode = false;
         _attackMode = false;
+        _healMode = false;
+        _productionMode.reset();_productionType.reset();_productionPlacement.reset();
     }
     [self refreshRange];
     const auto& mission = _session->mission();
     const bool battle = _session->battle().has_value();
     _battlePanel.hidden = !battle;
+    _title.hidden=battle; _hint.hidden=battle; _worldLegend.hidden=battle;
     if (battle) {
-        const auto& exchange = *_session->battle();
-        const auto name = [&](const g1::CombatUnitState& unit) {
-            const auto& definition = _session->world().unit_definitions.at(unit.type);
-            return native_text(_text->at(g1::script_text_id(g1::unit_text_index(definition.raw_text_indices.at(unit.form)))));
+        [self prepareBattle];
+        const auto status=_battlePresentation->status();
+        const auto name = [&](std::size_t side) {
+            const auto& definition = _session->world().unit_definitions.at(status.types[side]);
+            return native_text(_text->at(g1::script_text_id(g1::unit_text_index(definition.raw_text_indices.at(status.forms[side])))));
         };
-        [_battleCanvas showBattle:exchange attacker:name(exchange.attacker_before) defender:name(exchange.defender_before)];
-        _battleDoneButton.enabled = [_battleCanvas readyForAcknowledgement];
+        [_battleCanvas showStatus:status left:name(0) right:name(1)];
     }
     const bool dialogue = mission.gate == g1::MissionGate::dialogue && mission.dialogue.has_value();
     _dialoguePanel.hidden = !dialogue || battle;
-    _commands.hidden = battle || dialogue || mission.interaction_mode != 0 || !_session->selected() || _session->moving();
+    _commands.hidden = battle || dialogue || mission.interaction_mode != 0 ||
+        _session->moving() || _session->focus_request().has_value() || _session->world_presentation().has_value() ||
+        _session->turn().controllers[_session->current_player()]==1;
     if (battle) {
         _hint.text = @"Battle";
     } else if (dialogue) {
@@ -718,15 +1578,20 @@ struct NativeCameraPan {
         _hint.text = _notice;
     } else if (_session->moving()) {
         _hint.text = @"Moving…";
+    } else if (_session->turn().controllers[_session->current_player()]==1) {
+        _hint.text = @"Computer turn";
     } else if (_session->selected()) {
         const auto index = *_session->selected();
         const auto& unit = _session->world().units.at(index);
         const auto& definition = _session->world().unit_definitions.at(unit.type);
         const auto& combat = _session->combat_units().at(index);
         const auto name = native_text(_text->at(g1::script_text_id(g1::unit_text_index(definition.raw_text_indices.at(unit.form)))));
-        _hint.text = _attackMode ? @"Select a highlighted enemy to attack." : _moveMode ? @"Tap a green tile, then tap it again to move." :
-            [NSString stringWithFormat:@"%@ · HP %u · ATK %d–%d · DEF %d",name,unsigned(combat.health),
-                int(combat.stats.attack_low),int(combat.stats.attack_high),int(combat.stats.defense)];
+        _hint.text = _productionMode ? @"Tap a highlighted adjacent tile, then tap it again to activate." :
+            _attackMode ? @"Select a highlighted enemy to attack." : _healMode ? @"Select a highlighted friendly unit to repair." :
+            _moveMode ? @"Tap a green tile, then tap it again to move." :
+            [NSString stringWithFormat:@"%@ · HP %u · ATK %d–%d · DEF %d · Energy %d",name,unsigned(combat.health),
+                int(combat.stats.attack_low),int(combat.stats.attack_high),int(combat.stats.defense),
+                _session->turn().funds[_session->current_player()]];
     } else if (mission.objective) {
         _hint.text = native_text(_text->at(mission.objective->text_id));
     } else {
@@ -736,6 +1601,17 @@ struct NativeCameraPan {
     _captureButton.enabled = _session->selected_can_capture();
     _transformButton.enabled = _session->selected_transform_eligibility() == g1::TransformEligibility::allowed;
     _attackButton.enabled = !_attackTargets.empty() && !battle;
+    _healButton.enabled=!_healTargets.empty() && !battle;
+    _upgradeButton.enabled=_session->selected_upgrade_eligibility()==g1::UpgradeEligibility::allowed;
+    _endTurnButton.enabled=_session->end_turn_available();
+    _buildButton.enabled=_session->selected_production_eligibility(g1::ProductionMode::ordinary)==g1::ProductionEligibility::allowed;
+    _deployButton.enabled=_session->selected_production_eligibility(g1::ProductionMode::deploy)==g1::ProductionEligibility::allowed;
+    _undoButton.enabled=_session->selected_can_undo();
+    if(_session->selected()) {
+        const auto& unit=_session->world().units.at(*_session->selected());
+        const auto cost=g1::unit_spawn_cost(_session->world().unit_definitions.at(unit.type));
+        [_upgradeButton setTitle:[NSString stringWithFormat:@"Upgrade (%d)",int(cost)] forState:UIControlStateNormal];
+    } else [_upgradeButton setTitle:@"Upgrade" forState:UIControlStateNormal];
     if (_session->world().title_text_index)
         _title.text = native_text(_text->at(g1::script_text_id(*_session->world().title_text_index)));
 }
@@ -745,6 +1621,8 @@ struct NativeCameraPan {
     try {
         _moveMode = true;
         _attackMode = false;
+        _healMode = false;
+        _productionMode.reset();_productionType.reset();_productionPlacement.reset();_returnCursor.reset();
         _pendingDestination.reset();
         _rangeDirty = true;
         _notice = nil;
@@ -757,6 +1635,8 @@ struct NativeCameraPan {
     try {
         _attackMode = !_session->selected_attack_targets().empty();
         _moveMode = false;
+        _healMode = false;
+        _productionMode.reset();_productionType.reset();_productionPlacement.reset();_returnCursor.reset();
         _pendingDestination.reset();
         _rangeDirty = true;
         _notice = nil;
@@ -764,22 +1644,160 @@ struct NativeCameraPan {
     } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
 }
 
-- (void)finishBattle {
-    if (!_loaded || _failed || !_session->battle() || ![_battleCanvas readyForAcknowledgement]) return;
+- (void)beginHeal {
+    if(!_loaded || _failed || _panelPurpose!=NativePanel::none || _session->battle())return;
     try {
-        const auto battle = *_session->battle();
-        if (battle.token != [_battleCanvas battleToken]) return;
-        // This user action is enabled only after the final native result view
-        // has actually drawn. Elapsed time alone never acknowledges a battle.
-        _session->report_battle_finished(battle.token);
-        _completedBattles.push_back(battle);
-        if (_completedBattles.size() > 64) _completedBattles.erase(_completedBattles.begin());
-        ++_battleAcknowledgements;
-        _rangeDirty = true;
-        _attackMode = false;
-        _notice = nil;
+        _healMode=!_session->selected_heal_targets().empty();
+        _productionMode.reset();_productionType.reset();_productionPlacement.reset();_returnCursor.reset();
+        _attackMode=false;_moveMode=false;_pendingDestination.reset();_rangeDirty=true;_notice=nil;
         [self refreshControls];
-    } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
+    } catch(const std::exception& e){[self fail:native_text(e.what())];}
+}
+
+- (BOOL)productionTileAllowed:(g1::WorldCoordinate)tile {
+    if(!_productionMode || !_productionPlacement || !_session->selected())return NO;
+    const auto& unit=_session->units().at(*_session->selected());
+    const int dx=int(tile.x)-int(unit.tile_x),dy=int(tile.y)-int(unit.tile_y);
+    const std::array<std::array<int,2>,4> directions{{{{0,-1}},{{0,1}},{{-1,0}},{{1,0}}}};
+    for(std::size_t i=0;i<directions.size();++i)
+        if(dx==directions[i][0] && dy==directions[i][1])
+            return _productionPlacement->reachable[i] && _productionPlacement->vacant[i];
+    return NO;
+}
+
+- (void)beginProduction { [self showProductionTypes:g1::ProductionMode::ordinary]; }
+- (void)beginDeploy { [self showProductionTypes:g1::ProductionMode::deploy]; }
+- (void)cancelProduction {
+    _typeListOpen=false;_productionMode.reset();_productionType.reset();_productionPlacement.reset();
+    _pendingDestination.reset();_rangeDirty=true;_clockStarted=false;_simulationClock.reset();
+    [self refreshControls];
+}
+
+- (void)showProductionTypes:(g1::ProductionMode)mode {
+    if(!_loaded || _failed || _panelPurpose!=NativePanel::none || _typeListOpen)return;
+    try {
+        if(_session->selected_production_eligibility(mode)!=g1::ProductionEligibility::allowed ||
+           !_session->selected())return;
+        const auto candidates=_session->selected_production_candidates(mode);
+        if(candidates.empty())return;
+        const auto producer=*_session->selected();
+        const auto spawn=_session->unit_spawn_generation(producer),session=_sessionInstalls;
+        const int funds=_session->turn().funds[_session->current_player()];
+        UIAlertController* choices=[UIAlertController alertControllerWithTitle:[self originalText:
+            mode==g1::ProductionMode::deploy ? 1055 : 785]
+            message:[NSString stringWithFormat:@"Energy: %d",funds]
+            preferredStyle:UIAlertControllerStyleActionSheet];
+        __weak G1ViewController* weakSelf=self;
+        for(const auto type:candidates) {
+            const auto& definition=_session->world().unit_definitions.at(type);
+            const auto name=[self originalText:g1::script_text_id(g1::unit_text_index(definition.raw_text_indices[0]))];
+            const auto cost=g1::unit_spawn_cost(definition);
+            NSString* label=[NSString stringWithFormat:@"%@ · %d",name,int(cost)];
+            [choices addAction:[UIAlertAction actionWithTitle:label style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction* action){(void)action;
+                    [weakSelf selectProductionType:type mode:mode session:session producer:producer spawn:spawn];}]];
+        }
+        [choices addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel
+            handler:^(UIAlertAction* action){(void)action;[weakSelf cancelProduction];}]];
+        choices.popoverPresentationController.sourceView=_commands;
+        choices.popoverPresentationController.sourceRect=_commands.bounds;
+        _typeListOpen=true;_simulationClock.reset();
+        [self presentViewController:choices animated:YES completion:nil];
+        choices.presentationController.delegate=self;
+    } catch(const std::exception& e){[self fail:native_text(e.what())];}
+}
+
+- (void)selectProductionType:(std::uint8_t)type mode:(g1::ProductionMode)mode
+    session:(std::uint64_t)session producer:(std::size_t)producer spawn:(std::uint64_t)spawn {
+    if(session!=_sessionInstalls || !_session || !_session->selected() ||
+       producer>=_session->units().size() || *_session->selected()!=producer ||
+       _session->unit_spawn_generation(producer)!=spawn)return;
+    _typeListOpen=false;_clockStarted=false;_simulationClock.reset();
+    try {
+        const auto candidates=_session->selected_production_candidates(mode);
+        if(std::find(candidates.begin(),candidates.end(),type)==candidates.end())
+            throw g1::FormatError("Selected activation type no longer belongs to the current menu");
+        _productionPlacement=_session->selected_production_placement(mode);
+        if(!_productionPlacement)return;
+        _productionMode=mode;_productionType=type;_pendingDestination=_productionPlacement->initial_cursor;
+        _moveMode=false;_attackMode=false;_healMode=false;_returnCursor.reset();_notice=nil;_rangeDirty=true;
+        [self refreshControls];
+    } catch(const std::exception& e){[self fail:native_text(e.what())];}
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController*)presentationController {
+    (void)presentationController;
+    if(_typeListOpen)[self cancelProduction];
+}
+
+- (void)upgradeUnit {
+    if(!_loaded || _failed || _panelPurpose!=NativePanel::none)return;
+    try {
+        const auto result=_session->upgrade_selected();
+        if(result) {
+            ++_upgradeActions;_checkpointRequested=true;_rangeDirty=true;
+            [self dispatchAudio:g1::MissionAudioRequest{5,13}]; // Original human59edc branch.
+            _moveMode=false;_attackMode=false;_healMode=false;_pendingDestination.reset();
+            _notice=[NSString stringWithFormat:@"Level %u · Energy %d",unsigned(result->combat.level),result->funds_after];
+            _noticeUntil=CACurrentMediaTime()+3;
+        }
+        [self refreshControls];[self saveCheckpoint];
+    } catch(const std::exception& e){[self fail:native_text(e.what())];}
+}
+
+- (void)undoAction {
+    if(!_loaded || _failed || _panelPurpose!=NativePanel::none || _typeListOpen)return;
+    try {
+        const auto result=_session->undo_selected();
+        if(result) {
+            ++_undoActions;_checkpointRequested=true;_rangeDirty=true;
+            _moveMode=false;_attackMode=false;_healMode=false;
+            _productionMode.reset();_productionType.reset();_productionPlacement.reset();
+            _pendingDestination.reset();_returnCursor=result->cursor;
+            _previousUnits=_session->units();
+            [self dispatchAudio:g1::MissionAudioRequest{result->audio_operation,result->audio_argument}];
+            _notice=nil;++_contentGeneration;
+            // GameSession owns retain_selection and the record=false form
+            // reversal. Do not synthesize a second transform animation here.
+        }
+        [self refreshControls];[self saveCheckpoint];
+    } catch(const std::exception& e){[self fail:native_text(e.what())];}
+}
+
+- (void)endTurn {
+    if(!_loaded || _failed || _panelPurpose!=NativePanel::none || _endTurnButton.hidden)return;
+    try {
+        const auto result=_session->end_turn();
+        if(result) {
+            ++_endTurnActions;_checkpointRequested=true;_rangeDirty=true;
+            _moveMode=false;_attackMode=false;_healMode=false;_pendingDestination.reset();_notice=nil;
+        }
+        [self refreshControls];
+    } catch(const std::exception& e){[self fail:native_text(e.what())];}
+}
+
+- (void)finishBattleFrame:(const NativePresentedFrame::Battle&)frame {
+    if (!_loaded || _failed || !_session->battle() || !_battlePresentation || !frame.complete) return;
+    const auto status=_battlePresentation->status();
+    if (frame.token!=_session->battle()->token || frame.token!=status.token ||
+        frame.revision!=status.revision || !status.complete ||
+        ![_battleCanvas hasDrawnToken:frame.token revision:frame.revision]) return;
+    // Called only from this drawable's positive presentedTime callback. The
+    // original controller has finished and the same final HUD revision drew.
+    // Neither a timer, a Continue button nor an unsupported-asset path can ack.
+    const auto battle=*_session->battle();
+    _session->report_battle_finished(battle.token);
+    _completedBattles.push_back(battle);
+    if (_completedBattles.size()>64) _completedBattles.erase(_completedBattles.begin());
+    ++_battleAcknowledgements;
+    _lastBattleFinalToken=frame.token; _lastBattleFinalRevision=frame.revision;
+    // Original45af0 natural-completion wrapper calls audio operation2,arg0.
+    // This conditional query is not an invented music-resume/loop request.
+    [self dispatchAudio:g1::MissionAudioRequest{2,0}];
+    _battlePresentation.reset(); _battleModels.clear(); _battlePresentedToken=0;
+    _checkpointRequested=true; _rangeDirty=true; _attackMode=false; _notice=nil;
+    _clockStarted=false; _simulationClock.reset(); ++_contentGeneration;
+    [self refreshControls];
 }
 
 - (void)capture {
@@ -788,6 +1806,7 @@ struct NativeCameraPan {
         const auto result = _session->capture_selected();
         if (result.status == g1::CaptureStatus::captured) {
             ++_captureActions;
+            _checkpointRequested=true;
             if (result.audio_5_12) [self dispatchAudio:g1::MissionAudioRequest{5,12}];
             _notice = @"Captured.";
             _noticeUntil = CACurrentMediaTime()+2;
@@ -795,12 +1814,10 @@ struct NativeCameraPan {
             _pendingDestination.reset();
             _moveMode = false;
             _attackMode = false;
+            _healMode = false;
             ++_contentGeneration;
         } else if (result.message_id) {
-            UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Capture"
-                message:native_text(_text->at(*result.message_id)) preferredStyle:UIAlertControllerStyleAlert];
-            [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-            [self presentViewController:alert animated:YES completion:nil];
+            _pendingMessageIds.push_back(*result.message_id);
         }
         [self refreshControls];
     } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
@@ -812,12 +1829,14 @@ struct NativeCameraPan {
         const auto result = _session->transform_selected();
         if (result) {
             ++_transformActions;
+            _checkpointRequested=true;
             if (result->audio_event_in_group5)
                 [self dispatchAudio:g1::MissionAudioRequest{5,*result->audio_event_in_group5}];
             _rangeDirty = true;
             _pendingDestination.reset();
             _moveMode = false;
             _attackMode = false;
+            _healMode = false;
             _notice = nil;
         }
         [self refreshControls];
@@ -840,16 +1859,162 @@ struct NativeCameraPan {
     [_audio request:request];
 }
 
+- (NSString*)messageText:(std::uint32_t)resource {
+    if((resource&0xffff0000U)==0x21ff0000U)
+        return [self originalText:static_cast<std::uint16_t>(resource)];
+    if(resource<=65535U && _text->contains(static_cast<std::uint16_t>(resource)))
+        return [self originalText:static_cast<std::uint16_t>(resource)];
+    throw g1::FormatError("Requested localized message has no recovered text resource");
+}
+
+- (void)showNextMessage {
+    if(_panelPurpose!=NativePanel::none || _pendingMessageIds.empty())return;
+    [self showPanel:NativePanel::message title:[self originalText:715]
+        body:[self messageText:_pendingMessageIds.front()] token:++_localPanelToken];
+    _panelContinueButton=[self addCampaignButton:[self originalText:587] action:@selector(dismissMessage)];
+    _panelContinueButton.enabled=NO;
+}
+
+- (void)dismissMessage {
+    if(_panelPurpose!=NativePanel::message || _pendingMessageIds.empty() ||
+       [_campaignCanvas drawnToken]!=_panelToken)return;
+    _presentedMessageIds.push_back(_pendingMessageIds.front());
+    if(_presentedMessageIds.size()>256)_presentedMessageIds.erase(_presentedMessageIds.begin());
+    _pendingMessageIds.erase(_pendingMessageIds.begin());
+    [self hidePanel];[self showNextMessage];[self refreshControls];
+}
+
+- (void)showResults {
+    const auto& state=_campaign->state();
+    if(!state.results)throw g1::FormatError("Campaign results request is missing its real record");
+    const auto& result=*state.results;
+    NSString* body=[NSString stringWithFormat:@"%@ %d\n\n%@ %d\n%@ · %@ %d",
+        [self originalText:1242],result.campaign.mission_index+1,
+        [self originalText:667],result.current_record.value_274,
+        [self originalText:535],[self originalText:667],result.best_record.value_274];
+    [self showPanel:NativePanel::results title:[self originalText:1266] body:body token:state.token];
+    _panelContinueButton=[self addCampaignButton:[self originalText:587] action:@selector(continueResults)];
+    _panelContinueButton.enabled=NO;
+}
+
+- (void)continueResults {
+    if(!_campaign || _panelPurpose!=NativePanel::results ||
+       _campaign->state().gate!=g1::CampaignControllerGate::results ||
+       _campaign->state().token!=_panelToken || !_campaign->state().results ||
+       !_campaign->state().results->drawn || [_campaignCanvas drawnToken]!=_panelToken)return;
+    _resultsInputEdges|=16; // Actual native button, original accepted results mask.
+}
+
+- (void)retryCampaignSave {
+    if(!_campaign)return;
+    try {
+        if(_campaign->state().gate==g1::CampaignControllerGate::save_failed) {
+            const auto written=_campaign->retry_save(_campaign->state().token);
+            if(!written.succeeded)_panelPurpose=NativePanel::none; // Refresh the actual retry error.
+        }
+        _campaignError=nil;
+        _campaignRetryRequired=false;
+        [self updateCampaign:0];
+    } catch(const std::exception& e) {
+        _campaignError=native_text(e.what());_campaignRetryRequired=true;
+        [self showPanel:NativePanel::save_error title:@"Campaign could not continue"
+            body:_campaignError token:++_localPanelToken];
+        [self addCampaignButton:@"Retry" action:@selector(retryCampaignSave)];
+    }
+}
+
+- (void)updateCampaign:(std::uint32_t)delta {
+    if(!_campaign || !_session || _campaignRetryRequired)return;
+    if(_panelPurpose==NativePanel::message) {
+        _panelContinueButton.enabled=[_campaignCanvas drawnToken]==_panelToken;return;
+    }
+    if(_campaign->state().gate==g1::CampaignControllerGate::idle) {
+        if(_panelPurpose!=NativePanel::none || !_pendingMessageIds.empty() ||
+           _session->mission().stop!=g1::MissionStop::campaign_handoff_required)return;
+        (void)_campaign->begin(*_session); // Writes the real profile; failures retain the old checkpoint.
+    }
+    using Gate=g1::CampaignControllerGate;
+    const auto token=_campaign->state().token;
+    if(_campaign->state().gate==Gate::save_failed) {
+        if(_panelPurpose!=NativePanel::save_error || _panelToken!=token) {
+            [self showPanel:NativePanel::save_error title:@"Campaign could not be saved"
+                body:native_text(_campaign->state().save_error) token:token];
+            [self addCampaignButton:@"Retry save" action:@selector(retryCampaignSave)];
+        }
+        return;
+    }
+    if(_campaign->state().gate==Gate::results) {
+        if(_panelPurpose!=NativePanel::results || _panelToken!=token)[self showResults];
+        if([_campaignCanvas drawnToken]==token && !_campaign->state().results->drawn) {
+            const auto height=static_cast<std::int32_t>(std::ceil(_campaignCanvas.bounds.size.height));
+            _campaign->report_results_presented(token,height);++_resultsReports;
+        }
+        if(_campaign->state().results->drawn) {
+            _panelContinueButton.enabled=YES;
+            const auto update=_campaign->update_results(token,delta ? _resultsInputEdges : 0U,delta);
+            if(delta)_resultsInputEdges=update.remaining_input_edges;
+            [_campaignCanvas setBackgroundOffset:update.background_offset_q16];
+        }
+        if(_campaign->state().gate==Gate::results)return;
+    }
+    try {
+        if(_campaign->state().gate==Gate::next_mission) {
+            auto prepared=_campaign->prepare_next_campaign(token,*_archive);
+            auto session=std::make_unique<g1::GameSession>(*_archive,std::move(prepared.bootstrap),prepared.context);
+            auto nextController=std::make_unique<g1::CampaignController>(_profilePath.UTF8String);
+            [self installSession:std::move(session)];
+            if(![self retireCheckpoint])throw std::runtime_error(_checkpointError.UTF8String ?: "Checkpoint retirement failed");
+            _campaign->report_next_session_installed(token,*_session);
+            _campaign=std::move(nextController);
+            _checkpointRequested=true;_restoredCheckpoint=false;
+            [self hidePanel];[self refreshControls];return;
+        }
+        if(_campaign->state().gate==Gate::campaign_menu) {
+            if(![self retireCheckpoint])throw std::runtime_error(_checkpointError.UTF8String ?: "Checkpoint retirement failed");
+            if(_panelPurpose!=NativePanel::menu || _panelToken!=token)[self showProfileMenu];
+            if([_campaignCanvas drawnToken]==token)_campaign->report_menu_presented(token);
+            return;
+        }
+        if(_campaign->state().gate==Gate::campaign_ending) {
+            if(![self retireCheckpoint])throw std::runtime_error(_checkpointError.UTF8String ?: "Checkpoint retirement failed");
+            if(!_campaign->state().handoff || !_campaign->state().handoff->ending_text_resource)
+                throw g1::FormatError("Campaign ending has no original text request");
+            if(_panelPurpose!=NativePanel::ending || _panelToken!=token) {
+                [self showPanel:NativePanel::ending title:[self originalText:715]
+                    body:[self messageText:*_campaign->state().handoff->ending_text_resource] token:token];
+                _panelContinueButton=[self addCampaignButton:[self originalText:1169] action:@selector(showProfileMenu)];
+                _panelContinueButton.enabled=NO;
+            }
+            if([_campaignCanvas drawnToken]==token) {
+                _campaign->report_ending_presented(token);++_endingReports;_panelContinueButton.enabled=YES;
+            }
+        }
+    } catch(const std::exception& e) {
+        _campaignError=native_text(e.what());_campaignRetryRequired=true;
+        [self showPanel:NativePanel::save_error title:@"Campaign could not continue"
+            body:_campaignError token:++_localPanelToken];
+        [self addCampaignButton:@"Retry" action:@selector(retryCampaignSave)];
+    }
+}
+
 - (void)advanceCamera:(std::uint32_t)delta {
     const auto& mission = _session->mission();
-    if (mission.gate != g1::MissionGate::camera || !mission.camera) return;
-    if (!_cameraPan || _cameraPan->command != mission.command_index) {
-        const auto& request = *mission.camera;
-        if (request.x < 0 || request.y < 0 || request.x >= _session->world().grid.width ||
-            request.y >= _session->world().grid.height)
+    std::uint64_t token = 0;
+    bool sessionFocus = false, immediate = false;
+    std::int32_t x = 0, y = 0;
+    if (mission.gate == g1::MissionGate::camera && mission.camera) {
+        token = mission.command_index;
+        x = mission.camera->x; y = mission.camera->y; immediate = mission.camera->immediate;
+    } else if (_session->focus_request()) {
+        const auto& request = *_session->focus_request();
+        token = request.token; sessionFocus = true;
+        x = request.tile.x; y = request.tile.y; immediate = request.immediate;
+    } else { _cameraPan.reset(); return; }
+    if (!_cameraPan || _cameraPan->token != token || _cameraPan->session_focus != sessionFocus) {
+        if (x < 0 || y < 0 || x >= _session->world().grid.width || y >= _session->world().grid.height)
             throw g1::FormatError("Camera request lies outside the recovered scene");
-        _cameraPan = NativeCameraPan{mission.command_index,_camera.center_x,_camera.center_z,
-            (request.x+0.5F)*0.32F,(request.y+0.5F)*0.32F,0,request.immediate ? 0U : 360U,false};
+        _cameraPan = NativeCameraPan{token,sessionFocus,_camera.center_x,_camera.center_z,
+            (x+0.5F)*0.32F,(y+0.5F)*0.32F,0,immediate ? 0U : 360U,false};
     }
     auto& pan = *_cameraPan;
     if (pan.reached) return;
@@ -875,9 +2040,29 @@ struct NativeCameraPan {
         const auto index = _scene->sprites[i].unit_index;
         const auto& unit = _session->units().at(index);
         const auto& worldUnit = _session->world().units.at(index);
-        if (!unit.active) continue;
+        if (!unit.active) {
+            _renderedActive[i] = false; _animations[i].reset(); _animationIds[i] = -1;
+            _playbackTransformGenerations[i] = 0; _pendingTransformCompletions[i].reset();
+            continue;
+        }
         const auto& row = _animationTable.at(worldUnit.type);
         const auto signedId = [](std::uint8_t value) { return value < 128 ? int(value) : int(value)-256; };
+        if (!_animations[i] || !_renderedActive[i] ||
+            _playbackSpawnGenerations[i] != _session->unit_spawn_generation(index)) {
+            if (unit.form > 1 || unit.facing > 3) throw g1::FormatError("Activated unit has unsupported sprite form/facing");
+            const int initial = signedId(row[unit.form*4+unit.facing]);
+            if (initial < 0 || static_cast<std::size_t>(initial) >= _scene->sprites[i].descriptor.animations().size())
+                throw g1::FormatError("Activated unit's initial animation is not present in its descriptor");
+            _animations[i].emplace(_scene->sprites[i].descriptor.animations()[initial],-1,false);
+            _animationIds[i] = initial;
+            _renderedActive[i] = true;
+            _playbackSpawnGenerations[i] = _session->unit_spawn_generation(index);
+            _playbackTransformGenerations[i] = 0;
+            _pendingTransformCompletions[i].reset();
+            if (index < _previousUnits.size()) _previousUnits[index] = unit;
+            ++_spawnPlaybackResets;
+            ++_contentGeneration;
+        }
         const int special = signedId(row[8]);
         bool reverse = false;
         std::int32_t repeats = -1;
@@ -886,45 +2071,74 @@ struct NativeCameraPan {
             desired = special;
             reverse = unit.form == 0;
             repeats = 1;
+            _playbackTransformGenerations[i] = _session->unit_transform_generation(index);
+            _pendingTransformCompletions[i].reset();
             _session->clear_transform_animation_request(index); // Original6cdc6.
         } else {
             if (unit.form > 1 || unit.facing > 3) throw g1::FormatError("Unsupported sprite form/facing");
             desired = signedId(row[unit.form*4+unit.facing]);
         }
-        const auto beforeFrame = _animations[i].current_frame();
+        const auto beforeFrame = _animations[i]->current_frame();
         bool changed = false;
-        if (_animationIds[i] == special && !_animations[i].state().completed) {
+        if (_animationIds[i] == special && !_animations[i]->state().completed) {
             if (sharedDelta > std::uint32_t(std::numeric_limits<std::int32_t>::max()/2))
                 throw g1::FormatError("Original shared sprite delta exceeded signed range");
             sharedDelta *= 2;
         } else if (desired != _animationIds[i] && desired != -1) {
             if (desired < 0 || static_cast<std::size_t>(desired) >= _scene->sprites[i].descriptor.animations().size())
                 throw g1::FormatError("Sprite animation request exceeds recovered descriptor");
+            // Original 6ce42..6ce50 clears global map+28 when the OLD
+            // animation equals row8. It does not compare that global to the
+            // current unit. Native host completion is deferred until the
+            // resulting normal-animation frame has actually been presented.
+            if (_animationIds[i] == special && _playbackTransformGenerations[i] != 0)
+                _pendingTransformCompletions[i] = NativeTransformCompletion{index,
+                    _playbackTransformGenerations[i],_playbackSpawnGenerations[i]};
             _animations[i] = g1::SpriteAnimation(_scene->sprites[i].descriptor.animations()[desired],repeats,reverse);
             _animationIds[i] = desired;
             changed = true; // Original new sequence is not advanced in this tick.
         }
         if (!changed) {
             if (unit.flag_2c && worldUnit.owner == _session->current_player() && _animationIds[i] != special)
-                _animations[i].select_step(0);
-            else _animations[i].advance_ms(sharedDelta);
+                _animations[i]->select_step(0);
+            else _animations[i]->advance_ms(sharedDelta);
         }
-        if (changed || beforeFrame != _animations[i].current_frame()) ++_contentGeneration;
+        if (changed || beforeFrame != _animations[i]->current_frame()) ++_contentGeneration;
     }
 }
 
 - (void)simulate:(std::uint32_t)delta {
+    if(_typeListOpen)return;
+    const auto installedBefore=_sessionInstalls;
+    const auto panelBefore=_panelPurpose;
+    [self updateCampaign:0];
+    if(installedBefore!=_sessionInstalls || (panelBefore!=NativePanel::none && _panelPurpose==NativePanel::none))delta=0;
+    if(_panelPurpose!=NativePanel::none) {
+        const auto steps=_simulationClock.add_elapsed(delta);
+        for(std::uint32_t n=0;n<steps && _panelPurpose!=NativePanel::none;++n)
+            [self updateCampaign:g1::SimulationClock::step_ms];
+        return;
+    }
+    [self showNextMessage];
+    if(_panelPurpose!=NativePanel::none || _typeListOpen)return;
+    [self synchronizeScene];
+    [self prepareWorldPresentation];
+    [self refreshWorldOverlays];
+    [self refreshTerrainDecorations];
     const auto steps = _simulationClock.add_elapsed(delta);
     for (std::uint32_t n=0;n<steps;++n) {
         _previousUnits = _session->units();
-        [self advanceCamera:g1::SimulationClock::step_ms];
         [self refreshControls];
         if (_session->battle()) {
-            [_battleCanvas advance:g1::SimulationClock::step_ms];
-            ++_battlePresentationTicks;
-            [self advanceSprites:g1::SimulationClock::step_ms];
+            if (_battlePresentation && _battlePresentedToken==_battlePresentation->status().token &&
+                !_battlePresentation->status().complete) {
+                _battlePresentation->advance(g1::SimulationClock::step_ms);
+                for (const auto request:_battlePresentation->take_audio_requests()) [self dispatchAudio:request];
+                ++_battlePresentationTicks; ++_contentGeneration;
+            }
             continue;
         }
+        [self advanceCamera:g1::SimulationClock::step_ms];
         g1::MissionTickInput input;
         if (_session->mission().gate == g1::MissionGate::dialogue) {
             input.dialogue_layout = [_dialogueCanvas layoutFeedback];
@@ -933,20 +2147,35 @@ struct NativeCameraPan {
             if (_inputCommand == _session->mission().command_index) input.input_edges = _inputEdges;
         } else _inputEdges = 0;
         const auto result = _session->tick(g1::SimulationClock::step_ms,input);
+        [self synchronizeScene];
+        [self prepareWorldPresentation];
+        [self refreshWorldOverlays];
+        [self refreshTerrainDecorations];
         _inputEdges = result.mission.remaining_input_edges;
+        for(const auto request:result.audio)[self dispatchAudio:request];
+        _pendingMessageIds.insert(_pendingMessageIds.end(),result.message_ids.begin(),result.message_ids.end());
         for (const auto effect : result.mission.effects)
             if (effect == g1::MissionEffect::skip_dialogue_audio_event)
                 [self dispatchAudio:g1::MissionAudioRequest{5,18}];
         if (result.completion) {
             for (const auto request : result.completion->audio_requests) [self dispatchAudio:request];
             _pendingCompletionRequests.emplace_back(_session->mission().command_index,*result.completion);
+            if(result.completion->text_resource_id)_pendingMessageIds.push_back(*result.completion->text_resource_id);
         }
         ++_simulationTicks;
-        if (result.movement_finished || result.world_changed) _rangeDirty = true;
+        if (result.movement_finished || result.world_changed || result.turn_transition) {
+            _rangeDirty = true;_checkpointRequested=true;
+        }
         [self advanceSprites:g1::SimulationClock::step_ms];
+        [self showNextMessage];
+        if(_panelPurpose!=NativePanel::none)break;
     }
+    if(_panelPurpose!=NativePanel::none || _typeListOpen)return;
     [self advanceCamera:0];
     [self refreshControls];
+    if(_session->checkpoint_available() && _checkpointCommand!=_session->mission().command_index)
+        _checkpointRequested=true;
+    [self saveCheckpoint];
     const float blend = _simulationClock.interpolation();
     for (std::size_t i=0;i<_unitModels.size();++i) {
         const auto index = _scene->sprites[i].unit_index;
@@ -960,22 +2189,78 @@ struct NativeCameraPan {
     }
 }
 
-- (void)recordPresentation:(double)time content:(std::uint64_t)content camera:(NSInteger)cameraToken {
-    if (_metalView.paused || time <= 0 || !std::isfinite(time)) return;
+- (void)deliverPresentation:(std::shared_ptr<NativePresentationDelivery>)delivery {
+    if (!delivery || delivery->delivered || delivery->failed || !delivery->completed ||
+        delivery->presented_time<=0 || !std::isfinite(delivery->presented_time)) return;
+    delivery->delivered=true;
+    [self recordPresentation:delivery->presented_time frame:delivery->frame];
+}
+
+- (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame {
+    if (!frame || frame->scene_revision != _sceneRevision) return;
+    if (_failed || _metalView.paused || time <= 0 || !std::isfinite(time)) return;
     if (!_frameStats.times.empty() && time <= _frameStats.times.back()) return;
     _frameStats.add(time);
-    if (content != _lastPresentedContent) { ++_presentedContentChanges; _lastPresentedContent = content; }
-    if (cameraToken >= 0 && _session && _session->mission().gate == g1::MissionGate::camera &&
-        _session->mission().command_index == static_cast<std::size_t>(cameraToken)) {
-        try {
-            _session->report_camera(static_cast<std::size_t>(cameraToken),true);
-            ++_cameraReports;
-        } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
+    if (frame->content_generation != _lastPresentedContent) {
+        ++_presentedContentChanges; _lastPresentedContent = frame->content_generation;
     }
+    if(_panelPurpose!=NativePanel::none || _typeListOpen)return;
+    try {
+        if (frame->battle) {
+            ++_battlePresentedFrames; _battleQueuedDrawsPresented+=frame->battle->queued_draws;
+            if (_session->battle() && _battlePresentation &&
+                _session->battle()->token==frame->battle->token &&
+                _battlePresentation->status().token==frame->battle->token) {
+                _battlePresentedToken=frame->battle->token;
+                [self finishBattleFrame:*frame->battle];
+            }
+        } else if (_session->battle()) {
+            // A queued tactical drawable cannot acknowledge hidden tactical
+            // focus, transform or world work while the battle is now active.
+            return;
+        }
+        if(frame->world && _session->world_presentation() &&
+           _session->world_presentation()->token==*frame->world &&
+           _preparedWorldToken && *_preparedWorldToken==*frame->world) {
+            _session->report_world_presented(*frame->world);++_worldReports;
+            _preparedWorldToken.reset();_rangeDirty=true;_checkpointRequested=true;
+        }
+        if (frame->mission_camera && _session->mission().gate == g1::MissionGate::camera &&
+            _session->mission().command_index == *frame->mission_camera) {
+            _session->report_camera(*frame->mission_camera,true);
+            ++_cameraReports;
+        }
+        if (frame->session_focus && _session->focus_request() &&
+            _session->focus_request()->token == *frame->session_focus) {
+            _session->report_focus_presented(*frame->session_focus);
+            ++_focusReports;
+            _checkpointRequested=true;
+        }
+        for (const auto& completion : frame->transforms) {
+            const auto index = completion.unit_index;
+            if (index >= _session->units().size() || !_session->units()[index].active ||
+                !_session->unit_transform_waiting(index) ||
+                _session->unit_transform_generation(index) != completion.transform_generation ||
+                _session->unit_spawn_generation(index) != completion.spawn_generation) continue;
+            _session->report_transform_finished(index,completion.transform_generation);
+            ++_transformReports;
+            _checkpointRequested=true;
+            for (auto& pending : _pendingTransformCompletions)
+                if (pending && pending->unit_index == index &&
+                    pending->transform_generation == completion.transform_generation &&
+                    pending->spawn_generation == completion.spawn_generation) pending.reset();
+        }
+        [self saveCheckpoint];
+    } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
     if (time - _lastHudTime < 0.5 || _frameStats.times.size() < 2) return;
     _lastHudTime = time;
     _fps.text = [NSString stringWithFormat:@"%.1f presented fps · target %ld",_frameStats.fps(),
         static_cast<long>(_metalView.preferredFramesPerSecond)];
+}
+
+- (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision {
+    if(revision!=_sceneRevision){++_staleGpuErrors;return;}
+    [self fail:message];
 }
 
 - (void)drawInMTKView:(MTKView*)view {
@@ -995,40 +2280,137 @@ struct NativeCameraPan {
             if (std::uint32_t(tick - _lastTick) > 1000U) ++_clampedClockIntervals;
             _lastTick = tick;
             [self simulate:delta];
-            const auto camera = _camera.matrix();
-            std::vector<g1::MetalDraw> draws{
-                {_terrain,_textures[@(_scene->terrain.atlas_resource_id)],camera,{{1,1,1,1}},true}};
-            if (_range) draws.push_back({_range,_white,camera,{{0.12F,0.9F,0.85F,0.36F}},false});
-            if (_cursor) draws.push_back({_cursor,_white,camera,{{1,0.82F,0.12F,0.6F}},false});
-            if (_attackRange) draws.push_back({_attackRange,_white,camera,{{1,0.18F,0.14F,0.48F}},false});
-            std::vector<std::size_t> order;
-            for (std::size_t i = 0; i < _animations.size(); ++i)
-                if (_session->units().at(_scene->sprites[i].unit_index).active) order.push_back(i);
-            std::stable_sort(order.begin(),order.end(),[&](std::size_t a,std::size_t b) {
-                const auto pa = transform(g1::multiply_matrix(camera,_unitModels[a]),{{0,0,0,1}});
-                const auto pb = transform(g1::multiply_matrix(camera,_unitModels[b]),{{0,0,0,1}});
-                return pa[2] > pb[2];
-            });
-            for (const auto i : order) {
-                const auto texture = _textures[@(_scene->sprites[i].resource.image_id)];
-                draws.push_back({_spriteMeshes[i][_animations[i].current_frame()],texture,
-                    g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true});
-            }
+            if(!_loaded || !_scene)return;
             id<MTLCommandBuffer> command = [_queue commandBuffer];
-            _renderer->encode(command,pass,draws);
+            if (!command) throw g1::FormatError("Metal command buffer is unavailable");
+            auto frame = std::make_shared<NativePresentedFrame>();
+            frame->content_generation = _contentGeneration;
+            frame->scene_revision = _sceneRevision;
+            if (_session->battle()) {
+                [self prepareBattle];
+                std::vector<const g1::M3GRenderAsset*> uploaded;
+                for (const auto& model:_battleModels) uploaded.push_back(&model->asset());
+                const auto size=view.drawableSize;
+                // Native XR policy: preserve authored vertical FOV/parallel
+                // height, changing only aspect for the actual drawable.
+                const auto output=_battlePresentation->prepare_frame(
+                    {{static_cast<float>(size.width),static_cast<float>(size.height)}},uploaded,
+                    _simulationClock.interpolation(),static_cast<float>(size.width/size.height));
+                pass.colorAttachments[0].loadAction=output.clear_color ? MTLLoadActionClear : MTLLoadActionLoad;
+                pass.colorAttachments[0].clearColor=MTLClearColorMake(output.background_color[0],
+                    output.background_color[1],output.background_color[2],output.background_color[3]);
+                pass.depthAttachment.loadAction=output.clear_depth ? MTLLoadActionClear : MTLLoadActionLoad;
+                pass.depthAttachment.clearDepth=1;
+                id<MTLRenderCommandEncoder> encoder=[command renderCommandEncoderWithDescriptor:pass];
+                if (!encoder) throw g1::FormatError("Metal battle render encoder is unavailable");
+                [encoder setViewport:MTLViewport{0,0,size.width,size.height,0,1}];
+                std::size_t queued=0;
+                for (const auto& submission:output.submissions) {
+                    // Each original node call flushes its own queue. World
+                    // clear occurs once; A/B/effects retain this order/depth.
+                    _m3gRenderer->encode_frame(encoder,{_battleModels.at(submission.asset_index)},submission.frame);
+                    queued+=submission.frame.draws.size();
+                }
+                [encoder endEncoding];
+                frame->battle=NativePresentedFrame::Battle{output.token,output.revision,output.complete,queued};
+                ++_battlePreparedFrames;
+            } else {
+                pass.colorAttachments[0].loadAction=MTLLoadActionClear;
+                pass.colorAttachments[0].clearColor=view.clearColor;
+                pass.depthAttachment.loadAction=MTLLoadActionClear;
+                pass.depthAttachment.clearDepth=1;
+                const auto camera = _camera.matrix();
+                std::vector<g1::MetalDraw> draws{
+                    {_terrain,_textures[@(_scene->terrain.atlas_resource_id)],camera,{{1,1,1,1}},true}};
+                if(_scene->terrain.animated_surface && !_session->terrain_state())
+                    throw g1::FormatError("Animated terrain has no native clock state");
+                const float terrainOffset=_session->terrain_state() ?
+                    g1::terrain_animation_u_offset(_session->terrain_state()->animation) : 0;
+                // Original420 indices reserve transient slots before fixed faces.
+                if(_decorationTerrain && _scene->terrain.animated_surface)
+                    draws.push_back({_decorationTerrain,_textures[@(_scene->terrain.animated_surface->atlas_resource_id)],
+                        camera,{{1,1,1,1}},true,{{terrainOffset,0}}});
+                if(_animatedTerrain && _scene->terrain.animated_surface)
+                    draws.push_back({_animatedTerrain,_textures[@(_scene->terrain.animated_surface->atlas_resource_id)],
+                        camera,{{1,1,1,1}},true,{{terrainOffset,0}}});
+                // Recovered visible/attached nodes and sibling order. The tactical
+                // inspection renderer's grouping against unit overlays is native
+                // presentation policy, not a claim of the full original draw tree.
+                for(const auto& decoration:_terrainSpriteDraws)
+                    draws.push_back({_terrainSpriteMeshes.at(decoration.resource.descriptor_id).at(decoration.frame_index),
+                        _textures[@(decoration.resource.image_id)],
+                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true});
+                for(const auto& overlay:_worldOverlays)
+                    draws.push_back({overlay.mesh,_white,camera,overlay.tint,false});
+                if (_range) draws.push_back({_range,_white,camera,{{0.12F,0.9F,0.85F,0.36F}},false});
+                if (_cursor) draws.push_back({_cursor,_white,camera,{{1,0.82F,0.12F,0.6F}},false});
+                if (_attackRange) draws.push_back({_attackRange,_white,camera,{{1,0.18F,0.14F,0.48F}},false});
+                if(_healRange)draws.push_back({_healRange,_white,camera,{{0.20F,1,0.35F,0.48F}},false});
+                if(_productionRange)draws.push_back({_productionRange,_white,camera,{{0.25F,0.85F,1,0.48F}},false});
+                std::vector<std::size_t> order;
+                for (std::size_t i = 0; i < _animations.size(); ++i)
+                    if (_session->units().at(_scene->sprites[i].unit_index).active && _animations[i]) order.push_back(i);
+                std::stable_sort(order.begin(),order.end(),[&](std::size_t a,std::size_t b) {
+                    const auto pa = transform(g1::multiply_matrix(camera,_unitModels[a]),{{0,0,0,1}});
+                    const auto pb = transform(g1::multiply_matrix(camera,_unitModels[b]),{{0,0,0,1}});
+                    return pa[2] > pb[2];
+                });
+                for (const auto i : order) {
+                    const auto texture = _textures[@(_scene->sprites[i].resource.image_id)];
+                    draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
+                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true});
+                }
+                _renderer->encode(command,pass,draws);
+                if(_panelPurpose==NativePanel::none && _preparedWorldToken && _session->world_presentation() &&
+                   _session->world_presentation()->token==*_preparedWorldToken && [_title currentTextDrawn]) {
+                    bool rosterReady=true;
+                    for(std::size_t i=0;i<_scene->sprites.size();++i) {
+                        const auto index=_scene->sprites[i].unit_index;
+                        if(_session->units().at(index).active &&
+                           (!_animations[i] || !_renderedActive[i] ||
+                            _playbackSpawnGenerations[i]!=_session->unit_spawn_generation(index)))rosterReady=false;
+                    }
+                    if(rosterReady)frame->world=*_preparedWorldToken;
+                }
+                if (_cameraPan && _cameraPan->reached) {
+                    if (_cameraPan->session_focus && _session->focus_request() &&
+                        _session->focus_request()->token == _cameraPan->token)
+                        frame->session_focus = _cameraPan->token;
+                    else if (!_cameraPan->session_focus && _session->mission().gate == g1::MissionGate::camera &&
+                        _session->mission().command_index == _cameraPan->token)
+                        frame->mission_camera = static_cast<std::size_t>(_cameraPan->token);
+                }
+                for (const auto i : order) {
+                    const auto& pending = _pendingTransformCompletions[i];
+                    if (pending && _session->unit_transform_waiting(pending->unit_index) &&
+                        _session->unit_transform_generation(pending->unit_index) == pending->transform_generation &&
+                        _session->unit_spawn_generation(pending->unit_index) == pending->spawn_generation)
+                        frame->transforms.push_back(*pending);
+                }
+            }
             __weak G1ViewController* weakSelf = self;
-            const std::uint64_t content = _contentGeneration;
-            const NSInteger cameraToken = _cameraPan && _cameraPan->reached &&
-                _session->mission().gate == g1::MissionGate::camera ?
-                static_cast<NSInteger>(_cameraPan->command) : -1;
+            const std::shared_ptr<const NativePresentedFrame> presentedFrame = frame;
+            auto delivery=std::make_shared<NativePresentationDelivery>();
+            delivery->frame=presentedFrame;
             [drawable addPresentedHandler:^(id<MTLDrawable> presented) {
                 const double time = presented.presentedTime;
-                dispatch_async(dispatch_get_main_queue(),^{ [weakSelf recordPresentation:time content:content camera:cameraToken]; });
+                dispatch_async(dispatch_get_main_queue(),^{
+                    delivery->presented_time=time;
+                    [weakSelf deliverPresentation:delivery];
+                });
             }];
             [command addCompletedHandler:^(id<MTLCommandBuffer> completed) {
                 if (completed.status == MTLCommandBufferStatusError) {
                     NSString* reason = completed.error.localizedDescription ?: @"Metal command failed";
-                    dispatch_async(dispatch_get_main_queue(),^{ [weakSelf fail:reason]; });
+                    dispatch_async(dispatch_get_main_queue(),^{
+                        delivery->failed=true;
+                        [weakSelf recordCommandFailure:reason revision:presentedFrame->scene_revision];
+                    });
+                } else if (completed.status == MTLCommandBufferStatusCompleted) {
+                    dispatch_async(dispatch_get_main_queue(),^{
+                        delivery->completed=true;
+                        [weakSelf deliverPresentation:delivery];
+                    });
                 }
             }];
             [command presentDrawable:drawable];
@@ -1047,6 +2429,11 @@ struct NativeCameraPan {
     NSMutableArray* siteState = [NSMutableArray new];
     NSMutableArray* completionRequests = [NSMutableArray new];
     NSMutableArray* battleHistory = [NSMutableArray new];
+    NSMutableArray* battleAssets = [NSMutableArray new];
+    if (_battlePresentation)
+        for (const auto& asset:_battlePresentation->assets()) [battleAssets addObject:@(asset.resource_id)];
+    NSMutableArray* messageHistory=[NSMutableArray new];
+    for(const auto identifier:_presentedMessageIds)[messageHistory addObject:@(identifier)];
     const auto battleJson = [](const g1::SessionBattle& battle) -> NSDictionary* {
         const auto strikeJson = [](const g1::CombatStrike& strike) -> NSDictionary* {
             return @{@"rolled_damage":@(strike.rolled_damage),@"health_before":@(strike.health_before),
@@ -1072,7 +2459,8 @@ struct NativeCameraPan {
             [audio addObject:@{@"operation":@(request.operation),@"argument":@(request.argument)}];
         [completionRequests addObject:@{@"command_index":@(entry.first),@"audio":audio,
             @"text_resource_id":entry.second.text_resource_id ? @(*entry.second.text_resource_id) : NSNull.null,
-            @"audio_requests_forwarded_to_host":@(_audio != nil),@"text_presentation_performed":@NO}];
+            @"audio_requests_forwarded_to_host":@(_audio != nil),
+            @"text_request_forwarded_to_native_queue":@(entry.second.text_resource_id.has_value())}];
     }
     if (_session) {
         for (std::size_t i=0;i<_session->units().size();++i) {
@@ -1083,7 +2471,10 @@ struct NativeCameraPan {
                 @"active":@(unit.active),@"x":@(unit.tile_x),@"y":@(unit.tile_y),
                 @"offset_x":@(unit.offset_x),@"offset_y":@(unit.offset_y),@"facing":@(unit.facing),
                 @"spent_movement":@(unit.spent_budget),@"action_used_flag2c":@(unit.flag_2c),
-                @"transformed_flag2d":@(unit.flag_2d),@"health":@(combat.health)}];
+                @"transformed_flag2d":@(unit.flag_2d),@"health":@(combat.health),
+                @"spawn_generation":@(_session->unit_spawn_generation(i)),
+                @"transform_generation":@(_session->unit_transform_generation(i)),
+                @"transform_waiting_for_presentation":@(_session->unit_transform_waiting(i))}];
         }
         for (const auto& site : _session->sites()) {
             NSMutableArray* groups = [NSMutableArray new];
@@ -1096,10 +2487,23 @@ struct NativeCameraPan {
         }
     }
     NSDictionary* report = @{
-        @"artifact_kind": @"native first-mission gameplay test", @"source_commit": info[@"G1SourceCommit"] ?: @"unknown",
+        @"artifact_kind": @"native campaign integration test", @"source_commit": info[@"G1SourceCommit"] ?: @"unknown",
         @"app_version": info[@"CFBundleShortVersionString"] ?: @"unknown",
         @"device": [NSString stringWithUTF8String:system.machine], @"ios": UIDevice.currentDevice.systemVersion,
         @"native_scene_loaded": @(_loaded), @"failure": _failure ?: NSNull.null,
+        @"scene_revision":@(_sceneRevision),@"scene_rebuilds":@(_sceneRebuilds),
+        @"session_installs":@(_sessionInstalls),@"spawn_playback_resets":@(_spawnPlaybackResets),
+        @"scene_sprite_asset_count":@(_scene ? _scene->sprites.size() : 0),
+        @"scene_grid_resource":@(_scene ? _scene->world.grid_resource_id : 0),
+        @"scene_style":@(_scene ? _scene->world.style : 0),
+        @"fixed_animated_terrain_quads":@(_scene && _scene->terrain.animated_surface ? _scene->terrain.animated_surface->quads.size() : 0),
+        @"transient_terrain_quads":@(_decorationTerrain ? _decorationTerrain->count/6 : 0),
+        @"terrain_generation":@(_session ? _session->terrain_generation() : 0),
+        @"terrain_clock_owner":@"GameSession; one shared random generator; host only reads geometry/UV phase",
+        @"world_presentation_acknowledgements":@(_worldReports),
+        @"world_presentation_pending":@(_session && _session->world_presentation().has_value()),
+        @"native_world_overlay_count":@(_worldOverlays.size()),
+        @"world_overlay_scope":@"Real site/item coordinates and CaptureNetwork ownership/link state, blocking site points and mission markers; native geometry, not original artwork",
         @"archive_sha256": [NSString stringWithUTF8String:archive_sha],
         @"terrain_tables_sha256": [NSString stringWithUTF8String:tables_sha],
         @"fps_requested": @(_metalView.preferredFramesPerSecond),
@@ -1113,10 +2517,27 @@ struct NativeCameraPan {
         @"presented_interval_p95_ms": @(_frameStats.interval_percentile(0.95)),
         @"camera": @"Native inspection projection; real tile-focus requests with 360 ms native pan; original camera fidelity unverified",
         @"camera_requests_acknowledged_after_presentation": @(_cameraReports),
+        @"session_focus_acknowledged_after_presentation":@(_focusReports),
+        @"transform_completion_acknowledged_after_presentation":@(_transformReports),
+        @"stale_previous_scene_gpu_errors":@(_staleGpuErrors),
+        @"focus_pending":_session && _session->focus_request() ? @{
+            @"token":@(_session->focus_request()->token),
+            @"x":@(_session->focus_request()->tile.x),@"y":@(_session->focus_request()->tile.y),
+            @"reason":@(static_cast<int>(_session->focus_request()->reason))} : NSNull.null,
         @"campaign_cursor": @(_session ? _session->mission().command_index : 0),
         @"mission_gate": @(_session ? static_cast<int>(_session->mission().gate) : -1),
         @"mission_stop_detail": _session ? native_text(_session->mission().stop_detail) : @"not loaded",
         @"current_player": @(_session ? _session->current_player() : 0),
+        @"campaign_group":@(_session ? _session->campaign_context().group : 0),
+        @"campaign_mission_index":@(_session ? _session->campaign_context().mission_index : 0),
+        @"campaign_controller_gate":@(_campaign ? static_cast<int>(_campaign->state().gate) : -1),
+        @"campaign_cycle_profile_persisted":@(_campaign && _campaign->state().profile_persisted),
+        @"campaign_results_drawn_acknowledgements":@(_resultsReports),
+        @"campaign_ending_drawn_acknowledgements":@(_endingReports),
+        @"campaign_error":_campaignError ?: NSNull.null,
+        @"campaign_profile_save_error":_campaign && !_campaign->state().save_error.empty() ?
+            native_text(_campaign->state().save_error) : NSNull.null,
+        @"mode_menu_policy":@"Original Story/Showdown/Arena definitions and completion locks; native UIKit selection and results layout",
         @"simulation_step_ms": @(g1::SimulationClock::step_ms),
         @"simulation_ticks_total": @(_simulationTicks),
         @"clock_clamp_intervals_over1000ms": @(_clampedClockIntervals),
@@ -1130,19 +2551,42 @@ struct NativeCameraPan {
         @"capture_actions_completed": @(_captureActions),
         @"transform_actions_started": @(_transformActions),
         @"attack_actions_started": @(_attackActions),
+        @"repair_actions_completed":@(_healActions),@"upgrade_actions_completed":@(_upgradeActions),
+        @"production_actions_completed":@(_productionActions),@"undo_actions_completed":@(_undoActions),
+        @"end_turn_actions_completed":@(_endTurnActions),
+        @"production_confirmation":@"Original direct touch type-list branch; no invented affordability filter or cargo inventory",
+        @"friendly_destination_policy":@"Reachable occupied taps reach the core's original carrier admission; no UI blanket occupancy rejection",
         @"battle_presentations_acknowledged": @(_battleAcknowledgements),
         @"battle_presentation_ticks": @(_battlePresentationTicks),
+        @"battle_metal_frames_prepared": @(_battlePreparedFrames),
+        @"battle_metal_frames_presented": @(_battlePresentedFrames),
+        @"battle_queued_draws_in_presented_frames": @(_battleQueuedDrawsPresented),
+        @"battle_original_asset_ids": battleAssets,
+        @"battle_controller_phase": @(_battlePresentation ? int(_battlePresentation->status().phase) : -1),
+        @"battle_controller_revision": @(_battlePresentation ? _battlePresentation->status().revision : 0),
         @"battle_history":battleHistory,
         @"battle_pending":_session && _session->battle() ? battleJson(*_session->battle()) : NSNull.null,
-        @"last_battle_final_view_drawn":@([_battleCanvas readyForAcknowledgement]),
-        @"battle_presentation":@"Native before/result HP panel; final view must draw and user Continue must match token; original 3D cinematic parity is not implemented",
+        @"last_battle_final_presented_token":@(_lastBattleFinalToken),
+        @"last_battle_final_presented_revision":@(_lastBattleFinalRevision),
+        @"battle_presentation":@"Original M3G models, forms, texture overrides, anchors, clips, cameras, shot/hit/death effects and ordered node passes; native point HUD uses actual controller health. Natural completion requires matching final Metal presentation and drawn HUD revision",
+        @"battle_aspect_policy":@"Preserve original vertical FOV or parallel height; adapt only aspect to native drawable width/height",
+        @"battle_interpolation":@"Read-only integer-millisecond animation resampling between original 30ms controller states; additive camera translations interpolate; camera/clip/placement cuts remain discrete. No RNG, audio, phase or completion advance at display rate",
         @"audio_game_requests_observed": @(_audioRequests), @"audio_playback_implemented": @YES,
         @"audio_host":_audio ? [_audio diagnostics] : @{@"operational":@NO,@"error":@"Audio host was not created"},
         @"completion_presentation_requests":completionRequests,
+        @"original_message_ids_drawn_and_acknowledged":messageHistory,
+        @"native_checkpoint_writes_confirmed":@(_checkpointWrites),
+        @"native_checkpoint_installs":@(_checkpointLoads),
+        @"native_checkpoint_retirements":@(_checkpointRetirements),
+        @"current_session_restored_from_checkpoint":@(_restoredCheckpoint),
+        @"checkpoint_available_now":@(_session && _session->checkpoint_available()),
+        @"checkpoint_retry_required":@(_checkpointRetryRequired),
+        @"checkpoint_error":_checkpointError ?: NSNull.null,
+        @"checkpoint_policy":@"Atomic completed-action/objective saves in Application Support; busy actions retain last checkpoint; corrupt files are preserved; successful handoffs retire prior Continue to a retained backup",
         @"random_seed": @(_randomSeed), @"units":unitState, @"sites":siteState,
         @"full_gameplay_implemented": @NO, @"full_campaign_verified": @NO,
         @"native_save_reload_verified": @NO,
-        @"remaining_scope": @"Original camera/font/UI and battle-cinematic fidelity, site visual updates, full sound-event coverage and device audio, complete AI/campaign/save flow and XR validation remain unfinished",
+        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, battle GPU/output fidelity and sustained60Hz validation; original earlier tactical support-attack sequence, site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
         @"measurement_scope": @"Positive monotonic Metal presentedTime samples from current native scene; not full-game performance"
     };
     NSError* error = nil;

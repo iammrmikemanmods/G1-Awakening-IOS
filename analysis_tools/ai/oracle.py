@@ -86,6 +86,9 @@ class OriginalAI(combat.OriginalCombat):
             transform[unit["type"]]=unit.get("transform_capability",0)
             upgrade[unit["type"]]=unit.get("upgrade_cost",0)
             by_type[unit["type"]]=pointer
+        # Original unit loader 0x5a8ce..0x5a8e0 overrides map+0x14c[21]
+        # with 40, independently of the raw resource scalar byte.
+        upgrade[21]=40
         self.vector(self.map+0x154,transform,"B")
         self.vector(self.map+0x14c,upgrade,"B")
         self.w32(self.map+0x90,self.array(by_type))

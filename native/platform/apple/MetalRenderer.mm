@@ -8,13 +8,13 @@ constexpr const char* shader = R"METAL(
 #include <metal_stdlib>
 using namespace metal;
 struct Vertex { float4 position; float2 uv; float2 padding; };
-struct Uniform { float4x4 matrix; float4 tint; };
+struct Uniform { float4x4 matrix; float4 tint; float4 texture_offset; };
 struct Out { float4 position [[position]]; float2 uv; float4 tint; };
 vertex Out g1_vertex(uint index [[vertex_id]], const device Vertex* vertices [[buffer(0)]],
                      constant Uniform& uniform [[buffer(1)]]) {
     Out out;
     out.position = uniform.matrix * vertices[index].position;
-    out.uv = vertices[index].uv;
+    out.uv = vertices[index].uv + uniform.texture_offset.xy;
     out.tint = uniform.tint;
     return out;
 }
@@ -29,8 +29,9 @@ fragment float4 g1_fragment(Out in [[stage_in]], texture2d<float> image [[textur
 struct alignas(16) Uniform {
     Matrix4 matrix;
     std::array<float, 4> tint;
+    std::array<float, 4> texture_offset;
 };
-static_assert(sizeof(Uniform) == 80, "Metal uniform layout changed");
+static_assert(sizeof(Uniform) == 96, "Metal uniform layout changed");
 
 std::runtime_error metal_error(const char* message, NSError* error = nil) {
     return std::runtime_error(std::string(message) +
@@ -132,7 +133,7 @@ void MetalRenderer::encode(id<MTLCommandBuffer> command, MTLRenderPassDescriptor
     for (const auto& draw : draws) {
         if (!draw.mesh || draw.mesh->count == 0) continue;
         if (!draw.texture) { [encoder endEncoding]; throw metal_error("draw texture is missing"); }
-        const Uniform uniform{draw.matrix, draw.tint};
+        const Uniform uniform{draw.matrix, draw.tint,{{draw.uv_offset[0],draw.uv_offset[1],0,0}}};
         [encoder setDepthStencilState:draw.depth_write ? depth_write_ : depth_read_];
         [encoder setVertexBuffer:draw.mesh->vertices offset:0 atIndex:0];
         [encoder setVertexBytes:&uniform length:sizeof(uniform) atIndex:1];

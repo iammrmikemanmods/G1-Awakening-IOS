@@ -9,6 +9,7 @@
 // Native TextKit layout and drawing. The mission receives measured line
 // geometry and completed drawing feedback, never a guessed character count.
 @interface G1DialogueCanvas : UIView
+- (void)resetPresentation;
 - (void)setOriginalText:(NSString*)text;
 - (void)showProgress:(const g1::DialogueProgress&)progress;
 - (g1::DialogueLayout)layoutFeedback;
@@ -67,6 +68,15 @@
     _drawnFull = false;
     [self setNeedsLayout];
     [self setNeedsDisplay];
+}
+
+- (void)resetPresentation {
+    _originalText = nil; _progress = {};
+    _lines.clear(); _lineRects.clear();
+    _drawRange = NSMakeRange(0,0); _drawOrigin = CGPointZero;
+    _requestedFull = false; _drawnFull = false; _drawnRevision = 0;
+    self.accessibilityLabel = @"";
+    [self setOriginalText:@""];
 }
 
 - (void)ensureLineLayout {

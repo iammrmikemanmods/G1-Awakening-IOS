@@ -80,6 +80,7 @@ const char* resource_kind(const Bytes& bytes) noexcept {
 
 Archive::Archive(Bytes bytes) : bytes_(std::move(bytes)) {
     require(bytes_.size() >= 32 && bytes_.size() <= max_archive_size, "invalid FGIB size");
+    checksum_ = adler32_bytes(bytes_);
     require(u32(bytes_, 0) == 0x42494746U && u32(bytes_, 4) == 0x00800001U,
             "unsupported FGIB magic/version");
     const std::uint64_t group_offset = u32(bytes_, 8);

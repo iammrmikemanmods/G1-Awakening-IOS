@@ -68,6 +68,11 @@ struct WorldSite {
     std::vector<std::vector<WorldCoordinate>> coordinate_groups;
 };
 
+struct WorldSitePoint {
+    MovementPoint point; // Original point record x,y,field3; nonzero blocks.
+    std::size_t site_index{}; // Original field2; installation sets site owner1.
+};
+
 enum class WorldInitializationEffectKind {
     begin_current_player_turn,
     debit_spawn_funds,
@@ -94,6 +99,7 @@ struct WorldCameraRequest {
 
 enum class BootstrapStop {
     presentation_required,
+    execution_required, // Unconsumed control request in a general bootstrap.
     unsupported_command,
     end_of_stream,
 };
@@ -109,8 +115,14 @@ struct WorldBootstrap {
     std::vector<UnitDefinition> unit_definitions; // Indexed by original type.
     std::array<std::uint8_t, 2> player_factions{{0, 1}};
     std::array<bool, 23> available_types{};
-    std::vector<WorldUnit> units; // Active placements, in command order.
+    // Unique types in first-activation order; indices stay stable. Repeated
+    // placement resets an existing entry. Reload retains inactive identities.
+    std::vector<WorldUnit> units;
     std::vector<WorldSite> sites;
+    std::vector<WorldSitePoint> site_points;
+    std::vector<MovementCostRegion> cost99_regions;
+    std::array<std::int16_t,2> marker_254{{-1,-1}};
+    std::array<std::int16_t,2> marker_25c{{-1,-1}};
     std::optional<WorldCameraRequest> camera;
     std::optional<std::uint16_t> title_text_index;
     std::uint16_t last_phase_opcode{};

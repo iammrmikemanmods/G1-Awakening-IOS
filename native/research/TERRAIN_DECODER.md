@@ -85,9 +85,12 @@ starts each row with previous mask`0x10`; omitted outer columns can affect the
 left-edge bevel state in the complete scene.
 
 Style1 has an additional animated face14 routing branch, gated at`0x6a404` and
-handled around`0x6af30..0x6b1c2`. The bounded mesh builder **rejects style1**;
-its data and face primitives can still be decoded. Static rendering of that
-special face would misrepresent the original behavior. Styles0 and2 are supported.
+handled in`0x6af02..0x6b1e8`. The explicit overload taking decoded resource307
+now emits its separate resource420 surface and ordinary base surface. The
+three-argument overload rejects style1 without this configuration. Exact
+fixed-face geometry, candidate capacity and the250ms texture clock are recorded
+in`TERRAIN_ANIMATION.md`; the transient shared-RNG decoration pool remains
+separate work. Styles0 and2 retain the original three-argument interface.
 
 ## Validation actually performed
 
@@ -120,6 +123,9 @@ Reports are in`native/research/terrain_validation/`:
 `native_terrain_validation.json`, `original_terrain_oracle.json`, and
 `original_first_grid_oracle.json`. The compact distributable source reference is
 `native/tests/terrain_reference.json`.
+The subsequent animated-face slice adds `original_animated_terrain.json`,
+`original_animated_maps.json` and `native_animated_terrain.json`, described in
+`TERRAIN_ANIMATION.md`. Historical reports retain their original narrower scope.
 
 ## Reproduction
 

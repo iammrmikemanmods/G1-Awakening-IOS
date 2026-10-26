@@ -1,0 +1,38 @@
+{
+  "scope": "Historical component manifests pin their delivery versions; the source manifest pins the final integrated checkpoint.",
+  "ordered_patch_deliveries": [
+    {
+      "manifest": "g1_port/research/native_m3g/sampler_v2/SAMPLER_V2_FREEZE.json",
+      "sha256": "34bc2a7cb6224b6fdf2bf57b3ee5b4ec59823ddce3a8ba99cffaa5f96f67f478",
+      "files": 12
+    },
+    {
+      "manifest": "g1_port/research/native_m3g/scene_pose_v3/SCENE_POSE_V3_FREEZE.json",
+      "sha256": "4fe63a28a2e724dbd95c194f8f8f52715f308058eb94be8838672f9eb6cb330c",
+      "files": 14
+    },
+    {
+      "manifest": "g1_port/research/native_m3g/render_scene_v4/RENDER_SCENE_V4_FREEZE.json",
+      "sha256": "55616cf6e1befe82b81e4d9a65d63ce2a348cdaae3d2150eee7dddd132f3ec05",
+      "files": 21
+    },
+    {
+      "manifest": "g1_port/native/research/m3g_validation/M3G_MATERIAL_OVERRIDES_FREEZE.json",
+      "sha256": "8ea2030ce7e46aa9e4580c4de470f3123ec7e7522a7920ec6eb3f455cbe93062",
+      "files": 15
+    },
+    {
+      "manifest": "g1_port/native/research/m3g_validation/M3G_BATTLE_PRESENTATION_FREEZE.json",
+      "sha256": "9202be4a145401675d68f6d617b1bb49c73c6c62fb5013b5c78172ce4d690355",
+      "files": 17
+    },
+    {
+      "manifest": "g1_port/research/playthrough_strategy/PLAYTHROUGH_STRATEGY_FREEZE.json",
+      "sha256": "bd5af17b1cbd4e97a3323d09b344af6d407dec08335abbb1bb982ae2712d33cf",
+      "files": 48
+    }
+  ],
+  "apple_validation": "pending; publication was blocked by user rejected MCP tool call",
+  "full_playthrough_verified": false,
+  "iphone_xr_verified": false
+}

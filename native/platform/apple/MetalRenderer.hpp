@@ -19,6 +19,7 @@ struct MetalDraw {
     Matrix4 matrix;
     std::array<float, 4> tint{{1, 1, 1, 1}};
     bool depth_write{true};
+    std::array<float,2> uv_offset{};
 };
 
 class MetalRenderer {

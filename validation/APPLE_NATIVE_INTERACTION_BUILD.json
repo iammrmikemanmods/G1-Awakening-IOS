@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "source_commit": "5795315e970d34419c739bbd4b81ff2011a9ecd4",
+  "run_id": 40280927071,
+  "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40280927071",
+  "conclusion": "success",
+  "jobs": {
+    "host": 121433816292,
+    "apple": 121433816613
+  },
+  "host_suites": {
+    "passed": 29,
+    "total": 29
+  },
+  "toolchain": {
+    "xcode": "26.6",
+    "build": "17F113",
+    "sdk": "26.5",
+    "cmake": "4.4.4"
+  },
+  "apple_app": {
+    "architecture": "arm64",
+    "platform": "iphoneos",
+    "minimum_ios": "17.5",
+    "unsigned": true,
+    "executable_bytes": 684360,
+    "executable_sha256": "e0ace7200f07693704a1f0632bfac6367ae1110639843225f0dfdd094278c24a"
+  },
+  "native_profile_test": {
+    "platform": "macOS",
+    "passed": 1,
+    "total": 1
+  },
+  "metal": {
+    "device": "Apple Paravirtual device",
+    "pixel_checks_passed": 6,
+    "channels_compared": 24,
+    "skipped": false
+  },
+  "artifact": {
+    "id": 12632168284,
+    "name": "G1-native-game-unsigned-code",
+    "bytes": 313985,
+    "digest": "sha256:4fc66ea44e2157006ab160c6e7607d259813237f741981335dd0216376d7a7c6",
+    "expires_at": "2026-11-09T06:38:22Z"
+  },
+  "prior_failed_runs": [
+    40280079431,
+    40280369974
+  ],
+  "failure_resolution": "The iPhoneOS app compiled in the earlier runs. macOS test translation unit needed <unistd.h> for Darwin mkdtemp declaration; exact successful source is recorded above.",
+  "scope": "Native touch/movement/capture/transform/combat-result UI and audio checkpoint. Predates continuous AI, general live world commands, native session resume and new campaign UI. No physical iPhone XR, audible output, sustained frame-rate or complete playthrough claim."
+}

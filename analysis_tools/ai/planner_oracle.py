@@ -40,6 +40,21 @@ def make_case(index):
     return case
 
 
+def effective_cost_cases():
+    rows=[]
+    for raw in (0,5,255):
+        for funds in (39,40,41):
+            case=ai.simple_case()
+            case.update(actor=1,current=1,rules=[[1,0,0] for _ in range(5)],
+                        funds=[0,funds],upgrade_slots=[-1,0])
+            actor=case['units'][1]
+            actor.update(type=21,upgrade_cost=raw,transform_capability=0,acted=0)
+            for form in actor['forms']:
+                form[0]=2;form[3]=0;form[4]=0;form[12]=0
+            rows.append(case)
+    return rows
+
+
 def execute(image,gcc,case,entry):
     old=ai.OriginalAI(image,gcc)
     old.configure_ai(case)
@@ -65,8 +80,8 @@ def main():
     if ai.combat.sha(image)!=ai.combat.IMAGE_SHA or ai.combat.sha(gcc)!=ai.combat.LIBGCC_SHA:
         raise ValueError("original inputs differ")
     rows=[];calls=Counter()
-    for index in range(a.count):
-        case=make_case(index)
+    all_cases=[make_case(i) for i in range(a.count)]+effective_cost_cases()
+    for index,case in enumerate(all_cases):
         result,used=ai.original_result(image,gcc,case,index,budget_override=2)
         calls.update(used)
         for key,entry in (("fallback",0x4ec72),("decision",0x512e6)):
@@ -82,6 +97,8 @@ def main():
             "fixture_sha256":ai.combat.sha(a.fixture.read_bytes()),
             "oracle_sha256":ai.combat.sha(Path(__file__).read_bytes()),
             "shared_oracle_sha256":ai.combat.sha(Path(__file__).with_name("oracle.py").read_bytes()),
+            "type21_boundary_cases":{"start_index":a.count,"count":9,
+                "raw_costs":[0,5,255],"funds":[39,40,41],"effective_cost":40},
             "calls":dict(calls),"cases":[{"input":c,"output":r} for c,r in rows]}
     a.output.parent.mkdir(parents=True,exist_ok=True)
     a.output.write_text(json.dumps(report,indent=2)+"\n")

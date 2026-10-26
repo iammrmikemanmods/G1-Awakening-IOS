@@ -44,7 +44,7 @@ int main() {
                 "reverse backtracking prefers UP over LEFT on equal budgets");
         require(g1::choose_movement_route(range,{1,1},{1,1}).status ==
                     g1::MovementRouteStatus::already_at_destination,
-                "origin click is not a travel route");
+                "same destination is distinguished from a route with travel steps");
         range.remaining[8] = -1;
         require(g1::choose_movement_route(range,{0,0},{2,2}).status ==
                     g1::MovementRouteStatus::unreachable, "unvisited target rejects");
@@ -144,6 +144,56 @@ int main() {
         require(turn.offset_x==-7 && turn.offset_y==12 && turn.facing==2 &&
                 turn.anchor_facing==3 && turn.timer_ms==100,
                 "turn reset preserves offsets, both facing fields and countdown");
+        // These expectations are compared with unchanged 49e90, 43e2e and
+        // 4351c by analysis_tools/movement_action/empty_route_oracle.py.
+        g1::MovementRange same_range{1,1,{3},false};
+        g1::MovementProfile same_profile{0,0,3,0,0};
+        auto same_state=unit(); same_state.facing=2; same_state.anchor_facing=2;
+        const auto same_route=g1::choose_movement_route(same_range,{0,0},{0,0});
+        g1::MovementAction same_move(same_state,same_profile,same_range,same_route,2);
+        require(same_move.moving() && same_move.route().steps.empty() &&
+                same_move.route_index()==0 && same_move.pending_cost()==0 &&
+                same_move.state().spent_budget==0 && same_move.state().flag_38==1,
+                "admitted same-tile begin sets moving and predicate flag without completing");
+        require(same_move.undo_ordinary()==g1::MovementUndoResult::still_moving,
+                "same-tile action retains begin-to-first-tick boundary");
+        require(same_move.advance_tick(30)==g1::MovementTickResult::completed &&
+                !same_move.moving() && same_move.state().tile_x==0 &&
+                same_move.state().tile_y==0 && same_move.state().offset_x==0 &&
+                same_move.state().offset_y==0 && same_move.state().facing==2 &&
+                same_move.route_index()==0 && same_move.state().timer_ms==70 &&
+                same_move.state().spent_budget==0,
+                "first same-tile tick completes without displacement and updates countdown");
+        require(same_move.advance_tick(30)==g1::MovementTickResult::stationary &&
+                same_move.state().timer_ms==40 && same_move.state().spent_budget==0,
+                "later same-tile ticks do not repeat completion or charge");
+        same_profile.spent_budget=253; // Remaining byte budget is 6.
+        same_state.spent_budget=253; same_state.timer_ms=-1; same_state.form=1;
+        g1::MovementAction stale_same(same_state,same_profile,same_range,same_route,0);
+        require(stale_same.pending_cost()==3 && stale_same.state().spent_budget==253,
+                "same-tile begin preserves deferred arithmetic from supplied range");
+        require(stale_same.advance_tick(0)==g1::MovementTickResult::completed &&
+                stale_same.state().spent_budget==0 && stale_same.state().timer_ms==-1 &&
+                stale_same.state().facing==2,
+                "zero-ms same-tile tick charges with byte wrap and preserves disabled timer");
+        same_profile.base_budget=127; same_profile.spent_budget=0;
+        same_state.spent_budget=0; same_range.remaining[0]=127;
+        g1::MovementAction sentinel_same(same_state,same_profile,same_range,same_route,0);
+        require(sentinel_same.pending_cost()==0 &&
+                sentinel_same.advance_tick(1)==g1::MovementTickResult::completed,
+                "same-origin base case admits actual budget127 without neighbor scanning");
+        auto forged=same_route; forged.status=g1::MovementRouteStatus::ready;
+        rejects([&]{g1::MovementAction value(same_state,same_profile,same_range,forged,0);},
+                "empty ready route cannot bypass same-tile status validation");
+        forged=same_route; forged.steps.push_back({0,0});
+        rejects([&]{g1::MovementAction value(same_state,same_profile,same_range,forged,0);},
+                "same-tile route with fabricated travel step rejects");
+        forged=same_route; forged.destination={1,0};
+        rejects([&]{g1::MovementAction value(same_state,same_profile,same_range,forged,0);},
+                "same-tile status cannot admit a different destination");
+        same_range.remaining[0]=-1;
+        rejects([&]{g1::MovementAction value(same_state,same_profile,same_range,same_route,0);},
+                "same-tile action still rejects inconsistent negative destination budget");
         std::cout << "movement action contracts: " << checks << " passed\n";
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n'; return 1;

@@ -24,18 +24,31 @@ struct SceneSprite {
     AtlasDescriptor descriptor;
 };
 
-// Actual first-campaign resources and native geometry. Camera and interaction
-// policy belong to the viewer. This does not advance past the bootstrap stop.
-class FirstMissionScene {
+// Resources and native geometry for an already decoded/applied world. The
+// current unique-type roster may include inactive entries and any original
+// gameplay type. Camera, unit playback state and command acknowledgement are
+// separate host responsibilities. Unsupported terrain paths remain errors.
+class MissionScene {
 public:
-    FirstMissionScene(const Archive& archive, const Bytes& terrain_tables);
+    MissionScene(const Archive& archive, const Bytes& terrain_tables, WorldBootstrap world);
     WorldBootstrap world;
     TerrainMesh terrain;
     std::map<std::uint32_t, RgbaImage> textures;
     std::vector<SceneSprite> sprites;
+
+    bool matches_map(const WorldBootstrap&) const noexcept;
+    bool matches_roster(const std::vector<WorldUnit>&) const noexcept;
+};
+
+// Kept for the existing first-campaign tools/reference. This constructor does
+// not execute campaign continuation or imply that every map style is complete.
+class FirstMissionScene : public MissionScene {
+public:
+    FirstMissionScene(const Archive& archive, const Bytes& terrain_tables);
 };
 
 std::vector<SceneVertex> terrain_vertices(const TerrainMesh&);
+std::vector<SceneVertex> terrain_vertices(const std::vector<TerrainQuad>&, float position_scale);
 std::vector<SceneVertex> sprite_vertices(const AtlasDescriptor&, std::size_t frame);
 
 } // namespace g1

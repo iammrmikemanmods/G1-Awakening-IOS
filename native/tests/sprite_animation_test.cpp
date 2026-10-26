@@ -91,6 +91,54 @@ int main() {
         a.select_step(255);
         check(a.state().step_index == 0 && a.state().elapsed_ms == selected_before.elapsed_ms,
               "out-of-range step selector preserves state");
+        const std::vector<g1::AtlasStep> saved_steps{{7, 100}, {8, 30}, {9, 200}};
+        const auto same_state = [](const g1::SpriteAnimationState& x,
+                                   const g1::SpriteAnimationState& y) {
+            return x.step_index == y.step_index && x.elapsed_ms == y.elapsed_ms &&
+                   x.repeat_count == y.repeat_count && x.reverse == y.reverse &&
+                   x.completed == y.completed;
+        };
+        // select_step leaves 189 ms on a 100 ms step. This valid original
+        // state must survive restoration without normalizing its elapsed time.
+        auto restored = g1::SpriteAnimation::restore(saved_steps, a.state());
+        check(same_state(restored.state(), a.state()) && restored.current_frame() == a.current_frame(),
+              "restore preserves selected-step elapsed time");
+        for (const auto delta : {0U, 17U, 200U, 1000U}) {
+            const auto expected_changed = a.advance_ms(delta);
+            check(restored.advance_ms(delta) == expected_changed &&
+                  same_state(restored.state(), a.state()) && restored.current_frame() == a.current_frame(),
+                  "restored reverse continuation differs");
+            restored = g1::SpriteAnimation::restore(saved_steps, restored.state());
+        }
+        a.reset(1);
+        a.advance_ms(300);
+        a.select_step(0);
+        restored = g1::SpriteAnimation::restore(saved_steps, a.state());
+        check(restored.state().completed && restored.state().step_index == 0,
+              "restore incorrectly constrains sticky completion to the last step");
+        for (const auto delta : {0U, 31U, 330U}) {
+            const auto expected_changed = a.advance_ms(delta);
+            check(restored.advance_ms(delta) == expected_changed && same_state(restored.state(), a.state()),
+                  "restored completed forward continuation differs");
+        }
+        auto invalid_state = a.state();
+        invalid_state.step_index = saved_steps.size();
+        rejects([&] { g1::SpriteAnimation::restore(saved_steps, invalid_state); },
+                "out-of-range saved step accepted");
+        invalid_state = a.state();
+        invalid_state.elapsed_ms = -1;
+        rejects([&] { g1::SpriteAnimation::restore(saved_steps, invalid_state); },
+                "negative saved elapsed time accepted");
+        rejects([&] { g1::SpriteAnimation::restore({}, a.state()); },
+                "restore accepted an empty decoded sequence");
+        rejects([&] { g1::SpriteAnimation::restore({{0, 0}}, {}); },
+                "restore accepted a zero-duration decoded sequence");
+        const g1::SpriteAnimationState maximum{0, std::numeric_limits<std::int32_t>::max(),
+                                             std::numeric_limits<std::int32_t>::min(), false, false};
+        restored = g1::SpriteAnimation::restore(saved_steps, maximum);
+        check(same_state(restored.state(), maximum), "restore narrowed signed state fields");
+        rejects([&] { restored.advance_ms(1); }, "restored elapsed overflow accepted");
+        check(same_state(restored.state(), maximum), "restored overflow rejection changed state");
         std::cout << "Passed " << checks << " sprite animation checks; no original runtime required.\n";
         return 0;
     } catch (const std::exception& error) {

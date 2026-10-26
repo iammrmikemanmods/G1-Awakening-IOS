@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "command": [
+    "/tmp/g1_native_complete_staged_hostbuild/g1_session_playthrough_probe",
+    "--archive",
+    "/workspace/scratch/cba553aafa20/g1_port/research/assets/iphone.big",
+    "--terrain-tables",
+    "/workspace/scratch/cba553aafa20/g1_port/research/native_terrain/terrain_visual_tables.bin",
+    "--output",
+    "/tmp/g1-native-complete-staged-story",
+    "--strategy",
+    "native-planner-tactical",
+    "--group",
+    "0",
+    "--start-mission",
+    "0",
+    "--seed",
+    "0x4741",
+    "--max-missions",
+    "17",
+    "--max-ticks",
+    "200000",
+    "--max-human-turns",
+    "150",
+    "--max-seconds",
+    "75.0"
+  ],
+  "inputs": {
+    "pilot": {
+      "path": "/tmp/g1_native_complete_staged_hostbuild/g1_session_playthrough_probe",
+      "bytes": 961760,
+      "sha256": "400bd39d522e47c37051942b0e7145f319e00d843d1b90ccd3e3ee79e071fb00"
+    },
+    "archive": {
+      "path": "/workspace/scratch/cba553aafa20/g1_port/research/assets/iphone.big",
+      "bytes": 6994213,
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+    },
+    "terrain_tables": {
+      "path": "/workspace/scratch/cba553aafa20/g1_port/research/native_terrain/terrain_visual_tables.bin",
+      "bytes": 480,
+      "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8"
+    }
+  },
+  "returncode": 0,
+  "stdout": "Outcome native_loss_handoff; native handoffs 15; ticks 16301; human moves 348; attacks 172; captures 24\n",
+  "stderr": "",
+  "native_gameplay_core_used": true,
+  "original_executable_executed": false,
+  "presentation_feedback": "synthetic; not rendered/device validation",
+  "gameplay_state_forced": false,
+  "result": {
+    "path": "/tmp/g1-native-complete-staged-story/result.json",
+    "bytes": 5440,
+    "sha256": "79a237e3b3b1cf557fdadd44fabc2122abd39f220f805f63120641bd0dbb094b"
+  },
+  "observed": {
+    "outcome": "native_loss_handoff",
+    "error": "",
+    "successful_story_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "continuous_prefix": true,
+    "final_mission": 14,
+    "profile_writes": 15,
+    "live_checkpoint_matches": 689,
+    "full_story_completed": false
+  }
+}

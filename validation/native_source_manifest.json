@@ -1,323 +1,3446 @@
 {
   "schema": 1,
-  "purpose": "Point-in-time native interaction source manifest; excludes itself and original game assets.",
-  "files": {
-    ".gitattributes": "ff6a34edd4c5c4704138b75c42bb48cf3cc34f67f06e2475b9053c8d44c3f5ca",
-    ".github/workflows/native-core.yml": "c0e5e6489d1144bc52b752bebc66da7c4362d51aa86633c5e2a84b73538b5058",
-    ".gitignore": "242234391f1792d304676e7349eae6f44cd013bfcda67d04e6e147926856c109",
-    "LICENSE": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172",
-    "PORT_STATUS.json": "9746629dc65edac66623a9f5b0f22a6a965a2109424aabc13e00f9a492a55cf7",
-    "README.md": "4206ed40ceeec5d575d3d9263f7f45d9dc151c433fbce62ed101539ce8817e2c",
-    "analysis_tools/PRESERVATION.json": "37efd877a885ba4c6d07149c5fb195e1e4d5d5cc2f9882d776c900e62a6b8b43",
-    "analysis_tools/README.md": "e8bb0d9b0f547ebdedc9c3a84d5d35b15a75433ede067927484a28aed3e9d7e5",
-    "analysis_tools/ai/README.md": "5b17e920cdba2f22b71a98ee7bbb0922aa79ca165c72a1f09cc9c899612e83a2",
-    "analysis_tools/ai/oracle.py": "6d0b51cf6c32fa415024028737578833ae7a4020c05a7ff9d5e8dc416e47bed8",
-    "analysis_tools/ai/planner_oracle.py": "60759be4e2109882daafa12e7d540d1f014baf65c8b789d4734e1ebb27170376",
-    "analysis_tools/ai/site_oracle.py": "ebd784c90bf6387fe023514292dcc2fab4f2b16436b06644c38a00a7421b16b5",
-    "analysis_tools/ai/source_oracle.py": "2f681d12a45b313a431fb06648d09000f36e8691214def685c7ea7207832f34e",
-    "analysis_tools/ai/turn_oracle.py": "a5d4f0d24b85ec9617db9a71aad9281b16593c4cec9fbdc7ad11ca9e65279383",
-    "analysis_tools/atlas/ATLAS_FREEZE.json": "bd6d7f7e432d605f7fbb9a4f9154dae4ee02638f02a199d55ec8668deb7717f8",
-    "analysis_tools/atlas/quad_oracle_frozen.py": "7daa9ed55617d34867549fa0d75656eef07734bb6e65893a33dd840ece4a89d2",
-    "analysis_tools/audio/events_oracle.py": "a813a107487e3f2196dc6ff63102addafea4656406c979e687eb33d186bf0db1",
-    "analysis_tools/bootstrap_metadata/README.md": "e153229bb8e9b37101164728024ff39c0311686e67a13d1d313f4c0b3203f267",
-    "analysis_tools/bootstrap_metadata/REFERENCE.json": "23b26f71e89cf5d017ae0b4ec51d8d82e97f83af306323c9d72929b576ce4a85",
-    "analysis_tools/bootstrap_metadata/bootstrap_metadata_oracle.py": "36176feaec3dea876564cf2390a15f50d4394020a57ad89b93de48976aba99e2",
-    "analysis_tools/bootstrap_metadata/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
-    "analysis_tools/capture_action/README.md": "6adaf7e1625183506b2909371f409e263bf9ab9d31fad54955358607ca3eade2",
-    "analysis_tools/capture_action/oracle.py": "8368f9e6be9000c2435270e39d2bdb09414478faa34392fa17f1370308a8b4f3",
-    "analysis_tools/capture_action/probe.cpp": "fe47619563c2ba414d338e913f0cad7583a4e60c761321005f1ffe8dab451d69",
-    "analysis_tools/combat/oracle.py": "10c98c7fe6b2132fd8e70da527cb7f149e8c071975fae137404970d0dfd038e9",
-    "analysis_tools/inspect_assets.py": "8c2e133dfdb6c5cca2cf2d5331090f024d8d4d0724a7e9819f2a4a03e36c2d99",
-    "analysis_tools/inspect_game_data.py": "e9a03e9a7bc7b851dea5c801e8a1b7748428d9f7bcf332b50baff96754ac9925",
-    "analysis_tools/mission_execution/README.md": "914e7451ab2f5be8dacfa2a26007fddd5a248f0308b96755da91020a15e02fad",
-    "analysis_tools/mission_execution/REFERENCE.json": "30ba2643d1c120c11cb41a83061fb9195e130be765775b7d6d24cb2c7d3da7e4",
-    "analysis_tools/mission_execution/oracle.py": "17c89000f86d327946602d621ba10729d5a6880a80e0140dc5592f5532bf0c8f",
-    "analysis_tools/mission_execution/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
-    "analysis_tools/mission_execution/validate_resources.py": "f32f83cffced3a2159ec2747477041f98fd87aba00665ba78c0e1a0529a663ca",
-    "analysis_tools/mission_objectives/README.md": "8383e44c9f5f508ae9c8dbf1c4178e8b6132da88e46153197515cf2567919c84",
-    "analysis_tools/mission_objectives/REFERENCE.json": "fa677074226a420c14c7efb91fed9938345d397a55940ac09322df2cb138fc1e",
-    "analysis_tools/mission_objectives/objective_oracle.py": "c339ef33b4757331a3e83e566baa885a5096eb3e63b3e3f29a683c58bf47755a",
-    "analysis_tools/mission_objectives/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
-    "analysis_tools/mission_progression/README.md": "639408177f993acb5ba2a30c2017d077a850e2cda7012fd0642761067afc3108",
-    "analysis_tools/mission_progression/REFERENCE.json": "a6ba89615fe5108dfb2a10007befb614ccff25f4d8697f88bb26097f40f06c06",
-    "analysis_tools/mission_progression/oracle.py": "f0505848b34b88b6653cbb8ebe5f74fa8fd5394f4e1727fa93f0b3f2c18374ad",
-    "analysis_tools/mission_progression/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
-    "analysis_tools/movement/cases.json": "8339a517a8757e70a25adc42e7b0ce2b164b8da062b3e7529aea944de3899bae",
-    "analysis_tools/movement/make_cases.py": "abc56504d92482a1dd227431238bd811c3f06f30940b4964847add5201e9d1fa",
-    "analysis_tools/movement/oracle.py": "ded6e06bc41c9bb6c8189b5f84e8636053d4ae296f925160de978660e61946a0",
-    "analysis_tools/movement/original_results.json": "61add36fcbbea0ae6a1f8a0c2d0abc4a4b13171c0fab02cdef5e194e2d7a19f5",
-    "analysis_tools/movement_action/README.md": "73e1873dd897ac133ae427a959af0a333e2b7d1daacfbcb84b1bc79a202c1265",
-    "analysis_tools/movement_action/arrival_oracle.py": "9da989eb736d824f97591e6565d15adc90d3a192e890d09a465d9f9f03aa7e6a",
-    "analysis_tools/movement_action/arrival_probe.cpp": "24c57a3fc4e8b551c70675ee547688f3ff6467d558ca4c66a91b20245e9eeabd",
-    "analysis_tools/movement_action/oracle.py": "7bcecdcf7f890643f8700e23d979c99ff03092a6062da0611e984572c157aa15",
-    "analysis_tools/movement_action/probe.cpp": "1d21de8e95fa83a4167b88aa96f0243716d36a3b3c411cb9eb7c3c08275d9c25",
-    "analysis_tools/pc_reference/PC_REUSE_FINDINGS.md": "d84222f193c5fb64791d0ea4d06e631d17b48011fb5116187b428587ccf6e4de",
-    "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json": "bbb2a021780d652e8db909fe6e166a46b9d8ab1ecec3987209fc86dad2c2c762",
-    "analysis_tools/pc_reference/inspect_pc_package.py": "543194afc3b1a679f5cf31010fa2666c5943ec3ed63c0e50191cb52f0ac73f40",
-    "analysis_tools/scene_reference/README.md": "5d77b724c9881fe311838045afbe1c851e52ab5439402b191d16e3abd8e55e04",
-    "analysis_tools/scene_reference/render.py": "9b270ad9f03aa307a17cc0ec3f5fe3a15d32d9691752f45c6954fbea231f0af3",
-    "analysis_tools/sprite/README.md": "bf7eba337401312b6da6142029ec69a75335f39ae2b8627937df338b207b3176",
-    "analysis_tools/sprite/animation_oracle.py": "055c46dbfc8b13fc7c63278e214d1c04c9ca61035d9513bad9dffa84f9dbf79b",
-    "analysis_tools/sprite/animation_probe.cpp": "9ed6bb55dd04e7240bd0be5ed319665903183d1972c599336f4fb963e970d283",
-    "analysis_tools/sprite/matrix_oracle.py": "678dd059c857de98c2a9aadcb0f7be3be65b273c6772893be0963ec1f5ef57d4",
-    "analysis_tools/sprite/placement_oracle.py": "940f7010add66ec3188886f4b96147c1c4c16cbf8720c89f6d369b8682b85325",
-    "analysis_tools/sprite/placement_probe.cpp": "a4c0b34ac1385e446da75c21aa0638f949ac32e431079f1b6a08a0ad2175d2a1",
-    "analysis_tools/sprite/render_oracle.py": "f3fa8b4d3df77c82bfc3d249109f650e3ec6e9c5421fd29dcf81adb3d3e1124c",
-    "analysis_tools/terrain/camera_oracle.py": "6f9f58ec84de10bf775268648520ca5d3c96f38d11e3b8bb06a29fac964abf59",
-    "analysis_tools/terrain/geometry_oracle.py": "b6dee3a66421bd251cf9841c97129c10854e772a88bb09d6a609fe2d0a28d68d",
-    "analysis_tools/terrain/map_oracle.py": "bdb206e5455a5246a064361e6648bf565464487e399249ce656d87554a9fc919",
-    "analysis_tools/timing/trace_summary.py": "b2d019d92d2cd87958f594fc32444d32743991cc7135c16fbc490dab6e4362fc",
-    "analysis_tools/transform_action/README.md": "f0649e07f11667dc13603cb3f99d9680c507a1dbbd83e71119cffd64a506f945",
-    "analysis_tools/transform_action/oracle.py": "6db2c2f19bf6e332f7b60114da57a4ed58612e385e15fc57419088789e255b02",
-    "analysis_tools/transform_action/probe.cpp": "8e18b0452ad51e86ff3c192fe3bc07030dc6ba5744a7f0627489f8c45e0eb875",
-    "analysis_tools/turns/README.md": "a95229588851b91305cb737e5b4acb13a139ceca049d2aa02ebe748eaff5b845",
-    "analysis_tools/turns/oracle.py": "5ba40f91b504d0b124f3ecda9ca276fece32acdb360e001916c78310ccf7ed0c",
-    "analysis_tools/unit_spawn/README.md": "fac565ca44e952ebad30c935d7258c47e912a326c71f7d6bd9272f6240929d2b",
-    "analysis_tools/unit_spawn/REFERENCE.json": "19f42299423931e8e828f1ff111e9d1c331d88005c2c56535ad186370bb65985",
-    "analysis_tools/unit_spawn/requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4",
-    "analysis_tools/unit_spawn/unit_spawn_oracle.py": "aaab3684fb98d3ff0333700d1edbc729260afa743ecdf73b985c1070442140af",
-    "analysis_tools/world/README.md": "f65a83066673d4906cd3a63c2a7595cbbc5dca8882257172bc6fe6bcc2a04206",
-    "analysis_tools/world/REFERENCE.json": "fa44a30b51f883008cc61cac8a24038feabbb68a5ae6d9174268e93ef51c4262",
-    "analysis_tools/world/world_oracle.py": "2c1fc1e53e27c8c0a16a248b4d724f6225f9fdcba05456a9d840cc21d1bc6a79",
-    "docs/NATIVE_SCENE_TEST.md": "e90adb02758451b39ac17495e76039e17ee16bcddc02f705a26f9ae01ca5d424",
-    "docs/README_MEMORY_ZIP_POLICY.md": "2f90499f5ab125f9e1baa8982135525bb97f907dd2bbb0e1bd348d92af0525d4",
-    "docs/TIMING_REQUIREMENT.md": "92703185a8111c51e2c70d9f21ac3d99af0fa6c12c394c1451a443c8f8b3710e",
-    "native/CMakeLists.txt": "a9a19d4bcd1df02df90a6ec9352351370ef4ca75f91ee80ba978687564656d9c",
-    "native/include/g1/AI.hpp": "ea45901ace1318be438de171d27a3aa78f9d2779ac2c9d92c91b99ff2b74bf91",
-    "native/include/g1/AIIncome.hpp": "3e78f1300b3a54fda0a0f697ec100b4323a7e24f241e40410a03552658a68160",
-    "native/include/g1/Archive.hpp": "a53b2b30f456bad82d644996c92c5f3d630df1b6e8778b4be446765be41657f5",
-    "native/include/g1/Atlas.hpp": "7306580534598d1d1de640ae66e96dd05810fe1eef87d8a06b78864bd2f1381f",
-    "native/include/g1/Audio.hpp": "8b690383d255e4f08a2d99d41f799e563cfa6fbe8088654fbfb963b496c8453f",
-    "native/include/g1/AudioEvents.hpp": "98a2872b108889ab093c28d718dc41ec631e4155ab7144cf407cf32e135f4471",
-    "native/include/g1/CaptureAction.hpp": "9d198f8d61ff07beeea26264776ac4ba2514b4c2d572c17190ee07612135621b",
-    "native/include/g1/Combat.hpp": "b82553f85b90e7794140903d8a6cdf2310c232dbde2339a8d7208d70a0b30a17",
-    "native/include/g1/GameSession.hpp": "66851b5cb8789cfc7e86917e78fe2c128fd82fdb4f03849cb0e42c82a660c286",
-    "native/include/g1/Image.hpp": "b7a19e7f2473190d19fbc46380a5cfd288e5d2f08db9b1a41983a63627e79804",
-    "native/include/g1/InitialPresentation.hpp": "2031c931ea7dcfc388d13eb554df1deace1db70294c0603a47c642f4112b2dde",
-    "native/include/g1/M3G.hpp": "03069196d3475c6f5dd910fa9202504d4dd4a8ee7f84f4c144cbb21cedb5ff7d",
-    "native/include/g1/Mission.hpp": "3580e5d74e2c2250302b996c13b92f61f592c7763fb4c233ac08c80d16b85efa",
-    "native/include/g1/MissionExecution.hpp": "6d42d532228d7d90f24e7257eb93f778c8efbe2e919da90088590dc76a126419",
-    "native/include/g1/MissionObjectives.hpp": "b1774f766cd669f9a840b663698e0bea931bdede752ad1485f7007ace912e7df",
-    "native/include/g1/MissionProgression.hpp": "7da6229854fa0168ae1402e890f53eaf1241e1284bc07c1b167602101e12f2e9",
-    "native/include/g1/Movement.hpp": "a3a4b66db096e34c6de57642e01a41e2aa19c616aebeb4002eab279f809b6e75",
-    "native/include/g1/MovementAction.hpp": "4de89a3a714fd9cfc570e2fadf539c7b2728d05b255e1617df1a1ec2b9539992",
-    "native/include/g1/MovementArrival.hpp": "4d2f2cd05b78ad730c08184b9f13ea7b64d4e321f83c2ac86c0bdc7ee38ad3d3",
-    "native/include/g1/SaveStore.hpp": "bba8b7e69165d1d0d4a4059346082757e7f4f223186cc7a2feb4e61777a566fc",
-    "native/include/g1/Scene.hpp": "26dda9945692d72f663909b427d745f93bd5c9e61cf72b6cbc22d69462c968d4",
-    "native/include/g1/SpriteAnimation.hpp": "11ad554fa9bfe469fb49adb8b5b041d7e9801878f23cbb72be02c4b64cb82a70",
-    "native/include/g1/SpriteGeometry.hpp": "1356de05761e44485e90300083fcd99eaaecf5055c777530cd9f5430511611ac",
-    "native/include/g1/SpritePlacement.hpp": "be73567877ec77644328abcbe73629526b0e1f12d4d1753d687c218083eb555d",
-    "native/include/g1/Terrain.hpp": "23f270aa8360b59674c44925afbcdae25d146aeea81099db69143ca8c431bcc6",
-    "native/include/g1/Text.hpp": "7e78e6b25dfe6e65ed7b98ec47809b1a0560428145a8e8d32ec5ea40b5134df0",
-    "native/include/g1/TransformAction.hpp": "2a9f1738b07db5df60181b90d46cf624b31120b10e2f39ce75ee4cccd35f003e",
-    "native/include/g1/TurnProgression.hpp": "f82e327a22ef1c45c9bee832439215d9d9e962811ca554f5335f21c7a7cd9e61",
-    "native/include/g1/UnitSpawn.hpp": "ea2a2365909deaf668b78fcf0be2c4864f5defffc53ad163fb27265fb0d4d27f",
-    "native/include/g1/World.hpp": "39f6a78b4bbececf39d702bd95137fd30540bc2766febb24357b402e5869d07d",
-    "native/platform/apple/AppleAudio.hpp": "eacbb06584a93fffc07c9510df8c8c13fae950bf545b20a89896a5a34ea170fd",
-    "native/platform/apple/AppleAudio.mm": "c9ea90c338a429392d97b8316c8915bcefda32a60c39439017f54d72d63537f9",
-    "native/platform/apple/Info.plist.in": "bc80e3f123a6aa6b4640e1ca7de8a38f4376a01a5f68046537cdef69838ebf1e",
-    "native/platform/apple/MetalProbe.mm": "1643bd1db4b52e53530f6690d37a7c7d836a0dd52118d8319f30b6072da6eed3",
-    "native/platform/apple/MetalRenderer.hpp": "4cd575225d20c1d456188b8fb2c00d293f5dccf9ad4550f3a1f2d7f6f37eae81",
-    "native/platform/apple/MetalRenderer.mm": "3dc396a183761c9420392144f4e6d661ff64d03741bf5006059523dc59d9e1df",
-    "native/platform/apple/NativeApp.mm": "3b2e86456032a637793b4a5fe08f2dd443b41c9408e6034c7d1101cba4edf6a5",
-    "native/platform/apple/NativeBattle.hpp": "34ca6a80ac3ae8aca32124db9e94545b17c240a550e6d543200ad8e92c93f729",
-    "native/platform/apple/NativeDialogue.hpp": "ed05f1d832cab3d24e294ab5b802e6ecadfd4b077fc90ef45472e1932523bbfc",
-    "native/research/ACTION_ADMISSION.md": "b3106d4f3b96ba50c6834abd0e1952f0ff1b53eab6bc0337f0f1629d5f6c4ce9",
-    "native/research/AI_CAPTURE.json": "a8932ebbe1f6ebc6695bb44fd5afc260d11c4c8ec22b00bf6f396a6332281cc2",
-    "native/research/AI_CAPTURE.md": "fab35db7e6c7bd0cd01258879929e882798288b650868d8e1cee30ebb2a881e9",
-    "native/research/AI_RECOVERY.md": "1160c5aac92e97c8443df3792b033c2a075218bb7d049878bef22352bcfff840",
-    "native/research/APP_SOURCE_REVIEW.json": "d3653b053b1006be3e0b5f9d6ad973575a72b1fc0a4373cdce192df5beb8dab3",
-    "native/research/ATLAS_DECODER.md": "8b77c30d48169c2f5a3c0811b93e40f96e7d7f8ed53c1d76e4c65064679897c8",
-    "native/research/AUDIO_DECODING.md": "4d084f390035d1fcc8c451bd89c417ece611b02da3d053d10e20b962b5334e5f",
-    "native/research/AUDIO_EVENTS.md": "14540fb86b049605392de38fd9aa672ea02da4904235afded9226b590652d3cd",
-    "native/research/CAMERA_RECOVERY.md": "3d27dd469867ca68b16201b0778fb7e8ec15419e074e06594f3d52212faf35de",
-    "native/research/CAPTURE_ACTION.json": "5ad271e9473db47ca174db596ea0fcb15c2b50eb770fb17d94de1a65fefdbc76",
-    "native/research/CAPTURE_ACTION.md": "80901d0edf2540f0fc3015669604ea0e14e2fba6fd888d1844e62db0e80ae820",
-    "native/research/COMBAT_RECOVERY.md": "848dae829c62e5b55404f42b5c3a20ca221bfc4123a7879e7288da318c745000",
-    "native/research/MISSION_DECODER.md": "6384bfa5ae662bff83963b8e959838aec25a188daa388a442ce61187f82be9cd",
-    "native/research/MISSION_EXECUTION.json": "db61e01e2f6b22d20f014c32b87f7d3c87778418eb8c9e04180b6d49c675a80f",
-    "native/research/MISSION_EXECUTION.md": "283af0a0421ba80fb628a99a89fbf65ec0c2f080eb866bbc162069cfe1c70962",
-    "native/research/MISSION_OBJECTIVES.json": "e2b2e5730276cc3d585c4cdafa1ca93836764e8e9d869dedf3d2eb0a4e366d8a",
-    "native/research/MISSION_OBJECTIVES.md": "15c0394613eae46c0cab3dc3f61b5779737933445c3bc38b0fd8b19587242aad",
-    "native/research/MISSION_PROGRESSION.json": "f86301ed5c5a20f57b2e44ab434eb3e811647bc78dcb13eba79b92b36423df38",
-    "native/research/MISSION_PROGRESSION.md": "840982355be02b392e64b653612f9af1dda2ec41c24240d7648300bf13c88f6f",
-    "native/research/MOVEMENT_ACTION.json": "b352c8eb8e7d61f459bbd46384b2e43df4e214193df9490894010f09981d5e5d",
-    "native/research/MOVEMENT_ACTION.md": "69dada926769d8446f44aae5278015e9f9231c0dae539f4911ec877446af3895",
-    "native/research/MOVEMENT_ARRIVAL.json": "1533888ad355b56d62ac4d64e075155f91c494b805ecec9830027ba248b89e2e",
-    "native/research/MOVEMENT_ARRIVAL.md": "582b33220c3e63d705140e0ff9baf615a50aa2af9f0e48e83471b97815973d5e",
-    "native/research/MOVEMENT_RECOVERY.json": "dc8af2ce1a8ff94b75ba83ca2c64ad9daa27b98b0c7b556415a30971195b8c38",
-    "native/research/MOVEMENT_RECOVERY.md": "b3d5fa8883af45d2860dd193c9623d9d39a60b2ac052ccf4a5c238a48fa80c87",
-    "native/research/NATIVE_AUDIO_OUTPUT.json": "2c5281e46b6aa8bb21f102b10804ec1f9c273a2d940b6a7bd98c3eba05c26bcb",
-    "native/research/NATIVE_AUDIO_OUTPUT.md": "058365e1d8a5654c97e08886393c164dfb845ee6ffc1bd82eb97d33664cfb847",
-    "native/research/NATIVE_BATTLE_PRESENTATION.md": "a8cf4196adf635ad5c42eec5ba1ad18393cb19b0d84b700cf2065a6c1bbd9c08",
-    "native/research/NATIVE_GAMEPLAY_UI.json": "d489bf28c7dbf52eb16b1775c59e73562e3fc45dabe0c22350e9fa574ff47e08",
-    "native/research/NATIVE_GAMEPLAY_UI.md": "017f739b162a69107418b0b55b85f358a88baac08fed3a304e85f1b3851537ca",
-    "native/research/NATIVE_PROFILE.md": "88601ff24b35575b46a0579221d291c62715d5627668a34e0ba1c9e9896807fd",
-    "native/research/SCENE_REFERENCE.md": "0cbebe5888e19bc73dfd2b1478c3e747fdbb0a01d61bb73f759189e1c08cd511",
-    "native/research/SPRITE_RENDERING.json": "d2020a9d29ab549d4638b7fe0319d0e37512cdb47007d1998ac5aae14ac2ea18",
-    "native/research/SPRITE_RENDERING.md": "0c26611e0468f67f11cdb2003d2ec14baf739177f83a7c0cae55b19ebdf405c1",
-    "native/research/TERRAIN_DECODER.md": "fbc389c203731090e160cebbb2917b90651cc8f9ddebe8ac108af8bdf1e63078",
-    "native/research/TIMER_RUNTIME_OBSERVATION.md": "dcd3c3ec96bbe5bf6f2fc3999065ffa18521f55d04392fa253bb8416c97add23",
-    "native/research/TRANSFORM_ACTION.json": "1c2cc0b55648727adc19cd6350c60c66966132c0e5cf10c8e905c65144d67a52",
-    "native/research/TRANSFORM_ACTION.md": "a0762ac3e58bc04fa200bbdfd0d9e6b17cc734a6f6003f1346d4f491fa6db9c3",
-    "native/research/TURN_PROGRESSION.md": "69cfa3d247af4b4c516ba31e4bfd999e7aebb4fc36fb92db414b13f0611b9744",
-    "native/research/UNIT_SPAWN.json": "f5fa0eb444307df0b310f0a57728405cba90286f3baa0544841aad6e4518553a",
-    "native/research/UNIT_SPAWN.md": "4f4abb800566407726a0b73bbe0d232cba5d7493ed3a37afa2518fd639bee5dd",
-    "native/research/WORLD_BOOTSTRAP.json": "65a7badb34d3eb5e24d9cfcd00a7472f1c937021644c23bd2533e8875d4c4602",
-    "native/research/WORLD_BOOTSTRAP.md": "887125491e7490414777560fb7de4d06dd68dbccf6249d6d11af3230e9ccdd96",
-    "native/research/WORLD_BOOTSTRAP_METADATA.json": "bb97e8962c26ab3b98cbb6ede14145490c763db1f06ede27bf2c57be002c5be4",
-    "native/research/WORLD_BOOTSTRAP_METADATA.md": "3e42f7d1f35b2c03c2e31469149b4585337de90104d8969bbb0e1cc6652b1ef9",
-    "native/research/ai_validation/native_ai_validation.json": "af606b29b60c45b2e24f36472a4552c57f68bdbd8e58a6eb39de1657353ab453",
-    "native/research/ai_validation/original_ai_oracle.json": "0e2b82e1157b1efdd13932789fa44f189c1a4f19ae7ac4972d3701321feac90c",
-    "native/research/atlas_validation/native_atlas_validation.json": "47688d06d6621bbc5eb29df7ca3668d75b18edde90b966b3d5cf166515ac50d1",
-    "native/research/atlas_validation/original_quad_oracle.json": "2822faa4884e297ad8655c9b05a75e031dfd8c67ad5d308bfc5183035ecf11f1",
-    "native/research/audio_decode_validation.json": "d4db1bcd0564c088070cf518e9d8ab31568dad261fd61583b6232a0fc0105d3f",
-    "native/research/image_validation/native_png_pixels.json": "49a4f6256a08bd8b0c8acff34ecdb92a742c17e795d4bcbab9d061b12b5e037b",
-    "native/research/mission_execution_validation/native_mission_execution_validation.json": "df423ff9e8fd6a3d71a61488754cc4f9311d4ac9d3bef5ceeff8e011fd95c5cd",
-    "native/research/mission_execution_validation/original_mission_execution_reference.json": "4811020b731986c364bcf0bc6b93e7a6269e74bbaa48cd510c51c761e5fbbe78",
-    "native/research/mission_validation/MISSION_CHECKPOINT.json": "a438ef30a23890e6293caf5aca6509ae2510866dc4e897c9a96c19f8ac03d398",
-    "native/research/mission_validation/cmake_validation.json": "b92d9e26a0d9dd879c98ffccf8209b67215947492de61f5f67357d2055030bcd",
-    "native/research/mission_validation/native_mission_validation.json": "55b70ec3e3bf800421f048ba64e28010e27b1788358e05ea466d84b563713a01",
-    "native/research/mission_validation_opcode7/native_mission_validation.json": "afcf32c2afcc92f57ca051bc82457e7ca91b35cab3cab35501c9989ba12ff148",
-    "native/research/mission_validation_opcode7/reference_refresh.json": "9708209f47afbb39f19a7c0327b40c6eb43be17c6cd1b2cb6e65de3bfc68b463",
-    "native/research/movement_action_validation/original_actions.json": "4be274515da01e656109614e10bedeeb0bc60642c2ba1bc03df07d2fa5a5236d",
-    "native/research/movement_action_validation/original_arrival_facing.json": "32af51d9c98020354e86c897e9716c6302df3e5f34f06f824f95f4809ea4b08b",
-    "native/research/resource_validation/native_resource_inventory.tsv": "c82184845563e87a25699577bb8c287b91ba5eea6d7fcbf023c980c7156cf274",
-    "native/research/resource_validation/native_validation.json": "013bb2278366070de243752ed27dfef4c15910e73ae2be87cce4d5e915c1ad71",
-    "native/research/scene_reference_validation.json": "f39c05a24b22412a339f4e405b4c80c956aa3e5d3f513a7522a537f150f4ceb7",
-    "native/research/scene_validation/first_scene_load.json": "86de5da7bdb13fd44ef80141b80e1e1b351e9349992e639924478355fb46becf",
-    "native/research/scene_validation/local_scene_validation.json": "54e78f90b490bf64f20bc0c0dc9807f80bc1841237fa87a31ef73959fd95c660",
-    "native/research/sprite_validation/original_animation.json": "98a4635b26aa7577f6e0c1e14b5926c877167706c125e9ef9e0b3444a35b8832",
-    "native/research/sprite_validation/original_matrix.json": "4b8177654819afab875ce908bcc737730f6d45e12742c40e7d6ea2c465a1a712",
-    "native/research/sprite_validation/original_placement.json": "078c965d01611f8a498310fddd630978b0b51a3e11986ad5176c20fb56fbd99d",
-    "native/research/sprite_validation/original_render_setup.json": "082428b9f9e232141b4eaa8753015f7a3897e2d6bd650e945528bf5abce25074",
-    "native/research/terrain_validation/TERRAIN_CHECKPOINT.json": "06ab4748d3684ac789c97b11d5b618bc9dcc6f90b4aa80d3044d8da3b62428da",
-    "native/research/terrain_validation/native_terrain_validation.json": "57722e6cc7835473056b495c7b17182454997bbeb3d81d7ea4a7218675743c61",
-    "native/research/terrain_validation/original_camera_setup.json": "e1b7292f7b09607e40ecbbe1429634795050c63f237c0d10cb25f3d1728241f8",
-    "native/research/terrain_validation/original_first_grid_oracle.json": "c1fdd81a0d5ebc17a706a8046141a433a4a62da4b4ab94f520e1fa4b1475bacb",
-    "native/research/terrain_validation/original_terrain_oracle.json": "06ea8a192abc6e717a9022d28bce9867e2eebfaae6343e97c6ca8073dc166133",
-    "native/research/timer_runtime_observation.json": "34cd5ab672a2c4515200df8b6a66dbf1d12c15eae668e07bc92776146236c2b4",
-    "native/research/world_validation/original_world_oracle.json": "ddfa2c079e2b156ea240dc8f53c3377210a94ae8715e04de09c3f74b91b4a0f8",
-    "native/src/AI.cpp": "e25b60c687596c6e5b817b6facb4b099348b354ece8492f9311099b6b051edf1",
-    "native/src/AIIncome.cpp": "3b663dab235207b1ac6e6cdcce0881f13eafd0277c5251e2f08f66fd6e2388e7",
-    "native/src/AISite.cpp": "abd1e3643b723ab01b1ea9bd7992dc3d7e44f4438fa06c2c8d6398b314cd3772",
-    "native/src/Archive.cpp": "a19a7576c9b9e793a5e2171d0096b7aba68e3951d28f4bb794494466905f8d87",
-    "native/src/Atlas.cpp": "5224165172d03bd54c7d8033c1d2e6ee44ce7ca1fa03526d74b61d1b1e156749",
-    "native/src/Audio.cpp": "297a62c64cfcb9f1ef5af80c7e8c2bc1b1d0e74d034473e24bbc8af6eb2bfc52",
-    "native/src/AudioEvents.cpp": "132fcbde0f734e79e0401877f2fb35bc39650c0311f433f4aa9eb8cc88868685",
-    "native/src/CaptureAction.cpp": "951bad97b69cdaad3b3788581c1f2f1379a4fbf0de1d8c1727d009d235312e14",
-    "native/src/Combat.cpp": "a54dbc005997313f1347c1d7e61c745d909c5fa330722a61b6dcea9b4b81eb9e",
-    "native/src/GameSession.cpp": "bedd09218491bbc94fd6f662d72892b3af8efddfd20dfc0d782f97e360f1db1c",
-    "native/src/Image.cpp": "a3f4d8e18f82699138ef6948bbd72e7402c98e2e4973c6cba5096cb220564e4f",
-    "native/src/InitialPresentation.cpp": "dd992341007b3d19bc43c4a88c994d5f3581cbe6132528e3f83d5ad91fe7b62e",
-    "native/src/M3G.cpp": "5a80cf51465903ec076bd18173235b801b90fe61217cb67d410060d6f17ba9ff",
-    "native/src/Mission.cpp": "8cfd2d9a7faf9c8b3ad89816d6220eeae29119d754b0bf371543d9c6ca116cf2",
-    "native/src/MissionExecution.cpp": "efda86bfc468304c6f218d18c6ee18c50890bfcbadbd3d31624fa64e0f5c6522",
-    "native/src/MissionObjectives.cpp": "317e1160344c6f02a98aad2280553b1abf94ccb21dab1eb8f4a1c3ff642bb993",
-    "native/src/MissionProgression.cpp": "8fe4883f3a6532a3254afa29919bb95e0137ac8cc585642b2d42aad2797fd203",
-    "native/src/Movement.cpp": "0cac89782a82b521ea12845c400caedbb680790432de17f6d8fbd51acdd64f9f",
-    "native/src/MovementAction.cpp": "4c519b8c7c1cb75a8cb696f9852452f6f7bae60e855f0cc26b5fe1ab558ae4f9",
-    "native/src/MovementArrival.cpp": "a929d215d24ceaceba6e5ae0a9492f2834400d117e7b9ca6c8c5789db68fae23",
-    "native/src/SaveStore.cpp": "fdae81f5f210ea2bd2606924eef67a268493d05ea15d980a4092611e5e955679",
-    "native/src/Scene.cpp": "20205229fbcc8ad80c8bf306f93f2006696d451687d48335771b4797f6140705",
-    "native/src/SpriteAnimation.cpp": "8469a57e5149757e9f531fe1e6f68f17d6281d535c94b155fe612ae8ef1df564",
-    "native/src/SpriteGeometry.cpp": "ad8bb1b6b324bcd39f1ce23b7e45cfa18d8d20b95a3a7afdf1da801a0d0c5f39",
-    "native/src/SpritePlacement.cpp": "7615da12e273eb5bf5c6cb18707655b73b547c2dce0f7306f074619a37bb7ed0",
-    "native/src/Terrain.cpp": "2baa7dbe5503e90379aa5950f5f5898a072a0e53cbec560612c7953c4582ef43",
-    "native/src/Text.cpp": "77f0edbdf3a6f9b9979a89175ce7a2efe3068c2039394cdc9b33b70e0fa17058",
-    "native/src/TextIndexMap.inc": "cfdb86ff805a4a75b65aa1f79c943bb4f671d18e47d40dfe1b02561709201ad4",
-    "native/src/TransformAction.cpp": "a51c0872e29238283da5eb371aa67362bc55342c3d2b14e6b71681615f95e7d3",
-    "native/src/TurnProgression.cpp": "dbedefb33651b22fa2acddce2d1ff423b04a11ce35e301210f83253c4c98b2bd",
-    "native/src/UnitSpawn.cpp": "1a6e77d6b1d57eaac69274d3fa76091b010c0412bf27ab1bb0c3ae44c18b64a4",
-    "native/src/World.cpp": "869906b089a72b0890a2ce0a1d31bb41e7a6e6a7ebb55cfb635692cdb9ca9a10",
-    "native/tests/ai_attack_cases.txt": "6831e4b0cb7f9eb8b83350dd8cde42db97b1faa09793e78ca9af28abc883dc00",
-    "native/tests/ai_attack_test.cpp": "5cedf4d24b5c57a965095c5d3d4025a4031e91ab10bafacb7f8c995f55dd8fe6",
-    "native/tests/ai_planner_cases.txt": "753d60ffd9fa11a33698493c6919f21df7c0b676160463a0f4a06d45f11eab1f",
-    "native/tests/ai_site_cases.txt": "66fb7aa04859b7f0fb6275cbe0d3afafe6d4ea7e2f67de609c9d236e2b935c91",
-    "native/tests/ai_site_test.cpp": "650adc1ff39e8316da185bd0d61864339a71f2630225f65798d7d22caeb104a9",
-    "native/tests/ai_turn_cases.txt": "9be9e90b6b24e0e2a26745759f595cd682b81f86e9bfc421a0f920e9108692a6",
-    "native/tests/atlas_reference.json": "56fc4b6637852f51a0377b2a6583e1ad62503501af2b636ad34e381ea73d9adf",
-    "native/tests/atlas_test.cpp": "b66a127f098faada423a51149e43d2438f2e2a388164138948e4a2efc6e50f6f",
-    "native/tests/audio_event_original_vectors.txt": "749a24ea8f0677019758cf5ab28e2318c36eb72ba5b95c5f9397065999c34a80",
-    "native/tests/audio_events_test.cpp": "bd91f823235b9e339b05ba1c0954ca237995bf537c2a37bb7ca2e994681f8602",
-    "native/tests/audio_test.cpp": "ea594168a918d6e298e41f226595aba82a0c4a0f98caba74651ad7375396d25d",
-    "native/tests/capture_action_test.cpp": "3ab201a77e1edb23f8a79ce2f6ad5beeb094c358bd9a22e8d102f10e1ba34c82",
-    "native/tests/capture_original_vectors.txt": "e31a5a7359ef7a29da6359d993d8ee19328e9728d56a7242a8857ad0eb5acb8f",
-    "native/tests/combat_cases.txt": "61ac20c9c674a082d4bce2bef0f6d5ffb9b7c9e78d5d2841b1dc32eba18894dc",
-    "native/tests/combat_test.cpp": "29c9e33c46064ead94de51a555c7e2c138636098f60d016f86c0907713132c66",
-    "native/tests/dialogue_original_vectors.txt": "4254fffddd56e8c4c6be760b614ea71df0838f56abb1d7350f5bfc804134bf41",
-    "native/tests/game_session_test.cpp": "e3232f49d384437583ff2bdee04c8c51841519c397e2dcc2bd4d30db4bb671df",
-    "native/tests/generate_atlas_reference.py": "1cda792238f2967a973206af136283bb9568e9d7d6dff38ec2cecb8a10a44dbb",
-    "native/tests/generate_mission_reference.py": "3022d02273db82675701a12a2050ad92dab123a92076d40de9ed35c01071ae14",
-    "native/tests/generate_terrain_reference.py": "9a5bccfa856356c281ba1440bd007d59325b80051132aa8c4f9b5037b218ba33",
-    "native/tests/image_test.cpp": "05bfdbe80f59ebeb9815c1744b3ea5eb907dd0612e65533be8d24dcf06368ec8",
-    "native/tests/initial_presentation_test.cpp": "7955f27f95a41b61853e121222d5a65fab460b04145e9e7a8f5c806d8365d1b2",
-    "native/tests/mission_clock_original_vectors.txt": "d2d5007a408aee4d9289bd8d64cc9611fd1b8afa446cec54c78f6fdadf69a1d0",
-    "native/tests/mission_execution_test.cpp": "5672cfe2f6ba786a381fe05a3cac9887f759f47c251e5dcae6d732c189fcfe14",
-    "native/tests/mission_objectives_original_vectors.txt": "6e070197d3455bdc3dbd13f7f366a51ce93e571f9bdae83315dbac507b74df0c",
-    "native/tests/mission_objectives_test.cpp": "693ef93ad585ef9b825ae7e30c17a9acc1a77504352cb0acb67218aa92df5096",
-    "native/tests/mission_progression_original_vectors.txt": "a120950902b56f7a339f774f44f0c7e489f082e533500c24b579c65f78421aa5",
-    "native/tests/mission_progression_test.cpp": "6bef39fe778757cdcfd9e0fbf1432c45d4448153b0cd869fb6892032d25009a9",
-    "native/tests/mission_reference.json": "76b465dadb42c4a55c7b3d0bb5082a88ee8590ab207989ad1a8a76276b7df9d7",
-    "native/tests/mission_test.cpp": "a7c4df5a354d9775c1335a9da92381375b20be5d6d6c79e151fbfc8f5b66f21e",
-    "native/tests/movement_action_test.cpp": "38fe7b67b0b18f73e0bb5cb3859fd6c114dac3861b75af132a3306fe5465ba6b",
-    "native/tests/movement_arrival_test.cpp": "0d053b16109499cc3af12160fc80e48f7c636b359ef0bcddb4531427eace28c7",
-    "native/tests/movement_cases.txt": "ba6b138459a4016101f8ad22e35564faafa6635defc75437695d26408e0425d3",
-    "native/tests/movement_test.cpp": "4dbe03624ab5e378c5e19f63b93ba337afd5357a6c493afae87c9a656ce22dc6",
-    "native/tests/resource_reference.json": "ba6ee933649e511ac917b7018a1313d32f39f2fbd7700ee7d84b22045ac479c7",
-    "native/tests/save_store_test.cpp": "29cf19c547edbb2b9a2bc255207788ca2dd57d764540a688e0f3165891742345",
-    "native/tests/sprite_animation_test.cpp": "81b426bfedf725b383ff339ebc2d8884f55f1a98a7a1f957db18798358a12ac3",
-    "native/tests/sprite_geometry_test.cpp": "62ef35a3933f7ad3a58d1978075f9e7335bdd5ff7edcab7b1e30d21225eb21e4",
-    "native/tests/sprite_placement_test.cpp": "9e59f47a53049811d3e2631bf8062ce341ebcc9b8ffe585af37c213cf1fc5ed6",
-    "native/tests/terrain_cases.txt": "5791215629f391e3400075ce012a4168a65931ea50fc8581f4c30e8d11c64345",
-    "native/tests/terrain_reference.json": "e1d5940bc9acd1d1d89e475650e85f83fd9fdad7364b4ef1eec3a0f2fb7bee87",
-    "native/tests/terrain_test.cpp": "91b8f0b9cf82012759180cb9c46c71e415ef7b68a80af5a187b5adde2d7dd28f",
-    "native/tests/text_index_original_vectors.txt": "cd329716c58c072847af3a476a6abd6ed7792301cbc1663f952c22100585daac",
-    "native/tests/text_test.cpp": "d4252e42c8a4fc98d3054bd2d12c81ff00e4a2a677309b479be036b4192d864c",
-    "native/tests/transform_action_test.cpp": "48edfffa767ae14b0f009be77d4a5965d692515befcbe2ac49175cde4489abfa",
-    "native/tests/turn_original_vectors.txt": "2a44165d4e7691f6884e3a215f0e9385f50ec1dc96a18942a87ee5f16dd14bcc",
-    "native/tests/turn_test.cpp": "ee447394cf96d6e233ace12f3b0014f012a460dbcf5e4eaae390e6adbdef45a2",
-    "native/tests/unit_spawn_original_vectors.txt": "f5b518a31e605ba8f254fe8ad96079d5eaa42c7a9bbb4591c3ab8a13ab6dcf88",
-    "native/tests/unit_spawn_test.cpp": "67464ec71bb1be61ca8113476fe7092fba302b0b74e24fa62d99225ca7eb4571",
-    "native/tests/verify_atlas.py": "5ab4a5b8774082254f801e80aa98587c5d03d5d5fe5110975b4294be27871f08",
-    "native/tests/verify_audio.py": "8f95d8d960b118623d35b60eee86863a867c58914780b2888849ba8ac603dc8c",
-    "native/tests/verify_images.py": "f3ab6b9c13c43998eb7fe72735604fd45e30759e49fd4f5667016d524909fc4c",
-    "native/tests/verify_missions.py": "de8f32da9479ed2a70b2ee49d1529c6d1218e110404867e5f8d3bbe320c16469",
-    "native/tests/verify_resources.py": "025799d510e7ccba2882ef875f0249755fa03b2f4c3cb063da863793ddccf1a9",
-    "native/tests/verify_terrain.py": "851f7a94494e73f301223e8a46f5d8edd33107f21b0cd42db10d9592eafaa6f9",
-    "native/tests/world_funds_original_vectors.txt": "3848fe0e43133b777ae13a4e4860c79dae7b17a88a5d0ccd3c9afbc25e4cf637",
-    "native/tests/world_test.cpp": "3e42de60a11adb2e818d848ce40c6670e2188b82ee99206e90a17972ee37ac13",
-    "native/third_party/lodepng/LICENSE": "bdafa318b8e637d600ca1b60545e894881977a16a16b74809c95e805701621e3",
-    "native/third_party/lodepng/UPSTREAM.json": "cb2940d282b1bace1f30d5031dd0d4b436f67a37acbddd7d8c724b072d8453fe",
-    "native/third_party/lodepng/lodepng.cpp": "6aec876971ec860527859458d3095220fc5ee1258ec37eb59e1e7dd9cf136a81",
-    "native/third_party/lodepng/lodepng.h": "9a1fca0238c38333bdc8545336961b73fd0b76957bbacf033186991be9d7cf85",
-    "native/third_party/stb/LICENSE": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63",
-    "native/third_party/stb/UPSTREAM.json": "f49725da5c0866f601db30578ebedc9b8d4da22729e4da61344059420b816a1d",
-    "native/third_party/stb/stb_vorbis.c": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636",
-    "native/tools/atlas_probe.cpp": "a79260305f11fd65764a7b5b2d37e7d4067c82e015772422ffbac1334cd05e15",
-    "native/tools/audio_probe.cpp": "e553a793ac72af426ff8080d3e3db00f53a23b8c0003dde1a9ce684b5cb6e75d",
-    "native/tools/extract_terrain_tables.py": "bca928d01ef4dc25f335b75d761266fbb6750bb721efd2a8fa93d60511c2e9b0",
-    "native/tools/g1_asset_probe.cpp": "873af09ec06d65a14bec3ab30c0022df2f401c75262f266aca487ba4760ba5ac",
-    "native/tools/image_probe.cpp": "7ad7e4d5a7f0315438153d8f7b75a118c46865c0b61bc18356e270108e6cfea5",
-    "native/tools/m3g_probe.cpp": "42b628462dbdba1f589e8e0c517aea97d881386d2f37e375979da662e42960f7",
-    "native/tools/mission_execution_probe.cpp": "30202022383afff7b4a96d9e16c7a2a212de12cac3ac63bac98919148bb185ce",
-    "native/tools/mission_probe.cpp": "689ff449ce11f633a7d66c7fb8237501780d127af02c05e891efe6eb90042e46",
-    "native/tools/scene_export.cpp": "0363e4e69deea5b25131dd326ea9406af4841f92ed8ed79ff50c1c20efadb053",
-    "native/tools/scene_probe.cpp": "4ac7bf4026dae41475dcb3a6af1c77f8a3e3ce848fcf2d2c96e4c08b13c9fecb",
-    "native/tools/terrain_probe.cpp": "f7d7013fda5001de7b6ed01da0873827345ce82b2b0d67833337fff0d7398a38",
-    "native/tools/world_probe.cpp": "11d336a0211f90f35e54e9f0f1cd303b5017c0cc7c2d618957e454be87671820",
-    "scripts/package-native-scene.py": "43d6c4e7781f73d3b1e8f935cb0c0f4451b9a40ac3174069b74af3477e15b72a",
-    "scripts/verify-native-app.py": "9337f2979e85ce22f3c7dc4e4deed238a945581ef85ec05471fd42bd6cac7e50",
-    "scripts/verify-native-archive.py": "a830660e024f3ffbd0320bde22a0f3e51a43b5ac13f89a31f03501b2d9ebf6bb",
-    "validation/APPLE_GAMEPLAY_COMPONENT_BUILD.json": "91e7f6557c2593eebc8c203eacdec105faae368afb21ee82bc158f5be014af55",
-    "validation/APPLE_NATIVE_CORE_BUILD.json": "3e845d2a639bf8da660486cfb10887d0f710db4e1a0e7c55ce27e0bc38ea880c",
-    "validation/APPLE_NATIVE_INTERACTION_INITIAL_FAILURE.json": "1d0ae08c46144ecb986d4af1557b380f0f3e7c245c147a62af0b04e73ad6673d",
-    "validation/APPLE_NATIVE_SCENE_BUILD.json": "69766d7600331c8702b3bf241f6f7bc14be69e8fcabd9f9b6ee46d1dc4f2d2d2",
-    "validation/DARWIN_PROFILE_DECLARATION_FIX.json": "c957c6dabe68e26fde26ad4d4915a23587420748ddff87fb6556a4b35b1baeae",
-    "validation/LOCAL_NATIVE_GAMEPLAY_COMPONENTS.json": "55918fcf4282ee6d878fafab3a93ecd251ee1bfad41b092355926e498c155de1",
-    "validation/NATIVE_INTERACTION_HOST_CHECK.json": "1ae8365a80a9eca2abe78eebc997e6dad0bc7e6eb276405a14749be7b6925004",
-    "validation/NATIVE_SCENE_BUILD_001.json": "08032de58ede929ebc0b847b046a7d4e70573975e27eb781655841fc520f77a1",
-    "validation/NATIVE_SCENE_IPA_002.json": "1649a6cf81d462056d8f90399da8dbefe73787ae24fc9962f265fb57114ff39c",
-    "validation/native_workflow_local_validation.json": "65f29d76d2798064dc69c006ed46927855035fa5aef7deda08275b0c9a80d5dc"
-  }
+  "scope": "Exact integrated source/research checkpoint, excluding this manifest itself",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 84,
+      "sha256": "ff6a34edd4c5c4704138b75c42bb48cf3cc34f67f06e2475b9053c8d44c3f5ca"
+    },
+    {
+      "path": ".github/workflows/native-core.yml",
+      "bytes": 6304,
+      "sha256": "5ed0509b4adbf482e9e539e20b170e47fbcdc07343cbebd8e997d8499b1977ed"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 122,
+      "sha256": "242234391f1792d304676e7349eae6f44cd013bfcda67d04e6e147926856c109"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 16727,
+      "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
+    },
+    {
+      "path": "PORT_STATUS.json",
+      "bytes": 12145,
+      "sha256": "e0d77c13ae2dc84d2409b80ba35c9fe4d8fa5ce3706f41f0853eaf34c3f824d1"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9382,
+      "sha256": "ede935cd15e78cf4ccef5926ad47bab01878f746893c1846c051c8398a955e82"
+    },
+    {
+      "path": "analysis_tools/PRESERVATION.json",
+      "bytes": 2192,
+      "sha256": "37efd877a885ba4c6d07149c5fb195e1e4d5d5cc2f9882d776c900e62a6b8b43"
+    },
+    {
+      "path": "analysis_tools/README.md",
+      "bytes": 3552,
+      "sha256": "e8bb0d9b0f547ebdedc9c3a84d5d35b15a75433ede067927484a28aed3e9d7e5"
+    },
+    {
+      "path": "analysis_tools/actions/oracle.py",
+      "bytes": 15733,
+      "sha256": "d8133492ea62bc5a9ab4b190648d72cfedf6b9fd9b5761f97fb2b7226d673994"
+    },
+    {
+      "path": "analysis_tools/ai/README.md",
+      "bytes": 3150,
+      "sha256": "84560c7f850a268a5ffe9c5fd1cc37b0fc45f3b78b56446d55ebaa0ce8b0ac54"
+    },
+    {
+      "path": "analysis_tools/ai/execution_oracle.py",
+      "bytes": 5051,
+      "sha256": "39c03ab3ed28b06dd66e7d2a43ce2d91e6ef184e820730f71af6879bd9a14090"
+    },
+    {
+      "path": "analysis_tools/ai/oracle.py",
+      "bytes": 18621,
+      "sha256": "6d59e821459f7f4a86dc4ea562b39f1a092491bd90168fb83f2309e645a9737f"
+    },
+    {
+      "path": "analysis_tools/ai/planner_oracle.py",
+      "bytes": 4937,
+      "sha256": "17840c760a60104395815850cdd6eac84337ff4967c579c6664a611014c91797"
+    },
+    {
+      "path": "analysis_tools/ai/site_oracle.py",
+      "bytes": 8496,
+      "sha256": "ebd784c90bf6387fe023514292dcc2fab4f2b16436b06644c38a00a7421b16b5"
+    },
+    {
+      "path": "analysis_tools/ai/source_oracle.py",
+      "bytes": 5074,
+      "sha256": "2f681d12a45b313a431fb06648d09000f36e8691214def685c7ea7207832f34e"
+    },
+    {
+      "path": "analysis_tools/ai/turn_oracle.py",
+      "bytes": 7827,
+      "sha256": "dc8f4bf2955e869ae69c53a4314ca6abf152827ad16b45094904c0c71f8684d9"
+    },
+    {
+      "path": "analysis_tools/atlas/ATLAS_FREEZE.json",
+      "bytes": 1631,
+      "sha256": "bd6d7f7e432d605f7fbb9a4f9154dae4ee02638f02a199d55ec8668deb7717f8"
+    },
+    {
+      "path": "analysis_tools/atlas/quad_oracle_frozen.py",
+      "bytes": 9197,
+      "sha256": "7daa9ed55617d34867549fa0d75656eef07734bb6e65893a33dd840ece4a89d2"
+    },
+    {
+      "path": "analysis_tools/audio/events_oracle.py",
+      "bytes": 6318,
+      "sha256": "a813a107487e3f2196dc6ff63102addafea4656406c979e687eb33d186bf0db1"
+    },
+    {
+      "path": "analysis_tools/bootstrap_metadata/README.md",
+      "bytes": 867,
+      "sha256": "e153229bb8e9b37101164728024ff39c0311686e67a13d1d313f4c0b3203f267"
+    },
+    {
+      "path": "analysis_tools/bootstrap_metadata/REFERENCE.json",
+      "bytes": 904,
+      "sha256": "23b26f71e89cf5d017ae0b4ec51d8d82e97f83af306323c9d72929b576ce4a85"
+    },
+    {
+      "path": "analysis_tools/bootstrap_metadata/bootstrap_metadata_oracle.py",
+      "bytes": 3797,
+      "sha256": "36176feaec3dea876564cf2390a15f50d4394020a57ad89b93de48976aba99e2"
+    },
+    {
+      "path": "analysis_tools/bootstrap_metadata/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/capture_action/README.md",
+      "bytes": 1384,
+      "sha256": "6adaf7e1625183506b2909371f409e263bf9ab9d31fad54955358607ca3eade2"
+    },
+    {
+      "path": "analysis_tools/capture_action/oracle.py",
+      "bytes": 12187,
+      "sha256": "8368f9e6be9000c2435270e39d2bdb09414478faa34392fa17f1370308a8b4f3"
+    },
+    {
+      "path": "analysis_tools/capture_action/probe.cpp",
+      "bytes": 4116,
+      "sha256": "fe47619563c2ba414d338e913f0cad7583a4e60c761321005f1ffe8dab451d69"
+    },
+    {
+      "path": "analysis_tools/combat/oracle.py",
+      "bytes": 31197,
+      "sha256": "10c98c7fe6b2132fd8e70da527cb7f149e8c071975fae137404970d0dfd038e9"
+    },
+    {
+      "path": "analysis_tools/inspect_assets.py",
+      "bytes": 21092,
+      "sha256": "8c2e133dfdb6c5cca2cf2d5331090f024d8d4d0724a7e9819f2a4a03e36c2d99"
+    },
+    {
+      "path": "analysis_tools/inspect_game_data.py",
+      "bytes": 8850,
+      "sha256": "e9a03e9a7bc7b851dea5c801e8a1b7748428d9f7bcf332b50baff96754ac9925"
+    },
+    {
+      "path": "analysis_tools/m3g/BATTLE_PRESENTATION_REFERENCE.md",
+      "bytes": 4868,
+      "sha256": "9477fa07897bdc73fc76b3cd9258c8a1325360c3eb7b829f0f541e92948a65d3"
+    },
+    {
+      "path": "analysis_tools/m3g/BATTLE_TIMELINE_REFERENCE.md",
+      "bytes": 2908,
+      "sha256": "d975ac61432a8d850596461fe4fc830a0b5bbdea975c4914f770fe857567b314"
+    },
+    {
+      "path": "analysis_tools/m3g/animation_oracle.py",
+      "bytes": 12728,
+      "sha256": "9aac208b97f7f5654d5745f806fea80d8e7056cb1a0ed38746137452058ef97f"
+    },
+    {
+      "path": "analysis_tools/m3g/animation_validate.py",
+      "bytes": 8222,
+      "sha256": "13908b36de89fdb4530c379561aa8e23c368a6c366e87e0b399b2b6c8edc0d90"
+    },
+    {
+      "path": "analysis_tools/m3g/battle_camera_fixture.py",
+      "bytes": 5087,
+      "sha256": "0b86dd1c2409e7f996739b5f99e2c94c8a48544a60b9ad0c6ef3e83acd432449"
+    },
+    {
+      "path": "analysis_tools/m3g/battle_camera_inventory.py",
+      "bytes": 3181,
+      "sha256": "82bbb7d13b4ef80bdbb5c7b146d42bfccd7af15fa8c6c52f4445eb8e52eab6a6"
+    },
+    {
+      "path": "analysis_tools/m3g/battle_camera_oracle.py",
+      "bytes": 12383,
+      "sha256": "7917b756471c4a8d47dfcd0bf51f8a8ace59f6538f7479e6f5f6dbb7f820eb02"
+    },
+    {
+      "path": "analysis_tools/m3g/battle_controller_fixture.py",
+      "bytes": 4133,
+      "sha256": "fcc8ede80528c7d1ebb85ebcf2ab6ef7721bda567f2fdeed5a86c0c1fadc036f"
+    },
+    {
+      "path": "analysis_tools/m3g/battle_controller_oracle.py",
+      "bytes": 19874,
+      "sha256": "f7e40e584624174ffbc345d3935a9e44bc8d45384615851c654574da2cacf346"
+    },
+    {
+      "path": "analysis_tools/m3g/battle_render_pass_oracle.py",
+      "bytes": 12779,
+      "sha256": "c1b31bae8594348a3d0089cb0afa953db93c96b3931e80767a22ac0ded9951b6"
+    },
+    {
+      "path": "analysis_tools/m3g/battle_timeline_oracle.py",
+      "bytes": 7080,
+      "sha256": "43ea3cdba41d9af33f44819f86a480eb2b57d16b112a6b36392e63bfaf796622"
+    },
+    {
+      "path": "analysis_tools/m3g/bindings_validate.py",
+      "bytes": 15990,
+      "sha256": "d72ba93577bd257fc33cf892648e9c12f801c2f33280a3f9a0fa59a871bbe437"
+    },
+    {
+      "path": "analysis_tools/m3g/camera_oracle.py",
+      "bytes": 6209,
+      "sha256": "dbc007fa33e0e23a75ed26833ea1fe72d40da3aaf7dff6b0be3b9c930953c9da"
+    },
+    {
+      "path": "analysis_tools/m3g/camera_validate.py",
+      "bytes": 3119,
+      "sha256": "3df7e8b962e257ebfca7c03fbb66d9d80d33a1b4c6567dd0e7367839c66f19fa"
+    },
+    {
+      "path": "analysis_tools/m3g/extract_metal_shader.py",
+      "bytes": 961,
+      "sha256": "8cdcf150ffb6431ecf6027bc08299b46585ed5a4294839ff0beefa88a80b8422"
+    },
+    {
+      "path": "analysis_tools/m3g/material_find_oracle.py",
+      "bytes": 8097,
+      "sha256": "45a9ebb7469e13ffbddccf27d95e5670aa68b4a81a251a14d88b29d5165a964c"
+    },
+    {
+      "path": "analysis_tools/m3g/material_override_oracle.py",
+      "bytes": 18988,
+      "sha256": "9d9b10e2db593f18cd20215b52aa1e252436d986a940c33d990e82f44e477dab"
+    },
+    {
+      "path": "analysis_tools/m3g/material_override_validate.py",
+      "bytes": 7881,
+      "sha256": "7670f3a1de960ffa9e4220eb9b904fe6e89241d245a6d751302cb87dfe44f4e6"
+    },
+    {
+      "path": "analysis_tools/m3g/material_png_oracle.py",
+      "bytes": 11793,
+      "sha256": "febb4029767222c45f5a2b89f50027acd20c8418d40d93a340f485d5b2d9040d"
+    },
+    {
+      "path": "analysis_tools/m3g/mesh_queue_fixture.py",
+      "bytes": 2434,
+      "sha256": "ca15c9e307d34927e11ffb6df39f750eaed7e98721c7b465788e4a077d3cf02a"
+    },
+    {
+      "path": "analysis_tools/m3g/property_fixture.py",
+      "bytes": 4176,
+      "sha256": "d5bb87e63fa27ce25961188c5108422d06d671df5370a1f1d1306a82fa9d68c3"
+    },
+    {
+      "path": "analysis_tools/m3g/reference.py",
+      "bytes": 10578,
+      "sha256": "62bcdf69622b7601db7fdf09bc301d2330f32a739030ec5fb987157c22c1a404"
+    },
+    {
+      "path": "analysis_tools/m3g/render_frame_validate.py",
+      "bytes": 3596,
+      "sha256": "805fe23f2806373339de334cf22c3b621627e9f43b324584e546f2f1b4bd3c74"
+    },
+    {
+      "path": "analysis_tools/m3g/render_pass_inventory.py",
+      "bytes": 2975,
+      "sha256": "7e8c407a58c244f0e623fc60b04d8fd866ac3d5e9ba14860472dbb1d61aa6c27"
+    },
+    {
+      "path": "analysis_tools/m3g/render_state_audit.py",
+      "bytes": 3837,
+      "sha256": "d60c2f402b7582a9f7b0873846430e27976943467d30e01fee7b0a3cc824823a"
+    },
+    {
+      "path": "analysis_tools/m3g/scene_pose_validate.py",
+      "bytes": 2395,
+      "sha256": "3e04c36864451a7853d74c875d7b66ac1176f32f0450f984be81b4254a07b070"
+    },
+    {
+      "path": "analysis_tools/m3g/spline_corpus_validate.py",
+      "bytes": 3386,
+      "sha256": "5ad09954e88ba45f07cd06ef1d04db4277ae07c53742f20eac1d3bcbed4bad15"
+    },
+    {
+      "path": "analysis_tools/m3g/spline_fixture.py",
+      "bytes": 3437,
+      "sha256": "e20addacc85428ce5c55bf8b4c030c09e7967bc5ea0f2f38a24055eb78fb617d"
+    },
+    {
+      "path": "analysis_tools/m3g/sprite3d_validate.py",
+      "bytes": 8952,
+      "sha256": "d193f81b96c9cb45a0dce8b05a1e029de8ad382795e17aac3b92814f86ee2879"
+    },
+    {
+      "path": "analysis_tools/m3g/timeline_fixture.py",
+      "bytes": 2953,
+      "sha256": "16cd2e4675f10b67055867f1b274a124063dd66e8c4b91c796f535a4da1c83c0"
+    },
+    {
+      "path": "analysis_tools/m3g/validate.py",
+      "bytes": 10213,
+      "sha256": "5bae2c249babf6c3b833c63261fe65068c41fb5ec26e1ff90bb62fe049052cee"
+    },
+    {
+      "path": "analysis_tools/mission_execution/README.md",
+      "bytes": 4531,
+      "sha256": "914e7451ab2f5be8dacfa2a26007fddd5a248f0308b96755da91020a15e02fad"
+    },
+    {
+      "path": "analysis_tools/mission_execution/REFERENCE.json",
+      "bytes": 851,
+      "sha256": "30ba2643d1c120c11cb41a83061fb9195e130be765775b7d6d24cb2c7d3da7e4"
+    },
+    {
+      "path": "analysis_tools/mission_execution/oracle.py",
+      "bytes": 18550,
+      "sha256": "17c89000f86d327946602d621ba10729d5a6880a80e0140dc5592f5532bf0c8f"
+    },
+    {
+      "path": "analysis_tools/mission_execution/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/mission_execution/validate_resources.py",
+      "bytes": 6533,
+      "sha256": "f32f83cffced3a2159ec2747477041f98fd87aba00665ba78c0e1a0529a663ca"
+    },
+    {
+      "path": "analysis_tools/mission_objectives/README.md",
+      "bytes": 1872,
+      "sha256": "8383e44c9f5f508ae9c8dbf1c4178e8b6132da88e46153197515cf2567919c84"
+    },
+    {
+      "path": "analysis_tools/mission_objectives/REFERENCE.json",
+      "bytes": 941,
+      "sha256": "fa677074226a420c14c7efb91fed9938345d397a55940ac09322df2cb138fc1e"
+    },
+    {
+      "path": "analysis_tools/mission_objectives/objective_oracle.py",
+      "bytes": 9802,
+      "sha256": "c339ef33b4757331a3e83e566baa885a5096eb3e63b3e3f29a683c58bf47755a"
+    },
+    {
+      "path": "analysis_tools/mission_objectives/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/mission_progression/README.md",
+      "bytes": 3050,
+      "sha256": "639408177f993acb5ba2a30c2017d077a850e2cda7012fd0642761067afc3108"
+    },
+    {
+      "path": "analysis_tools/mission_progression/REFERENCE.json",
+      "bytes": 2143,
+      "sha256": "a6ba89615fe5108dfb2a10007befb614ccff25f4d8697f88bb26097f40f06c06"
+    },
+    {
+      "path": "analysis_tools/mission_progression/oracle.py",
+      "bytes": 19663,
+      "sha256": "f0505848b34b88b6653cbb8ebe5f74fa8fd5394f4e1727fa93f0b3f2c18374ad"
+    },
+    {
+      "path": "analysis_tools/mission_progression/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/movement/cases.json",
+      "bytes": 350558,
+      "sha256": "8339a517a8757e70a25adc42e7b0ce2b164b8da062b3e7529aea944de3899bae"
+    },
+    {
+      "path": "analysis_tools/movement/make_cases.py",
+      "bytes": 5927,
+      "sha256": "abc56504d92482a1dd227431238bd811c3f06f30940b4964847add5201e9d1fa"
+    },
+    {
+      "path": "analysis_tools/movement/oracle.py",
+      "bytes": 10551,
+      "sha256": "ded6e06bc41c9bb6c8189b5f84e8636053d4ae296f925160de978660e61946a0"
+    },
+    {
+      "path": "analysis_tools/movement/original_results.json",
+      "bytes": 158376,
+      "sha256": "61add36fcbbea0ae6a1f8a0c2d0abc4a4b13171c0fab02cdef5e194e2d7a19f5"
+    },
+    {
+      "path": "analysis_tools/movement_action/README.md",
+      "bytes": 2258,
+      "sha256": "73e1873dd897ac133ae427a959af0a333e2b7d1daacfbcb84b1bc79a202c1265"
+    },
+    {
+      "path": "analysis_tools/movement_action/arrival_oracle.py",
+      "bytes": 8044,
+      "sha256": "9da989eb736d824f97591e6565d15adc90d3a192e890d09a465d9f9f03aa7e6a"
+    },
+    {
+      "path": "analysis_tools/movement_action/arrival_probe.cpp",
+      "bytes": 1807,
+      "sha256": "24c57a3fc4e8b551c70675ee547688f3ff6467d558ca4c66a91b20245e9eeabd"
+    },
+    {
+      "path": "analysis_tools/movement_action/empty_route_oracle.py",
+      "bytes": 10505,
+      "sha256": "204e1182a001772bafde9b8fd631cc1ec99c90d330cef1f85a11f26ef1633829"
+    },
+    {
+      "path": "analysis_tools/movement_action/oracle.py",
+      "bytes": 10795,
+      "sha256": "7bcecdcf7f890643f8700e23d979c99ff03092a6062da0611e984572c157aa15"
+    },
+    {
+      "path": "analysis_tools/movement_action/probe.cpp",
+      "bytes": 3447,
+      "sha256": "1d21de8e95fa83a4167b88aa96f0243716d36a3b3c411cb9eb7c3c08275d9c25"
+    },
+    {
+      "path": "analysis_tools/pc_reference/PC_REUSE_FINDINGS.md",
+      "bytes": 8212,
+      "sha256": "d84222f193c5fb64791d0ea4d06e631d17b48011fb5116187b428587ccf6e4de"
+    },
+    {
+      "path": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json",
+      "bytes": 67877,
+      "sha256": "bbb2a021780d652e8db909fe6e166a46b9d8ab1ecec3987209fc86dad2c2c762"
+    },
+    {
+      "path": "analysis_tools/pc_reference/inspect_pc_package.py",
+      "bytes": 11538,
+      "sha256": "543194afc3b1a679f5cf31010fa2666c5943ec3ed63c0e50191cb52f0ac73f40"
+    },
+    {
+      "path": "analysis_tools/playthrough/README.md",
+      "bytes": 6007,
+      "sha256": "1b2a13d54cfb643d3e6681419b0d4cdc25dca2c0bc28f4a86673de78294bdc52"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v1/session_playthrough_probe.cpp",
+      "bytes": 66212,
+      "sha256": "21dc8bdcecdae2bca900b11183f4c418b6c2fff741d2d8112435a5675d85c461"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v2/session_playthrough_probe.cpp",
+      "bytes": 66979,
+      "sha256": "80cd9a1a2d4ac1709b453d84de72d68f0738aed0292713822fc3184822dcf568"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v2/tactical_search.inc",
+      "bytes": 19231,
+      "sha256": "0e188883af68d9c774c1cb4ddc4ba9c62f9f13c2f0e4e8d843a9c92a57699d21"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v3/session_playthrough_probe.cpp",
+      "bytes": 66979,
+      "sha256": "80cd9a1a2d4ac1709b453d84de72d68f0738aed0292713822fc3184822dcf568"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v3/tactical_search.inc",
+      "bytes": 19382,
+      "sha256": "5cc335817a266e1f77de515f1634c5935e9500455dcd141f2c68257af117247a"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v4/session_playthrough_probe.cpp",
+      "bytes": 66979,
+      "sha256": "80cd9a1a2d4ac1709b453d84de72d68f0738aed0292713822fc3184822dcf568"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v4/tactical_search.inc",
+      "bytes": 20781,
+      "sha256": "dad4111c5562a3bb56c0e9f2773fb401a20332711b4b2a36fddd4776b3dcb8fa"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v5/session_playthrough_probe.cpp",
+      "bytes": 66979,
+      "sha256": "80cd9a1a2d4ac1709b453d84de72d68f0738aed0292713822fc3184822dcf568"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v5/tactical_search.inc",
+      "bytes": 21853,
+      "sha256": "d307ef453d6ebebd7f4f0fb861be858b8df84e4f16f7b7a3093264b0d1820e21"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v6/session_playthrough_probe.cpp",
+      "bytes": 66979,
+      "sha256": "80cd9a1a2d4ac1709b453d84de72d68f0738aed0292713822fc3184822dcf568"
+    },
+    {
+      "path": "analysis_tools/playthrough/development/v6/tactical_search.inc",
+      "bytes": 22671,
+      "sha256": "a26455100ab48e1b28365a0860cf5642865740bd54d7f7115eb546f83b9c3f17"
+    },
+    {
+      "path": "analysis_tools/playthrough/run_probe.py",
+      "bytes": 7136,
+      "sha256": "9311d8cf7d313397731a963b31a84e379ba089e2681148a70775540e066c6bb0"
+    },
+    {
+      "path": "analysis_tools/playthrough/run_strategy_probe.py",
+      "bytes": 4265,
+      "sha256": "a68e5727aa7b6d6595e67276f804a8a4bb01a70d978861cd8bdac5d802e94be3"
+    },
+    {
+      "path": "analysis_tools/scene_catalog/validate.py",
+      "bytes": 5030,
+      "sha256": "b9886446b4f478d3abd9df38d516bd95f71fb0cbcf4089976db0e92d7163e64a"
+    },
+    {
+      "path": "analysis_tools/scene_reference/README.md",
+      "bytes": 732,
+      "sha256": "5d77b724c9881fe311838045afbe1c851e52ab5439402b191d16e3abd8e55e04"
+    },
+    {
+      "path": "analysis_tools/scene_reference/render.py",
+      "bytes": 10512,
+      "sha256": "9b270ad9f03aa307a17cc0ec3f5fe3a15d32d9691752f45c6954fbea231f0af3"
+    },
+    {
+      "path": "analysis_tools/sprite/README.md",
+      "bytes": 4110,
+      "sha256": "bf7eba337401312b6da6142029ec69a75335f39ae2b8627937df338b207b3176"
+    },
+    {
+      "path": "analysis_tools/sprite/animation_oracle.py",
+      "bytes": 10553,
+      "sha256": "055c46dbfc8b13fc7c63278e214d1c04c9ca61035d9513bad9dffa84f9dbf79b"
+    },
+    {
+      "path": "analysis_tools/sprite/animation_probe.cpp",
+      "bytes": 2113,
+      "sha256": "9ed6bb55dd04e7240bd0be5ed319665903183d1972c599336f4fb963e970d283"
+    },
+    {
+      "path": "analysis_tools/sprite/animation_restore_probe.cpp",
+      "bytes": 2273,
+      "sha256": "275834d145ebf2230003212d3454de3a5b8231f90ed2e3eb393a6d019b9281d1"
+    },
+    {
+      "path": "analysis_tools/sprite/matrix_oracle.py",
+      "bytes": 7517,
+      "sha256": "678dd059c857de98c2a9aadcb0f7be3be65b273c6772893be0963ec1f5ef57d4"
+    },
+    {
+      "path": "analysis_tools/sprite/placement_oracle.py",
+      "bytes": 8148,
+      "sha256": "940f7010add66ec3188886f4b96147c1c4c16cbf8720c89f6d369b8682b85325"
+    },
+    {
+      "path": "analysis_tools/sprite/placement_probe.cpp",
+      "bytes": 1824,
+      "sha256": "a4c0b34ac1385e446da75c21aa0638f949ac32e431079f1b6a08a0ad2175d2a1"
+    },
+    {
+      "path": "analysis_tools/sprite/render_oracle.py",
+      "bytes": 13657,
+      "sha256": "f3fa8b4d3df77c82bfc3d249109f650e3ec6e9c5421fd29dcf81adb3d3e1124c"
+    },
+    {
+      "path": "analysis_tools/terrain/animated_map_oracle.py",
+      "bytes": 12617,
+      "sha256": "28ece8384423a5093593ca787a30e7f6d236428819c860eaa18ab35d69f0b1e2"
+    },
+    {
+      "path": "analysis_tools/terrain/animated_oracle.py",
+      "bytes": 13691,
+      "sha256": "7cfd7925655b959e86f3e7d0fdfd3aa17509582f46fdfc03ac84320fe92a127a"
+    },
+    {
+      "path": "analysis_tools/terrain/camera_oracle.py",
+      "bytes": 10408,
+      "sha256": "6f9f58ec84de10bf775268648520ca5d3c96f38d11e3b8bb06a29fac964abf59"
+    },
+    {
+      "path": "analysis_tools/terrain/decorations_oracle.py",
+      "bytes": 12052,
+      "sha256": "69dccc2828a830863f361d56c8a5152eaacaa503e4023fcd99ed4ed61a09706d"
+    },
+    {
+      "path": "analysis_tools/terrain/decorations_probe.cpp",
+      "bytes": 3865,
+      "sha256": "8163639babf6f43e828b4c6c2e97fa0ba2aa900e4f98d9a4c0249a8889ba2689"
+    },
+    {
+      "path": "analysis_tools/terrain/geometry_oracle.py",
+      "bytes": 8923,
+      "sha256": "b6dee3a66421bd251cf9841c97129c10854e772a88bb09d6a609fe2d0a28d68d"
+    },
+    {
+      "path": "analysis_tools/terrain/map_oracle.py",
+      "bytes": 7323,
+      "sha256": "bdb206e5455a5246a064361e6648bf565464487e399249ce656d87554a9fc919"
+    },
+    {
+      "path": "analysis_tools/terrain/sprite_decorations_oracle.py",
+      "bytes": 17447,
+      "sha256": "4b7a5831b2ba4e2e08cc87911dd5632020626f63ed89ff81200b14f2d7b1000b"
+    },
+    {
+      "path": "analysis_tools/terrain/sprite_decorations_probe.cpp",
+      "bytes": 6758,
+      "sha256": "b264791eb4957429f907bd6fcce259d21a6789df188816963af2490aefacc6e0"
+    },
+    {
+      "path": "analysis_tools/terrain/validate_decorations.py",
+      "bytes": 10958,
+      "sha256": "753a611b563aee23906aaff0dbfd81d199023980f7cb9723ed5350578b256334"
+    },
+    {
+      "path": "analysis_tools/terrain/validate_sprite_decorations.py",
+      "bytes": 16329,
+      "sha256": "31a5cea13f4b0842cf7cfe2ba9c91b4e0eb497ce0a415cbe3fd24b3748f7caf6"
+    },
+    {
+      "path": "analysis_tools/timing/trace_summary.py",
+      "bytes": 6230,
+      "sha256": "b2d019d92d2cd87958f594fc32444d32743991cc7135c16fbc490dab6e4362fc"
+    },
+    {
+      "path": "analysis_tools/transform_action/README.md",
+      "bytes": 1404,
+      "sha256": "f0649e07f11667dc13603cb3f99d9680c507a1dbbd83e71119cffd64a506f945"
+    },
+    {
+      "path": "analysis_tools/transform_action/oracle.py",
+      "bytes": 8731,
+      "sha256": "6db2c2f19bf6e332f7b60114da57a4ed58612e385e15fc57419088789e255b02"
+    },
+    {
+      "path": "analysis_tools/transform_action/probe.cpp",
+      "bytes": 1896,
+      "sha256": "8e18b0452ad51e86ff3c192fe3bc07030dc6ba5744a7f0627489f8c45e0eb875"
+    },
+    {
+      "path": "analysis_tools/turns/README.md",
+      "bytes": 767,
+      "sha256": "a95229588851b91305cb737e5b4acb13a139ceca049d2aa02ebe748eaff5b845"
+    },
+    {
+      "path": "analysis_tools/turns/oracle.py",
+      "bytes": 9027,
+      "sha256": "5ba40f91b504d0b124f3ecda9ca276fece32acdb360e001916c78310ccf7ed0c"
+    },
+    {
+      "path": "analysis_tools/undo/README.md",
+      "bytes": 3955,
+      "sha256": "5ed8a47966a71c42d60f80fa8f254e971a88c1e4cd5fef7867b24cd0deb97de5"
+    },
+    {
+      "path": "analysis_tools/undo/REFERENCE.json",
+      "bytes": 2555,
+      "sha256": "342e21dd31f66f406e0f4d8d8fdf9a9bb0b033241d3ee17fdf9cb9232f2f9b1a"
+    },
+    {
+      "path": "analysis_tools/undo/oracle.py",
+      "bytes": 15096,
+      "sha256": "080990fd715004bce7b562d23f4e64ebf59ddddd3dc16dd3907003708f03b7e9"
+    },
+    {
+      "path": "analysis_tools/undo/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/unit_interactions/README.md",
+      "bytes": 2196,
+      "sha256": "b37ce5ea6650240c554854779b293dc99d7c9b5d02666e3676e5a1253a6f11d8"
+    },
+    {
+      "path": "analysis_tools/unit_interactions/REFERENCE.json",
+      "bytes": 6861,
+      "sha256": "1ff8938d2bead72aac01b354d2e3a0f2d99914c5c331473d6538b49aa0523592"
+    },
+    {
+      "path": "analysis_tools/unit_interactions/oracle.py",
+      "bytes": 26044,
+      "sha256": "bb70491ccc5c0a5d1290883aefcf5225723adcfec14bc14bc29410e0c299e5b4"
+    },
+    {
+      "path": "analysis_tools/unit_interactions/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/unit_spawn/README.md",
+      "bytes": 1008,
+      "sha256": "fac565ca44e952ebad30c935d7258c47e912a326c71f7d6bd9272f6240929d2b"
+    },
+    {
+      "path": "analysis_tools/unit_spawn/REFERENCE.json",
+      "bytes": 1431,
+      "sha256": "19f42299423931e8e828f1ff111e9d1c331d88005c2c56535ad186370bb65985"
+    },
+    {
+      "path": "analysis_tools/unit_spawn/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/unit_spawn/unit_spawn_oracle.py",
+      "bytes": 8363,
+      "sha256": "aaab3684fb98d3ff0333700d1edbc729260afa743ecdf73b985c1070442140af"
+    },
+    {
+      "path": "analysis_tools/world/README.md",
+      "bytes": 2555,
+      "sha256": "f65a83066673d4906cd3a63c2a7595cbbc5dca8882257172bc6fe6bcc2a04206"
+    },
+    {
+      "path": "analysis_tools/world/REFERENCE.json",
+      "bytes": 1031,
+      "sha256": "fa44a30b51f883008cc61cac8a24038feabbb68a5ae6d9174268e93ef51c4262"
+    },
+    {
+      "path": "analysis_tools/world/world_oracle.py",
+      "bytes": 20643,
+      "sha256": "2c1fc1e53e27c8c0a16a248b4d724f6225f9fdcba05456a9d840cc21d1bc6a79"
+    },
+    {
+      "path": "analysis_tools/world_commands/README.md",
+      "bytes": 1821,
+      "sha256": "7ad536dba479c8e48e6c06208171aba92cf2918f88ad15aca14828148ee707cd"
+    },
+    {
+      "path": "analysis_tools/world_commands/REFERENCE.json",
+      "bytes": 1801,
+      "sha256": "858b1c2bf91e1ad31e9f3164e5af4f3f9dfb084882e0966f3cd48d0b6ac0e593"
+    },
+    {
+      "path": "analysis_tools/world_commands/requirements.txt",
+      "bytes": 15,
+      "sha256": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+    },
+    {
+      "path": "analysis_tools/world_commands/world_commands_oracle.py",
+      "bytes": 13129,
+      "sha256": "5a8279d8e165eea33a2c9b2da3563cf3b3dbf540e18e6c4e412b2987146a1a7a"
+    },
+    {
+      "path": "docs/NATIVE_SCENE_TEST.md",
+      "bytes": 2408,
+      "sha256": "e90adb02758451b39ac17495e76039e17ee16bcddc02f705a26f9ae01ca5d424"
+    },
+    {
+      "path": "docs/README_MEMORY_ZIP_POLICY.md",
+      "bytes": 2360,
+      "sha256": "f4e830554427e2784e375b50f5eb8513b59575bc1d379d0845a4abad556ee2e6"
+    },
+    {
+      "path": "docs/TIMING_REQUIREMENT.md",
+      "bytes": 3887,
+      "sha256": "92703185a8111c51e2c70d9f21ac3d99af0fa6c12c394c1451a443c8f8b3710e"
+    },
+    {
+      "path": "native/CMakeLists.txt",
+      "bytes": 19828,
+      "sha256": "de2ba9b2a551174d277c6bafe1f0298d2911ed14b83009c39130fc804435c4af"
+    },
+    {
+      "path": "native/include/g1/AI.hpp",
+      "bytes": 4594,
+      "sha256": "ea45901ace1318be438de171d27a3aa78f9d2779ac2c9d92c91b99ff2b74bf91"
+    },
+    {
+      "path": "native/include/g1/AIExecution.hpp",
+      "bytes": 1563,
+      "sha256": "5891fe1aa39f323460561aadda21b7595f9dfcaf6003704d07d0ff04f4bc6b37"
+    },
+    {
+      "path": "native/include/g1/AIIncome.hpp",
+      "bytes": 611,
+      "sha256": "3e78f1300b3a54fda0a0f697ec100b4323a7e24f241e40410a03552658a68160"
+    },
+    {
+      "path": "native/include/g1/Archive.hpp",
+      "bytes": 1939,
+      "sha256": "786c7f3a87d3d9d9fa3e663510cf43d7ba38e47d3ef590a92b2bfa1e34d5eb99"
+    },
+    {
+      "path": "native/include/g1/Atlas.hpp",
+      "bytes": 3325,
+      "sha256": "7306580534598d1d1de640ae66e96dd05810fe1eef87d8a06b78864bd2f1381f"
+    },
+    {
+      "path": "native/include/g1/Audio.hpp",
+      "bytes": 521,
+      "sha256": "8b690383d255e4f08a2d99d41f799e563cfa6fbe8088654fbfb963b496c8453f"
+    },
+    {
+      "path": "native/include/g1/AudioEvents.hpp",
+      "bytes": 1651,
+      "sha256": "98a2872b108889ab093c28d718dc41ec631e4155ab7144cf407cf32e135f4471"
+    },
+    {
+      "path": "native/include/g1/CampaignController.hpp",
+      "bytes": 4950,
+      "sha256": "bcce896bbf1612f5ff5f8750de01b9dce5edc81307da14730f9e96a9ef0a94b1"
+    },
+    {
+      "path": "native/include/g1/CaptureAction.hpp",
+      "bytes": 3966,
+      "sha256": "9d198f8d61ff07beeea26264776ac4ba2514b4c2d572c17190ee07612135621b"
+    },
+    {
+      "path": "native/include/g1/Combat.hpp",
+      "bytes": 6478,
+      "sha256": "2dab77f84a82ce5771ddc5aa5048ef8bcd294944dc5396ff91757e480bc02322"
+    },
+    {
+      "path": "native/include/g1/GameSession.hpp",
+      "bytes": 12117,
+      "sha256": "37e21ce2c4ee57a879eccca53f66586aa8caf7a4516932bce7792355333668b0"
+    },
+    {
+      "path": "native/include/g1/HealAction.hpp",
+      "bytes": 2109,
+      "sha256": "31117a87ad62872778197af5a6df3b3d4c40719e1fe0447e4b3a47087bbf0df7"
+    },
+    {
+      "path": "native/include/g1/Image.hpp",
+      "bytes": 412,
+      "sha256": "b7a19e7f2473190d19fbc46380a5cfd288e5d2f08db9b1a41983a63627e79804"
+    },
+    {
+      "path": "native/include/g1/InitialPresentation.hpp",
+      "bytes": 758,
+      "sha256": "2031c931ea7dcfc388d13eb554df1deace1db70294c0603a47c642f4112b2dde"
+    },
+    {
+      "path": "native/include/g1/M3G.hpp",
+      "bytes": 1006,
+      "sha256": "03069196d3475c6f5dd910fa9202504d4dd4a8ee7f84f4c144cbb21cedb5ff7d"
+    },
+    {
+      "path": "native/include/g1/M3GAnimation.hpp",
+      "bytes": 5222,
+      "sha256": "790d94abaf8b0ea4d842801c3e3517347efa4cd02163c1fc85816700b48597ad"
+    },
+    {
+      "path": "native/include/g1/M3GBattleCamera.hpp",
+      "bytes": 3698,
+      "sha256": "34370c78f2f81f540d68dcd1a8f9e968f7d624236bc059d49c01c8f45e1e9fc3"
+    },
+    {
+      "path": "native/include/g1/M3GBattleController.hpp",
+      "bytes": 2269,
+      "sha256": "3a4b2770c751c1c0bc7fe240199ff5b4271e4ab60780148b51c277a32bc27483"
+    },
+    {
+      "path": "native/include/g1/M3GBattlePresentation.hpp",
+      "bytes": 2729,
+      "sha256": "1ebe63e4af014f459a9516fe04e68496c6c7700e2229af5b5f674229bb73eaa7"
+    },
+    {
+      "path": "native/include/g1/M3GBattleTimeline.hpp",
+      "bytes": 1332,
+      "sha256": "b80131c93ce1445a4caa1d0c11897a803f87165ab3cef63fc9223afec3964925"
+    },
+    {
+      "path": "native/include/g1/M3GBindings.hpp",
+      "bytes": 3365,
+      "sha256": "70308b20b29c424653848978986f32b08ed0233dc2e9f2bdada464108aa17c03"
+    },
+    {
+      "path": "native/include/g1/M3GCamera.hpp",
+      "bytes": 1520,
+      "sha256": "1cddf532f3acc7992bce3e9f259a13a3d66658862d5744ceac267f6598f8ba04"
+    },
+    {
+      "path": "native/include/g1/M3GMaterialOverrides.hpp",
+      "bytes": 3670,
+      "sha256": "3ac2699d45e83dc04088ac723bc49a42db4630303a88720e311ff42de17c52c9"
+    },
+    {
+      "path": "native/include/g1/M3GRenderFrame.hpp",
+      "bytes": 3741,
+      "sha256": "1a89af7fc4701c75492293ea074b2ce5556e6bfe10a1c428d6ea0ecf45ab6796"
+    },
+    {
+      "path": "native/include/g1/M3GScene.hpp",
+      "bytes": 6176,
+      "sha256": "7a1c27aa53e6df32d83c2ec23727d180008591154b108af70b8c12f9a373c653"
+    },
+    {
+      "path": "native/include/g1/M3GScenePose.hpp",
+      "bytes": 2131,
+      "sha256": "c2d8080f45a6060b2e22bacd77c91a4643f0ce644a885620950d1aefd7fb6b50"
+    },
+    {
+      "path": "native/include/g1/M3GSprite3D.hpp",
+      "bytes": 4011,
+      "sha256": "0e99e83bf8a16b8eb754f1d80aa9a0cd202a97558958ac2a562f42607842167b"
+    },
+    {
+      "path": "native/include/g1/Mission.hpp",
+      "bytes": 1448,
+      "sha256": "3580e5d74e2c2250302b996c13b92f61f592c7763fb4c233ac08c80d16b85efa"
+    },
+    {
+      "path": "native/include/g1/MissionExecution.hpp",
+      "bytes": 8551,
+      "sha256": "df0ceb34f1ded75523f30777ba39b402a2aec3d659cb6226e2c7c41fe426289e"
+    },
+    {
+      "path": "native/include/g1/MissionObjectives.hpp",
+      "bytes": 3195,
+      "sha256": "b1774f766cd669f9a840b663698e0bea931bdede752ad1485f7007ace912e7df"
+    },
+    {
+      "path": "native/include/g1/MissionProgression.hpp",
+      "bytes": 5233,
+      "sha256": "7da6229854fa0168ae1402e890f53eaf1241e1284bc07c1b167602101e12f2e9"
+    },
+    {
+      "path": "native/include/g1/Movement.hpp",
+      "bytes": 3493,
+      "sha256": "a3a4b66db096e34c6de57642e01a41e2aa19c616aebeb4002eab279f809b6e75"
+    },
+    {
+      "path": "native/include/g1/MovementAction.hpp",
+      "bytes": 4403,
+      "sha256": "a96b7f918569dd8923955d02e462887eb2e6cf51bd35f9cee79cdc5f37783728"
+    },
+    {
+      "path": "native/include/g1/MovementArrival.hpp",
+      "bytes": 1369,
+      "sha256": "4d2f2cd05b78ad730c08184b9f13ea7b64d4e321f83c2ac86c0bdc7ee38ad3d3"
+    },
+    {
+      "path": "native/include/g1/SaveStore.hpp",
+      "bytes": 896,
+      "sha256": "bba8b7e69165d1d0d4a4059346082757e7f4f223186cc7a2feb4e61777a566fc"
+    },
+    {
+      "path": "native/include/g1/Scene.hpp",
+      "bytes": 1965,
+      "sha256": "65b4df6a8880d1bdb076f6fef55113dc6e0eab880bac5ee9c8901af67fb4a7c1"
+    },
+    {
+      "path": "native/include/g1/SessionSave.hpp",
+      "bytes": 1819,
+      "sha256": "6e1fc2481b0c643b58993a1307bdc756bf5fadaf31243506d58238ddcc4234a2"
+    },
+    {
+      "path": "native/include/g1/SpriteAnimation.hpp",
+      "bytes": 2470,
+      "sha256": "a828515f61ce4540682ee85fc57a88588d78d717317a6f0dfbb08b3b2c6cb9a9"
+    },
+    {
+      "path": "native/include/g1/SpriteGeometry.hpp",
+      "bytes": 1700,
+      "sha256": "1356de05761e44485e90300083fcd99eaaecf5055c777530cd9f5430511611ac"
+    },
+    {
+      "path": "native/include/g1/SpritePlacement.hpp",
+      "bytes": 1267,
+      "sha256": "be73567877ec77644328abcbe73629526b0e1f12d4d1753d687c218083eb555d"
+    },
+    {
+      "path": "native/include/g1/Terrain.hpp",
+      "bytes": 6474,
+      "sha256": "9d7de469413078e68b20f7dabec29a051436217d0a54c7fcd5022b21ed25702a"
+    },
+    {
+      "path": "native/include/g1/TerrainDecorations.hpp",
+      "bytes": 2661,
+      "sha256": "52925f12aeb10622a2943f377ddbf6f088402d8184d85cd5196fbdb62a84d494"
+    },
+    {
+      "path": "native/include/g1/TerrainRuntime.hpp",
+      "bytes": 1512,
+      "sha256": "de33c17f623639eccc11aa0234bf1feb9f088029f101259b8cac3a738e0a109b"
+    },
+    {
+      "path": "native/include/g1/TerrainSpriteDecorations.hpp",
+      "bytes": 5040,
+      "sha256": "5c691db68a5635cd5cf1ec17c9513c7166f91c786e6602e8b2c4e89bca5535ec"
+    },
+    {
+      "path": "native/include/g1/Text.hpp",
+      "bytes": 1373,
+      "sha256": "7e78e6b25dfe6e65ed7b98ec47809b1a0560428145a8e8d32ec5ea40b5134df0"
+    },
+    {
+      "path": "native/include/g1/TransformAction.hpp",
+      "bytes": 1672,
+      "sha256": "2a9f1738b07db5df60181b90d46cf624b31120b10e2f39ce75ee4cccd35f003e"
+    },
+    {
+      "path": "native/include/g1/TurnProgression.hpp",
+      "bytes": 1634,
+      "sha256": "f82e327a22ef1c45c9bee832439215d9d9e962811ca554f5335f21c7a7cd9e61"
+    },
+    {
+      "path": "native/include/g1/UndoAction.hpp",
+      "bytes": 2522,
+      "sha256": "30783a0111cbe3e324056607cebc4828f6e2766f927dfab2c53c542deb74cc58"
+    },
+    {
+      "path": "native/include/g1/UnitCommands.hpp",
+      "bytes": 2143,
+      "sha256": "b0f501484216dfb7ed2756fd0b76614fdad6d1863c7332d72317a6b1de4f2e2e"
+    },
+    {
+      "path": "native/include/g1/UnitInteractions.hpp",
+      "bytes": 6610,
+      "sha256": "17c078644175988bf8ded0cae22864f25dec20d26279cdc56d1c841de8fc74fb"
+    },
+    {
+      "path": "native/include/g1/UnitSpawn.hpp",
+      "bytes": 1879,
+      "sha256": "ea2a2365909deaf668b78fcf0be2c4864f5defffc53ad163fb27265fb0d4d27f"
+    },
+    {
+      "path": "native/include/g1/UpgradeAction.hpp",
+      "bytes": 2793,
+      "sha256": "8ada0dea4e358b179d2711f7c01e5a4af863b40163898f857a373dc248e68287"
+    },
+    {
+      "path": "native/include/g1/World.hpp",
+      "bytes": 5870,
+      "sha256": "9b2c9692004e50490c1b5605b34eed8fc5e86e919f44330f9ba553bf6dff5501"
+    },
+    {
+      "path": "native/include/g1/WorldCommands.hpp",
+      "bytes": 6008,
+      "sha256": "cb1902396e24f527a7eabf1f59fca7466bd54305676262e503380c960ebea592"
+    },
+    {
+      "path": "native/platform/apple/AppleAudio.hpp",
+      "bytes": 584,
+      "sha256": "c72655669f7c8c28a91682bafedd7b43c7005cf581c2a302750d6ac5a1eda5e3"
+    },
+    {
+      "path": "native/platform/apple/AppleAudio.mm",
+      "bytes": 18268,
+      "sha256": "53d2c5655d9672d99a635fda5b6b765b0bc3d5f142c691d3ac6c5d9d32297912"
+    },
+    {
+      "path": "native/platform/apple/Info.plist.in",
+      "bytes": 1880,
+      "sha256": "f9a2fc2d28f7712611c0eedd1d0a14543baff0f89a68a430235617d3ba9aeaa5"
+    },
+    {
+      "path": "native/platform/apple/MetalM3GProbe.mm",
+      "bytes": 9272,
+      "sha256": "eed26f026c0eae2821bd4fcfd65cf208f4ecfb2b60b01ac1c3bebfe938024c72"
+    },
+    {
+      "path": "native/platform/apple/MetalM3GRenderer.hpp",
+      "bytes": 2991,
+      "sha256": "fcce8e7a6e7279dfd44aeb3f1df9d2d2dacad504b8a7cdc1404c80a8afe2b429"
+    },
+    {
+      "path": "native/platform/apple/MetalM3GRenderer.mm",
+      "bytes": 25537,
+      "sha256": "ef7ada8792ba2e8c740b86793c8da508050fd0d8407e919c0c1462870d57e41c"
+    },
+    {
+      "path": "native/platform/apple/MetalM3GShader.hpp",
+      "bytes": 2855,
+      "sha256": "a376bd4ba4df753e9fe4299c3ce3e6b616b9a06e05592c7cfdd9d95cae07cd49"
+    },
+    {
+      "path": "native/platform/apple/MetalProbe.mm",
+      "bytes": 5857,
+      "sha256": "1643bd1db4b52e53530f6690d37a7c7d836a0dd52118d8319f30b6072da6eed3"
+    },
+    {
+      "path": "native/platform/apple/MetalRenderer.hpp",
+      "bytes": 1070,
+      "sha256": "0e97ecfd4820515ee8673e9e76db82aebd927cbe47ec76347d154b7122ef38d1"
+    },
+    {
+      "path": "native/platform/apple/MetalRenderer.mm",
+      "bytes": 7262,
+      "sha256": "8a27f759647c622309207cbf0e07f08a224899eaa1ff9ef0f22dd959368432dc"
+    },
+    {
+      "path": "native/platform/apple/NativeApp.mm",
+      "bytes": 149158,
+      "sha256": "33e11fd69808b892a83a67f85c14b76bca4ac1a89af91376c9733464bb3fec43"
+    },
+    {
+      "path": "native/platform/apple/NativeBattle.hpp",
+      "bytes": 3953,
+      "sha256": "c26818c80ee8f9e6b1953b71ff030aebaa01d601afd8a5ef16fe81dbd0a812b4"
+    },
+    {
+      "path": "native/platform/apple/NativeCampaign.hpp",
+      "bytes": 4079,
+      "sha256": "2c8a8b16b191fe74ef13ed27878618926b7e937d3411bb99b6bdc7a743e97c27"
+    },
+    {
+      "path": "native/platform/apple/NativeDialogue.hpp",
+      "bytes": 6556,
+      "sha256": "0feb9b86c49d22b636932cfd2bf7e3920fce9fc1270a5a0666c3c068fd16e806"
+    },
+    {
+      "path": "native/research/ACTION_ADMISSION.md",
+      "bytes": 3611,
+      "sha256": "b3106d4f3b96ba50c6834abd0e1952f0ff1b53eab6bc0337f0f1629d5f6c4ce9"
+    },
+    {
+      "path": "native/research/AI_CAPTURE.json",
+      "bytes": 1427,
+      "sha256": "a8932ebbe1f6ebc6695bb44fd5afc260d11c4c8ec22b00bf6f396a6332281cc2"
+    },
+    {
+      "path": "native/research/AI_CAPTURE.md",
+      "bytes": 2569,
+      "sha256": "fab35db7e6c7bd0cd01258879929e882798288b650868d8e1cee30ebb2a881e9"
+    },
+    {
+      "path": "native/research/AI_EXECUTION.json",
+      "bytes": 966,
+      "sha256": "8e0450cc5e7cb9c9b8271cf7915110420916eb4980392b9c76737efb41620fee"
+    },
+    {
+      "path": "native/research/AI_EXECUTION.md",
+      "bytes": 4559,
+      "sha256": "f99f7612fcb5b9286b54ac2d5e6d130b982cb0800dd77cf9ae389cd67c549ba6"
+    },
+    {
+      "path": "native/research/AI_RECOVERY.md",
+      "bytes": 12842,
+      "sha256": "97e458f5b290eb43f7c1af080d869084a2dff4722acfd3112f7668153cd41e05"
+    },
+    {
+      "path": "native/research/APP_SOURCE_REVIEW.json",
+      "bytes": 5057,
+      "sha256": "d3653b053b1006be3e0b5f9d6ad973575a72b1fc0a4373cdce192df5beb8dab3"
+    },
+    {
+      "path": "native/research/ATLAS_DECODER.md",
+      "bytes": 10294,
+      "sha256": "8b77c30d48169c2f5a3c0811b93e40f96e7d7f8ed53c1d76e4c65064679897c8"
+    },
+    {
+      "path": "native/research/AUDIO_DECODING.md",
+      "bytes": 3094,
+      "sha256": "4d084f390035d1fcc8c451bd89c417ece611b02da3d053d10e20b962b5334e5f"
+    },
+    {
+      "path": "native/research/AUDIO_EVENTS.md",
+      "bytes": 1812,
+      "sha256": "14540fb86b049605392de38fd9aa672ea02da4904235afded9226b590652d3cd"
+    },
+    {
+      "path": "native/research/CAMERA_RECOVERY.md",
+      "bytes": 5321,
+      "sha256": "3d27dd469867ca68b16201b0778fb7e8ec15419e074e06594f3d52212faf35de"
+    },
+    {
+      "path": "native/research/CAMPAIGN_CONTROLLER.json",
+      "bytes": 1376,
+      "sha256": "80a20f9cd9b8c39ccdc876c21faa66bc70ef82f25b6c74ce467ee5184e7f8902"
+    },
+    {
+      "path": "native/research/CAMPAIGN_CONTROLLER.md",
+      "bytes": 8608,
+      "sha256": "406c7a64b4516e128db80c1649efc3900b1b572210f9f27bd1ac52b7743678bc"
+    },
+    {
+      "path": "native/research/CAPTURE_ACTION.json",
+      "bytes": 1698,
+      "sha256": "5ad271e9473db47ca174db596ea0fcb15c2b50eb770fb17d94de1a65fefdbc76"
+    },
+    {
+      "path": "native/research/CAPTURE_ACTION.md",
+      "bytes": 7797,
+      "sha256": "80901d0edf2540f0fc3015669604ea0e14e2fba6fd888d1844e62db0e80ae820"
+    },
+    {
+      "path": "native/research/COMBAT_RECOVERY.md",
+      "bytes": 13687,
+      "sha256": "848dae829c62e5b55404f42b5c3a20ca221bfc4123a7879e7288da318c745000"
+    },
+    {
+      "path": "native/research/EFFECTIVE_UNIT_COST.md",
+      "bytes": 4483,
+      "sha256": "c712590bc7fdfe37bb9b4ad61378912a29092a4288abb78ece6856aa181650ba"
+    },
+    {
+      "path": "native/research/M3G_ANIMATION.md",
+      "bytes": 10887,
+      "sha256": "0312b1b26ad04e2bdc422cdd909c05c6ddea1192f70db38f8b8116bc19665784"
+    },
+    {
+      "path": "native/research/M3G_ANIMATION_FREEZE.json",
+      "bytes": 2062,
+      "sha256": "524c785bd9c6db16a22014966562f903ec3f052ad1802a635330b1fd9a96fe25"
+    },
+    {
+      "path": "native/research/M3G_APPLE_VALIDATION_GATES.md",
+      "bytes": 2731,
+      "sha256": "300cf735db998362758663063bf14476e53bf424163bdf473ecb841423b3c05a"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_BINDING.json",
+      "bytes": 10449,
+      "sha256": "02bc1d349ba91547c1ed04ad9a7cf43ddaa5e27af80cabcec046e45fe6892644"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_BINDING.md",
+      "bytes": 12971,
+      "sha256": "8327d757900f509d0888ab1aa08792f75ae796fe041309db4e982582a096e4f7"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_CAMERA.md",
+      "bytes": 9434,
+      "sha256": "0790b2eddd2a290f3261d633805f58747ce4dfc33ace879b017dd0bc037ea1fc"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_CONTROLLER.json",
+      "bytes": 3127,
+      "sha256": "6254d9a7111f89d834179dce9186035ca112597560dacad45aa759b709aeec3c"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_CONTROLLER.md",
+      "bytes": 18232,
+      "sha256": "eb7902cb8a4cd166297849b47182f84338ce02b7ddedd880e05ae7ccb17eef03"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_CONTROLLER_NATIVE.md",
+      "bytes": 5119,
+      "sha256": "b95fe861f239c4e0666021767f56f6d24823547b095f124cc92f865190612cee"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_PRESENTATION.md",
+      "bytes": 12776,
+      "sha256": "9f4f9acb05db0892a32042cfdcd883f55e51f5b8cb97768935ec17fab8773228"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_RENDER_PASS.json",
+      "bytes": 3855,
+      "sha256": "45b9f47491f38923cfe1ef26da3584c2ef034feff92dd2d994d9d5b43337baf5"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_RENDER_PASS.md",
+      "bytes": 10179,
+      "sha256": "af1da738da5eaa106ca523570da2905aee11917ff5120082976e1d975f87e349"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_TIMELINE.md",
+      "bytes": 4991,
+      "sha256": "305a9dff95d26da636cd4d88ff4171a11dc509efbc0126b81bc634979ede75bc"
+    },
+    {
+      "path": "native/research/M3G_BATTLE_TIMELINE_FREEZE.json",
+      "bytes": 3154,
+      "sha256": "0eccc900dca333caedbf2ce64cdf08abcfcca082ff9826541947617ae3e30ff4"
+    },
+    {
+      "path": "native/research/M3G_BINDINGS.md",
+      "bytes": 10859,
+      "sha256": "a0a03da5f6c77b14b9dcf6cac1ad086d48693e309976ab3a42c6ca033b154ae7"
+    },
+    {
+      "path": "native/research/M3G_CAMERA.md",
+      "bytes": 7596,
+      "sha256": "c72c7bd3c0054a82e082a71fe465ec114dbae3a96a38bd5f1370e46d5f0633ea"
+    },
+    {
+      "path": "native/research/M3G_CAMERA_FREEZE.json",
+      "bytes": 3170,
+      "sha256": "8d2b1f76777d8d3967b8544b8d0ae7b0d79d668008e18aa390119e30caa9f9bc"
+    },
+    {
+      "path": "native/research/M3G_MATERIAL_OVERRIDES.md",
+      "bytes": 13325,
+      "sha256": "7cff26358201abefca9aef027fccd7f50df593cf545dba94ea63fc99e0637124"
+    },
+    {
+      "path": "native/research/M3G_METAL_FREEZE.json",
+      "bytes": 1743,
+      "sha256": "e707b788d803a7c5903ae2941a35dafe0a99e25b67deaf9bbbdfa6cf817e41bd"
+    },
+    {
+      "path": "native/research/M3G_METAL_RENDERER.md",
+      "bytes": 6193,
+      "sha256": "88a6ee0bd6a41d4ef89a3eb545d14274ae432853a45b6f5a69f49bc7d402acb3"
+    },
+    {
+      "path": "native/research/M3G_PUBLIC_ANIMATE.md",
+      "bytes": 4832,
+      "sha256": "371b64730ff011d8f0a2e9fdf8c6a34b6890f59c3aac6d30b11f17158100e8ba"
+    },
+    {
+      "path": "native/research/M3G_RENDER_FRAME.md",
+      "bytes": 13789,
+      "sha256": "4b54392977753ebec8bc00207f50f71582490d0420bdbf48ee191a44a9d05c7f"
+    },
+    {
+      "path": "native/research/M3G_RIGID_SCENE.json",
+      "bytes": 1579,
+      "sha256": "9829019e587e2f1018df5debb68127010b4df80d2f8b21accbdc349d7e4d2308"
+    },
+    {
+      "path": "native/research/M3G_RIGID_SCENE.md",
+      "bytes": 6838,
+      "sha256": "d4b2d7415381eeaf14ca67b983d51983950bd73b73bbb3426ec7f19d39dc8b8d"
+    },
+    {
+      "path": "native/research/M3G_RUNTIME_STATE.md",
+      "bytes": 2085,
+      "sha256": "6dca6f21d3bf5fae4c12bceb388afcc703061531cfa503c949ceb9e9b75ff469"
+    },
+    {
+      "path": "native/research/M3G_SCENE_POSE.md",
+      "bytes": 7472,
+      "sha256": "d4e8a28ae252fef173bfb7941e27aeae4bdb55998442385e439cf655607287cb"
+    },
+    {
+      "path": "native/research/M3G_SPLINE_SAMPLER.md",
+      "bytes": 5734,
+      "sha256": "4b5e6de4f9bc724cc89f7e712b04715a35733f6d3fbabeebbc10142ea194e7cf"
+    },
+    {
+      "path": "native/research/MISSION_DECODER.md",
+      "bytes": 9403,
+      "sha256": "6384bfa5ae662bff83963b8e959838aec25a188daa388a442ce61187f82be9cd"
+    },
+    {
+      "path": "native/research/MISSION_EXECUTION.json",
+      "bytes": 3930,
+      "sha256": "db61e01e2f6b22d20f014c32b87f7d3c87778418eb8c9e04180b6d49c675a80f"
+    },
+    {
+      "path": "native/research/MISSION_EXECUTION.md",
+      "bytes": 14553,
+      "sha256": "283af0a0421ba80fb628a99a89fbf65ec0c2f080eb866bbc162069cfe1c70962"
+    },
+    {
+      "path": "native/research/MISSION_OBJECTIVES.json",
+      "bytes": 2213,
+      "sha256": "e2b2e5730276cc3d585c4cdafa1ca93836764e8e9d869dedf3d2eb0a4e366d8a"
+    },
+    {
+      "path": "native/research/MISSION_OBJECTIVES.md",
+      "bytes": 6354,
+      "sha256": "15c0394613eae46c0cab3dc3f61b5779737933445c3bc38b0fd8b19587242aad"
+    },
+    {
+      "path": "native/research/MISSION_PROGRESSION.json",
+      "bytes": 2588,
+      "sha256": "f86301ed5c5a20f57b2e44ab434eb3e811647bc78dcb13eba79b92b36423df38"
+    },
+    {
+      "path": "native/research/MISSION_PROGRESSION.md",
+      "bytes": 7673,
+      "sha256": "840982355be02b392e64b653612f9af1dda2ec41c24240d7648300bf13c88f6f"
+    },
+    {
+      "path": "native/research/MOVEMENT_ACTION.json",
+      "bytes": 2320,
+      "sha256": "b352c8eb8e7d61f459bbd46384b2e43df4e214193df9490894010f09981d5e5d"
+    },
+    {
+      "path": "native/research/MOVEMENT_ACTION.md",
+      "bytes": 11004,
+      "sha256": "69dada926769d8446f44aae5278015e9f9231c0dae539f4911ec877446af3895"
+    },
+    {
+      "path": "native/research/MOVEMENT_ARRIVAL.json",
+      "bytes": 2066,
+      "sha256": "1533888ad355b56d62ac4d64e075155f91c494b805ecec9830027ba248b89e2e"
+    },
+    {
+      "path": "native/research/MOVEMENT_ARRIVAL.md",
+      "bytes": 6875,
+      "sha256": "582b33220c3e63d705140e0ff9baf615a50aa2af9f0e48e83471b97815973d5e"
+    },
+    {
+      "path": "native/research/MOVEMENT_RECOVERY.json",
+      "bytes": 3313,
+      "sha256": "dc8af2ce1a8ff94b75ba83ca2c64ad9daa27b98b0c7b556415a30971195b8c38"
+    },
+    {
+      "path": "native/research/MOVEMENT_RECOVERY.md",
+      "bytes": 8974,
+      "sha256": "b3d5fa8883af45d2860dd193c9623d9d39a60b2ac052ccf4a5c238a48fa80c87"
+    },
+    {
+      "path": "native/research/NATIVE_AUDIO_OUTPUT.json",
+      "bytes": 1663,
+      "sha256": "2c5281e46b6aa8bb21f102b10804ec1f9c273a2d940b6a7bd98c3eba05c26bcb"
+    },
+    {
+      "path": "native/research/NATIVE_AUDIO_OUTPUT.md",
+      "bytes": 8131,
+      "sha256": "42fb6aa0ddc4c4d9a30b3cfa50b026da1ab18940e7e11cd525b652692f91b9cf"
+    },
+    {
+      "path": "native/research/NATIVE_BATTLE_PRESENTATION.md",
+      "bytes": 3939,
+      "sha256": "a8cf4196adf635ad5c42eec5ba1ad18393cb19b0d84b700cf2065a6c1bbd9c08"
+    },
+    {
+      "path": "native/research/NATIVE_CAMPAIGN_UI.json",
+      "bytes": 4852,
+      "sha256": "5caab439928eafd86d458b64b428d19eb6fc265273d5b98a5255cea0506c912a"
+    },
+    {
+      "path": "native/research/NATIVE_CAMPAIGN_UI.md",
+      "bytes": 11243,
+      "sha256": "96f30b88bce3e82c2628b34a063cdba2009b45f91b556628ac57b957640f714e"
+    },
+    {
+      "path": "native/research/NATIVE_CAMPAIGN_UI_FREEZE.json",
+      "bytes": 3868,
+      "sha256": "00b0e086a41b19b40103ec387500ed96a01b317f2f59c2cb908a7377b8d4b5d5"
+    },
+    {
+      "path": "native/research/NATIVE_GAMEPLAY_UI.json",
+      "bytes": 3907,
+      "sha256": "d489bf28c7dbf52eb16b1775c59e73562e3fc45dabe0c22350e9fa574ff47e08"
+    },
+    {
+      "path": "native/research/NATIVE_GAMEPLAY_UI.md",
+      "bytes": 13320,
+      "sha256": "533745ec24553da88ead0ac4512ccafc6d263b6307226d32cd06ea9c2aec5ff6"
+    },
+    {
+      "path": "native/research/NATIVE_PROFILE.md",
+      "bytes": 1321,
+      "sha256": "88601ff24b35575b46a0579221d291c62715d5627668a34e0ba1c9e9896807fd"
+    },
+    {
+      "path": "native/research/PLAYTHROUGH_PILOT.json",
+      "bytes": 17259,
+      "sha256": "d316ea5a3167789bf7fe72566833231f0e68f944bcc115aee1bf77f88f835613"
+    },
+    {
+      "path": "native/research/PLAYTHROUGH_PILOT.md",
+      "bytes": 9866,
+      "sha256": "ae94f111d25b16b54d74a3308516926143945d8c8e4abbfb1190ef71e9acd938"
+    },
+    {
+      "path": "native/research/PLAYTHROUGH_STRATEGY.json",
+      "bytes": 3236,
+      "sha256": "08762cb417b5fa7b21328dbe659d0402ebcd6791b7845725d10dcb3cce87d956"
+    },
+    {
+      "path": "native/research/PLAYTHROUGH_STRATEGY.md",
+      "bytes": 8537,
+      "sha256": "46c2a8329e5df1f4ca39b2f80e22c7b1bde3a8242109dc2073cdfb11a29a3e62"
+    },
+    {
+      "path": "native/research/PLAYTHROUGH_STRATEGY_FREEZE.json",
+      "bytes": 17180,
+      "sha256": "bd5af17b1cbd4e97a3323d09b344af6d407dec08335abbb1bb982ae2712d33cf"
+    },
+    {
+      "path": "native/research/SCENE_ASSET_RELOAD.md",
+      "bytes": 5672,
+      "sha256": "9437c62831cd998a3104e4a124399d50ae41b00d47dc388488ea0f852ce042a9"
+    },
+    {
+      "path": "native/research/SCENE_REFERENCE.md",
+      "bytes": 5566,
+      "sha256": "0cbebe5888e19bc73dfd2b1478c3e747fdbb0a01d61bb73f759189e1c08cd511"
+    },
+    {
+      "path": "native/research/SESSION_ACTION_INTEGRATION.md",
+      "bytes": 4089,
+      "sha256": "c01c274573c45b66d083e8be05d0948e67f5d4ea5d12be9ceabda14f5a64500e"
+    },
+    {
+      "path": "native/research/SESSION_SAVE.md",
+      "bytes": 8647,
+      "sha256": "94dc7983f7bfb3d5d58931549e1a9fe4091f7ab0c8e0cb2ee2599497c83bd0cc"
+    },
+    {
+      "path": "native/research/SPRITE_ANIMATION_RESTORE.md",
+      "bytes": 2726,
+      "sha256": "8dc97f0f03d370c5889b334d60614e05d4676ac76b64e72bd0d348625e804747"
+    },
+    {
+      "path": "native/research/SPRITE_RENDERING.json",
+      "bytes": 5498,
+      "sha256": "d2020a9d29ab549d4638b7fe0319d0e37512cdb47007d1998ac5aae14ac2ea18"
+    },
+    {
+      "path": "native/research/SPRITE_RENDERING.md",
+      "bytes": 17617,
+      "sha256": "0c26611e0468f67f11cdb2003d2ec14baf739177f83a7c0cae55b19ebdf405c1"
+    },
+    {
+      "path": "native/research/TERRAIN_ANIMATION.md",
+      "bytes": 8137,
+      "sha256": "c3b24683e54847806f983f0554e6b352cdd8a92c7d3edfba270d4d7ed787381d"
+    },
+    {
+      "path": "native/research/TERRAIN_DECODER.md",
+      "bytes": 9482,
+      "sha256": "093bfd64c838b51054ddeac1865fa18a69af1d920ac34907e6ed87445dd0ccad"
+    },
+    {
+      "path": "native/research/TERRAIN_DECORATIONS.md",
+      "bytes": 9191,
+      "sha256": "9ca9c1515bc8f74ee092701d9e483c514f27eef4bb573ba777bc89ee81f8e568"
+    },
+    {
+      "path": "native/research/TERRAIN_RNG_ORDER.md",
+      "bytes": 3564,
+      "sha256": "275238e8f212118ede4e421c60ee0f7201c8fed6415abe2406a624d3dde7619d"
+    },
+    {
+      "path": "native/research/TERRAIN_SPRITE_DECORATIONS.md",
+      "bytes": 13493,
+      "sha256": "32f8836f64eaca3d74026541e52e074b59567918de4043cef9e95cf8d39a9d01"
+    },
+    {
+      "path": "native/research/TIMER_RUNTIME_OBSERVATION.md",
+      "bytes": 5119,
+      "sha256": "dcd3c3ec96bbe5bf6f2fc3999065ffa18521f55d04392fa253bb8416c97add23"
+    },
+    {
+      "path": "native/research/TRANSFORM_ACTION.json",
+      "bytes": 1874,
+      "sha256": "1c2cc0b55648727adc19cd6350c60c66966132c0e5cf10c8e905c65144d67a52"
+    },
+    {
+      "path": "native/research/TRANSFORM_ACTION.md",
+      "bytes": 5641,
+      "sha256": "a0762ac3e58bc04fa200bbdfd0d9e6b17cc734a6f6003f1346d4f491fa6db9c3"
+    },
+    {
+      "path": "native/research/TURN_PROGRESSION.md",
+      "bytes": 2266,
+      "sha256": "69cfa3d247af4b4c516ba31e4bfd999e7aebb4fc36fb92db414b13f0611b9744"
+    },
+    {
+      "path": "native/research/UNDO_AND_COMMANDS.json",
+      "bytes": 4474,
+      "sha256": "b4bdf3466ed7de6277d75a24e36bfb113f868913c5f54b0eeaffb8af8c4b8c02"
+    },
+    {
+      "path": "native/research/UNDO_AND_COMMANDS.md",
+      "bytes": 9075,
+      "sha256": "f3a2108429f3a677ab917ea45d7dc7bf1466f6c2fc15fab7e041f928dd5e4e2b"
+    },
+    {
+      "path": "native/research/UNIT_INTERACTIONS.json",
+      "bytes": 3437,
+      "sha256": "bb5f8a0de62993de7938503277585ff58e845e3a9a13bbf4009b0214af5a1322"
+    },
+    {
+      "path": "native/research/UNIT_INTERACTIONS.md",
+      "bytes": 9366,
+      "sha256": "0989cf0a2ad3951508c30779e1279ba1b070f45865cf7bfe051280be3a1ed7a1"
+    },
+    {
+      "path": "native/research/UNIT_SPAWN.json",
+      "bytes": 1152,
+      "sha256": "f5fa0eb444307df0b310f0a57728405cba90286f3baa0544841aad6e4518553a"
+    },
+    {
+      "path": "native/research/UNIT_SPAWN.md",
+      "bytes": 3445,
+      "sha256": "4f4abb800566407726a0b73bbe0d232cba5d7493ed3a37afa2518fd639bee5dd"
+    },
+    {
+      "path": "native/research/UPGRADE_HEAL_ACTIONS.md",
+      "bytes": 12035,
+      "sha256": "365f90af2cdaa30aef92e733a5e94ec13f3a8c4889698e9dd7bfab4a03d862ee"
+    },
+    {
+      "path": "native/research/WORLD_BOOTSTRAP.json",
+      "bytes": 6804,
+      "sha256": "65a7badb34d3eb5e24d9cfcd00a7472f1c937021644c23bd2533e8875d4c4602"
+    },
+    {
+      "path": "native/research/WORLD_BOOTSTRAP.md",
+      "bytes": 10672,
+      "sha256": "887125491e7490414777560fb7de4d06dd68dbccf6249d6d11af3230e9ccdd96"
+    },
+    {
+      "path": "native/research/WORLD_BOOTSTRAP_METADATA.json",
+      "bytes": 1333,
+      "sha256": "bb97e8962c26ab3b98cbb6ede14145490c763db1f06ede27bf2c57be002c5be4"
+    },
+    {
+      "path": "native/research/WORLD_BOOTSTRAP_METADATA.md",
+      "bytes": 2980,
+      "sha256": "3e42f7d1f35b2c03c2e31469149b4585337de90104d8969bbb0e1cc6652b1ef9"
+    },
+    {
+      "path": "native/research/WORLD_COMMANDS.json",
+      "bytes": 3739,
+      "sha256": "8b56641bad9c00480e3d9fb9037607df76d4e5d4c7d43fa25e21334ef406ec2d"
+    },
+    {
+      "path": "native/research/WORLD_COMMANDS.md",
+      "bytes": 8760,
+      "sha256": "ccd3b59dd56c06c62ef0a9387cd942794a1aeb8e97092f39aed5fc16b145f6d6"
+    },
+    {
+      "path": "native/research/ai_execution_validation/original_plan_consumer.json",
+      "bytes": 115053,
+      "sha256": "087b7e07f33edfa8658ef5d02742305360f8cb00975c916aab7fd22e30ef2579"
+    },
+    {
+      "path": "native/research/ai_validation/native_ai_validation.json",
+      "bytes": 8237,
+      "sha256": "1533f68783ca34e9883efc9ace0cfef4523490de4bd6cd1dd7745bdc90303c9f"
+    },
+    {
+      "path": "native/research/ai_validation/original_ai_oracle.json",
+      "bytes": 50614,
+      "sha256": "0b82db50875f7802be7660dac2eb3e971a9edb74f60c217d6b5c0a6ca67a040b"
+    },
+    {
+      "path": "native/research/atlas_validation/native_atlas_validation.json",
+      "bytes": 40297,
+      "sha256": "47688d06d6621bbc5eb29df7ca3668d75b18edde90b966b3d5cf166515ac50d1"
+    },
+    {
+      "path": "native/research/atlas_validation/original_quad_oracle.json",
+      "bytes": 8720,
+      "sha256": "2822faa4884e297ad8655c9b05a75e031dfd8c67ad5d308bfc5183035ecf11f1"
+    },
+    {
+      "path": "native/research/audio_decode_validation.json",
+      "bytes": 18065,
+      "sha256": "d4db1bcd0564c088070cf518e9d8ab31568dad261fd61583b6232a0fc0105d3f"
+    },
+    {
+      "path": "native/research/campaign_controller_validation/native_checks.json",
+      "bytes": 3154,
+      "sha256": "36e7a6a84959a019c519f2eefa7826ba0c11491a2b0e7fe4aad91c9da6c7ec7e"
+    },
+    {
+      "path": "native/research/image_validation/native_png_pixels.json",
+      "bytes": 40570,
+      "sha256": "49a4f6256a08bd8b0c8acff34ecdb92a742c17e795d4bcbab9d061b12b5e037b"
+    },
+    {
+      "path": "native/research/m3g_validation/APPLE_BATTLE_INTEGRATION_REVIEW.json",
+      "bytes": 5787,
+      "sha256": "4f915ab66845209688cd0679bb06697f1552cc1d17f7c75113bc9af559467d08"
+    },
+    {
+      "path": "native/research/m3g_validation/M3G_BATTLE_CAMERA_FREEZE.json",
+      "bytes": 3327,
+      "sha256": "668efb80a5bc5841655c82b8044debc032ff74ec27b82b654338018606ac1aeb"
+    },
+    {
+      "path": "native/research/m3g_validation/M3G_BATTLE_PRESENTATION_FREEZE.json",
+      "bytes": 6099,
+      "sha256": "9202be4a145401675d68f6d617b1bb49c73c6c62fb5013b5c78172ce4d690355"
+    },
+    {
+      "path": "native/research/m3g_validation/M3G_BINDINGS_FREEZE.json",
+      "bytes": 3402,
+      "sha256": "8d2623cee7fde2283e7e1bbc23a261054bc4a0b05f20b73b092ba4cf9b38acdb"
+    },
+    {
+      "path": "native/research/m3g_validation/M3G_MATERIAL_OVERRIDES_FREEZE.json",
+      "bytes": 6212,
+      "sha256": "8ea2030ce7e46aa9e4580c4de470f3123ec7e7522a7920ec6eb3f455cbe93062"
+    },
+    {
+      "path": "native/research/m3g_validation/NATIVE_SPRITE3D.md",
+      "bytes": 11335,
+      "sha256": "896860fb21e55f35a3403df99a3d1962fc95f877bf2b2b3c2c27361dea8dbfbe"
+    },
+    {
+      "path": "native/research/m3g_validation/NATIVE_SPRITE3D_FREEZE.json",
+      "bytes": 3545,
+      "sha256": "2347e452aa8dc4d052a379d848592a63d3f1fa8a3cf253436e7d851677642d1a"
+    },
+    {
+      "path": "native/research/m3g_validation/RENDER_SCENE_V4_FREEZE.json",
+      "bytes": 9631,
+      "sha256": "55616cf6e1befe82b81e4d9a65d63ce2a348cdaae3d2150eee7dddd132f3ec05"
+    },
+    {
+      "path": "native/research/m3g_validation/RUNTIME_STATE_FREEZE.json",
+      "bytes": 2064,
+      "sha256": "5319302b489b7c8f962104b763e9efcda84ac4dec61477a3d479a7699482b151"
+    },
+    {
+      "path": "native/research/m3g_validation/SAMPLER_V2_FREEZE.json",
+      "bytes": 6114,
+      "sha256": "34bc2a7cb6224b6fdf2bf57b3ee5b4ec59823ddce3a8ba99cffaa5f96f67f478"
+    },
+    {
+      "path": "native/research/m3g_validation/SCENE_POSE_V3_FREEZE.json",
+      "bytes": 5535,
+      "sha256": "4fe63a28a2e724dbd95c194f8f8f52715f308058eb94be8838672f9eb6cb330c"
+    },
+    {
+      "path": "native/research/m3g_validation/battle_camera_native_validation.json",
+      "bytes": 3001,
+      "sha256": "b71d41ce3626b93b13b74a3cd583acd37192c4f6b6c1e151cf3d6827866b43ae"
+    },
+    {
+      "path": "native/research/m3g_validation/battle_camera_scene_bindings.json",
+      "bytes": 9344,
+      "sha256": "fb0191582677e534c89d9f5340ddb736145254e5de88869ff4fe19f510bc369d"
+    },
+    {
+      "path": "native/research/m3g_validation/battle_presentation_validation.json",
+      "bytes": 35905,
+      "sha256": "d8c36b4c77cd3c7a7867a1bae3321ff56cf0987e370e34d97d436cd134957819"
+    },
+    {
+      "path": "native/research/m3g_validation/battle_timeline_native.json",
+      "bytes": 2239,
+      "sha256": "2860a538fa36dd20b00b6e7a35f827121351ae2da434851b1c86000ddc1c3edc"
+    },
+    {
+      "path": "native/research/m3g_validation/bindings_native_validation.json",
+      "bytes": 31107,
+      "sha256": "5b4e408b4f1aa67323b044fac44d5aefacea57dd56c05fa70aa589bae33a381b"
+    },
+    {
+      "path": "native/research/m3g_validation/bumblebee_animation.json",
+      "bytes": 3232,
+      "sha256": "76d98bb841feef5e88ddbb04c6f846a19a61a21b5a7e2958e5ee1bc013db64bd"
+    },
+    {
+      "path": "native/research/m3g_validation/bumblebee_render_states.json",
+      "bytes": 1986,
+      "sha256": "6920188bb09ba87bbcd0e8e88e360e7e42b06f18f4e1fb17963291e768584318"
+    },
+    {
+      "path": "native/research/m3g_validation/bumblebee_rigid.json",
+      "bytes": 7073,
+      "sha256": "3ee7ff267b743ac85ecc47a79fb5d1f542889643db8db9e8c7969ea67da1447f"
+    },
+    {
+      "path": "native/research/m3g_validation/bumblebee_spline_regression.json",
+      "bytes": 3988,
+      "sha256": "e8c0480e20ed6b8adf17c514629ab6a252df37ba42797d2f74fe215ab567624d"
+    },
+    {
+      "path": "native/research/m3g_validation/camera_corpus_native.json",
+      "bytes": 7098,
+      "sha256": "0d604f4aa99ab2e22d4a1330c1b888dcbc7f5b5f7dd6af329405397840cda89c"
+    },
+    {
+      "path": "native/research/m3g_validation/camera_projection_native.json",
+      "bytes": 1803,
+      "sha256": "4fe21fbaa793e16eec37cb2b6be14ddee5c58d4ec8c0efa7d6e1c1fb06e2a34c"
+    },
+    {
+      "path": "native/research/m3g_validation/material_overrides.json",
+      "bytes": 15148,
+      "sha256": "541d3657bc16df34efd750f5cc69d8fede633c312eda08898656fe0fde936d0d"
+    },
+    {
+      "path": "native/research/m3g_validation/material_overrides_contracts.json",
+      "bytes": 1702,
+      "sha256": "2024fccba25a0bd33ff833c8e77b2658f11410f708304ea057b29c5f6ee36d27"
+    },
+    {
+      "path": "native/research/m3g_validation/original_battle_camera.json",
+      "bytes": 865475,
+      "sha256": "1ff9f9c6235d53809bf7db4d1e69c286fb195cf5de5675f9c9f77fe672bd1ace"
+    },
+    {
+      "path": "native/research/m3g_validation/original_battle_controller.json",
+      "bytes": 1888437,
+      "sha256": "2a0d24678c03d9a88942e021a8cf8eeafb0577e9dc2c8923c2ac9d368e35cca2"
+    },
+    {
+      "path": "native/research/m3g_validation/original_battle_render_pass.json",
+      "bytes": 103316,
+      "sha256": "d5e544dfb438704cf1f76d19b9969da089768c9f08b9c7de21af42edeb5240ec"
+    },
+    {
+      "path": "native/research/m3g_validation/original_battle_timeline.json",
+      "bytes": 16646,
+      "sha256": "15baf7f0794896bd5815f46b7721c3099a94fea28201eb8b3eba74ad3f2b8c4a"
+    },
+    {
+      "path": "native/research/m3g_validation/original_camera_projection.json",
+      "bytes": 5984,
+      "sha256": "6aaedd0bfc4f6d53b2b9cf511a5ba99693f75d111a7ac4465a67782669eebcc1"
+    },
+    {
+      "path": "native/research/m3g_validation/original_material_find.json",
+      "bytes": 4702,
+      "sha256": "44ee6bdcf4715a86319df80352da2024a360ba4cd316104f180b95052651f8d1"
+    },
+    {
+      "path": "native/research/m3g_validation/original_material_overrides.json",
+      "bytes": 201907,
+      "sha256": "6ec43cc903b5f4f3548a44ec4ffc3ebf78ef42bb4b438972277fecb1fabbc59d"
+    },
+    {
+      "path": "native/research/m3g_validation/original_material_png.json",
+      "bytes": 12358,
+      "sha256": "716897a58b7f9957759c53e42960bc8ef0db5f96298ee91328ecbe310d4be2b2"
+    },
+    {
+      "path": "native/research/m3g_validation/render_asset_native.txt",
+      "bytes": 44,
+      "sha256": "19bfc06cfc932c1aed8d29ffdcf0d75ce720a92035b5238ffbe6fbaefd4ef52b"
+    },
+    {
+      "path": "native/research/m3g_validation/render_frame_actual.json",
+      "bytes": 414230,
+      "sha256": "9bf02816bbc775678f276ff4557295ba812779cbeed271086b687d212b672de2"
+    },
+    {
+      "path": "native/research/m3g_validation/render_frame_native.json",
+      "bytes": 78,
+      "sha256": "38892bcc0be23c1bd841bfc269cd4b56c3e5166be77325efd96ffbe8f671702b"
+    },
+    {
+      "path": "native/research/m3g_validation/render_pass_inventory.json",
+      "bytes": 16597,
+      "sha256": "474f9edaaac86a8b54fb7aa6244624c61d88e47bae2e7b1f80eede9a2a0153d0"
+    },
+    {
+      "path": "native/research/m3g_validation/render_scene_native.txt",
+      "bytes": 37,
+      "sha256": "db848f24c00813cf6b42b0766c8be851a12d427e838db56d5af3257cfdb98a14"
+    },
+    {
+      "path": "native/research/m3g_validation/scalar_native.json",
+      "bytes": 139,
+      "sha256": "1bd761e99fb4916baeb4b025f17ebfa1857f879c565078401f0b9a7741e52752"
+    },
+    {
+      "path": "native/research/m3g_validation/scene_pose_actual.json",
+      "bytes": 40000,
+      "sha256": "9cf40932cc71d9c108fa000ec9411301e1e791ac0f882a7db85c6da0c7400d29"
+    },
+    {
+      "path": "native/research/m3g_validation/scene_pose_animation_regression.txt",
+      "bytes": 41,
+      "sha256": "b3e07391eeb5fb546178c4a0b6ae0201e483aad837c7d0f2c8d67374819243cf"
+    },
+    {
+      "path": "native/research/m3g_validation/spline_actual_corpus.json",
+      "bytes": 19081,
+      "sha256": "db7ee98df76008c3c94765162a563ebb9c124c28e4e4d598dba5214ec255210a"
+    },
+    {
+      "path": "native/research/m3g_validation/spline_native.json",
+      "bytes": 1344,
+      "sha256": "623cdab019c4dcc96e6b693de64bffe0683493ea5959dce316f4eae17ca2a70d"
+    },
+    {
+      "path": "native/research/m3g_validation/sprite3d_native_validation.json",
+      "bytes": 2633,
+      "sha256": "98f8db77bcf5722ec1fab89b7762dfb64d8e3a02342a79fe6753cad32dea8818"
+    },
+    {
+      "path": "native/research/mission_execution_validation/native_mission_execution_validation.json",
+      "bytes": 4756,
+      "sha256": "df423ff9e8fd6a3d71a61488754cc4f9311d4ac9d3bef5ceeff8e011fd95c5cd"
+    },
+    {
+      "path": "native/research/mission_execution_validation/original_mission_execution_reference.json",
+      "bytes": 2450,
+      "sha256": "4811020b731986c364bcf0bc6b93e7a6269e74bbaa48cd510c51c761e5fbbe78"
+    },
+    {
+      "path": "native/research/mission_validation/MISSION_CHECKPOINT.json",
+      "bytes": 2956,
+      "sha256": "a438ef30a23890e6293caf5aca6509ae2510866dc4e897c9a96c19f8ac03d398"
+    },
+    {
+      "path": "native/research/mission_validation/cmake_validation.json",
+      "bytes": 6999,
+      "sha256": "b92d9e26a0d9dd879c98ffccf8209b67215947492de61f5f67357d2055030bcd"
+    },
+    {
+      "path": "native/research/mission_validation/native_campaign_entries.json",
+      "bytes": 6529,
+      "sha256": "eaadbeaf24cd2c748d7690076773243a9279a0075d6d9115c229a8dba06587e4"
+    },
+    {
+      "path": "native/research/mission_validation/native_campaign_entries_all_modes.json",
+      "bytes": 27218,
+      "sha256": "b24a883bf2a6e3a83ff6b5130ad7331d4225286b0c4961cdf544af9d007f666a"
+    },
+    {
+      "path": "native/research/mission_validation/native_campaign_entries_with_terrain.json",
+      "bytes": 7090,
+      "sha256": "e6a37d9de429196528c04e50106120c15a46e2fbb2a6c55cf492ef2043b9a28d"
+    },
+    {
+      "path": "native/research/mission_validation/native_mission_validation.json",
+      "bytes": 144390,
+      "sha256": "55b70ec3e3bf800421f048ba64e28010e27b1788358e05ea466d84b563713a01"
+    },
+    {
+      "path": "native/research/mission_validation_opcode7/native_mission_validation.json",
+      "bytes": 144341,
+      "sha256": "afcf32c2afcc92f57ca051bc82457e7ca91b35cab3cab35501c9989ba12ff148"
+    },
+    {
+      "path": "native/research/mission_validation_opcode7/reference_refresh.json",
+      "bytes": 591,
+      "sha256": "9708209f47afbb39f19a7c0327b40c6eb43be17c6cd1b2cb6e65de3bfc68b463"
+    },
+    {
+      "path": "native/research/movement_action_validation/original_actions.json",
+      "bytes": 1779791,
+      "sha256": "4be274515da01e656109614e10bedeeb0bc60642c2ba1bc03df07d2fa5a5236d"
+    },
+    {
+      "path": "native/research/movement_action_validation/original_arrival_facing.json",
+      "bytes": 256361,
+      "sha256": "32af51d9c98020354e86c897e9716c6302df3e5f34f06f824f95f4809ea4b08b"
+    },
+    {
+      "path": "native/research/playthrough_validation/BASELINE_PILOT01_PROVENANCE.json",
+      "bytes": 12271,
+      "sha256": "3ab7815196e27117ac84c9b149309945fd431ea4f601587a27bddeb9f49b7fb7"
+    },
+    {
+      "path": "native/research/playthrough_validation/BASELINE_PILOT01_RESULT.json",
+      "bytes": 2848,
+      "sha256": "b023b1a7feadd6d4564270979130484c1a092424598e2e39b2725b5fdad01895"
+    },
+    {
+      "path": "native/research/playthrough_validation/CORRECTED_HEAL_CASES.json",
+      "bytes": 28820,
+      "sha256": "35a99f0f1a826eedcfe72e530dbf4a3394c560876c9a9416c701319489b4eb52"
+    },
+    {
+      "path": "native/research/playthrough_validation/FINAL_BUILD.json",
+      "bytes": 2641,
+      "sha256": "e306b6be0338ad4323c991f34c56fdff82fb8c0db045ee55f606265667c1d305"
+    },
+    {
+      "path": "native/research/playthrough_validation/FINAL_CONTINUOUS.json",
+      "bytes": 10690,
+      "sha256": "6aab0e13c29c6faf63a82c468deb95246afd3be7020a1b628b2499ed8e265397"
+    },
+    {
+      "path": "native/research/playthrough_validation/FINAL_INDIVIDUAL.json",
+      "bytes": 248257,
+      "sha256": "186947341bc08beae7dc882c1d8c955796ac943cadbba45ec05b1ac5cbb87a49"
+    },
+    {
+      "path": "native/research/playthrough_validation/FREEZE_MANIFEST.json",
+      "bytes": 2727,
+      "sha256": "7d54d027529909d18d8d3f32ae8019ff9b95592a29fcdb4a8ccefa6c443bd0ce"
+    },
+    {
+      "path": "native/research/playthrough_validation/WRAPPER_SMOKE.json",
+      "bytes": 264,
+      "sha256": "297a529b7c1df599a0521073113c1601933735bdf838a32199c24d8ba0112b27"
+    },
+    {
+      "path": "native/research/playthrough_validation/continuous_events.jsonl",
+      "bytes": 190383,
+      "sha256": "78eb261102f59d489241fa08852e1ae4b7177d4708eb3be3b1b86604f14f7c03"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/BUILD_v1.json",
+      "bytes": 13885,
+      "sha256": "5dd320b2b4c21658fb94af79195a4e931222ac753f77e5382228ffcd30da1ec8"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/BUILD_v2.json",
+      "bytes": 1602,
+      "sha256": "e032324b7856b7605e7df096b69e5cfee2a15dc279193a81b37052c45bbd9b98"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/BUILD_v3.json",
+      "bytes": 1575,
+      "sha256": "a127d4152661b19a3d9189f6a5738f40cba1b7e0c0b999094cf7878b0e351d4c"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/BUILD_v4.json",
+      "bytes": 892,
+      "sha256": "96772c84e2f6b86199cc49ed86560022e1f62efe43b3521edb1db6db648e5478"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/BUILD_v5.json",
+      "bytes": 893,
+      "sha256": "b95b92d484f6e738f082a5d23a1f133e73c40ff8e3e0cd5c8c3a125d1a9d344e"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/BUILD_v6.json",
+      "bytes": 902,
+      "sha256": "8434c6fe7ce36d79da13abf5c35d6ff7be3bd1ad2ea3d39ff7815301d5a82102"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/BUILD_v7.json",
+      "bytes": 1867,
+      "sha256": "844f4a3d922bdd5a496e421f9371699f840c973ffad53b73dfb1197a6c1f5801"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/DEVELOPMENT_RUNS.json",
+      "bytes": 19033,
+      "sha256": "eb5b1f07810f876264bb1137b69691cd66d8961b34f9d7d4cce9249b345de3d9"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/SOURCE_ORIGIN.json",
+      "bytes": 393,
+      "sha256": "6db8256563321dd144cebf3ad1111ec6181a26fc3bf995a71fafded0a703ce93"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe01_site_ai/events.jsonl",
+      "bytes": 223196,
+      "sha256": "f91dc64a0d7f0c55a6170a84f3f46875a2ebddddbee1b31749a16b2424c9598d"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe01_site_ai/result.json",
+      "bytes": 3473,
+      "sha256": "e38867d40da68f169f4a4d1448c5231e0862a39a7bfe4bba75ffa1f2858d3684"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe02_baseline/events.jsonl",
+      "bytes": 111127,
+      "sha256": "8cc4728f509337f76953ff1cea144281949f95a0c8927d61d9dcfa320a6df86e"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe02_baseline/result.json",
+      "bytes": 3201,
+      "sha256": "0ff4dc9886ab4eee992ab815f4c26669c74466831d407b904c8671cf5f0084a3"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_coordinated-economy/events.jsonl",
+      "bytes": 127132,
+      "sha256": "44bf9649b93aa70e8ec67ba25f157e083c94885b2ea98e99f440e309dabc223b"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_coordinated-economy/result.json",
+      "bytes": 3201,
+      "sha256": "7c86b9cb316d0a64aadd64d827d9b775146dc745661f393c7c167455efec7af3"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_coordinated/events.jsonl",
+      "bytes": 127132,
+      "sha256": "44bf9649b93aa70e8ec67ba25f157e083c94885b2ea98e99f440e309dabc223b"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_coordinated/result.json",
+      "bytes": 3193,
+      "sha256": "7a7ccf0ce24b3c60ef990cc58f83b980356f20775dce4c25527324d4341c918e"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_direct/events.jsonl",
+      "bytes": 111127,
+      "sha256": "8cc4728f509337f76953ff1cea144281949f95a0c8927d61d9dcfa320a6df86e"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_direct/result.json",
+      "bytes": 3186,
+      "sha256": "20a07df950132a6bc6c5cfea26368e7e06b30b014cb9a92ac844eb4a8073675d"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_economy/events.jsonl",
+      "bytes": 147967,
+      "sha256": "cafb06f7c9ebe7a35bba4d2a1dd6e72c32c6d8dee474d2a5b15947a437a99837"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe03_economy/result.json",
+      "bytes": 3190,
+      "sha256": "3bb7aeafb54a39c5b5b9e5b59050e28a257761c9891220d19669daed10f257b8"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe04_tactical/events.jsonl",
+      "bytes": 206734,
+      "sha256": "2ec43d07772e9a5ffe7114134fccf2b87249fe1c801cdb72c1d9824f2832d68e"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe04_tactical/result.json",
+      "bytes": 2877,
+      "sha256": "da6a57b9a097151d78d288788102b8ec120d3435d95c183dc36081ba5f88edc3"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe05_tactical_economy/events.jsonl",
+      "bytes": 206734,
+      "sha256": "6e223d90b5026b4b736da072bcee0d3c61cf14c100cbc09b8dc139e1da8eb4c6"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe05_tactical_economy/result.json",
+      "bytes": 2877,
+      "sha256": "82d74160986409cc22096c5766b925d10925f098cbeb961a262f8ffc6860989e"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe06_tactical_diagnostic/events.jsonl",
+      "bytes": 59347,
+      "sha256": "31f2c1ccbf73a10daccafb0acc954bda8acc080ede7be9e579e360109249c2b2"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe06_tactical_diagnostic/result.json",
+      "bytes": 2868,
+      "sha256": "4c706ec083cde1225e8e849882c56fa74eab6a08d07834be477fe37d6e852774"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe07_tactical_response/events.jsonl",
+      "bytes": 258229,
+      "sha256": "c2e98069b70e78702324e2e6ca6d8ec4feaa4d134c3a112b1a6646e2fcf3bab5"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe07_tactical_response/result.json",
+      "bytes": 2999,
+      "sha256": "28b7858b1f0337bc1bb494c2b9c2cd1208d6ee5825c0a0285385ccce033cc8e4"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe08_tactical_arrival_transform/events.jsonl",
+      "bytes": 284361,
+      "sha256": "792c5e87c8ec25e5a878a3aaaa6b77994e20f3d3fe0302de26ac54dbb21d14ea"
+    },
+    {
+      "path": "native/research/playthrough_validation/strategy_development/probe08_tactical_arrival_transform/result.json",
+      "bytes": 2999,
+      "sha256": "76a1ee4f99668a4652190bcf8e5d3cf7adf2ba99c96ddbdd4b26545ecfd7a8cd"
+    },
+    {
+      "path": "native/research/playthrough_validation/tactical_continuous/events.jsonl",
+      "bytes": 729283,
+      "sha256": "d00c66f47d7a6280933ba49af7fa0b84d0c09dbbd64d1437aa8c9b5b2d1724c7"
+    },
+    {
+      "path": "native/research/playthrough_validation/tactical_continuous/result.json",
+      "bytes": 5440,
+      "sha256": "dec386f94f36c4fdb996654417c5b7642cef3e83c8f8fb2002cc85eedb7b7c1f"
+    },
+    {
+      "path": "native/research/resource_validation/native_resource_inventory.tsv",
+      "bytes": 24879,
+      "sha256": "c82184845563e87a25699577bb8c287b91ba5eea6d7fcbf023c980c7156cf274"
+    },
+    {
+      "path": "native/research/resource_validation/native_validation.json",
+      "bytes": 3464,
+      "sha256": "013bb2278366070de243752ed27dfef4c15910e73ae2be87cce4d5e915c1ad71"
+    },
+    {
+      "path": "native/research/scene_catalog_validation/with_animated_surface/scene_catalog_probe.json",
+      "bytes": 10832,
+      "sha256": "2878c4f900391441e5eb1dcd15146cc8c420d61c22191d9a85d8073cd3e3f279"
+    },
+    {
+      "path": "native/research/scene_catalog_validation/with_animated_surface/scene_probe.json",
+      "bytes": 909,
+      "sha256": "86de5da7bdb13fd44ef80141b80e1e1b351e9349992e639924478355fb46becf"
+    },
+    {
+      "path": "native/research/scene_catalog_validation/with_animated_surface/validation.json",
+      "bytes": 24751,
+      "sha256": "f04111de4f334aefd6a34999cbada3c1bf39a9308ee0b9387717d338844b77ce"
+    },
+    {
+      "path": "native/research/scene_reference_validation.json",
+      "bytes": 17166,
+      "sha256": "f39c05a24b22412a339f4e405b4c80c956aa3e5d3f513a7522a537f150f4ceb7"
+    },
+    {
+      "path": "native/research/scene_validation/first_scene_load.json",
+      "bytes": 909,
+      "sha256": "86de5da7bdb13fd44ef80141b80e1e1b351e9349992e639924478355fb46becf"
+    },
+    {
+      "path": "native/research/scene_validation/local_scene_validation.json",
+      "bytes": 1665,
+      "sha256": "54e78f90b490bf64f20bc0c0dc9807f80bc1841237fa87a31ef73959fd95c660"
+    },
+    {
+      "path": "native/research/sprite_validation/original_animation.json",
+      "bytes": 5946,
+      "sha256": "98a4635b26aa7577f6e0c1e14b5926c877167706c125e9ef9e0b3444a35b8832"
+    },
+    {
+      "path": "native/research/sprite_validation/original_animation_restore.json",
+      "bytes": 7107,
+      "sha256": "7458a228668adb9b02eb432196a24ef2e84262afd9305897bcc4c5b3cf12961b"
+    },
+    {
+      "path": "native/research/sprite_validation/original_matrix.json",
+      "bytes": 3933,
+      "sha256": "4b8177654819afab875ce908bcc737730f6d45e12742c40e7d6ea2c465a1a712"
+    },
+    {
+      "path": "native/research/sprite_validation/original_placement.json",
+      "bytes": 2340,
+      "sha256": "078c965d01611f8a498310fddd630978b0b51a3e11986ad5176c20fb56fbd99d"
+    },
+    {
+      "path": "native/research/sprite_validation/original_render_setup.json",
+      "bytes": 11820,
+      "sha256": "082428b9f9e232141b4eaa8753015f7a3897e2d6bd650e945528bf5abce25074"
+    },
+    {
+      "path": "native/research/terrain_validation/TERRAIN_CHECKPOINT.json",
+      "bytes": 2941,
+      "sha256": "06ab4748d3684ac789c97b11d5b618bc9dcc6f90b4aa80d3044d8da3b62428da"
+    },
+    {
+      "path": "native/research/terrain_validation/TERRAIN_SESSION_RUNTIME_V3.json",
+      "bytes": 2173,
+      "sha256": "418f46f4b5f2cdd4ca23e66613a0e2f1e04c27452d7797396efb3c2824802982"
+    },
+    {
+      "path": "native/research/terrain_validation/map_init_rng_order.json",
+      "bytes": 2389,
+      "sha256": "3e00d8362c325325d6696b2f1feef14de04731494d3770d0d1f3eada04567d31"
+    },
+    {
+      "path": "native/research/terrain_validation/native_animated_terrain.json",
+      "bytes": 1523,
+      "sha256": "40b3846608a03c102c67fcb3406503a92981a390ce83fec4f2ec5a54f48d9df7"
+    },
+    {
+      "path": "native/research/terrain_validation/native_decorations.json",
+      "bytes": 3126,
+      "sha256": "0a18dae43836afaf0f36da1307503f6edf96c52157a1c63f13ca2b2138071876"
+    },
+    {
+      "path": "native/research/terrain_validation/native_sprite_decorations.json",
+      "bytes": 8191,
+      "sha256": "43e917a02de97f8e807ca905faa1a31e0900359618d70a6115f10fdc34a9f9f9"
+    },
+    {
+      "path": "native/research/terrain_validation/native_terrain_validation.json",
+      "bytes": 28497,
+      "sha256": "57722e6cc7835473056b495c7b17182454997bbeb3d81d7ea4a7218675743c61"
+    },
+    {
+      "path": "native/research/terrain_validation/original_animated_maps.json",
+      "bytes": 9942,
+      "sha256": "749155ce88f47902eb4af48d6c4b551334d7cf3584cb614ed4d2c48cfa3d9a4c"
+    },
+    {
+      "path": "native/research/terrain_validation/original_animated_terrain.json",
+      "bytes": 324290,
+      "sha256": "94984aa8f21e3849e8a1eacdd66d736f6f670a882aea193c55c1b426cb8e419c"
+    },
+    {
+      "path": "native/research/terrain_validation/original_camera_setup.json",
+      "bytes": 12750,
+      "sha256": "e1b7292f7b09607e40ecbbe1429634795050c63f237c0d10cb25f3d1728241f8"
+    },
+    {
+      "path": "native/research/terrain_validation/original_decorations.json",
+      "bytes": 37863,
+      "sha256": "ac9a5195c3846874643e7f041d54eb43fec8d2d3cca303539700f67e1431fdd7"
+    },
+    {
+      "path": "native/research/terrain_validation/original_first_grid_oracle.json",
+      "bytes": 1801,
+      "sha256": "c1fdd81a0d5ebc17a706a8046141a433a4a62da4b4ab94f520e1fa4b1475bacb"
+    },
+    {
+      "path": "native/research/terrain_validation/original_sprite_decorations.json",
+      "bytes": 25740,
+      "sha256": "d913361ae9a1cbab23db1a316fbb58c9962868a882e299196df6a9c828818009"
+    },
+    {
+      "path": "native/research/terrain_validation/original_terrain_oracle.json",
+      "bytes": 42906,
+      "sha256": "06ea8a192abc6e717a9022d28bce9867e2eebfaae6343e97c6ca8073dc166133"
+    },
+    {
+      "path": "native/research/timer_runtime_observation.json",
+      "bytes": 3968,
+      "sha256": "34cd5ab672a2c4515200df8b6a66dbf1d12c15eae668e07bc92776146236c2b4"
+    },
+    {
+      "path": "native/research/undo_validation/native_checks.json",
+      "bytes": 1326,
+      "sha256": "b194eac82c94aa3903e3955750d2fb973ab4f9bbeb6bddaa88d752ced9a84ae2"
+    },
+    {
+      "path": "native/research/undo_validation/native_checks.txt",
+      "bytes": 85,
+      "sha256": "20f9f7aaf4bc7ce512b4d4162b32c73d8ff3d794231353dbd667af3afd191db5"
+    },
+    {
+      "path": "native/research/undo_validation/original_unit_commands_reference.json",
+      "bytes": 2555,
+      "sha256": "342e21dd31f66f406e0f4d8d8fdf9a9bb0b033241d3ee17fdf9cb9232f2f9b1a"
+    },
+    {
+      "path": "native/research/unit_action_validation/effective_cost_correction.json",
+      "bytes": 28058,
+      "sha256": "45736da6845e9aefe928579ab862bbc479294ecc2b1f2ee647b84261892a2a11"
+    },
+    {
+      "path": "native/research/unit_action_validation/native_unit_actions.json",
+      "bytes": 4838,
+      "sha256": "13556a5dbde727d79b1b32b3534dd248edebef400169cb01882545f4fd0e0f79"
+    },
+    {
+      "path": "native/research/unit_action_validation/original_unit_actions.json",
+      "bytes": 11952,
+      "sha256": "32f43db3d3034fb20f5a4d23cd467c673d4bbcfc5fb97e53c9d335e5f4764648"
+    },
+    {
+      "path": "native/research/unit_interactions_validation/native_checks.json",
+      "bytes": 2763,
+      "sha256": "b8ccc4d98864cc73de164f8d2f6e8ff1901ed0ab714ef4ef5bdfe7dd734b785c"
+    },
+    {
+      "path": "native/research/unit_interactions_validation/native_checks.txt",
+      "bytes": 96,
+      "sha256": "b80d33f86e82e868f5667a7e3e9ed5c59bc91582f6c31cceced848df021ad764"
+    },
+    {
+      "path": "native/research/unit_interactions_validation/original_unit_interactions_reference.json",
+      "bytes": 6861,
+      "sha256": "1ff8938d2bead72aac01b354d2e3a0f2d99914c5c331473d6538b49aa0523592"
+    },
+    {
+      "path": "native/research/world_commands_validation/campaign_bootstrap_corpus.json",
+      "bytes": 9659,
+      "sha256": "b1ce243920d09bc3ca0cabb2313424fd8d54ad935ba7e2237cca7f2dc3d988fc"
+    },
+    {
+      "path": "native/research/world_commands_validation/original_world_commands_reference.json",
+      "bytes": 1801,
+      "sha256": "858b1c2bf91e1ad31e9f3164e5af4f3f9dfb084882e0966f3cd48d0b6ac0e593"
+    },
+    {
+      "path": "native/research/world_validation/original_world_oracle.json",
+      "bytes": 7040,
+      "sha256": "ddfa2c079e2b156ea240dc8f53c3377210a94ae8715e04de09c3f74b91b4a0f8"
+    },
+    {
+      "path": "native/src/AI.cpp",
+      "bytes": 27645,
+      "sha256": "428f9868b0f2c33d82a288493008770ac7ffb4bedfa48448c36b982b6dd2e402"
+    },
+    {
+      "path": "native/src/AIExecution.cpp",
+      "bytes": 2662,
+      "sha256": "5b46ca0421bcf62edd8ffe82d941d757c287342286660a0e3d6861bbfda272c2"
+    },
+    {
+      "path": "native/src/AIIncome.cpp",
+      "bytes": 1492,
+      "sha256": "3b663dab235207b1ac6e6cdcce0881f13eafd0277c5251e2f08f66fd6e2388e7"
+    },
+    {
+      "path": "native/src/AISite.cpp",
+      "bytes": 6529,
+      "sha256": "abd1e3643b723ab01b1ea9bd7992dc3d7e44f4438fa06c2c8d6398b314cd3772"
+    },
+    {
+      "path": "native/src/Archive.cpp",
+      "bytes": 7888,
+      "sha256": "cc82a6de8d26c55cdad2ec17e342b03244a5dbd053d4f9a99af64247207ff309"
+    },
+    {
+      "path": "native/src/Atlas.cpp",
+      "bytes": 7960,
+      "sha256": "5224165172d03bd54c7d8033c1d2e6ee44ce7ca1fa03526d74b61d1b1e156749"
+    },
+    {
+      "path": "native/src/Audio.cpp",
+      "bytes": 2713,
+      "sha256": "297a62c64cfcb9f1ef5af80c7e8c2bc1b1d0e74d034473e24bbc8af6eb2bfc52"
+    },
+    {
+      "path": "native/src/AudioEvents.cpp",
+      "bytes": 3195,
+      "sha256": "132fcbde0f734e79e0401877f2fb35bc39650c0311f433f4aa9eb8cc88868685"
+    },
+    {
+      "path": "native/src/CampaignController.cpp",
+      "bytes": 11876,
+      "sha256": "26b4d0079990402cf1e13947dee9e89abc23c895104f60510375ca6c76c3bd2d"
+    },
+    {
+      "path": "native/src/CaptureAction.cpp",
+      "bytes": 9860,
+      "sha256": "951bad97b69cdaad3b3788581c1f2f1379a4fbf0de1d8c1727d009d235312e14"
+    },
+    {
+      "path": "native/src/Combat.cpp",
+      "bytes": 15641,
+      "sha256": "a54dbc005997313f1347c1d7e61c745d909c5fa330722a61b6dcea9b4b81eb9e"
+    },
+    {
+      "path": "native/src/GameSession.cpp",
+      "bytes": 23264,
+      "sha256": "8a90b763c6b27b914d3989b8bcfa5f2d35f0f435db95941a402432676acc830a"
+    },
+    {
+      "path": "native/src/GameSessionAI.cpp",
+      "bytes": 16090,
+      "sha256": "be4118db0bd2cf9de856d1771bc9bb58b2d81569acbaabd63eeaece673f6348d"
+    },
+    {
+      "path": "native/src/GameSessionActions.cpp",
+      "bytes": 5432,
+      "sha256": "a4f520ec2e807c3f519adf5d8a4bb3dcc71f0f3a2c94cf07c91237e0e75923bb"
+    },
+    {
+      "path": "native/src/GameSessionWorld.cpp",
+      "bytes": 8193,
+      "sha256": "14fc87e569983fc99528d9eda7c2f095f8af4c621f5bee546cd477fea183258d"
+    },
+    {
+      "path": "native/src/HealAction.cpp",
+      "bytes": 4148,
+      "sha256": "1b2c94205ea64668f35c5e13f696720c4bd07da0341ba04a64a1ca47cfb7cdfc"
+    },
+    {
+      "path": "native/src/Image.cpp",
+      "bytes": 2645,
+      "sha256": "a3f4d8e18f82699138ef6948bbd72e7402c98e2e4973c6cba5096cb220564e4f"
+    },
+    {
+      "path": "native/src/InitialPresentation.cpp",
+      "bytes": 2586,
+      "sha256": "dd992341007b3d19bc43c4a88c994d5f3581cbe6132528e3f83d5ad91fe7b62e"
+    },
+    {
+      "path": "native/src/M3G.cpp",
+      "bytes": 4130,
+      "sha256": "5a80cf51465903ec076bd18173235b801b90fe61217cb67d410060d6f17ba9ff"
+    },
+    {
+      "path": "native/src/M3GAnimation.cpp",
+      "bytes": 32088,
+      "sha256": "300b15ceb1f251d8701d6e8f058a86fe3f5987a5cea39f907f7ab7f3d150136c"
+    },
+    {
+      "path": "native/src/M3GBattleCamera.cpp",
+      "bytes": 6004,
+      "sha256": "2568601c2bac5561d32e64c50960cfb4698e2a56a7c6cf3aca79cc25015fa5a8"
+    },
+    {
+      "path": "native/src/M3GBattleController.cpp",
+      "bytes": 11187,
+      "sha256": "922a634e4af8d98dab7543dcdadc478c8a508d019dd58aa48ceec04f59e0f793"
+    },
+    {
+      "path": "native/src/M3GBattlePresentation.cpp",
+      "bytes": 29668,
+      "sha256": "dc4301ca833bb3fae00ce765121bc64a5271d58aebbb3e1a7d839a999416962e"
+    },
+    {
+      "path": "native/src/M3GBattleTimeline.cpp",
+      "bytes": 1869,
+      "sha256": "4cd66f6d2acf7d5af20eaaac8093e42b8809736c152f3ec54aa4e30c847df5f0"
+    },
+    {
+      "path": "native/src/M3GBindings.cpp",
+      "bytes": 6069,
+      "sha256": "6178bfd971e4aabdd1ade845a2175f2423cededdb246c7bff5d69d9eb7b50bdc"
+    },
+    {
+      "path": "native/src/M3GCamera.cpp",
+      "bytes": 7144,
+      "sha256": "5344397d24736ae86eab134d5a3ca7b5fe6b7c7870bb346a29187e12062e32a2"
+    },
+    {
+      "path": "native/src/M3GMaterialOverrides.cpp",
+      "bytes": 16082,
+      "sha256": "92edf8089968ec9e56d52ff8a30efa7c774819a1e359bdc3ec11635bdc69e111"
+    },
+    {
+      "path": "native/src/M3GRenderFrame.cpp",
+      "bytes": 9604,
+      "sha256": "69ee42e31ce63bbaff9d53513dec3146f5337af32da4703bdb2ab9fbf29a07ec"
+    },
+    {
+      "path": "native/src/M3GScene.cpp",
+      "bytes": 37873,
+      "sha256": "3908c41603d8a3d9f80ef184909083ca3cfe1e68244944918014aed431c9444b"
+    },
+    {
+      "path": "native/src/M3GScenePose.cpp",
+      "bytes": 6470,
+      "sha256": "09d815e4c654b18306b28b4e1d51ea53917d66bafc3a670523598b7273310ef7"
+    },
+    {
+      "path": "native/src/M3GSprite3D.cpp",
+      "bytes": 13806,
+      "sha256": "26486d2ade3a6823646a9b5a3c9be4cc9034e95dfed11385f28dac8e3d6cae1e"
+    },
+    {
+      "path": "native/src/Mission.cpp",
+      "bytes": 5199,
+      "sha256": "8cfd2d9a7faf9c8b3ad89816d6220eeae29119d754b0bf371543d9c6ca116cf2"
+    },
+    {
+      "path": "native/src/MissionExecution.cpp",
+      "bytes": 19505,
+      "sha256": "096c24a193e7a398c7813303bf5034e8adb8b0a4a374fca478dc6930acf54c17"
+    },
+    {
+      "path": "native/src/MissionObjectives.cpp",
+      "bytes": 9311,
+      "sha256": "317e1160344c6f02a98aad2280553b1abf94ccb21dab1eb8f4a1c3ff642bb993"
+    },
+    {
+      "path": "native/src/MissionProgression.cpp",
+      "bytes": 8208,
+      "sha256": "8fe4883f3a6532a3254afa29919bb95e0137ac8cc585642b2d42aad2797fd203"
+    },
+    {
+      "path": "native/src/Movement.cpp",
+      "bytes": 8505,
+      "sha256": "0cac89782a82b521ea12845c400caedbb680790432de17f6d8fbd51acdd64f9f"
+    },
+    {
+      "path": "native/src/MovementAction.cpp",
+      "bytes": 9189,
+      "sha256": "37e3d7cf8cd18262c7c808128fd5652851ab401350c9199f66079049bf86a073"
+    },
+    {
+      "path": "native/src/MovementArrival.cpp",
+      "bytes": 2057,
+      "sha256": "a929d215d24ceaceba6e5ae0a9492f2834400d117e7b9ca6c8c5789db68fae23"
+    },
+    {
+      "path": "native/src/SaveStore.cpp",
+      "bytes": 5698,
+      "sha256": "fdae81f5f210ea2bd2606924eef67a268493d05ea15d980a4092611e5e955679"
+    },
+    {
+      "path": "native/src/Scene.cpp",
+      "bytes": 4546,
+      "sha256": "919b83acbe2e6eee2299985f4a3bc41d46442f5b1f33d9ccb41474899cec98ab"
+    },
+    {
+      "path": "native/src/SessionSave.cpp",
+      "bytes": 30056,
+      "sha256": "7f9292c19a26b6bb09dff088f0e88d7fe70ac654684cb7b27695150b42cfb825"
+    },
+    {
+      "path": "native/src/SpriteAnimation.cpp",
+      "bytes": 4410,
+      "sha256": "80159bac9e3e9e52178a54a3d53666326142bd7863e47721d75a24703882c07e"
+    },
+    {
+      "path": "native/src/SpriteGeometry.cpp",
+      "bytes": 1942,
+      "sha256": "ad8bb1b6b324bcd39f1ce23b7e45cfa18d8d20b95a3a7afdf1da801a0d0c5f39"
+    },
+    {
+      "path": "native/src/SpritePlacement.cpp",
+      "bytes": 2598,
+      "sha256": "7615da12e273eb5bf5c6cb18707655b73b547c2dce0f7306f074619a37bb7ed0"
+    },
+    {
+      "path": "native/src/Terrain.cpp",
+      "bytes": 16396,
+      "sha256": "406822ec9fc0c3fa05906e3e743e8cd781707a8a4406e0ea4b9ec905b25ef7d5"
+    },
+    {
+      "path": "native/src/TerrainDecorations.cpp",
+      "bytes": 12779,
+      "sha256": "4b35dfc378068f3ee030bd6a4727e2a06650152a9c82baee350d26d47c4aed0b"
+    },
+    {
+      "path": "native/src/TerrainRuntime.cpp",
+      "bytes": 3453,
+      "sha256": "b2c5ccb05b6f43e4b90e0771958dc9c9a2cd73d04f5793c33308c8f4d241f69d"
+    },
+    {
+      "path": "native/src/TerrainSpriteDecorations.cpp",
+      "bytes": 24482,
+      "sha256": "0dfe3ee44ad7fabdff0572e81c8e205406d3ec7230e9fab81ac3769e1e980922"
+    },
+    {
+      "path": "native/src/Text.cpp",
+      "bytes": 5439,
+      "sha256": "77f0edbdf3a6f9b9979a89175ce7a2efe3068c2039394cdc9b33b70e0fa17058"
+    },
+    {
+      "path": "native/src/TextIndexMap.inc",
+      "bytes": 4814,
+      "sha256": "cfdb86ff805a4a75b65aa1f79c943bb4f671d18e47d40dfe1b02561709201ad4"
+    },
+    {
+      "path": "native/src/TransformAction.cpp",
+      "bytes": 2015,
+      "sha256": "a51c0872e29238283da5eb371aa67362bc55342c3d2b14e6b71681615f95e7d3"
+    },
+    {
+      "path": "native/src/TurnProgression.cpp",
+      "bytes": 2893,
+      "sha256": "dbedefb33651b22fa2acddce2d1ff423b04a11ce35e301210f83253c4c98b2bd"
+    },
+    {
+      "path": "native/src/UndoAction.cpp",
+      "bytes": 3865,
+      "sha256": "546050f67a6e6d153cdd3e8417c37be66cd9c56089d449129bfc8d6559c1162f"
+    },
+    {
+      "path": "native/src/UnitCommands.cpp",
+      "bytes": 1558,
+      "sha256": "0c7084fba55a28984e9d14e8c5822bdd8f1067e1551e09742d6f782951cdcee5"
+    },
+    {
+      "path": "native/src/UnitInteractions.cpp",
+      "bytes": 15269,
+      "sha256": "4de04ac71da7e2a0aff27c8b772b082786565d3fb7860f1233bfff8d217d2072"
+    },
+    {
+      "path": "native/src/UnitSpawn.cpp",
+      "bytes": 2501,
+      "sha256": "1a6e77d6b1d57eaac69274d3fa76091b010c0412bf27ab1bb0c3ae44c18b64a4"
+    },
+    {
+      "path": "native/src/UpgradeAction.cpp",
+      "bytes": 6633,
+      "sha256": "da24bd04630e36004be9166da967bfb50b3163ec83e474f791a2300e5c540b78"
+    },
+    {
+      "path": "native/src/World.cpp",
+      "bytes": 16810,
+      "sha256": "d1723e859654b46b007754b54dc6a2d720e00195c382ac49fdaa90380f882289"
+    },
+    {
+      "path": "native/src/WorldCommands.cpp",
+      "bytes": 20109,
+      "sha256": "ada6f10aa76b300cb9ad1323a6656ed4999b201eca956b70e9cb9d197fc124ef"
+    },
+    {
+      "path": "native/tests/ai_attack_cases.txt",
+      "bytes": 163437,
+      "sha256": "6831e4b0cb7f9eb8b83350dd8cde42db97b1faa09793e78ca9af28abc883dc00"
+    },
+    {
+      "path": "native/tests/ai_attack_test.cpp",
+      "bytes": 15534,
+      "sha256": "5cedf4d24b5c57a965095c5d3d4025a4031e91ab10bafacb7f8c995f55dd8fe6"
+    },
+    {
+      "path": "native/tests/ai_execution_original_vectors.txt",
+      "bytes": 12621,
+      "sha256": "b5bfc94cbd15165e76995c21ba23fc1eed876343a28070c55e5db05063beb758"
+    },
+    {
+      "path": "native/tests/ai_execution_test.cpp",
+      "bytes": 4398,
+      "sha256": "f2d604e0633f56ff778604d7b35ec33f40a340693efcc45c73450fe3f8a47514"
+    },
+    {
+      "path": "native/tests/ai_planner_cases.txt",
+      "bytes": 124269,
+      "sha256": "8b351bb21c8a615cfcd3d8941b9830304a827b4603f2cc8093de6fbc5a5dd879"
+    },
+    {
+      "path": "native/tests/ai_site_cases.txt",
+      "bytes": 224757,
+      "sha256": "66fb7aa04859b7f0fb6275cbe0d3afafe6d4ea7e2f67de609c9d236e2b935c91"
+    },
+    {
+      "path": "native/tests/ai_site_test.cpp",
+      "bytes": 11390,
+      "sha256": "650adc1ff39e8316da185bd0d61864339a71f2630225f65798d7d22caeb104a9"
+    },
+    {
+      "path": "native/tests/ai_turn_cases.txt",
+      "bytes": 615109,
+      "sha256": "e714394bae0e419b3b1cb47a464d8f12d492201086717918dfff8d95894ae478"
+    },
+    {
+      "path": "native/tests/atlas_reference.json",
+      "bytes": 25805,
+      "sha256": "56fc4b6637852f51a0377b2a6583e1ad62503501af2b636ad34e381ea73d9adf"
+    },
+    {
+      "path": "native/tests/atlas_test.cpp",
+      "bytes": 7090,
+      "sha256": "b66a127f098faada423a51149e43d2438f2e2a388164138948e4a2efc6e50f6f"
+    },
+    {
+      "path": "native/tests/audio_event_original_vectors.txt",
+      "bytes": 27161,
+      "sha256": "749a24ea8f0677019758cf5ab28e2318c36eb72ba5b95c5f9397065999c34a80"
+    },
+    {
+      "path": "native/tests/audio_events_test.cpp",
+      "bytes": 2599,
+      "sha256": "bd91f823235b9e339b05ba1c0954ca237995bf537c2a37bb7ca2e994681f8602"
+    },
+    {
+      "path": "native/tests/audio_test.cpp",
+      "bytes": 496,
+      "sha256": "ea594168a918d6e298e41f226595aba82a0c4a0f98caba74651ad7375396d25d"
+    },
+    {
+      "path": "native/tests/campaign_controller_test.cpp",
+      "bytes": 18261,
+      "sha256": "aff6f773d10cf816e772992bdd2b90f75bb9bf108ee36df54b36c4152769adbe"
+    },
+    {
+      "path": "native/tests/capture_action_test.cpp",
+      "bytes": 5756,
+      "sha256": "3ab201a77e1edb23f8a79ce2f6ad5beeb094c358bd9a22e8d102f10e1ba34c82"
+    },
+    {
+      "path": "native/tests/capture_original_vectors.txt",
+      "bytes": 7378,
+      "sha256": "e31a5a7359ef7a29da6359d993d8ee19328e9728d56a7242a8857ad0eb5acb8f"
+    },
+    {
+      "path": "native/tests/combat_cases.txt",
+      "bytes": 305463,
+      "sha256": "61ac20c9c674a082d4bce2bef0f6d5ffb9b7c9e78d5d2841b1dc32eba18894dc"
+    },
+    {
+      "path": "native/tests/combat_test.cpp",
+      "bytes": 16137,
+      "sha256": "29c9e33c46064ead94de51a555c7e2c138636098f60d016f86c0907713132c66"
+    },
+    {
+      "path": "native/tests/dialogue_original_vectors.txt",
+      "bytes": 28801,
+      "sha256": "4254fffddd56e8c4c6be760b614ea71df0838f56abb1d7350f5bfc804134bf41"
+    },
+    {
+      "path": "native/tests/game_session_test.cpp",
+      "bytes": 24170,
+      "sha256": "c047549d9cd2dfa4b1df8418f445ab51113d8c68f2c7e77bdc4c48570ca9deee"
+    },
+    {
+      "path": "native/tests/generate_atlas_reference.py",
+      "bytes": 9377,
+      "sha256": "1cda792238f2967a973206af136283bb9568e9d7d6dff38ec2cecb8a10a44dbb"
+    },
+    {
+      "path": "native/tests/generate_mission_reference.py",
+      "bytes": 6280,
+      "sha256": "3022d02273db82675701a12a2050ad92dab123a92076d40de9ed35c01071ae14"
+    },
+    {
+      "path": "native/tests/generate_terrain_reference.py",
+      "bytes": 8135,
+      "sha256": "9a5bccfa856356c281ba1440bd007d59325b80051132aa8c4f9b5037b218ba33"
+    },
+    {
+      "path": "native/tests/image_test.cpp",
+      "bytes": 1452,
+      "sha256": "05bfdbe80f59ebeb9815c1744b3ea5eb907dd0612e65533be8d24dcf06368ec8"
+    },
+    {
+      "path": "native/tests/initial_presentation_test.cpp",
+      "bytes": 1271,
+      "sha256": "7955f27f95a41b61853e121222d5a65fab460b04145e9e7a8f5c806d8365d1b2"
+    },
+    {
+      "path": "native/tests/m3g_animation_fixture.hpp",
+      "bytes": 3658,
+      "sha256": "1a9b5bcbfcc70a68c58e244702678c265c24177589b0079938674abfaebfa191"
+    },
+    {
+      "path": "native/tests/m3g_animation_test.cpp",
+      "bytes": 9535,
+      "sha256": "1b9470d97ed430ea01eff3ca5c1cc23f60da919f5f4801cfa64649bdc1c4bb57"
+    },
+    {
+      "path": "native/tests/m3g_battle_camera_fixture.hpp",
+      "bytes": 94872,
+      "sha256": "c4e6a67add5dbd7453c0f6465abda9842b236a1a49c9c4eab6ce78e0ee96ab7c"
+    },
+    {
+      "path": "native/tests/m3g_battle_camera_test.cpp",
+      "bytes": 7947,
+      "sha256": "d41f39c273fb8d9a9be5743d6ed9411f8fecd06b815db94ba19fb16466656115"
+    },
+    {
+      "path": "native/tests/m3g_battle_controller_cases.txt",
+      "bytes": 340582,
+      "sha256": "ed13ed66091c92e00560f3ac873a3d59f9ce0708aa5f7ed1f6e3198b24788bfb"
+    },
+    {
+      "path": "native/tests/m3g_battle_controller_test.cpp",
+      "bytes": 4742,
+      "sha256": "6cbb9ac6413c7a18ebff136ee4292d197cb7157812c5aa8cc438a1f6f2b273c1"
+    },
+    {
+      "path": "native/tests/m3g_battle_timeline_fixture.hpp",
+      "bytes": 4297,
+      "sha256": "b80aa1c0c34c62162a6ed5133883bee9c623dbdd601969995ef3b00f7469be14"
+    },
+    {
+      "path": "native/tests/m3g_battle_timeline_test.cpp",
+      "bytes": 2818,
+      "sha256": "d3494d69088115fb61ad740957faf03de3f01e3360b6504dfadee3bb5fa6d4c0"
+    },
+    {
+      "path": "native/tests/m3g_bindings_fixture.hpp",
+      "bytes": 2795,
+      "sha256": "9cc6dbbcc3f6d4b4ddb859fe0b5a2fa4ed83ddd02a39ffb4ad92a6dc91c02828"
+    },
+    {
+      "path": "native/tests/m3g_bindings_fixture_provenance.json",
+      "bytes": 1036,
+      "sha256": "2b298c056879b3fd62e47a8f527a2dd38cfbf671a61f810135edacb70f21909f"
+    },
+    {
+      "path": "native/tests/m3g_bindings_test.cpp",
+      "bytes": 9066,
+      "sha256": "16765506012c4e07d05fa17c83ae817392f483b4c6d9dfd20276444e482b0892"
+    },
+    {
+      "path": "native/tests/m3g_camera_fixture.hpp",
+      "bytes": 3916,
+      "sha256": "dc6d39f420534c965a5ff655bc43e518e42f1d34e3563a148868bf0fd23cc5e5"
+    },
+    {
+      "path": "native/tests/m3g_camera_test.cpp",
+      "bytes": 4252,
+      "sha256": "b9928f5c35d68e4935e8d9dc711d29d805c94cfc2231cf3596ba304719546ee4"
+    },
+    {
+      "path": "native/tests/m3g_material_cases.txt",
+      "bytes": 10734,
+      "sha256": "af5a4b4f44027dac70d30ec445458293596b5d638a2652ba180937a7028a179f"
+    },
+    {
+      "path": "native/tests/m3g_material_overrides_test.cpp",
+      "bytes": 12253,
+      "sha256": "47664677ed33ce332e89039b54eb1d354fd9b38c917ec7b986f90f59198f7896"
+    },
+    {
+      "path": "native/tests/m3g_mesh_queue_fixture.hpp",
+      "bytes": 5295,
+      "sha256": "915892abcc21d131750c06d26c251e820a71b36a7291fde4f0d0f803b4d0dfba"
+    },
+    {
+      "path": "native/tests/m3g_property_fixture.hpp",
+      "bytes": 8801,
+      "sha256": "477f50b590d38cae2ee7e5d86b748e54c4b16495ce19e289ccaabecd9eb7a2a2"
+    },
+    {
+      "path": "native/tests/m3g_render_asset_test.cpp",
+      "bytes": 4041,
+      "sha256": "6835643eb4003fc8fac0dc382891a73df9998ef9e59b61aa4736000bcc96820b"
+    },
+    {
+      "path": "native/tests/m3g_render_frame_test.cpp",
+      "bytes": 7505,
+      "sha256": "106a93a53bead23142c4821ed52897df0e3b35cad1257ed54d2b9698376b283b"
+    },
+    {
+      "path": "native/tests/m3g_runtime_state_test.cpp",
+      "bytes": 5193,
+      "sha256": "6f312aa4fe00d2afe063d7777976bb972910bdb628d903058e2a9228c5c301d2"
+    },
+    {
+      "path": "native/tests/m3g_scene_pose_test.cpp",
+      "bytes": 9822,
+      "sha256": "22fe2f24ea14dd3c159a85a9bf8da4efa73ea9110baebeae13d6fddaa7175f87"
+    },
+    {
+      "path": "native/tests/m3g_scene_test.cpp",
+      "bytes": 13247,
+      "sha256": "8435874945efd36efb86227b2317fdb3b45dc247b006e526ff10cfd7a3b4034b"
+    },
+    {
+      "path": "native/tests/m3g_spline_fixture.hpp",
+      "bytes": 58607,
+      "sha256": "8a840fd1429e367a14bf3cd6f13272e8e6139ee048229094d90a06f1e680dd5f"
+    },
+    {
+      "path": "native/tests/m3g_spline_test.cpp",
+      "bytes": 5665,
+      "sha256": "1d8fcada1ba7bedd32a9babf97557a34be3108909dc22bbdcace3c98fd904ad9"
+    },
+    {
+      "path": "native/tests/m3g_sprite3d_cases.txt",
+      "bytes": 68365,
+      "sha256": "4cb9bc5b0b3e6d40e9981038ac4ca33c27189a34a88a93875e9d6be3f17a9ef9"
+    },
+    {
+      "path": "native/tests/m3g_sprite3d_cases_provenance.json",
+      "bytes": 1003,
+      "sha256": "9a2e3e99a9ad0ee1a266c27d55148d6932487f55da2ff9bfa72691f1195681de"
+    },
+    {
+      "path": "native/tests/m3g_sprite3d_fixture.hpp",
+      "bytes": 4561,
+      "sha256": "625048fcf7d7f531b01062a28363f673287c05a11da06393b3e1cac6eaea32d2"
+    },
+    {
+      "path": "native/tests/m3g_sprite3d_test.cpp",
+      "bytes": 7973,
+      "sha256": "6b1a67facd4368007a57106657f07f3595b171bd282a8232a5cef4b536f5dbe3"
+    },
+    {
+      "path": "native/tests/mission_clock_original_vectors.txt",
+      "bytes": 1219,
+      "sha256": "d2d5007a408aee4d9289bd8d64cc9611fd1b8afa446cec54c78f6fdadf69a1d0"
+    },
+    {
+      "path": "native/tests/mission_execution_test.cpp",
+      "bytes": 22293,
+      "sha256": "a19a76bd74c1ee4cb10904514ebc9b08cdc2d3613e9449c72dd53b81842ff82e"
+    },
+    {
+      "path": "native/tests/mission_objectives_original_vectors.txt",
+      "bytes": 159185,
+      "sha256": "6e070197d3455bdc3dbd13f7f366a51ce93e571f9bdae83315dbac507b74df0c"
+    },
+    {
+      "path": "native/tests/mission_objectives_test.cpp",
+      "bytes": 7874,
+      "sha256": "693ef93ad585ef9b825ae7e30c17a9acc1a77504352cb0acb67218aa92df5096"
+    },
+    {
+      "path": "native/tests/mission_progression_original_vectors.txt",
+      "bytes": 40624,
+      "sha256": "a120950902b56f7a339f774f44f0c7e489f082e533500c24b579c65f78421aa5"
+    },
+    {
+      "path": "native/tests/mission_progression_test.cpp",
+      "bytes": 10671,
+      "sha256": "6bef39fe778757cdcfd9e0fbf1432c45d4448153b0cd869fb6892032d25009a9"
+    },
+    {
+      "path": "native/tests/mission_reference.json",
+      "bytes": 28663,
+      "sha256": "76b465dadb42c4a55c7b3d0bb5082a88ee8590ab207989ad1a8a76276b7df9d7"
+    },
+    {
+      "path": "native/tests/mission_test.cpp",
+      "bytes": 4939,
+      "sha256": "a7c4df5a354d9775c1335a9da92381375b20be5d6d6c79e151fbfc8f5b66f21e"
+    },
+    {
+      "path": "native/tests/movement_action_test.cpp",
+      "bytes": 12462,
+      "sha256": "1a8380acfe2c629ca999f83bbd238f9c668bab604c6ba877a2aa397baa78ccda"
+    },
+    {
+      "path": "native/tests/movement_arrival_test.cpp",
+      "bytes": 2908,
+      "sha256": "0d053b16109499cc3af12160fc80e48f7c636b359ef0bcddb4531427eace28c7"
+    },
+    {
+      "path": "native/tests/movement_cases.txt",
+      "bytes": 65806,
+      "sha256": "ba6b138459a4016101f8ad22e35564faafa6635defc75437695d26408e0425d3"
+    },
+    {
+      "path": "native/tests/movement_test.cpp",
+      "bytes": 5614,
+      "sha256": "4dbe03624ab5e378c5e19f63b93ba337afd5357a6c493afae87c9a656ce22dc6"
+    },
+    {
+      "path": "native/tests/resource_reference.json",
+      "bytes": 182450,
+      "sha256": "ba6ee933649e511ac917b7018a1313d32f39f2fbd7700ee7d84b22045ac479c7"
+    },
+    {
+      "path": "native/tests/save_store_test.cpp",
+      "bytes": 4000,
+      "sha256": "29cf19c547edbb2b9a2bc255207788ca2dd57d764540a688e0f3165891742345"
+    },
+    {
+      "path": "native/tests/session_save_test.cpp",
+      "bytes": 20331,
+      "sha256": "3a7ee885ad873a661696f3b3c31a9c65214dea24de18daf4ef6cb4af0e9d6ed3"
+    },
+    {
+      "path": "native/tests/sprite_animation_test.cpp",
+      "bytes": 8471,
+      "sha256": "010033124e9b194fadd18ad8580d8de1f7fffdfb79b06830802df8d7f2bac0d7"
+    },
+    {
+      "path": "native/tests/sprite_geometry_test.cpp",
+      "bytes": 4166,
+      "sha256": "62ef35a3933f7ad3a58d1978075f9e7335bdd5ff7edcab7b1e30d21225eb21e4"
+    },
+    {
+      "path": "native/tests/sprite_placement_test.cpp",
+      "bytes": 3142,
+      "sha256": "9e59f47a53049811d3e2631bf8062ce341ebcc9b8ffe585af37c213cf1fc5ed6"
+    },
+    {
+      "path": "native/tests/terrain_animated_cases.txt",
+      "bytes": 37483,
+      "sha256": "876712e3711ed9718ab2fe232e8d49b17f87f4156284e1fd748cd3073c31f4dc"
+    },
+    {
+      "path": "native/tests/terrain_animated_test.cpp",
+      "bytes": 6908,
+      "sha256": "a32919200e85df10db13be059a076d2a5358426eb555105c59a54f46d16b40f2"
+    },
+    {
+      "path": "native/tests/terrain_cases.txt",
+      "bytes": 29303,
+      "sha256": "5791215629f391e3400075ce012a4168a65931ea50fc8581f4c30e8d11c64345"
+    },
+    {
+      "path": "native/tests/terrain_decorations_cases.txt",
+      "bytes": 360942,
+      "sha256": "921cfa4c5884133259e0aff922404154f33f49f93b9bbc1a7e35b4ef96fdfdec"
+    },
+    {
+      "path": "native/tests/terrain_decorations_test.cpp",
+      "bytes": 9255,
+      "sha256": "5081be8cdf5930179c3c4230adbdd6555592cc4469c6da1a69c069773ff60f63"
+    },
+    {
+      "path": "native/tests/terrain_reference.json",
+      "bytes": 14887,
+      "sha256": "e1d5940bc9acd1d1d89e475650e85f83fd9fdad7364b4ef1eec3a0f2fb7bee87"
+    },
+    {
+      "path": "native/tests/terrain_sprite_decorations_cases.txt",
+      "bytes": 467484,
+      "sha256": "d7139baa76747707dd3cee59712151af83ab7398b87ad3d9326baeb4e6de3a9d"
+    },
+    {
+      "path": "native/tests/terrain_sprite_decorations_test.cpp",
+      "bytes": 15493,
+      "sha256": "e8ed3e37b69bf1be4bc408a0fe06d73150c9c7104b797f071c29eefb9e6e2822"
+    },
+    {
+      "path": "native/tests/terrain_test.cpp",
+      "bytes": 7672,
+      "sha256": "91b8f0b9cf82012759180cb9c46c71e415ef7b68a80af5a187b5adde2d7dd28f"
+    },
+    {
+      "path": "native/tests/text_index_original_vectors.txt",
+      "bytes": 9880,
+      "sha256": "cd329716c58c072847af3a476a6abd6ed7792301cbc1663f952c22100585daac"
+    },
+    {
+      "path": "native/tests/text_test.cpp",
+      "bytes": 6028,
+      "sha256": "d4252e42c8a4fc98d3054bd2d12c81ff00e4a2a677309b479be036b4192d864c"
+    },
+    {
+      "path": "native/tests/transform_action_test.cpp",
+      "bytes": 3556,
+      "sha256": "48edfffa767ae14b0f009be77d4a5965d692515befcbe2ac49175cde4489abfa"
+    },
+    {
+      "path": "native/tests/turn_original_vectors.txt",
+      "bytes": 251606,
+      "sha256": "2a44165d4e7691f6884e3a215f0e9385f50ec1dc96a18942a87ee5f16dd14bcc"
+    },
+    {
+      "path": "native/tests/turn_test.cpp",
+      "bytes": 5470,
+      "sha256": "ee447394cf96d6e233ace12f3b0014f012a460dbcf5e4eaae390e6adbdef45a2"
+    },
+    {
+      "path": "native/tests/unit_actions_cases.txt",
+      "bytes": 479050,
+      "sha256": "d6461eda09d30a2b60d394795cea846372cd261fbfc55ffc6c763aa00958f3e2"
+    },
+    {
+      "path": "native/tests/unit_actions_test.cpp",
+      "bytes": 8290,
+      "sha256": "8c48bac829354f65e31272f9ea4797cd17e1ff33c096033e4cb6cb75b4477e31"
+    },
+    {
+      "path": "native/tests/unit_commands_original_vectors.txt",
+      "bytes": 251082,
+      "sha256": "5a446d3079e49b4907a8c41af4b92d9eeba5345c7cbf36333eeb69912e36dd39"
+    },
+    {
+      "path": "native/tests/unit_commands_test.cpp",
+      "bytes": 9074,
+      "sha256": "b98163d60dfa90da61ed4fcc679288b3d704ff4ac6125d3372a12a8663e623c0"
+    },
+    {
+      "path": "native/tests/unit_interactions_original_vectors.txt",
+      "bytes": 910500,
+      "sha256": "12cadb6b1c3cd9bfcc5be7006ba4a306213e1d06a66a8b2d1b27028b112820ef"
+    },
+    {
+      "path": "native/tests/unit_interactions_test.cpp",
+      "bytes": 15423,
+      "sha256": "33247f55c55bcadae34f8089a3eb21fcc4c297aad4262311b875daa6341c057c"
+    },
+    {
+      "path": "native/tests/unit_spawn_original_vectors.txt",
+      "bytes": 23928,
+      "sha256": "f5b518a31e605ba8f254fe8ad96079d5eaa42c7a9bbb4591c3ab8a13ab6dcf88"
+    },
+    {
+      "path": "native/tests/unit_spawn_test.cpp",
+      "bytes": 5533,
+      "sha256": "67464ec71bb1be61ca8113476fe7092fba302b0b74e24fa62d99225ca7eb4571"
+    },
+    {
+      "path": "native/tests/verify_atlas.py",
+      "bytes": 6322,
+      "sha256": "5ab4a5b8774082254f801e80aa98587c5d03d5d5fe5110975b4294be27871f08"
+    },
+    {
+      "path": "native/tests/verify_audio.py",
+      "bytes": 8626,
+      "sha256": "8f95d8d960b118623d35b60eee86863a867c58914780b2888849ba8ac603dc8c"
+    },
+    {
+      "path": "native/tests/verify_images.py",
+      "bytes": 3292,
+      "sha256": "f3ab6b9c13c43998eb7fe72735604fd45e30759e49fd4f5667016d524909fc4c"
+    },
+    {
+      "path": "native/tests/verify_missions.py",
+      "bytes": 12247,
+      "sha256": "de8f32da9479ed2a70b2ee49d1529c6d1218e110404867e5f8d3bbe320c16469"
+    },
+    {
+      "path": "native/tests/verify_resources.py",
+      "bytes": 8261,
+      "sha256": "025799d510e7ccba2882ef875f0249755fa03b2f4c3cb063da863793ddccf1a9"
+    },
+    {
+      "path": "native/tests/verify_terrain.py",
+      "bytes": 8427,
+      "sha256": "851f7a94494e73f301223e8a46f5d8edd33107f21b0cd42db10d9592eafaa6f9"
+    },
+    {
+      "path": "native/tests/world_commands_original_vectors.txt",
+      "bytes": 8323,
+      "sha256": "eca49489020d81a467afff1839f91afa4dadc291aa569a3c58eac3a73d5ef656"
+    },
+    {
+      "path": "native/tests/world_commands_test.cpp",
+      "bytes": 17615,
+      "sha256": "e27c387d084534f1bed7c4c12f447738268a5a75a6e79338645b4eff95b30f70"
+    },
+    {
+      "path": "native/tests/world_funds_original_vectors.txt",
+      "bytes": 10298,
+      "sha256": "3848fe0e43133b777ae13a4e4860c79dae7b17a88a5d0ccd3c9afbc25e4cf637"
+    },
+    {
+      "path": "native/tests/world_test.cpp",
+      "bytes": 16030,
+      "sha256": "3e42de60a11adb2e818d848ce40c6670e2188b82ee99206e90a17972ee37ac13"
+    },
+    {
+      "path": "native/third_party/lodepng/LICENSE",
+      "bytes": 886,
+      "sha256": "bdafa318b8e637d600ca1b60545e894881977a16a16b74809c95e805701621e3"
+    },
+    {
+      "path": "native/third_party/lodepng/UPSTREAM.json",
+      "bytes": 639,
+      "sha256": "cb2940d282b1bace1f30d5031dd0d4b436f67a37acbddd7d8c724b072d8453fe"
+    },
+    {
+      "path": "native/third_party/lodepng/lodepng.cpp",
+      "bytes": 312689,
+      "sha256": "6aec876971ec860527859458d3095220fc5ee1258ec37eb59e1e7dd9cf136a81"
+    },
+    {
+      "path": "native/third_party/lodepng/lodepng.h",
+      "bytes": 108843,
+      "sha256": "9a1fca0238c38333bdc8545336961b73fd0b76957bbacf033186991be9d7cf85"
+    },
+    {
+      "path": "native/third_party/stb/LICENSE",
+      "bytes": 2510,
+      "sha256": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63"
+    },
+    {
+      "path": "native/third_party/stb/UPSTREAM.json",
+      "bytes": 727,
+      "sha256": "f49725da5c0866f601db30578ebedc9b8d4da22729e4da61344059420b816a1d"
+    },
+    {
+      "path": "native/third_party/stb/stb_vorbis.c",
+      "bytes": 192790,
+      "sha256": "4c7cb2ff1f7011e9d67950446b7eb9ca044f2e464d76bfbb0b84dd2e23e65636"
+    },
+    {
+      "path": "native/tools/atlas_probe.cpp",
+      "bytes": 4042,
+      "sha256": "a79260305f11fd65764a7b5b2d37e7d4067c82e015772422ffbac1334cd05e15"
+    },
+    {
+      "path": "native/tools/audio_probe.cpp",
+      "bytes": 1008,
+      "sha256": "e553a793ac72af426ff8080d3e3db00f53a23b8c0003dde1a9ce684b5cb6e75d"
+    },
+    {
+      "path": "native/tools/extract_terrain_tables.py",
+      "bytes": 6845,
+      "sha256": "bca928d01ef4dc25f335b75d761266fbb6750bb721efd2a8fa93d60511c2e9b0"
+    },
+    {
+      "path": "native/tools/g1_asset_probe.cpp",
+      "bytes": 1899,
+      "sha256": "873af09ec06d65a14bec3ab30c0022df2f401c75262f266aca487ba4760ba5ac"
+    },
+    {
+      "path": "native/tools/image_probe.cpp",
+      "bytes": 768,
+      "sha256": "7ad7e4d5a7f0315438153d8f7b75a118c46865c0b61bc18356e270108e6cfea5"
+    },
+    {
+      "path": "native/tools/m3g_animation_probe.cpp",
+      "bytes": 4726,
+      "sha256": "331e2111d57ad3a04a1f1f02b1a13857c0a8d940c25a86774b1fed3060a8f8af"
+    },
+    {
+      "path": "native/tools/m3g_battle_presentation_probe.cpp",
+      "bytes": 5038,
+      "sha256": "b69d31825a34b06ce30a857bf446a4f9d8a1ba5c77c37a3f68cfd1c9261f5373"
+    },
+    {
+      "path": "native/tools/m3g_battle_session_probe.cpp",
+      "bytes": 8646,
+      "sha256": "9483926e52b7525d2c09c7f555ae24134edf721ecac7ccd2126333901dcfc1d0"
+    },
+    {
+      "path": "native/tools/m3g_bindings_probe.cpp",
+      "bytes": 2691,
+      "sha256": "93046a7c2963adba6d5cd7974e3cf50330dcf20719cb9ef7eb51b09d75f29ebd"
+    },
+    {
+      "path": "native/tools/m3g_camera_probe.cpp",
+      "bytes": 1194,
+      "sha256": "9ce357639473752fc63abdd71d8ee7b4e85edb72ea068f46f8f1757c5f2448c7"
+    },
+    {
+      "path": "native/tools/m3g_curve_probe.cpp",
+      "bytes": 1937,
+      "sha256": "e41bad28efe7eb2b945765236beaea2fa850ca30a7b6952dabf5be16d52cf2b9"
+    },
+    {
+      "path": "native/tools/m3g_material_probe.cpp",
+      "bytes": 3511,
+      "sha256": "1959748be7888d49e4b8e227f8fa8a0c39f6c903c5903df696fba7ec2373eda0"
+    },
+    {
+      "path": "native/tools/m3g_probe.cpp",
+      "bytes": 569,
+      "sha256": "42b628462dbdba1f589e8e0c517aea97d881386d2f37e375979da662e42960f7"
+    },
+    {
+      "path": "native/tools/m3g_render_asset_probe.cpp",
+      "bytes": 3160,
+      "sha256": "890d5f3129134fb5b94eae852444b54975e6ef1a3664723d671abdbdec0a01ef"
+    },
+    {
+      "path": "native/tools/m3g_render_frame_probe.cpp",
+      "bytes": 2962,
+      "sha256": "da11ea4457c33ca9f0ca553a7e7a762ca25ffbc36d373709233cc249eb29cb70"
+    },
+    {
+      "path": "native/tools/m3g_scene_pose_probe.cpp",
+      "bytes": 2834,
+      "sha256": "271136d55069c1fe2b7daeae846f9f02f6cc6ba765fe023756f4b49c5577a9d7"
+    },
+    {
+      "path": "native/tools/m3g_scene_probe.cpp",
+      "bytes": 5699,
+      "sha256": "eacb8eaf9e7911a2fc9cac25d8379848854ff4b5aa98289b3f7d5ae29d6ff1d7"
+    },
+    {
+      "path": "native/tools/m3g_sprite3d_probe.cpp",
+      "bytes": 2951,
+      "sha256": "9db5034bb1ce028e1970b05b733433c967442f3d3a7a9de7424b8675f5b34aae"
+    },
+    {
+      "path": "native/tools/mission_execution_probe.cpp",
+      "bytes": 7200,
+      "sha256": "cb41b86bbeb611c6947c613c0cb2149f06f6f59dab0346bcf0abcc1214c84b69"
+    },
+    {
+      "path": "native/tools/mission_probe.cpp",
+      "bytes": 2533,
+      "sha256": "689ff449ce11f633a7d66c7fb8237501780d127af02c05e891efe6eb90042e46"
+    },
+    {
+      "path": "native/tools/scene_catalog_probe.cpp",
+      "bytes": 9487,
+      "sha256": "4b1b9d6ea9b365eb674f4610849ec79163ea7945dc0dab95973e68b0e230f6e8"
+    },
+    {
+      "path": "native/tools/scene_export.cpp",
+      "bytes": 8854,
+      "sha256": "0363e4e69deea5b25131dd326ea9406af4841f92ed8ed79ff50c1c20efadb053"
+    },
+    {
+      "path": "native/tools/scene_probe.cpp",
+      "bytes": 3031,
+      "sha256": "4ac7bf4026dae41475dcb3a6af1c77f8a3e3ce848fcf2d2c96e4c08b13c9fecb"
+    },
+    {
+      "path": "native/tools/session_campaign_probe.cpp",
+      "bytes": 5354,
+      "sha256": "650c57679b3e2570aa796e4330262d1dcd9dc8f5c99adceaae7cfe6810c29c10"
+    },
+    {
+      "path": "native/tools/session_playthrough_probe.cpp",
+      "bytes": 90230,
+      "sha256": "adf73562d5ed348ba4537d1c0e3d92190d24c1a69979e29483fe99c4b3718b2c"
+    },
+    {
+      "path": "native/tools/terrain_probe.cpp",
+      "bytes": 5361,
+      "sha256": "d68ae09cba8cd6dda165e130ef617a7a4d655118e94cadbb1523ae7d775fe975"
+    },
+    {
+      "path": "native/tools/world_commands_probe.cpp",
+      "bytes": 3977,
+      "sha256": "7b7b2cd4d06430e4ec31322f5ba532da97c50d645c59c8180062397de6530a2c"
+    },
+    {
+      "path": "native/tools/world_probe.cpp",
+      "bytes": 8303,
+      "sha256": "17f3ee556277219bbc6d6e887fa5156464d1c60555b1d860655bba9948c548d8"
+    },
+    {
+      "path": "scripts/package-native-scene.py",
+      "bytes": 8295,
+      "sha256": "43d6c4e7781f73d3b1e8f935cb0c0f4451b9a40ac3174069b74af3477e15b72a"
+    },
+    {
+      "path": "scripts/verify-native-app.py",
+      "bytes": 4895,
+      "sha256": "9337f2979e85ce22f3c7dc4e4deed238a945581ef85ec05471fd42bd6cac7e50"
+    },
+    {
+      "path": "scripts/verify-native-archive.py",
+      "bytes": 4215,
+      "sha256": "a830660e024f3ffbd0320bde22a0f3e51a43b5ac13f89a31f03501b2d9ebf6bb"
+    },
+    {
+      "path": "validation/APPLE_GAMEPLAY_COMPONENT_BUILD.json",
+      "bytes": 1182,
+      "sha256": "91e7f6557c2593eebc8c203eacdec105faae368afb21ee82bc158f5be014af55"
+    },
+    {
+      "path": "validation/APPLE_NATIVE_CORE_BUILD.json",
+      "bytes": 2984,
+      "sha256": "3e845d2a639bf8da660486cfb10887d0f710db4e1a0e7c55ce27e0bc38ea880c"
+    },
+    {
+      "path": "validation/APPLE_NATIVE_INTERACTION_BUILD.json",
+      "bytes": 1714,
+      "sha256": "b483222a915ff525909baa4b422c82be7c6af114f23e7012e05610da7594e2be"
+    },
+    {
+      "path": "validation/APPLE_NATIVE_INTERACTION_INITIAL_FAILURE.json",
+      "bytes": 858,
+      "sha256": "1d0ae08c46144ecb986d4af1557b380f0f3e7c245c147a62af0b04e73ad6673d"
+    },
+    {
+      "path": "validation/APPLE_NATIVE_SCENE_BUILD.json",
+      "bytes": 7536,
+      "sha256": "69766d7600331c8702b3bf241f6f7bc14be69e8fcabd9f9b6ee46d1dc4f2d2d2"
+    },
+    {
+      "path": "validation/DARWIN_PROFILE_DECLARATION_FIX.json",
+      "bytes": 600,
+      "sha256": "c957c6dabe68e26fde26ad4d4915a23587420748ddff87fb6556a4b35b1baeae"
+    },
+    {
+      "path": "validation/LOCAL_NATIVE_GAMEPLAY_COMPONENTS.json",
+      "bytes": 4177,
+      "sha256": "55918fcf4282ee6d878fafab3a93ecd251ee1bfad41b092355926e498c155de1"
+    },
+    {
+      "path": "validation/NATIVE_BUILD_005_TESTED_SOURCE.json",
+      "bytes": 46034,
+      "sha256": "7b8dbb83dc33334f28c664180b78b2ec50b04cbfd393cd60dec175e1ba244a86"
+    },
+    {
+      "path": "validation/NATIVE_CAMPAIGN_HOST_CHECKPOINT.json",
+      "bytes": 2672,
+      "sha256": "5ea93a72b0be0e83ce69ac41e430c5624925aeeb570d16317c3ee7b5da8f685d"
+    },
+    {
+      "path": "validation/NATIVE_COMPLETE_HOST_CHECKPOINT.json",
+      "bytes": 6604,
+      "sha256": "16979d95e9fcd03170f76090fd39ee1e008cc52322f3983d35df5405c2105cf7"
+    },
+    {
+      "path": "validation/NATIVE_COMPONENT_INTEGRATION_CHAIN.json",
+      "bytes": 1567,
+      "sha256": "5de6fbb0ef61cf65a9fc88a760f5b6fbc04c3b8d9b155549791b0baaecc6b597"
+    },
+    {
+      "path": "validation/NATIVE_INTERACTION_HOST_CHECK.json",
+      "bytes": 618,
+      "sha256": "1ae8365a80a9eca2abe78eebc997e6dad0bc7e6eb276405a14749be7b6925004"
+    },
+    {
+      "path": "validation/NATIVE_SCENE_BUILD_001.json",
+      "bytes": 806,
+      "sha256": "08032de58ede929ebc0b847b046a7d4e70573975e27eb781655841fc520f77a1"
+    },
+    {
+      "path": "validation/NATIVE_SCENE_IPA_002.json",
+      "bytes": 6021,
+      "sha256": "1649a6cf81d462056d8f90399da8dbefe73787ae24fc9962f265fb57114ff39c"
+    },
+    {
+      "path": "validation/build_005/actual-session-battle.json",
+      "bytes": 386,
+      "sha256": "9dbf25fcfbc923d18d91a1ceff5fdd20bd92e2b23c12c6a02af92ab20bbcc071"
+    },
+    {
+      "path": "validation/build_005/ctest.log",
+      "bytes": 7646,
+      "sha256": "c6f65910a12a6d0c4e7da43e8683015e8b67a985834300dd84bfe43b6abd78ef"
+    },
+    {
+      "path": "validation/build_005/ctest.xml",
+      "bytes": 14070,
+      "sha256": "a6d10aab0c93857f92d9be969920c3e0092dea83338d2b2d06da6cee1c2ef25e"
+    },
+    {
+      "path": "validation/build_005/host-build.log",
+      "bytes": 17879,
+      "sha256": "893fee6e87f6f0b1f6935037b04222842ef533c8d65447048890b56dd9db84f6"
+    },
+    {
+      "path": "validation/build_005/host-configure.log",
+      "bytes": 461,
+      "sha256": "60b4657729afdc3a02d1097d62c9b11b56a152adb71b729cbf399f9e2967f331"
+    },
+    {
+      "path": "validation/build_005/mission-entries.json",
+      "bytes": 15748,
+      "sha256": "3c5bca05a0bf7b178f8db695ed999f32097ed4032eea12314d02a814e18a18c9"
+    },
+    {
+      "path": "validation/build_005/story-events.jsonl",
+      "bytes": 729283,
+      "sha256": "d00c66f47d7a6280933ba49af7fa0b84d0c09dbbd64d1437aa8c9b5b2d1724c7"
+    },
+    {
+      "path": "validation/build_005/story-reproduction.json",
+      "bytes": 2263,
+      "sha256": "59461a8699961a327551056152cd87c8f461484efe1cab3e17a4eb67ee8944ab"
+    },
+    {
+      "path": "validation/build_005/story-result.json",
+      "bytes": 5440,
+      "sha256": "79a237e3b3b1cf557fdadd44fabc2122abd39f220f805f63120641bd0dbb094b"
+    },
+    {
+      "path": "validation/native_workflow_local_validation.json",
+      "bytes": 557,
+      "sha256": "65f29d76d2798064dc69c006ed46927855035fa5aef7deda08275b0c9a80d5dc"
+    }
+  ]
 }

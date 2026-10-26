@@ -69,6 +69,7 @@ std::runtime_error audio_error(NSString* operation, NSError* error) {
     _voices = [NSMutableArray new];
     _observers = [NSMutableArray new];
     _errors = [NSMutableArray new];
+    _configuration.enabled_a4 = true; // Explicit native preference, not a recovered cold default.
     _foreground = UIApplication.sharedApplication.applicationState != UIApplicationStateBackground;
     @try {
         try {
@@ -240,13 +241,34 @@ std::runtime_error audio_error(NSString* operation, NSError* error) {
             case g1::AudioActionKind::unload:
                 [_buffers removeObjectForKey:@(action.slot)]; ++_unloads; break;
             case g1::AudioActionKind::stop_all: [self stopAll]; break;
-            case g1::AudioActionKind::play_once: [self playSlot:action.slot]; break;
+            case g1::AudioActionKind::play_once:
+                // Independent native Music/Sound preferences. The original
+                // dispatch still determines resource/order/one-shot semantics.
+                if ((action.slot<=3 && _configuration.enabled_a4) ||
+                    (action.slot>3 && _configuration.enabled_a3)) [self playSlot:action.slot];
+                break;
             }
             _control = next;
             return dispatch.return_value;
         } catch (const std::exception& error) { [self recordFailure:audio_string(error.what())]; }
     } @catch (NSException* exception) { [self recordFailure:exception.reason ?: @"Audio request exception"]; }
     return false;
+}
+
+- (BOOL)musicEnabled { return _configuration.enabled_a4; }
+- (BOOL)soundEnabled { return _configuration.enabled_a3; }
+- (void)setMusicEnabled:(BOOL)music soundEnabled:(BOOL)sound {
+    if (!NSThread.isMainThread) { [self recordFailure:@"Audio preferences require the main thread"]; return; }
+    _configuration.enabled_a4=music;
+    _configuration.enabled_a3=sound;
+    _configuration.suppress_music_a0=!music;
+    @try {
+        for (G1AudioVoice* voice in _voices) if (voice.active &&
+            ((voice.slot<=3 && !music) || (voice.slot>3 && !sound))) {
+            voice.active=NO;voice.paused=NO;++voice.ticket;++_explicitlyStopped;
+            [voice.node stop];voice.buffer=nil;
+        }
+    } @catch (NSException* exception) { [self recordFailure:exception.reason ?: @"Audio preference change failed"]; }
 }
 
 - (void)setForegroundActive:(BOOL)active {
@@ -338,6 +360,9 @@ std::runtime_error audio_error(NSString* operation, NSError* error) {
     return @{@"host":@"AVAudioEngine / AVAudioPlayerNode",@"operational":@([self operational]),
         @"engine_running":@(_engine.isRunning),@"session_category":@"ambient",
         @"foreground":@(_foreground),@"interrupted":@(_interrupted),
+        @"native_music_preference":@(_configuration.enabled_a4),
+        @"native_sound_preference":@(_configuration.enabled_a3),
+        @"preference_defaults":@"Native Music/Sound ON; historical cold defaults not claimed",
         @"decoded_rate_hz":@22050,@"decoded_channels":@1,@"cached_slots":loaded,
         @"cached_pcm_frames":@(frames),@"requests_received":@(_requests),
         @"buffers_loaded":@(_loads),@"buffers_unloaded":@(_unloads),

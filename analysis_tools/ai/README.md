@@ -43,7 +43,11 @@ python3 analysis_tools/ai/source_oracle.py \
 ```
 
 Omit both archive/source-fixture options from the first command for the
-synthetic-only corpus. The last command consumes the independently validated
+synthetic-only corpus. Planner and turn commands append nine explicit type21
+cost-boundary cases to their requested varied counts. The shared original
+map+0x14c table applies the loader's type21-to40 override; the raw resource
+values remain unchanged in the fixture. See `native/research/EFFECTIVE_UNIT_COST.md`.
+The last command consumes the independently validated
 native world-probe export; its hash and the explicitly seeded scenario changes
 are recorded. It does not claim to observe an actual live opponent turn.
 

@@ -1,5 +1,7 @@
 # Native Apple audio output adapter
 
+> Current integration: `NATIVE_CAMPAIGN_UI.md` records the 0.4.0/build 4 event wiring, independent Music/Sound output preferences and current host source hashes. The original dispatch, no-loop and lifetime evidence below remains applicable; its readiness statements belong to the earlier adapter checkpoint.
+
 `platform/apple/AppleAudio.hpp/.mm` implements a separate native iOS audio host for the recovered `AudioEvents` dispatcher. It is ready for Apple compilation and integration. It has not been compiled against an Apple SDK or exercised on an iPhone in this checkpoint, and no device audibility is claimed.
 
 ## API and ownership

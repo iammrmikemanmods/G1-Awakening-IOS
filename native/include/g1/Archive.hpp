@@ -37,6 +37,10 @@ public:
     explicit Archive(Bytes bytes);
     const std::vector<Resource>& resources() const noexcept { return resources_; }
     std::size_t group_count() const noexcept { return group_count_; }
+    // Cached identity for native checkpoint/data pairing. Adler32 detects
+    // accidental changes; it is not a cryptographic authenticity claim.
+    std::uint32_t content_checksum() const noexcept { return checksum_; }
+    std::size_t byte_size() const noexcept { return bytes_.size(); }
     Bytes read(std::size_t index) const;
     std::vector<std::size_t> find(std::uint32_t resource_id, std::uint32_t key) const;
 
@@ -44,6 +48,7 @@ private:
     Bytes bytes_;
     std::vector<Resource> resources_;
     std::size_t group_count_{};
+    std::uint32_t checksum_{};
 };
 
 Bytes read_file(const std::string& path, std::size_t limit = Archive::max_archive_size);

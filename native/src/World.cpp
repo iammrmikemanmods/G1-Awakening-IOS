@@ -221,9 +221,10 @@ MovementBoard WorldBootstrap::movement_board() const {
         require(cell.active_owner == -1, "overlapping active placements are not supported by bootstrap");
         cell.active_owner = unit.owner;
     }
-    // Opcode-7 sites live at map+0x3f0 and are not movement points (+0x420).
-    // The initial prefix contains neither point-blocking opcode17 nor cost99
-    // rectangles; inventing blockers at site coordinates would change rules.
+    // Opcode-7 sites at+0x3f0 are distinct from opcode17 points at+0x420.
+    // The original parses opcode21 but does not install cost99 rectangles.
+    for (const auto& point:site_points) board.points.push_back(point.point);
+    board.cost99_regions=cost99_regions;
     return board;
 }
 

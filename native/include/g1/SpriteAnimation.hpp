@@ -19,6 +19,13 @@ class SpriteAnimation {
 public:
     explicit SpriteAnimation(std::vector<AtlasStep> steps,
                              std::int32_t repeat_count = -1, bool reverse = false);
+    // Native checkpoint restoration, without restarting the sequence. The
+    // caller supplies the same decoded sequence used when saving the state.
+    // An index outside that sequence and a negative elapsed time are rejected.
+    // Elapsed time may exceed the selected duration: original select_step()
+    // preserves it. Sticky completion likewise does not constrain the index.
+    static SpriteAnimation restore(std::vector<AtlasStep> steps,
+                                   const SpriteAnimationState& state);
     void reset(std::int32_t repeat_count = -1, bool reverse = false) noexcept;
 
     // Original 0x72cb4 changes only the selected step when it is in range.

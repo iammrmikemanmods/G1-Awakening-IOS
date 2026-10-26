@@ -20,6 +20,17 @@ SpriteAnimation::SpriteAnimation(std::vector<AtlasStep> steps,
     reset(repeat_count, reverse);
 }
 
+SpriteAnimation SpriteAnimation::restore(std::vector<AtlasStep> steps,
+                                         const SpriteAnimationState& state) {
+    SpriteAnimation result(std::move(steps), state.repeat_count, state.reverse);
+    if (state.step_index >= result.steps_.size())
+        throw std::out_of_range("saved sprite step is outside its decoded sequence");
+    if (state.elapsed_ms < 0)
+        throw std::invalid_argument("saved sprite elapsed time is negative");
+    result.state_ = state;
+    return result;
+}
+
 void SpriteAnimation::reset(std::int32_t repeat_count, bool reverse) noexcept {
     state_ = {};
     state_.repeat_count = repeat_count;

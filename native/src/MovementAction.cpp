@@ -99,18 +99,24 @@ MovementAction::MovementAction(MovementUnitState state, const MovementProfile& p
     if (!state.active || state.offset_x != 0 || state.offset_y != 0 || state.facing > 3 ||
         state.timer_ms < -1 || state.spent_budget != profile.spent_budget)
         throw std::invalid_argument("movement action requires an active, centered, consistent unit state");
-    if (route_.status != MovementRouteStatus::ready || route_.steps.empty() ||
+    const bool same_tile = route_.status == MovementRouteStatus::already_at_destination &&
+                           route_.steps.empty() && same(route_.origin, route_.destination);
+    const bool travelling = route_.status == MovementRouteStatus::ready && !route_.steps.empty();
+    if ((!travelling && !same_tile) ||
         !same(route_.origin, {state.tile_x, state.tile_y}))
-        throw std::invalid_argument("movement action requires a nonempty ready route from the unit position");
+        throw std::invalid_argument("movement action requires a ready or same-tile route from the unit position");
     const auto original = choose_movement_route(range, route_.origin, route_.destination);
-    if (original.status != MovementRouteStatus::ready || original.steps.size() != route_.steps.size())
+    if (original.status != route_.status || original.steps.size() != route_.steps.size())
         throw std::invalid_argument("movement route does not match the original budget-field reconstruction");
     for (std::size_t i = 0; i < original.steps.size(); ++i)
         if (!same(original.steps[i], route_.steps[i]))
             throw std::invalid_argument("movement route does not preserve the original tie order");
     const auto budget = remaining_movement_budget(profile);
     const auto remaining = range.at(route_.destination.x, route_.destination.y);
-    if (remaining < 0 || remaining > budget || remaining == movement_reserved_cell)
+    // The same-origin base case of 0x49e90 does not scan neighbors or exclude
+    // the value 127. It can be a genuine remaining byte budget at the origin.
+    if (remaining < 0 || remaining > budget ||
+        (remaining == movement_reserved_cell && !same_tile))
         throw std::invalid_argument("destination budget is inconsistent with the selected unit");
     pending_cost_ = std::uint8_t(std::int32_t(budget) - remaining);
     if (form0_field2_ > 1) state_.flag_38 = 1;
@@ -122,7 +128,11 @@ MovementTickResult MovementAction::advance_tick(std::uint32_t delta_ms) {
     if (!state_.active) return MovementTickResult::inactive;
     auto result = MovementTickResult::stationary;
     if (moving_) {
-        const auto target = route_.steps.at(route_index_);
+        // 0x49e90 writes origin into physical record0 even when its route count
+        // remains zero. 0x43e2e copies that record plus the sentinel; 0x4351c
+        // reaches it and completes on its first tick. Public steps still
+        // describe travel only, so no fabricated travel step is added there.
+        const auto target = route_.steps.empty() ? route_.origin : route_.steps.at(route_index_);
         const auto target_x = std::int32_t(target.x) * 32;
         const auto target_y = std::int32_t(target.y) * 32;
         const auto x = std::int32_t(state_.tile_x) * 32 + state_.offset_x;
@@ -141,7 +151,7 @@ MovementTickResult MovementAction::advance_tick(std::uint32_t delta_ms) {
         }
         if (std::int32_t(state_.tile_x) * 32 + state_.offset_x == target_x &&
             std::int32_t(state_.tile_y) * 32 + state_.offset_y == target_y) {
-            if (std::size_t(route_index_) + 1U == route_.steps.size()) {
+            if (route_.steps.empty() || std::size_t(route_index_) + 1U == route_.steps.size()) {
                 moving_ = false;
                 state_.spent_budget = std::uint8_t(state_.spent_budget + pending_cost_);
                 if (form0_field2_ > 1) state_.flag_38 = 1;

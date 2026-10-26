@@ -252,7 +252,7 @@ bool can_upgrade(const AIWorldView& world,std::size_t actor) {
     if (std::size_t(slot)!=*original_slot) return false;
     return a.active && world.movement_units[actor].flag_2c==0 &&
         sbyte(form(world,actor,0)[12])!=1 && a.level<=24 &&
-        world.funds[a.owner]>=sbyte(world.combat.definitions[a.type].scalar_fields[1]);
+        world.funds[a.owner]>=unit_spawn_cost(world.combat.definitions[a.type]);
 }
 
 } // namespace
@@ -516,7 +516,7 @@ AITurnAdmission choose_ai_turn_admission(const AIWorldView& world,std::int32_t c
                 const auto& def=world.combat.definitions[target];
                 const bool field8=sbyte(def.forms[0][8])==1 || sbyte(def.forms[1][8])==1;
                 if (field8!=(priority==1)) continue;
-                const auto cost=sbyte(def.scalar_fields[1]);
+                const auto cost=unit_spawn_cost(def);
                 if (cost>highest_cost && cost<=world.funds[world.current_player]) {
                     candidate=target;highest_cost=cost;
                 }

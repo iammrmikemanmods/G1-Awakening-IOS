@@ -1,0 +1,194 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-26T15:54:21.352541+00:00",
+  "checkpoint": "Native 0.5.0 / build 5 source review; no new IPA",
+  "target": {
+    "device": "iPhone XR",
+    "ios": "17.5",
+    "landscape_pixels": [
+      1792,
+      828
+    ],
+    "presentation_hz_target": 60,
+    "simulation_step_ms": 30
+  },
+  "source": {
+    "repository": "https://github.com/iammrmikemanmods/G1-Awakening-IOS",
+    "base_commit": "5795315e970d34419c739bbd4b81ff2011a9ecd4",
+    "tested_snapshot_sha256_before_report_additions": "9993a8ce62313c82c985ba2f272aace43759e814a0a3cab6840df29d35cd7133",
+    "tested_inventory": "validation/NATIVE_BUILD_005_TESTED_SOURCE.json",
+    "tested_inventory_sha256": "7b8dbb83dc33334f28c664180b78b2ec50b04cbfd393cd60dec175e1ba244a86",
+    "tested_file_count": 271,
+    "implementation_changed_after_test": false,
+    "post_test_changes": "Documentation and validation records only; the final source manifest pins the complete review package."
+  },
+  "host": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "build_type": "Release",
+    "cxx_standard": 17,
+    "floating_point_contraction": "off"
+  },
+  "portable_tests": {
+    "passed": 53,
+    "total": 53,
+    "failed": 0,
+    "skipped": 0,
+    "save_and_resume_checks": 74,
+    "save_scope": "Synthetic native sessions, actual closed files and fresh reloads; deterministic terrain/RNG/combat continuation across all three styles."
+  },
+  "actual_mission_entries": {
+    "presentation": "synthetic headless acknowledgements",
+    "playthrough": false,
+    "verified_entries": 45,
+    "applied_world_operations": 540,
+    "empty_initial_rosters": 6,
+    "checkpoint_round_trips": 45,
+    "unique_mission_scripts": 30,
+    "arena_variants_per_script": 4
+  },
+  "actual_session_battle": {
+    "source": "real GameSession exchange; synthetic startup/host feedback; no GPU",
+    "setup_ticks": 81,
+    "actual_attacker_type": 11,
+    "actual_defender_type": 19,
+    "attacker_health_after": 95,
+    "defender_health_after": 50,
+    "battle_updates": 534,
+    "prepared_frames": 217,
+    "read_only_sample_checks": 54,
+    "distinct_interpolation_cases": 46,
+    "rng_unchanged": true,
+    "token_retained_until_host_report": true,
+    "complete": true
+  },
+  "continuous_story_pilot": {
+    "strategy": "native-planner-tactical",
+    "seed": 18241,
+    "success_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "consecutive_successes": 14,
+    "terminal_result": "native_loss_handoff",
+    "terminal_loss_index": 14,
+    "story_indices_not_reached": [
+      15,
+      16
+    ],
+    "ticks": 16301,
+    "human_commands": 1029,
+    "actions": {
+      "commands": 1029,
+      "selections": 744,
+      "moves": 348,
+      "attacks": 172,
+      "captures": 24,
+      "transforms": 176,
+      "heals": 68,
+      "upgrades": 8,
+      "productions": 22,
+      "human_end_turns": 211,
+      "ai_turn_entries": 210
+    },
+    "profile_file_writes": 15,
+    "checkpoint_file_writes": 0,
+    "in_memory_live_checkpoint_comparisons": 689,
+    "gameplay_state_forced": false,
+    "state_transplanted": false,
+    "original_executable_executed": false,
+    "presentation_feedback": "Synthetic, including all 447 battle acknowledgements; this pilot does not draw frames or play audio.",
+    "normal_public_command_rejections": 3,
+    "normal_rejection_scope": "Rejected trial plan actions on Story index 5; the live pilot continued and won that mission.",
+    "native_exception": "",
+    "persisted_profile": {
+      "completed": [
+        false,
+        false
+      ],
+      "highest_unlocked": [
+        14,
+        0
+      ]
+    },
+    "matches_frozen_pilot_except_elapsed_seconds": true,
+    "events_and_profile_byte_identical_to_frozen_pilot": true,
+    "full_story_completed": false
+  },
+  "evidence": {
+    "validation/build_005/host-configure.log": {
+      "bytes": 461,
+      "sha256": "60b4657729afdc3a02d1097d62c9b11b56a152adb71b729cbf399f9e2967f331"
+    },
+    "validation/build_005/host-build.log": {
+      "bytes": 17879,
+      "sha256": "893fee6e87f6f0b1f6935037b04222842ef533c8d65447048890b56dd9db84f6"
+    },
+    "validation/build_005/ctest.log": {
+      "bytes": 7646,
+      "sha256": "c6f65910a12a6d0c4e7da43e8683015e8b67a985834300dd84bfe43b6abd78ef"
+    },
+    "validation/build_005/ctest.xml": {
+      "bytes": 14070,
+      "sha256": "a6d10aab0c93857f92d9be969920c3e0092dea83338d2b2d06da6cee1c2ef25e"
+    },
+    "validation/build_005/actual-session-battle.json": {
+      "bytes": 386,
+      "sha256": "9dbf25fcfbc923d18d91a1ceff5fdd20bd92e2b23c12c6a02af92ab20bbcc071"
+    },
+    "validation/build_005/mission-entries.json": {
+      "bytes": 15748,
+      "sha256": "3c5bca05a0bf7b178f8db695ed999f32097ed4032eea12314d02a814e18a18c9"
+    },
+    "validation/build_005/story-result.json": {
+      "bytes": 5440,
+      "sha256": "79a237e3b3b1cf557fdadd44fabc2122abd39f220f805f63120641bd0dbb094b"
+    },
+    "validation/build_005/story-reproduction.json": {
+      "bytes": 2263,
+      "sha256": "59461a8699961a327551056152cd87c8f461484efe1cab3e17a4eb67ee8944ab"
+    },
+    "validation/build_005/story-events.jsonl": {
+      "bytes": 729283,
+      "sha256": "d00c66f47d7a6280933ba49af7fa0b84d0c09dbbd64d1437aa8c9b5b2d1724c7"
+    }
+  },
+  "independent_review": {
+    "apple_static_review": "native/research/m3g_validation/APPLE_BATTLE_INTEGRATION_REVIEW.json",
+    "scope": "Static source and CPU evidence; not Apple compilation or physical display evidence."
+  },
+  "publication": {
+    "status": "awaiting renewed approval after rejected write",
+    "blocked_action": "GitHub create_commit",
+    "tool_response": "user rejected MCP tool call",
+    "new_commit_created": false,
+    "branch_updated": false,
+    "current_apple_build_submitted": false
+  },
+  "remaining_release_gates": {
+    "current_checkpoint_apple_compile": false,
+    "current_m3g_gpu_output": false,
+    "matching_new_ipa_packaged": false,
+    "earlier_tactical_support_fire_presentation": false,
+    "complete_audio_event_and_music_coverage": false,
+    "complete_original_tactical_ui_camera_font_fidelity": false,
+    "physical_iphone_xr_install_and_launch": false,
+    "physical_xr_save_resume_lifecycle": false,
+    "native_resolution_and_sustained_60hz_on_xr": false,
+    "all_story_showdown_arena_progression_and_endings": false,
+    "full_playthrough": false
+  },
+  "interpretation": "The native source has passed the listed host checks. It is not a completed or device-verified full-game release. No new iPhone binary or IPA is included."
+}

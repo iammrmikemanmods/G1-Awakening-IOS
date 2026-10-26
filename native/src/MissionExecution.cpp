@@ -1,4 +1,5 @@
 #include "g1/MissionExecution.hpp"
+#include "g1/WorldCommands.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -109,10 +110,11 @@ MissionExecution::MissionExecution(const WorldBootstrap& world, const CampaignCo
     : commands_(world.commands), campaign_group_(campaign.group),
       campaign_index_(campaign.mission_index) {
     if (world.mission_resource_id != mission_resource_for_campaign(campaign.group, campaign.mission_index) ||
-        world.stop != BootstrapStop::presentation_required ||
         world.next_command_index >= commands_.size() ||
-        commands_[world.next_command_index].opcode != 3U)
-        throw FormatError("mission continuation requires a matching campaign dialogue boundary");
+        (world.stop != BootstrapStop::execution_required &&
+         (world.stop != BootstrapStop::presentation_required ||
+          commands_[world.next_command_index].opcode != 3U)))
+        throw FormatError("mission continuation requires a matching campaign execution boundary");
     raw_unit_name_indices_.reserve(world.unit_definitions.size());
     for (std::size_t type = 0; type < world.unit_definitions.size(); ++type) {
         const auto& definition = world.unit_definitions[type];
@@ -123,10 +125,33 @@ MissionExecution::MissionExecution(const WorldBootstrap& world, const CampaignCo
     state_.command_index = world.next_command_index;
     state_.phase_flag_225 = world.flag_225;
     state_.original_phase = 99;
-    std::vector<MissionEffect> effects;
-    enter_current(effects);
-    if (!effects.empty())
-        throw FormatError("unexpected effect before initial dialogue presentation");
+    enter_current(initial_effects_);
+}
+
+std::vector<MissionEffect> MissionExecution::take_initial_effects() {
+    std::vector<MissionEffect> result;
+    result.swap(initial_effects_);
+    return result;
+}
+
+MissionGameplayCheckpoint MissionExecution::gameplay_checkpoint() const {
+    if ((state_.gate!=MissionGate::objective && state_.gate!=MissionGate::captured_site_item) ||
+        state_.stop!=MissionStop::none || state_.interaction_mode!=0 || state_.opcode!=12 ||
+        !state_.mission_objective || state_.skip_following_dialogue)
+        throw FormatError("mission is not at a checkpointable gameplay objective");
+    return {state_.command_index,state_.original_phase,state_.phase_flag_225,
+            state_.alternate_dialogue_variant,state_.transition_value,state_.remaining_delay_ms};
+}
+
+void MissionExecution::restore_gameplay_checkpoint(const MissionGameplayCheckpoint& saved) {
+    const auto current=gameplay_checkpoint();
+    if (saved.command_index!=current.command_index || saved.original_phase<0 || saved.original_phase>99)
+        throw FormatError("saved mission checkpoint does not match its objective boundary");
+    state_.original_phase=saved.original_phase;
+    state_.phase_flag_225=saved.phase_flag_225;
+    state_.alternate_dialogue_variant=saved.alternate_dialogue_variant;
+    state_.transition_value=saved.transition_value;
+    state_.remaining_delay_ms=saved.remaining_delay_ms;
 }
 
 void MissionExecution::stop(MissionStop reason, const std::string& detail) {
@@ -152,7 +177,13 @@ void MissionExecution::enter_current(std::vector<MissionEffect>& effects) {
     state_.objective.reset();
     state_.mission_objective.reset();
     state_.pending_text_id.reset();
+    state_.stop=MissionStop::none;
+    state_.stop_detail.clear();
     const auto& args = command.argument_words_u16;
+    if (is_world_command(command.opcode)) {
+        state_.gate=MissionGate::world_command;
+        return;
+    }
     switch (command.opcode) {
     case 3: {
         require_words(command, 2U);
@@ -279,6 +310,10 @@ MissionTickResult MissionExecution::tick(std::uint32_t delta_ms, const MissionTi
     case MissionGate::completion_frame:
         mark_ready(state_); // Original 0x57914 phase 8 has no acknowledgement test.
         break;
+    case MissionGate::world_frame:
+        mark_ready(state_); // Original 0x57930..0x57952:0/16/13/14/18/19/20.
+        break;
+    case MissionGate::world_command:
     case MissionGate::camera:
     case MissionGate::captured_site_item:
     case MissionGate::objective:
@@ -287,6 +322,40 @@ MissionTickResult MissionExecution::tick(std::uint32_t delta_ms, const MissionTi
         break;
     }
     return result;
+}
+
+const MissionCommand& MissionExecution::pending_world_command() const {
+    if (state_.gate!=MissionGate::world_command || state_.command_index>=commands_.size() ||
+        !is_world_command(state_.opcode))
+        throw FormatError("no pending world command at this mission gate");
+    return commands_[state_.command_index];
+}
+
+void MissionExecution::report_world_command_applied(std::size_t command_index) {
+    const auto& command=pending_world_command();
+    if (command_index!=state_.command_index)
+        throw FormatError("world response does not match the pending mission command");
+    switch (command.opcode) {
+    case 0:
+        state_.phase_flag_225=true;
+        [[fallthrough]];
+    case 13:case 14:case 16:case 18:case 19:case 20:
+        state_.original_phase=command.opcode;
+        state_.gate=MissionGate::world_frame;
+        break;
+    case 6:case 7:
+        mark_ready(state_);
+        break;
+    case 9:case 15:case 17:case 21:
+        // These entries do not write the phase. Normal dispatch arrives in99;
+        // an incompatible custom state is not silently repaired here.
+        if (state_.original_phase!=99)
+            throw FormatError("phase-preserving world command did not enter from phase99");
+        state_.gate=MissionGate::advance_pending;
+        break;
+    default:
+        throw FormatError("world acknowledgement has no recovered phase transition");
+    }
 }
 
 void MissionExecution::report_camera(std::size_t command_index, bool reached) {

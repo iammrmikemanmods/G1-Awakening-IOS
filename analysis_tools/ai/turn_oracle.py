@@ -49,6 +49,25 @@ def make_case(index):
     return c
 
 
+def effective_cost_cases():
+    rows=[]
+    for raw in (0,5,255):
+        for funds in (39,40,41):
+            case=make_case(1)
+            case.update(actor=1,current=1,cursor=0,tiles=[0]*42,
+                        rules=[[1,0,0] for _ in range(5)],funds=[0,funds],
+                        available=[int(t==21) for t in range(23)],points=[],regions=[])
+            for unit in case['units']:unit.update(active=0,acted=0)
+            producer=case['units'][1]
+            producer.update(active=1,form=0,x=2,y=2)
+            for form in producer['forms']:form[12]=1
+            target=case['units'][21]
+            target['upgrade_cost']=raw
+            for form in target['forms']:form[8]=0
+            rows.append(case)
+    return rows
+
+
 def execute(image,gcc,case):
     import unicorn
     old=ai.OriginalAI(image,gcc);old.configure_ai(case)
@@ -118,8 +137,8 @@ def main():
     if ai.combat.sha(image)!=ai.combat.IMAGE_SHA or ai.combat.sha(gcc)!=ai.combat.LIBGCC_SHA:
         raise ValueError("wrong original inputs")
     cases=[];calls=Counter()
-    for index in range(a.count):
-        c=make_case(index)
+    all_cases=[make_case(i) for i in range(a.count)]+effective_cost_cases()
+    for index,c in enumerate(all_cases):
         r,used=ai.original_result(image,gcc,c,index,budget_override=2);calls.update(used)
         r["admission"],r["production_destination"],used=execute(image,gcc,c);calls.update(used)
         cases.append((c,r))
@@ -134,6 +153,8 @@ def main():
             "fixture_sha256":ai.combat.sha(a.fixture.read_bytes()),
             "oracle_sha256":ai.combat.sha(Path(__file__).read_bytes()),
             "shared_oracle_sha256":ai.combat.sha(Path(__file__).with_name("oracle.py").read_bytes()),
+            "type21_boundary_cases":{"start_index":a.count,"count":9,
+                "raw_costs":[0,5,255],"funds":[39,40,41],"effective_cost":40},
             "calls":dict(calls),"cases":[{"input":c,"output":r} for c,r in cases]}
     a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps({k:report[k] for k in ("case_count","ordinary","production","finish")}))

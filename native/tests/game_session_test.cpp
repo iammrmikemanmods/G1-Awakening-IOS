@@ -58,6 +58,8 @@ int main() {
               "ordered initial turn credit and spawn debits changed economy");
         check(initialized.combat_units()[1].health==9 && initialized.combat_units()[1].damage_immune,
               "special scripted placement HP/immunity was lost");
+        check(initialized.combat_units()[0].preset_34_ms==0 && initialized.combat_units()[0].timer_30_ms==-1,
+              "fresh original unit countdown and preset defaults were conflated");
         auto repeated=fixture();
         repeated.initialization_effects.push_back(
             {g1::WorldInitializationEffectKind::debit_spawn_funds,1,0,0,{},1});
@@ -96,6 +98,16 @@ int main() {
               "world did not receive real move state");
         check(session.units()[0].spent_budget == 1 && session.units()[0].facing == 1,
               "arrival cost/facing not applied");
+        check(session.selected_can_undo(),"completed eligible movement did not expose Undo");
+        const auto undone_move=session.undo_selected();
+        check(undone_move && undone_move->restored_anchor && undone_move->retain_selection &&
+              session.units()[0].tile_x==1 && session.units()[0].tile_y==2 &&
+              session.units()[0].spent_budget==0 && session.combat_units()[0].x==1 &&
+              session.sites()[0].item_states[0][0]==-1 && !session.selected_can_undo(),
+              "real movement Undo did not restore only its original action state");
+        check(session.move_selected_to({2,2})==g1::MoveRequestResult::started,
+              "undone movement could not start again");
+        for(int i=0;i<11;++i)(void)session.tick(30);
         check(session.sites()[0].item_states[0][0] == -1 &&
               session.mission().gate == g1::MissionGate::captured_site_item,
               "moving onto objective fabricated capture");
@@ -158,6 +170,189 @@ int main() {
         check(combat_session.mission().gate==g1::MissionGate::advance_pending &&
               combat_session.campaign_context().active_unit_counts[1]==0,
               "real combat objective did not resume script after presentation");
+
+        auto repair_world=fixture();
+        repair_world.units[0].spawn.health=91;
+        repair_world.unit_definitions[11].forms[0][7]=1;
+        repair_world.initialization_effects.insert(repair_world.initialization_effects.begin(),
+            {g1::WorldInitializationEffectKind::begin_current_player_turn,0,0,0,{},0});
+        g1::GameSession repair(std::move(repair_world),1);
+        (void)repair.tick(30,advance());(void)repair.tick(30);
+        check(repair.select(0) && repair.selected_heal_targets()==std::vector<std::size_t>{0},
+              "healing did not expose the actual self target");
+        const auto healed=repair.heal_selected(0);
+        check(healed && healed->outcome==g1::HealOutcome::healed &&
+              repair.combat_units()[0].health==100 && repair.turn().funds[0]==0 &&
+              repair.units()[0].flag_2c==1,"native repair did not apply HP/funds/action together");
+
+        g1::GameSession upgrading(fixture(),2);
+        (void)upgrading.tick(30,advance());(void)upgrading.tick(30);
+        check(upgrading.select(0) && upgrading.selected_upgrade_eligibility()==g1::UpgradeEligibility::allowed,
+              "authorized upgrade was unavailable");
+        const auto upgraded=upgrading.upgrade_selected();
+        check(upgraded && upgrading.combat_units()[0].level==1 &&
+              upgrading.combat_units()[0].stats.attack_low==72 && upgrading.units()[0].flag_2c==1,
+              "native upgrade did not apply original level/stats/action");
+
+        auto ai_world=fixture();
+        ai_world.units[1].x=2;ai_world.units[1].y=2;
+        ai_world.sites[0].position={4,4}; // Only the current item is in capture movement range.
+        for(auto& form:ai_world.unit_definitions[19].forms)form[3]=form[4]=0;
+        g1::GameSession opponent(std::move(ai_world),3);
+        (void)opponent.tick(30,advance());(void)opponent.tick(30);
+        check(opponent.end_turn().has_value() && opponent.current_player()==1,
+              "human end-turn did not enter the real opponent turn");
+        bool captured=false,returned=false;
+        for(int step=0;step<500 && !returned;++step) {
+            // Explicit synthetic host acknowledgements. They are not evidence
+            // of an Apple drawable, physical camera, sound or playthrough.
+            if(opponent.focus_request())opponent.report_focus_presented(opponent.focus_request()->token);
+            for(std::size_t i=0;i<opponent.units().size();++i)
+                if(opponent.unit_transform_waiting(i)) {
+                    opponent.clear_transform_animation_request(i);
+                    opponent.report_transform_finished(i,opponent.unit_transform_generation(i));
+                }
+            (void)opponent.tick(30);
+            captured=captured || opponent.sites()[0].item_states[0][0]==1;
+            if(opponent.battle())opponent.report_battle_finished(opponent.battle()->token);
+            returned=opponent.current_player()==0;
+        }
+        check(captured && returned,"native enemy capture did not finish its turn and return control");
+
+        auto production_world=fixture();
+        production_world.units[1].type=20;
+        production_world.unit_definitions[20].scalar_fields[0]=1;
+        production_world.unit_definitions[19].scalar_fields[0]=1;
+        production_world.unit_definitions[19].scalar_fields[1]=1;
+        production_world.available_types[19]=true;
+        for(auto& form:production_world.unit_definitions[20].forms)form[12]=1;
+        g1::GameSession production(std::move(production_world),4);
+        (void)production.tick(30,advance());(void)production.tick(30);
+        check(production.end_turn().has_value(),"production fixture could not enter enemy turn");
+        for(int step=0;step<20 && production.units().size()==2;++step) {
+            if(production.focus_request())production.report_focus_presented(production.focus_request()->token);
+            (void)production.tick(30);
+        }
+        check(production.world().units.size()==3 && production.world().units[2].type==19 &&
+              production.world().units[2].x==4 && production.world().units[2].y==3 &&
+              production.units()[2].flag_2c==1 && production.units()[1].flag_2c==0 &&
+              production.turn().funds[1]==0 && production.campaign_context().active_unit_counts[1]==2,
+              "native AI production did not preserve destination/funds/new-unit action/count rules");
+
+        auto human_build_world=fixture();
+        for(auto& form:human_build_world.unit_definitions[11].forms)form[12]=1;
+        human_build_world.available_types[8]=true;
+        human_build_world.unit_definitions[8].scalar_fields[1]=5;
+        g1::GameSession human_build(std::move(human_build_world),6);
+        (void)human_build.tick(30,advance());(void)human_build.tick(30);
+        check(human_build.select(0) &&
+              human_build.selected_production_candidates(g1::ProductionMode::ordinary)==std::vector<std::uint8_t>{8},
+              "native human builder did not expose the original inactive available type");
+        check(!human_build.produce_selected(g1::ProductionMode::ordinary,8,{1,1},
+              g1::ProductionConfirmation::funds_checked_button) && human_build.units().size()==2,
+              "funds-checked production mutated the roster without enough funds");
+        check(!human_build.produce_selected(g1::ProductionMode::ordinary,8,{4,4},
+              g1::ProductionConfirmation::direct_type_list) && human_build.units().size()==2,
+              "type-list production admitted a nonadjacent occupied cell");
+        const auto built=human_build.produce_selected(g1::ProductionMode::ordinary,8,{1,1},
+            g1::ProductionConfirmation::direct_type_list);
+        check(built && built->audio_operation==5 && built->audio_argument==16 &&
+              human_build.units().size()==3 && human_build.world().units[2].type==8 &&
+              human_build.world().units[2].x==1 && human_build.world().units[2].y==1 &&
+              human_build.units()[0].flag_2c==1 && human_build.units()[2].flag_2c==1 &&
+              human_build.turn().funds[0]==0 && human_build.campaign_context().active_unit_counts[0]==2 &&
+              human_build.unit_spawn_generation(2)==1 && !human_build.selected(),
+              "human type-list production lost its single debit, both actions, or stable new renderer identity");
+        check(human_build.select(0) &&
+              human_build.selected_production_eligibility(g1::ProductionMode::ordinary)==g1::ProductionEligibility::action_used,
+              "human producer was allowed to build twice in one turn");
+
+        auto carrier_world=fixture();
+        carrier_world.units[0].type=6;carrier_world.units[0].spawn.health=91;
+        carrier_world.units.push_back({5,0,0,0,2,2,0,true,0});
+        carrier_world.initialization_effects.push_back(
+            {g1::WorldInitializationEffectKind::debit_spawn_funds,2,0,0,{},1});
+        carrier_world.available_types[6]=true;
+        for(auto& form:carrier_world.unit_definitions[6].forms)form[8]=1;
+        for(auto& form:carrier_world.unit_definitions[5].forms)form[9]=1;
+        g1::GameSession carrier(std::move(carrier_world),7);
+        (void)carrier.tick(30,advance());(void)carrier.tick(30);
+        check(carrier.select(0) && carrier.move_selected_to({2,2})==g1::MoveRequestResult::started,
+              "eligible tape could not start the actual route to its friendly carrier");
+        for(int i=0;i<11;++i)(void)carrier.tick(30);
+        check(!carrier.moving() && !carrier.units()[0].active && !carrier.combat_units()[0].active &&
+              !carrier.world().units[0].active && carrier.combat_units()[0].health==91 &&
+              carrier.units()[0].spent_budget==1 && carrier.campaign_context().active_unit_counts[0]==1 &&
+              carrier.units()[2].active && carrier.units()[2].flag_2c==0 && !carrier.selected(),
+              "carrier arrival lost original deactivation, preserved HP, count, or carrier action rules");
+        check(carrier.world().movement_board().cells[12].active_owner==0 && carrier.select(2) &&
+              carrier.selected_production_candidates(g1::ProductionMode::deploy)==std::vector<std::uint8_t>{6},
+              "boarded tape did not become an actual inactive deploy candidate");
+        const auto deployed=carrier.produce_selected(g1::ProductionMode::deploy,6,{1,2},
+            g1::ProductionConfirmation::direct_type_list);
+        check(deployed && carrier.units().size()==3 && carrier.units()[0].active &&
+              carrier.combat_units()[0].health==100 && carrier.units()[0].tile_x==1 &&
+              carrier.units()[0].tile_y==2 && carrier.units()[0].flag_2c==1 &&
+              carrier.units()[2].flag_2c==1 && carrier.campaign_context().active_unit_counts[0]==2 &&
+              carrier.unit_spawn_generation(0)==2,
+              "native deploy invented cargo HP or failed to reactivate the same type and renderer entry");
+
+        auto undo_world=fixture();
+        undo_world.units.push_back({0,0,0,0,0,0,0,true,0});
+        undo_world.initialization_effects.push_back(
+            {g1::WorldInitializationEffectKind::debit_spawn_funds,2,0,0,{},1});
+        undo_world.unit_definitions[11].scalar_fields[2]=1;
+        g1::GameSession undoing(std::move(undo_world),8);
+        (void)undoing.tick(30,advance());(void)undoing.tick(30);
+        check(undoing.select(0) && undoing.transform_selected().has_value() &&
+              !undoing.selected_can_undo(),"transformation did not retain its actual presentation gate");
+        undoing.clear_transform_animation_request(0);
+        undoing.report_transform_finished(0,undoing.unit_transform_generation(0));
+        check(undoing.selected_can_undo(),"completed recorded transform was not undoable");
+        const auto undone_transform=undoing.undo_selected();
+        check(undone_transform && undone_transform->reversed_transform && undone_transform->retain_selection &&
+              undoing.units()[0].form==0 && undoing.units()[0].flag_2d==0 &&
+              undoing.combat_units()[0].stats.attack_low==60 &&
+              undoing.transform_animation_pending(0)==0 && !undoing.unit_transform_waiting(0),
+              "transform Undo invented another recorded animation or failed to restore original form/stats");
+        check(undoing.move_selected_to({2,2})==g1::MoveRequestResult::started,
+              "selection-lock fixture could not execute movement");
+        for(int i=0;i<11;++i)(void)undoing.tick(30);
+        check(undoing.selected_can_undo() && undoing.select(2) && undoing.select(0) &&
+              undoing.units()[0].flag_3a==1 && !undoing.selected_can_undo(),
+              "switching to another friendly unit failed to lock committed movement Undo");
+
+        auto assault_world=fixture();
+        assault_world.units[1].x=4;assault_world.units[1].y=2;
+        assault_world.sites.clear();
+        for(auto& form:assault_world.unit_definitions[19].forms)form[10]=0;
+        assault_world.unit_definitions[19].scalar_fields[1]=99;
+        assault_world.commands={{0,0,6,3,{11,280}},{1,0,8,12,{2,245,19}},
+                                {2,0,2,1,{}},{3,0,4,8,{202}}};
+        g1::GameSession assault(std::move(assault_world),5);
+        (void)assault.tick(30,advance());(void)assault.tick(30);
+        check(assault.end_turn().has_value(),"assault fixture could not enter AI turn");
+        bool travelled=false,fought=false,back_to_human=false;
+        for(int step=0;step<500 && !back_to_human;++step) {
+            if(assault.focus_request())assault.report_focus_presented(assault.focus_request()->token);
+            for(std::size_t i=0;i<assault.units().size();++i)
+                if(assault.unit_transform_waiting(i)) {
+                    assault.clear_transform_animation_request(i);
+                    assault.report_transform_finished(i,assault.unit_transform_generation(i));
+                }
+            const auto update=assault.tick(30);
+            travelled=travelled || update.movement_finished;
+            if(assault.battle()) {
+                check(assault.battle()->attacker_before.type==19 &&
+                      assault.battle()->defender_before.type==11 &&
+                      assault.ai_action() && assault.ai_action()->elapsed_ms>=100,
+                      "AI battle lost the actual actor/target or original delay gate");
+                fought=true;assault.report_battle_finished(assault.battle()->token);
+            }
+            back_to_human=assault.current_player()==0;
+        }
+        check(travelled && fought && back_to_human && assault.combat_units()[0].health<100,
+              "native AI move/attack/presentation/turn sequence did not complete");
 
         for (const int refresh : {30,60,120,144}) {
             g1::SimulationClock clock;

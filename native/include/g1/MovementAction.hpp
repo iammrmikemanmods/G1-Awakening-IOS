@@ -28,6 +28,8 @@ struct MovementRoute {
     MovementTile destination{};
     // Forward order, excluding origin and including destination. Reconstructs
     // 0x49e90, including its UP, DOWN, LEFT, RIGHT tie preference.
+    // already_at_destination has no travel steps. If separately admitted by
+    // an AI/gameplay caller, it still begins moving and completes on one tick.
     std::vector<MovementTile> steps;
 };
 
@@ -73,6 +75,9 @@ public:
     // Reconstructs unit changes made by 0x51364 -> 0x43e2e. The caller must
     // already authorize the move through gameplay/occupancy rules. This class
     // does not admit transport, enemy destinations, selection or turn actions.
+    // An admitted already_at_destination route preserves original record0 at
+    // the origin and its trailing sentinel internally; it is not completed by
+    // this constructor. Human same-tile click eligibility remains the caller's.
     // form0_field2 is signed stat byte 2 of FORM ZERO, even when moving in form1.
     MovementAction(MovementUnitState, const MovementProfile&, const MovementRange&,
                    MovementRoute, std::int8_t form0_field2);

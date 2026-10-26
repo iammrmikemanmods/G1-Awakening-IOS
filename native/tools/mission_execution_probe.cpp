@@ -20,6 +20,10 @@ const char* gate_name(g1::MissionGate gate) {
     case g1::MissionGate::delay: return "delay";
     case g1::MissionGate::transition: return "transition";
     case g1::MissionGate::captured_site_item: return "captured_site_item";
+    case g1::MissionGate::objective: return "objective";
+    case g1::MissionGate::completion_frame: return "completion_frame";
+    case g1::MissionGate::world_command: return "world_command";
+    case g1::MissionGate::world_frame: return "world_frame";
     case g1::MissionGate::advance_pending: return "advance_pending";
     case g1::MissionGate::stopped: return "stopped";
     case g1::MissionGate::end_of_stream: return "end_of_stream";

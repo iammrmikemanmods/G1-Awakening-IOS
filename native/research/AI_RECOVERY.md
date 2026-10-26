@@ -102,13 +102,14 @@ raise explicit unsupported-input errors. No alternate pathfinder is used.
 
 The successful enemy-approach branch can toggle the temporary form an extra
 time before common cleanup. This can leave the unit in the alternate form,
-including cases where a later result is absent. The 128-case comparison
+including cases where a later result is absent. The original128-case comparison
 includes 38 observed form changes. Returning only a plan would lose this state.
 
 Fallback changes a result to action 4 only when the actor's original owner slot
 matches the stored `map+0x34` selection and `0x4ec0e` permits upgrading: active,
 not acted, form-zero field 12 is not 1, level at most 24, and owner's funds meet
-the signed scalar-1 cost. Applying the upgrade is a separate operation.
+the effective signed map+0x14c cost. The original loader forces type21 to40;
+other types retain signed scalar1. Applying the upgrade is a separate operation.
 
 ### Idle production and destination
 
@@ -116,7 +117,7 @@ The idle driver first considers active producers whose form-zero and selected-
 form field 12 both equal 1. Only if none yields a candidate does it consider
 field 9 in the same way. Available inactive production types are filtered by
 the original either-form field-8 predicate. It chooses the largest positive
-signed scalar-1 cost affordable by the current player; equal costs keep the
+effective signed cost affordable by the current player; equal costs keep the
 earlier type. The last eligible producer in a priority pass wins. Production
 has no action-spent gate in this original branch.
 
@@ -136,14 +137,17 @@ development oracle. They are not generated from the C++ implementation.
 | Corpus | Original coverage | Native result |
 |---|---|---|
 | Synthetic attack/score | 192 worlds; 768 score queries; 192 explicit-budget movement fields, including negative and greater-than-byte budgets | 6,479 checks passed |
-| Synthetic fallback/full choice | 128 worlds; entire `0x4ec72` and `0x512e6`; 88 fallback plans, 102 combined plans, 38 form changes | 7,582 checks passed |
-| Synthetic idle driver | 192 worlds; 62 ordinary requests, 46 production requests, 84 end-turn boundaries; all 46 production destinations | 14,928 checks passed |
+| Synthetic fallback/full choice | 137 worlds including9 type21 cost boundaries; entire `0x4ec72` and `0x512e6`; 97 fallback plans, 111 combined plans, 38 form changes | 8,050 checks passed |
+| Synthetic idle driver | 201 worlds including9 type21 cost boundaries; 65 ordinary requests, 50 production requests, 86 end-turn boundaries; all50 production destinations | 15,633 checks passed |
 | Actual definition attack | All 23 original types, both forms, two levels; first grid/style/rules, synthetic adjacent placements | 92 cases, 20,718 checks passed |
 | Actual first-map planner | All 23 definitions, grid 268/style 0, first sites and placements; eight explicitly seeded AI/funds/ownership scenarios | 8 cases, 1,994 checks passed |
 | Existing ordinary movement regression | Existing unchanged original-function fixture | 256 cases, 9,092 comparisons and 4 malformed-input checks passed |
 
 The native fixture test also rejects six malformed shape/state inputs. The
 current five AI fixture runs pass with the undefined-behavior sanitizer. The
+shared oracle now seeds the original loader's type21 override in map+0x14c;
+all five corpora were regenerated and rerun. `EFFECTIVE_UNIT_COST.md` records
+the defect, loader execution and exact39/40/41-credit boundary evidence. The
 capture candidate and income helpers have their separately recorded original
 comparisons; their evidence is in `AI_CAPTURE.md` and
 `ai_site_validation/original_ai_site.json`.
@@ -172,10 +176,12 @@ tree. Synthetic fixtures are the only committed expected-value inputs.
 From project root:
 
 ```sh
-g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I native/include \
+g++ -std=c++17 -O2 -ffunction-sections -fdata-sections \
+  -Wall -Wextra -Werror -pedantic -I native/include \
   native/src/AI.cpp native/src/AISite.cpp native/src/AIIncome.cpp \
   native/src/CaptureAction.cpp native/src/Combat.cpp native/src/Movement.cpp \
-  native/tests/ai_attack_test.cpp -o research/native_ai/ai_planner_tests
+  native/src/World.cpp native/tests/ai_attack_test.cpp -Wl,--gc-sections \
+  -o research/native_ai/ai_planner_tests
 research/native_ai/ai_planner_tests native/tests/ai_attack_cases.txt
 research/native_ai/ai_planner_tests native/tests/ai_planner_cases.txt
 research/native_ai/ai_planner_tests native/tests/ai_turn_cases.txt

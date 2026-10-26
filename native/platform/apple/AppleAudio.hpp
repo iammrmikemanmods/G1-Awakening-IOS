@@ -9,6 +9,9 @@
 - (instancetype)initWithArchive:(const g1::Archive&)archive;
 - (bool)request:(g1::MissionAudioRequest)request;
 - (void)setForegroundActive:(BOOL)active;
+- (void)setMusicEnabled:(BOOL)music soundEnabled:(BOOL)sound;
+- (BOOL)musicEnabled;
+- (BOOL)soundEnabled;
 - (BOOL)operational;
 - (NSDictionary*)diagnostics;
 @end

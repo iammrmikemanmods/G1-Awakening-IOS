@@ -52,7 +52,9 @@ struct CombatUnitState {
     CombatStats stats;
     std::int32_t support_bonus{}; // Original unit+0x5c, prepared before exchange.
     std::int32_t timer_30_ms{-1};
-    std::int32_t preset_34_ms{-1};
+    // Original4306c zeroes +34; the outer43f42 constructor separately sets
+    // timer+30 to-1. Later activations retain this preset, including zero.
+    std::int32_t preset_34_ms{};
 };
 
 // Reads existing decoded definitions. New placements start with health100,

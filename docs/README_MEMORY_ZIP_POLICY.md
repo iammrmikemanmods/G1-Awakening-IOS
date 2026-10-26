@@ -1,25 +1,41 @@
-# Native test artifact policy
+# Native development artifact policy
 
-This archive is a reproducible development artifact for the G1 Awakening native
-port. It is not a full playable release. Preserve its directory structure and
-the validation records when moving or extracting it.
+Preserve this file, the archive's directory structure, source identity and
+validation records when moving or extracting a G1 Awakening native-port
+artifact. These artifacts are development checkpoints. A complete playable
+release requires the separate gates recorded in `PORT_STATUS.json`.
 
-The cloud code artifact contains the new ARM64 app, source-commit metadata,
-licenses, and build/render verification. Original game assets are added locally
-by `scripts/package-native-scene.py` from the hash-verified source IPA. The
-original ARM32 executable is never copied into the native app.
+## Source review archive
 
-The resulting unsigned IPA is a **first-mission scene test**. It renders recovered
-terrain and sprites, previews recovered movement ranges, and measures presented
-frames on the testing device. Campaign control, combat, AI, saves, audio and a
-complete playthrough are unfinished. Its inspection camera and border treatment
-are not claims of original visual parity.
+`G1_Awakening_Native_Build_005_Source.zip` contains the reviewed native source,
+build workflow, development tools and validation evidence. It contains no
+compiled iPhone app, installable IPA, original game archive or original
+executable. Its root `README.md` describes implementation scope and remaining
+work. `validation/NATIVE_COMPLETE_HOST_CHECKPOINT.json` records the exact final
+host checks. `validation/native_source_manifest.json` identifies every included
+repository file except that manifest itself.
 
-The tester signs the IPA with Sideloadly. Compilation and archive verification
-do not prove installation or execution on an iPhone XR. Device results must be
-recorded separately; the app's **Share test report** action exports its actual
-version, source commit, device, OS and recent presentation measurements.
+The source connects native gameplay, enemy turns, campaign handoffs, saves,
+all three terrain styles and ordinary animated 3D battles. The current host
+pilot wins fourteen consecutive Story missions, then loses the next mission.
+Its presentation feedback is synthetic. That result is not a complete campaign
+or device playthrough. Current Apple compilation, Metal output, remaining
+support-fire/audio/original-presentation work and physical XR checks remain.
 
-No background service or compatibility interpreter is part of the app. The
-offline original-function oracles in the source repository are development
-tools and are not linked or bundled into this artifact.
+## Hosted code artifact and eventual IPA
+
+After a successful Apple build, the separate cloud code artifact contains the
+new ARM64 app, source-commit metadata, licenses and build/render verification.
+Original game assets are then added locally by `scripts/package-native-scene.py`
+from the hash-verified source IPA. The original ARM32 executable is never
+copied into the native app. Keep the code and validation from the same commit.
+
+The tester signs the resulting IPA with Sideloadly. Compilation and archive
+verification do not prove installation or execution on an iPhone XR. Device
+results must be recorded separately; the app's **Share test report** action
+exports its actual version, source commit, device, OS and recent presentation
+measurements. The earlier build 002 scene-test IPA is not this source checkpoint.
+
+No compatibility interpreter is part of the app. Offline original-function
+oracles in the source archive are development tools; neither those tools nor
+the original executable are linked or bundled into the app.

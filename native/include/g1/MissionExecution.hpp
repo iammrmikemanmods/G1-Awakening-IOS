@@ -58,6 +58,8 @@ enum class MissionGate {
     transition,
     captured_site_item,
     objective,
+    world_command,
+    world_frame,
     completion_frame,
     advance_pending,
     stopped,
@@ -113,7 +115,19 @@ struct MissionTickResult {
     std::vector<MissionEffect> effects;
 };
 
-// Native control-flow continuation from a decoded campaign dialogue boundary.
+// Native saves are taken only at a stationary opcode12 gameplay boundary.
+// The objective is re-decoded from the matching archive, never supplied by
+// the save. These backing controller values survive while that gate is open.
+struct MissionGameplayCheckpoint {
+    std::size_t command_index{};
+    std::int32_t original_phase{};
+    bool phase_flag_225{};
+    bool alternate_dialogue_variant{};
+    std::int32_t transition_value{};
+    std::int32_t remaining_delay_ms{};
+};
+
+// Native control-flow continuation from a decoded campaign execution boundary.
 // It owns no renderer, audio, combat, save system or original machine code.
 // The one-argument constructor retains the cold first-campaign default; other
 // campaign tables require explicit matching context. It returns typed requests.
@@ -132,7 +146,22 @@ public:
     explicit MissionExecution(const WorldBootstrap&);
     MissionExecution(const WorldBootstrap&, const CampaignContext&);
     const MissionExecutionState& state() const noexcept { return state_; }
+    MissionGameplayCheckpoint gameplay_checkpoint() const;
+    // Requires an already reconstructed matching objective; does not advance
+    // any command, satisfy a goal, reset units or acknowledge presentation.
+    void restore_gameplay_checkpoint(const MissionGameplayCheckpoint&);
     MissionTickResult tick(std::uint32_t delta_ms, const MissionTickInput& = {});
+
+    // A general bootstrap may begin directly at an objective. Its real entry
+    // effects are retained here rather than discarded by the constructor.
+    // Drain once during session initialization; subsequent calls are empty.
+    std::vector<MissionEffect> take_initial_effects();
+
+    // WorldCommands prepares this exact decoded command. The native session
+    // must apply its gameplay changes and required external work before this
+    // acknowledgement. UI/time alone cannot advance a pending world command.
+    const MissionCommand& pending_world_command() const;
+    void report_world_command_applied(std::size_t command_index);
 
     // The command token prevents a stale renderer response from completing a
     // later camera request. false retains the current camera gate.
@@ -165,6 +194,7 @@ private:
     std::uint8_t campaign_group_{};
     std::int32_t campaign_index_{};
     MissionExecutionState state_;
+    std::vector<MissionEffect> initial_effects_;
     void enter_current(std::vector<MissionEffect>&);
     void stop(MissionStop, const std::string&);
 };

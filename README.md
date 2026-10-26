@@ -6,26 +6,30 @@ gameplay timing, sound, reliable saves and a full campaign playthrough**. The
 user signs the IPA with Sideloadly on Windows. Apple compilation runs on a hosted
 Mac; the user does not need a local Mac.
 
-**The full native game is unfinished.** This checkpoint connects original
-text, touch movement, capture, transformation and combat outcomes to the native
-app. Enemy planning, turn rules, mission objectives, campaign progression and
-profile persistence have portable implementations; completing their integration
-into continuous play remains necessary. A build or component test is not a
-completed playthrough or proof of iPhone XR performance.
+**The full-playthrough release is not yet verified.** The current source
+checkpoint connects continuous enemy turns, general world commands, human
+actions and production, campaign results/handoff, cold-launch Continue, all
+three terrain styles' decorative animation, and the original ordinary M3G
+battles. The battle path uses the real models, forms, texture replacements,
+cameras, animation clips, shot/hit/destruction effects and completion sequence.
+The new Apple build and physical iPhone XR validation are still pending.
+Earlier tactical support-fire presentation, original HUD/site-marker/tactical
+camera/font fidelity and remaining audio coverage also remain release work.
 
 ## Current implementation
 
 | Component | Implemented | Remaining integration or verification |
 | --- | --- | --- |
-| Original data | Archive, 559 verified payloads, all 140 PNGs, all 24 Vorbis files, all 511 localized strings | Original data stays outside Git |
-| Mission scripts | All 30 streams / 803 commands parse; dialogue, timers, camera requests, four objective kinds, completion and campaign rules recovered | General world-changing commands, results, actual save and next-map handoff |
-| Human actions | Movement/arrival, capture, transformation and attack connected to GameSession and native touch controls | Upgrade/heal/production and broader mission interaction |
-| Combat | Original target, RNG, damage, counterattack, death and score-counter rules | Original 3D battle rendering and all presentation cues; current app shows real outcomes in a native panel |
-| Enemy | Original attack/capture/fallback planner, full owner slots, production admission/destination and turn reset/income | Continuous AI action execution and visible turn flow |
-| Rendering | Native Metal terrain and sprites, original sprite animation/placement, native screen drawable sizing | General map/roster refresh, style1 terrain, original camera and 3D battle models |
-| Audio | Original event dispatcher and resource mapping; native AVAudioEngine host | Remaining game event coverage and actual-device output testing |
-| Saving | Versioned campaign profile plus checked atomic file replacement | Live session snapshot, actual results save/handoff, cold-launch continuation |
-| Timing | Separate 30 ms simulation scheduler and up to 60 Hz interpolated presentation | Correctness and sustained performance on a physical XR |
+| Original data | Archive,559 verified payloads,140 PNGs,24 Vorbis files,511 localized strings | Original data stays outside Git |
+| Missions | All 30 streams / 803 commands, actual world operations and four objective kinds; bounded host pilot completes 14 consecutive Story missions | Remaining continuous campaign/mode traversal and rendered playthrough |
+| Human actions | Movement, capture, transformation, Undo, attack, upgrade, heal, production and carrier/tape transitions | Original control/presentation parity |
+| Enemy | Continuous production, movement, attack, capture and repair through actual native actions; turn reset/income | Broad gameplay and mission-balance verification |
+| Combat | Original damage/counterattack/death rules and connected animated M3G battles; actual controller health, ordered effects and presented-frame completion | Apple/GPU/device output; earlier tactical support-fire sequence |
+| Rendering | All 23 unit descriptors and21 actual map/style pairs; native Metal sprites/terrain; all three styles' session-owned decoration; ordinary original 3D scene/model/effect assets | Visual/device validation and original tactical artwork/camera/font fidelity |
+| Modes | Story, Showdown and Cybertron Arena with profile gates and explicit Arena faction/opponent choices | Actual end-to-end results, unlock and ending validation |
+| Audio | Original event dispatcher, battle shot/hit cues and native AVAudioEngine; persisted Music/Sound preferences | Shared background-music maintenance, remaining coverage and device output |
+| Saving | Atomic profile/results/handoff; format 3 checkpoints preserve all gameplay, RNG and terrain/sprite clocks; cold Continue | Physical-device lifecycle testing; busy actions resume from the last durable boundary |
+| Timing | Separate 30 ms simulation and up to 60 Hz interpolated tactical/battle display; XR camera aspect adaptation preserves vertical field of view | Sustained physical-XR performance and complete timing validation |
 
 The product compiles portable C++ and Objective-C++ directly to ARM64. It reads
 original game data. Offline reference tools execute unchanged original
@@ -34,13 +38,45 @@ not linked or packaged into the app.
 
 ## Evidence and build scope
 
-The preceding component checkpoint at
-`d11fa64e3a5d7dd62b0aded6e8f38f8d8e651efb` passed all 15 host suites and an actual
-Apple ARM64 app build in
-[run 40275688702](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40275688702).
-Six offscreen Metal pixel checks ran successfully on the hosted Apple GPU.
-That run predates the new touch/battle/audio integration in this checkpoint.
-See `validation/APPLE_GAMEPLAY_COMPONENT_BUILD.json` for the recorded evidence.
+The preceding native interaction checkpoint at
+`5795315e970d34419c739bbd4b81ff2011a9ecd4` passed all 29 host suites, an actual
+Apple ARM64 app build and macOS profile-file tests in
+[run 40280927071](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40280927071).
+Six offscreen Metal pixel checks ran on the hosted Apple GPU. See
+`validation/APPLE_NATIVE_INTERACTION_BUILD.json` for exact source/artifact data.
+That successful run predates the current continuous-play, resume and animated
+battle code. A new recorded Apple run is required. The previous attempt to
+commit the prepared campaign checkpoint returned `user rejected MCP tool call`;
+no commit or branch update succeeded. The current source is prepared locally
+for review, with publication awaiting renewed approval.
+
+The exact staged source passes all 53 portable CTest suites. The final build,
+test, mission-entry, battle and continuous-pilot records are collected in
+`validation/NATIVE_COMPLETE_HOST_CHECKPOINT.json`, with a separate inventory
+of the tested code, fixtures and build files. No implementation bytes were
+changed after this staged build. The 74 session-save
+checks include actual closed files and fresh sessions, followed by identical
+terrain activity, random state and combat results for all three styles. All 30
+mission scripts reach their first objective and round-trip their checkpoints;
+both faction orders and both opponent settings in Arena produce 45 entries and
+540 real world operations. Entry checks do not complete the missions.
+
+The improved bounded input pilot separately completes 14 consecutive Story
+missions, indices 0–13, then loses 14 normally. It uses ordinary public player
+commands and real native AI, with 689 byte-identical in-memory checkpoint
+comparisons after replaying searched command sequences, plus 15 checked
+profile-file writes. This pilot writes no checkpoint files; the separate
+74-check save suite and 45 cold-entry round trips cover checkpoint persistence.
+It never transplants a winning state. Its world/dialogue/battle/results feedback
+is synthetic. Missions 15–16
+were not reached in that continuous attempt, so it is not a full Story result.
+
+The native battle controller matches 1,225 original updates and 159 original
+draw plans. The connected asset adapter exercises 47 bounded model/form/style
+and combat-outcome cases. A separate actual GameSession battle drives 534 native
+presentation updates and 217 prepared frames, keeps gameplay RNG unchanged,
+and retains its real pending token until explicit host feedback. These are
+CPU integration results; they do not establish Metal or physical output.
 
 The previously packaged `G1_Awakening_Native_Scene_Test_002.ipa` was built from
 `4b5708924b8aa51bf01faec470c33623d1dbb5c0`. It is an earlier scene test and does
@@ -64,9 +100,11 @@ ctest --test-dir build/native --output-on-failure --no-tests=error
 
 The [workflow](.github/workflows/native-core.yml) builds a real unsigned
 `iphoneos` ARM64 app targeting iOS 17.5, checks its Mach-O architecture and
-system dependencies, tests profile persistence on macOS, and runs an offscreen
-Metal pixel probe when a GPU is available. A skipped GPU test is recorded as a
-skip. Original game data is packaged locally, outside the cloud artifact.
+system dependencies, runs all portable tests on macOS, compiles the exact M3G
+runtime shader for iPhoneOS, and runs separate tactical and M3G offscreen Metal
+pixel probes when a GPU is available. A skipped GPU test is recorded as a skip.
+Original game data is packaged locally, outside the cloud artifact. The new
+M3G Apple checks are prepared and have not yet run.
 
 After a successful run, package the matching code artifact with the original
 local IPA:
@@ -75,8 +113,8 @@ local IPA:
 python3 scripts/package-native-scene.py \
   --code-artifact G1-native-game-unsigned-code.zip \
   --source-ipa G1awakening_v1.1.3_os30.ipa \
-  --out G1_Awakening_Native_Interaction_Test.ipa \
-  --report G1_Awakening_Native_Interaction_Test.validation.json \
+  --out G1_Awakening_Native_Game_Test_005.ipa \
+  --report G1_Awakening_Native_Game_Test_005.validation.json \
   --expected-commit SOURCE_COMMIT_FROM_THE_RUN
 ```
 
@@ -106,6 +144,7 @@ retained only on `archive/compatibility-experiment` and is not the requested
 native deliverable. This project does not use the GTA repository.
 
 A full-game completion estimate is not established. The outstanding release
-work is continuous enemy turns, complete mission/campaign integration, native
-session save/reload, the remaining original rendering/presentation, and actual
-XR testing through the whole campaign.
+work includes the earlier tactical support-fire presentation, remaining audio
+and original UI/artwork fidelity, complete mission/campaign traversal, and
+actual XR testing of installation, saves/resume, native resolution and sustained
+60 Hz presentation.

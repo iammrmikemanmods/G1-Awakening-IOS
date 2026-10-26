@@ -18,6 +18,7 @@ void integers(const Container& values) {
 const char* stop_name(g1::BootstrapStop stop) {
     switch (stop) {
     case g1::BootstrapStop::presentation_required: return "presentation_required";
+    case g1::BootstrapStop::execution_required: return "execution_required";
     case g1::BootstrapStop::unsupported_command: return "unsupported_command";
     case g1::BootstrapStop::end_of_stream: return "end_of_stream";
     }
