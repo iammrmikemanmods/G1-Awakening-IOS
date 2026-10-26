@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-26",
+  "status": "unverified",
+  "purpose": "Prospective acceptance plan and blank results for an actual target-device release candidate; no device tests claimed.",
+  "target": {
+    "device": "iPhone XR",
+    "os": "iOS 17.5",
+    "installation": "user-managed Sideloadly",
+    "native_refresh_target_fps": 60,
+    "cpu": "no-JIT interpreter",
+    "guest_memory": "compact low 1 GiB + top 1 MiB windows"
+  },
+  "original_game_input_sha256": "b24fbe5cc4d5cb603189a476c4f81dd2a6ecc18b025eae913262055a7fc443fd",
+  "candidate_ipa_sha256_before_user_signing": null,
+  "readme": "DEVICE_ACCEPTANCE.md",
+  "readme_sha256": "9ee57f757ade08d704a3c89aef1293b217bde3f6e72e99df676569fbd2cbd59b",
+  "reference_evidence": [
+    {
+      "path": "research/approaches/probe35_interpreter_v4_optimized/observations.json",
+      "scope": "Linux no-JIT/strict memory menus, first mission/tutorial and save creation."
+    },
+    {
+      "path": "research/approaches/probe36_interpreter_v4_compact_reload/observations.json",
+      "scope": "Linux compact memory accepted existing save and transformed Bumblebee; savegame unchanged."
+    },
+    {
+      "path": "research/approaches/probe38_interpreter_v4_same_destination/observations.json",
+      "scope": "Linux compact memory one adjacent-tile move after ordinary same-destination taps 18.983 s apart; savegame unchanged."
+    },
+    {
+      "path": "research/compact_memory/runtime_review.json",
+      "scope": "Independent frame/log review, bounded runs and remaining limits."
+    },
+    {
+      "path": "research/assets/results/game_data_inventory.json",
+      "scope": "30 framed mission command streams/803 commands; not a proven count of campaign levels or complete opcode semantics."
+    },
+    {
+      "path": "research/approaches/FRAME_TIMING_AUDIT.md",
+      "scope": "Original 10/30 ms one-shot timer and pre-presentation HUD audit; sparse existing Linux captures around 22.0\u201322.3 render calls/s, not XR or frame-pacing evidence."
+    }
+  ],
+  "performance_targets": {
+    "status": "unverified",
+    "kind": "Proposed project tolerances, not measured results or platform guarantees.",
+    "nominal_fps": 60,
+    "nominal_frame_budget_ms": 16.666666666666668,
+    "minimum_successful_game_frame_presentations_per_second_in_each_10s_window": 59,
+    "p95_presentation_interval_max_ms": 18.34,
+    "p99_presentation_interval_max_ms": 34.34,
+    "unexplained_active_gameplay_stall_max_ms": 100,
+    "minimum_continuous_sample_minutes": 20,
+    "repeat_warm_session": true,
+    "clock_comparison_minimum_foreground_minutes": 10,
+    "guest_monotonic_to_wall_drift_max_fraction": 0.01,
+    "loading_and_transition_intervals": "Report separately with explicit labels; do not silently exclude slow gameplay.",
+    "measurement_constraints": [
+      "Existing host FPS counter increments before actual presentation succeeds and cannot alone pass D03.",
+      "Use successful presentation/completion timestamps, correlate guest frame IDs and animation/content progress, and record attempted presents separately.",
+      "Do not count repeated old buffers at 60 Hz as 60 new game frames.",
+      "Native 10 ms/30 ms timer re-arm investigation is a timing constraint; selected branch/render relation remains unresolved and it is not an XR cap measurement.",
+      "Do not accelerate timers solely to reach the FPS target; preserve original simulation and scripted timing.",
+      "Record instrumentation/screen-recording overhead; missing measurements or timing reference leave gates unverified."
+    ],
+    "measured_results": null,
+    "timing_audit": "research/approaches/frame_timing_audit.json",
+    "existing_sparse_linux_sample_scope": "Approximately 22.0\u201322.3 render calls/s before SDL swap from 60-frame-spaced captures; no actual-device or individual-frame timing inference."
+  },
+  "campaign_coverage": {
+    "status": "unverified",
+    "scope": "Full normal campaign at the recorded difficulty, including final end screen.",
+    "difficulty": null,
+    "new_campaign_started": null,
+    "ending_evidence": null,
+    "recovered_command_stream_count": 30,
+    "framed_command_count": 803,
+    "proven_user_visible_mission_count": null,
+    "mission_records": [],
+    "stream_mapping_records": [],
+    "unvisited_optional_modes_and_branches": [],
+    "mission_record_fields": [
+      "title_or_identifier",
+      "entry_utc",
+      "exit_utc",
+      "objectives",
+      "result",
+      "completion_evidence",
+      "save_before_sha256",
+      "save_after_sha256",
+      "next_transition",
+      "mapped_stream_ids",
+      "open_issues"
+    ]
+  },
+  "run_record_template": {
+    "status": "unverified",
+    "run_id": null,
+    "tester": null,
+    "started_utc": null,
+    "ended_utc": null,
+    "device_model": null,
+    "ios_version": null,
+    "ipa_filename": null,
+    "ipa_sha256_before_user_signing": null,
+    "cloud_workflow_run_url": null,
+    "source_commit": null,
+    "patch_revisions": [],
+    "cpu_backend_log": null,
+    "memory_mode_log": null,
+    "build_options": {},
+    "sideloadly_install_result": null,
+    "signing_credentials_to_record": false,
+    "battery_start_percent": null,
+    "charging": null,
+    "low_power_mode": null,
+    "orientation": null,
+    "screen_recording": null,
+    "thermal_observations": null,
+    "diagnostic_files": [],
+    "video_and_screenshots": [],
+    "save_snapshots": [],
+    "issues": []
+  },
+  "gates": [
+    {
+      "id": "D01",
+      "title": "Install and launch",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Install the identified IPA using Sideloadly on iPhone XR/iOS 17.5.",
+        "Cold-launch three times; collect game screen and CPU/memory-mode diagnostics."
+      ],
+      "pass_criteria": [
+        "Installation and three launches succeed with intended interpreter and compact memory.",
+        "Ordinary user signing setup needs no extra JIT activation."
+      ],
+      "required_evidence": [
+        "IPA SHA256 before user signing",
+        "cloud run and source revisions",
+        "device/settings screenshot",
+        "installation result",
+        "startup and backend log"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D02",
+      "title": "Input and rendering",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Exercise menus and screen-edge buttons, unit/tile selection and same-destination confirmation.",
+        "Pan/zoom camera; inspect supported orientation changes, dialogue, tutorial and 3D-model screens."
+      ],
+      "pass_criteria": [
+        "Visible targets match touch locations and remain reachable.",
+        "No missing resources, clipped text, broken overlays or stuck input."
+      ],
+      "required_evidence": [
+        "short control video",
+        "screenshots of dialogue/tutorial/model",
+        "input problem reproduction steps"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D03",
+      "title": "Sustained 60 FPS",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Record actual successful presentation timestamps in an animated mission for at least 20 uninterrupted minutes, including busy AI/combat/camera activity.",
+        "Repeat after the phone is warm; record guest-present attempts and content/animation progress separately."
+      ],
+      "pass_criteria": [
+        "Meets proposed presentation and pacing thresholds in performance_targets.",
+        "Old-buffer repetition and pre-presentation HUD counts are not counted as new game frames."
+      ],
+      "required_evidence": [
+        "raw timing CSV",
+        "presentation-boundary method",
+        "frame IDs/content samples",
+        "percentile and rolling-window summary",
+        "conditions and instrumentation overhead"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D04",
+      "title": "Correct game time",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Measure foreground wall and guest monotonic time for at least 10 minutes.",
+        "Compare selected movement/animation/scripted sequences with an established original-game reference or independently justified timing model.",
+        "Include pause/resume and record timer due/fire/re-arm behavior."
+      ],
+      "pass_criteria": [
+        "Clock drift meets proposed tolerance.",
+        "Animation and scripted timing retain documented reference behavior without extra turns or catch-up bursts.",
+        "Missing timing reference leaves this gate unverified."
+      ],
+      "required_evidence": [
+        "wall/guest timestamp samples",
+        "timing reference and provenance",
+        "sequence duration comparison",
+        "pause/resume observations"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D05",
+      "title": "Complete normal campaign",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Start a new normal campaign at a recorded difficulty.",
+        "Record every visible mission start, objectives, victory/transition and final campaign/end screen.",
+        "Map recovered stream IDs where identified; account for shared/optional/unmapped resources separately."
+      ],
+      "pass_criteria": [
+        "Selected normal campaign completes through original controls without forced progression or skipped unresolved failures.",
+        "30 recovered streams are not represented as 30 proven campaign levels.",
+        "Unvisited optional modes and branches remain explicitly uncovered."
+      ],
+      "required_evidence": [
+        "mission ledger",
+        "completion video/screenshots",
+        "ending evidence",
+        "stream coverage mapping",
+        "per-mission save hashes"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D06",
+      "title": "Mechanics and branches",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Exercise player/enemy turns, close/ranged combat, retaliation, damage/death, transform, upgrade, repair and capture/energy.",
+        "Cover terrain/pathfinding, later units, tutorial/dialogue, victory and defeat/retry."
+      ],
+      "pass_criteria": [
+        "Exercised mechanics match expected original-game behavior.",
+        "AI turns and scripted objectives complete.",
+        "List mechanics and branches not exercised."
+      ],
+      "required_evidence": [
+        "mechanic outcome table",
+        "action/AI videos",
+        "unit/resource statistics before and after",
+        "failure/retry and dialogue evidence"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D07",
+      "title": "Changed-state save and cold reload",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Change unit/mission state through movement/transformation and combat/capture or mission progression.",
+        "Use normal save, exit, terminate and cold-launch; repeat in a later mission."
+      ],
+      "pass_criteria": [
+        "New changed state and progress survive cold reload without corruption or rollback.",
+        "Reloading only the preexisting unchanged save does not pass."
+      ],
+      "required_evidence": [
+        "save before/after bytes and hashes",
+        "visible state before exit and after reload",
+        "later-mission repeat record"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D08",
+      "title": "Audio",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Enable audible output and exercise menus, battle effects, dialogue where present, transitions and volume/mute controls.",
+        "Repeat after resume."
+      ],
+      "pass_criteria": [
+        "Expected audio is audible, synchronized and stable.",
+        "No persistent missing channels, distortion or resume-related audio loss."
+      ],
+      "required_evidence": [
+        "synchronized audio/video clip",
+        "listening notes",
+        "volume/mute and resume observations"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    },
+    {
+      "id": "D09",
+      "title": "Lifecycle and endurance",
+      "status": "unverified",
+      "mandatory": true,
+      "procedure": [
+        "Background/foreground and lock/unlock during mission, dialogue and safe save boundary.",
+        "Exercise an interruption, repeated cold launches and a long campaign session; record memory/thermal behavior and pacing."
+      ],
+      "pass_criteria": [
+        "No stuck input/audio, lost progress, allocation failure or crash.",
+        "Foreground resumes correctly and warm performance meets D03."
+      ],
+      "required_evidence": [
+        "lifecycle sequence and times",
+        "resume video",
+        "crash/memory warning logs",
+        "warm timing samples",
+        "save integrity comparison"
+      ],
+      "run_ids": [],
+      "evidence_files": [],
+      "observed_result": null,
+      "failure_reproduction": null,
+      "tester": null,
+      "completed_utc": null
+    }
+  ],
+  "release_decision": {
+    "status": "unverified",
+    "rule": "All mandatory gates need recorded passes on the same identified release candidate. Rerun affected gates after fixes. Scope confidence to tested device, artifact, route and difficulty; preserve untested branches rather than promise absence of every bug."
+  }
+}

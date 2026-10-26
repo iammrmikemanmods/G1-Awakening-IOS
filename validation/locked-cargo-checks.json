@@ -1,0 +1,44 @@
+{
+  "scope": "Wrapper invocation contract only; no Cargo build or Apple compilation",
+  "checks": [
+    {
+      "case": "build inserts locked and preserves spaced args",
+      "arguments": [
+        "build",
+        "--locked",
+        "--manifest-path",
+        "a path/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "metadata avoids duplicate locked",
+      "arguments": [
+        "metadata",
+        "--locked",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "version passthrough",
+      "arguments": [
+        "--version"
+      ],
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "failure code preserved",
+      "arguments": [
+        "build",
+        "--locked"
+      ],
+      "exit_code": 23,
+      "passed": true
+    }
+  ]
+}

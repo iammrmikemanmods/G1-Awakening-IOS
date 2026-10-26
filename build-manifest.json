@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "upstream": {
+    "url": "https://github.com/johnny901901901/Applesauce.git",
+    "commit": "c75278bda86c80cbcec2d8d1493b5be9d5a9e0d1"
+  },
+  "interpreter": {
+    "url": "https://github.com/moleworld-dev/touchhle-arm-interpreter",
+    "commit": "adffbbdae912568557f33f8596110cc677809641",
+    "license": "MPL-2.0"
+  },
+  "toolchain": {
+    "runner": "macos-26",
+    "xcode_version": "26.6",
+    "developer_dir": "/Applications/Xcode_26.6.app/Contents/Developer",
+    "rust": "1.99.1",
+    "rust_target": "aarch64-apple-ios",
+    "sdk": "iphoneos",
+    "deployment_target": "15.0",
+    "requested_device_os": "17.5",
+    "configuration": "Release"
+  },
+  "features": {
+    "cpu": "interpreter",
+    "memory": "compact",
+    "entry_cargo_features": [
+      "cpu-interpreter",
+      "compact-memory"
+    ],
+    "shared_sdl": true,
+    "signing": "unsigned",
+    "additional_core": false
+  },
+  "patches": [
+    {
+      "file": "patches/01_applesauce_nojit.patch",
+      "sha256": "875620886f38c71cb34c04f7f15fe7534f8f5f99898261122abd2518836df2eb",
+      "bytes": 313626,
+      "checkpoint_source": "research/interpreter/applesauce_nojit.patch"
+    },
+    {
+      "file": "patches/02_applesauce_ios_nojit_host.patch",
+      "sha256": "356c8f2af248c0816259d5cc43e1093c7fe29692045608ea771c9959323d2aef",
+      "bytes": 4265,
+      "checkpoint_source": "research/interpreter/applesauce_ios_nojit_host.patch"
+    },
+    {
+      "file": "patches/03_strict_runtime.patch",
+      "sha256": "139aaf7ab5ebc07935a368de96f35adfc58eb398b098c3abcf969e12b29ea9cb",
+      "bytes": 14596,
+      "checkpoint_source": "research/approaches/strict_runtime.patch"
+    },
+    {
+      "file": "patches/04_applesauce_strict_memory.patch",
+      "sha256": "9dfd3f0e6cd4eb8bbd264336787ae67f36d2eb2bf8f62a861da1973335c13e8a",
+      "bytes": 17377,
+      "checkpoint_source": "research/memory/strict_v1/applesauce_strict_memory.patch"
+    },
+    {
+      "file": "patches/05_compact_feature.patch",
+      "sha256": "a4d551c94363f86851c57a1d56897f763a92dab2a483e628797121a18b34d9d1",
+      "bytes": 390,
+      "checkpoint_source": "research/compact_memory/compact_feature.patch"
+    },
+    {
+      "file": "patches/06_compact_memory.patch",
+      "sha256": "5af17cff59459760fb1a8ac2cd98986ee6e59679190ca16d122cd7ad6b260b01",
+      "bytes": 14468,
+      "checkpoint_source": "research/compact_memory/compact_memory.patch"
+    },
+    {
+      "file": "patches/07_applesauce_ios_compact_selection.patch",
+      "sha256": "151e7a3ec754d9d888745fbeafb65b255e1cf1e0e5a6eb09346044d70f41b16d",
+      "bytes": 1976,
+      "checkpoint_source": "research/interpreter/applesauce_ios_compact_selection.patch"
+    }
+  ],
+  "expected_source_files": [
+    {
+      "file": "src/cpu/interpreter/vfp.rs",
+      "sha256": "7abc253432a616dac5a876bf871319dcd4c82566882c3e3b389a45edff2c5592"
+    },
+    {
+      "file": "src/mem.rs",
+      "sha256": "fcc88ad422e4850ee8d897138e1f040887cc3db6faba6421f082f31a4d304d19"
+    },
+    {
+      "file": "src/mem/compact.rs",
+      "sha256": "4858ef940b26a1626165fb1af6c1574cb04e9f4f8b2e44b9c25855a4d935e3fd"
+    },
+    {
+      "file": "src/mem/allocator.rs",
+      "sha256": "f8935d6849666f84cde171cfa4fc720ecf18cbdef2dcdbcaa61b785f65b331e0"
+    },
+    {
+      "file": "platform/ios/Sources/NativeHost.swift",
+      "sha256": "d0f1c2be4dc546216941312fe97a5c2e797cce33efe13652243a2093d29ccc4c"
+    },
+    {
+      "file": "platform/ios/scripts/build-rust.sh",
+      "sha256": "5eea05bb0ec907fe0f4e651ac08fdeb474bd718ccdc053a2f9e38897296cad13"
+    },
+    {
+      "file": "platform/ios/rust-entry/Cargo.toml",
+      "sha256": "903903efab5216467f615d46335dc3c3807029d5ad7ea7f67d4fb7e3ba65d814"
+    }
+  ],
+  "cargo_lock_sha256": "9b7fa52b9fdc1dc212fb78667d3b996b4c6f84295f246487bf78af371f9f7c94",
+  "artifact": {
+    "filename": "G1-Awakening-nojit-test-host-unsigned.ipa",
+    "app_path": "Payload/Applesauce.app",
+    "bundle_id": "io.github.johnny901901901.applesauce",
+    "executable": "Applesauce",
+    "frameworks": [
+      "libSDL2-2.0.0.dylib",
+      "libhyperhle_core.dylib"
+    ],
+    "core": "libhyperhle_core.dylib"
+  },
+  "github_actions": {
+    "checkout": {
+      "version": "v7.0.1",
+      "commit": "3d3c42e5aac5ba805825da76410c181273ba90b1"
+    },
+    "upload_artifact": {
+      "version": "v7.0.2",
+      "commit": "cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+    }
+  },
+  "scope": "First target is the patched open-source importer host. The original game IPA, game assets, saves, Apple credentials and signing material are excluded from this kit.",
+  "validation_boundary": "Source preparation and Linux behavior are established in the checkpoint. This kit has not run an Apple SDK build. XR60FPS, full playthrough, audio, signing/install and device memory fit remain unverified."
+}

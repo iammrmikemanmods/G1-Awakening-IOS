@@ -1,0 +1,114 @@
+--- a/platform/ios/Sources/EmulatorCore.swift
++++ b/platform/ios/Sources/EmulatorCore.swift
+@@ -72,6 +72,7 @@
+     typealias MetadataFree = @convention(c) (OpaquePointer?) -> Void
+     typealias RequestExit = @convention(c) () -> Void
+     typealias CurrentFPS = @convention(c) () -> Float
++    typealias RequiresJIT = @convention(c) () -> UInt32
+ 
+     let kind: CoreKind
+     let runGame: RunGame
+@@ -85,6 +86,8 @@
+     let metadataFree: MetadataFree
+     let requestExit: RequestExit
+     let currentFPS: CurrentFPS
++    /// A requirement of the selected CPU backend, not the process's JIT status.
++    let requiresJIT: Bool
+ 
+     /// Cores are never unloaded: a core that has run a game leaves SDL and its
+     /// audio and CPU state behind it, and there is nothing to gain from
+@@ -145,6 +148,14 @@
+         metadataFree = try symbol("touchhle_ios_game_metadata_free")
+         requestExit = try symbol("touchhle_ios_request_exit")
+         currentFPS = try symbol("touchhle_ios_current_fps")
++        // Older cores have no capability export and still require JIT. Only
++        // an explicit zero from a new core permits ordinary no-JIT launch.
++        if let address = dlsym(handle, "touchhle_ios_requires_jit") {
++            let requirement = unsafeBitCast(address, to: RequiresJIT.self)
++            requiresJIT = requirement() != 0
++        } else {
++            requiresJIT = true
++        }
+         loadedAllSymbols = true
+     }
+ }
+--- a/platform/ios/Sources/NativeHost.swift
++++ b/platform/ios/Sources/NativeHost.swift
+@@ -306,7 +306,18 @@
+         analogTilt: Bool
+     ) {
+         guard !isLaunching, !isImporting, heldLaunch == nil else { return }
+-        guard touchhle_ios_jit_available() else {
++        let requiresJIT: Bool
++        do {
++            // Loading metadata/capabilities does not execute guest code. The
++            // same cached core is used by start() after this launch decision.
++            requiresJIT = try EmulatorCore.load(
++                CoreSelection.kind(forBundleIdentifier: game.bundleIdentifier)
++            ).requiresJIT
++        } catch {
++            launchError = error.localizedDescription
++            return
++        }
++        if requiresJIT && !touchhle_ios_jit_available() {
+             heldLaunch = HeldLaunch(
+                 game: game,
+                 scaleHack: scaleHack,
+--- a/platform/ios/rust-entry/src/lib.rs
++++ b/platform/ios/rust-entry/src/lib.rs
+@@ -38,6 +38,14 @@
+             2
+         }
+     }
++}
++
++/// CPU-backend capability queried by the native host before game launch.
++/// Zero means this core requires no JIT; nonzero means JIT is required.
++/// This reports a build capability and never claims the OS granted JIT.
++#[no_mangle]
++pub extern "C" fn touchhle_ios_requires_jit() -> u32 {
++    if cfg!(feature = "cpu-interpreter") { 0 } else { 1 }
+ }
+ 
+ #[no_mangle]
+--- a/platform/ios/scripts/build-rust.sh
++++ b/platform/ios/scripts/build-rust.sh
+@@ -5,6 +5,17 @@
+ REPO=$(CDPATH= cd -- "$ROOT/../.." && pwd)
+ TARGET=${1:-aarch64-apple-ios-sim}
+ CONFIGURATION=${2:-Debug}
++
++# Explicit selection: the historical default remains Dynarmic. An interpreter
++# build disables the entry crate's defaults, so it cannot silently select JIT.
++TOUCHHLE_CPU_BACKEND=${TOUCHHLE_CPU_BACKEND:-dynarmic}
++case "$TOUCHHLE_CPU_BACKEND" in
++    dynarmic|interpreter) ;;
++    *)
++        echo "TOUCHHLE_CPU_BACKEND must be dynarmic or interpreter" >&2
++        exit 2
++        ;;
++esac
+ 
+ # Which emulator core to build. This repository holds HyperHLE; point
+ # TOUCHHLE_CORE_REPO at a checkout of another core (an upstream touchHLE tree,
+@@ -89,7 +100,7 @@
+     fi
+ done
+ 
+-if [ ! -d "$TOUCHHLE_BOOST_ROOT/boost" ]; then
++if [ "$TOUCHHLE_CPU_BACKEND" = dynarmic ] && [ ! -d "$TOUCHHLE_BOOST_ROOT/boost" ]; then
+     echo "Boost headers were not found at $TOUCHHLE_BOOST_ROOT" >&2
+     echo "Extract Boost into vendor/boost or set TOUCHHLE_BOOST_ROOT." >&2
+     exit 1
+@@ -132,6 +143,11 @@
+     set -- "$@" --release
+ fi
+ 
++if [ "$TOUCHHLE_CPU_BACKEND" = interpreter ]; then
++    set -- "$@" --no-default-features --features cpu-interpreter
++fi
++
++echo "Building $CORE_LIB_NAME for $TARGET with CPU backend: $TOUCHHLE_CPU_BACKEND"
+ cargo "$@"
+ 
+ if [ "$CONFIGURATION" = Release ]; then
