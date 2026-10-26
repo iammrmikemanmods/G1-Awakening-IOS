@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-10-26T04:41:11.559228+00:00",
+  "updated_utc": "2026-10-26T05:19:35.807449+00:00",
   "goal": {
     "game": "Transformers G1 Awakening 1.1.3",
     "device": "iPhone XR",
@@ -9,7 +9,11 @@
     "implementation": "native ARM64 source rebuild",
     "full_campaign_required": true,
     "signing": "User signs eventual IPA with Sideloadly",
-    "local_mac_required_for_user": false
+    "local_mac_required_for_user": false,
+    "render_resolution_landscape": [
+      1792,
+      828
+    ]
   },
   "forbidden_as_deliverable": [
     "ARM32 CPU interpreter",
@@ -21,15 +25,18 @@
   "native_implementation": {
     "archive_reader": "implemented; all559 payload hashes match",
     "m3g_container": "implemented; all36 object inventories match; renderer not implemented",
-    "mission_stream": "implemented; native command framing matches30 source streams; execution not implemented",
-    "movement_rules": "implemented cost/range calculations;256 original-function reference cases and9092 scalar comparisons pass; route execution/world integration absent",
-    "tactical_renderer": "asset metadata recovery in progress",
+    "mission_stream": "Original nested opcode7 grammar corrected; all30 streams/803commands unchanged; bootstrap executes bounded initial prefix only",
+    "movement_rules": "Costs/ranges recovered and connected to real first-world state; route execution and turn logic unfinished",
+    "tactical_renderer": "New Metal/UIKit first-scene app source written; Apple compilation pending for this source; inspection camera and interior terrain only",
     "combat": "not implemented",
     "ai": "not implemented",
     "native_saves": "not implemented",
     "audio": "not implemented",
     "campaign_execution": "not implemented",
-    "sprite_descriptors": "implemented descriptor parsing and local quantizedquad generation;38 source descriptors match; original arithmetic matches3639 quads for31 nonempty descriptors; GPU renderer absent"
+    "sprite_descriptors": "Original geometry, normalized UV, type factory, initial placement/model transform and millisecond animation implemented",
+    "world_bootstrap": "Original cold-start mission315/map268/style0; two initialunits; stopped before cursor9/opcode3",
+    "png_decoder": "Native LodePNG;140sourceimages/12222652RGBAbytes match Pillow",
+    "sprite_animation": "1616original-function cases/124432scalar comparisons pass; full gameplay timing unverified"
   },
   "release_gates": {
     "native_playable_ipa": false,
@@ -39,9 +46,12 @@
     "correct_game_timing": false,
     "sustained_60fps": false,
     "full_campaign": false,
-    "native_core_apple_sdk_compile": true
+    "native_core_apple_sdk_compile": true,
+    "native_scene_app_apple_compile": false,
+    "native_scene_ipa_packaged": false,
+    "native_gpu_probe_passed": false
   },
-  "ci_scope": "Compiles and validates native C++ core only; no app/IPA output.",
+  "ci_scope": "Compiles native ARM64 scene-testapp, inspects executable and runs macOSMetalpixelprobe ifGPUavailable. Originaldata packagedlocally. Doesnotverifydevice/fullgame.",
   "completion_eta": "Not established; remaining reverse engineering and full game implementation are unresolved.",
   "retired_approach": {
     "archive_branch": "archive/compatibility-experiment",
@@ -51,8 +61,8 @@
     "retirement_commit": "dba8521ff61f961755169f83715bfc796a4a3045"
   },
   "local_native_tests": {
-    "cmake_ctest_suites_passed": 3,
-    "cmake_ctest_suites_total": 3,
+    "cmake_ctest_suites_passed": 10,
+    "cmake_ctest_suites_total": 10,
     "mission_original_streams": 30,
     "mission_original_commands": 803,
     "mission_malformed_rejections": 855,
@@ -64,9 +74,17 @@
     "scope": "Native host component checks; no native game/app/device claim",
     "atlas_original_descriptors": 38,
     "atlas_original_quad_comparisons": 3639,
-    "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded"
+    "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded",
+    "png_images_compared": 140,
+    "png_rgba_bytes_compared": 12222652,
+    "terrain_first_grid_quads_compared": 255,
+    "sprite_animation_original_cases": 1616,
+    "sprite_animation_scalar_comparisons": 124432,
+    "sprite_placement_original_cases": 130,
+    "sprite_placement_matrix_comparisons": 2080,
+    "world_contract_checks": 90
   },
-  "native_cloud_validation": {
+  "prior_native_cloud_validation": {
     "source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
     "run_id": 40270134442,
     "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40270134442",
@@ -75,5 +93,17 @@
     "minimum_ios": "17.5",
     "host_ctest_suites_passed": 3,
     "ipa_produced": false
-  }
+  },
+  "native_cloud_validation": {
+    "status": "not yet run for current scene-app source",
+    "ipa_produced": false
+  },
+  "source_pc_reference": {
+    "uploaded_exe_sha256": "50dd5702e6cf6c0e79ec26757f84934c210be4576ff85a1d4d7303749b2e9cd7",
+    "architecture": "Windowsx64 launcher containingtouchHLE and unchangedoriginalARM32game",
+    "original_app_files_byte_matched": 9,
+    "recovered_native_gameplay_source": false,
+    "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
+  },
+  "next_work": "Applecompile/package native scene; then originalUI/missionexecution/actionlogic. Fullplaythrough and reliable savesremainunfinished."
 }

@@ -43,3 +43,25 @@ Apple's platform guidance for the eventual native implementation:
 
 The original-game facts above come from the user's executable. The Apple
 references describe platform APIs; they do not certify this port.
+
+## Recovered native sprite clock and playback
+
+Original0x1ac9c converts mach_absolute_time elapsed ticks through timebase numer/
+denom into integer milliseconds. Core0x9288 subtracts the preceding reading,
+clamps the delta to its configurable maximum (constructor default1000ms), and
+stores it at core+0x20. The renderer owner link has been traced through
+6432a→62c64→9208→91d4; rendering0x63a90 forwards that delta through the sprite
+update chain to0x72cc0. Sprite duration fields therefore measure milliseconds.
+
+The native SpriteAnimation module transcribes0x72d80/0x72cc0, including repeat/
+reverse behavior and the original forward large-delta duration quirk. All170
+source animations and32 synthetic sequences were compared in1,616 original-
+function cases, covering17,776 states/124,432 scalar values. See
+`native/research/SPRITE_RENDERING.md` for evidence, substitutions and limits.
+
+The scene app requests the attached display's maximum refresh rate, advances
+sprites by monotonic integer milliseconds, and samples drawable.presentedTime
+for its report. A60Hz request is a target. This establishes neither a full-game
+simulation schedule nor sustained device performance. The app's background
+pause policy belongs to the scene test; full original lifecycle/save behavior
+is still separate work.

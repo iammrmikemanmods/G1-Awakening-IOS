@@ -96,14 +96,17 @@ MissionStream::MissionStream(const Bytes& bytes) {
                     "mission opcode 7 list exceeds resource at byte " + std::to_string(offset));
             for (std::size_t record = 0; record < count; ++record) {
                 reader.append(3U, args);
-                const auto subtype = args.back();
-                require(subtype <= 2U,
-                        "unsupported mission opcode 7 subtype at byte " +
-                            std::to_string(reader.position() - 2U));
-                if (subtype != 0U) {
-                    const auto extra_count = reader.word();
-                    args.push_back(extra_count);
-                    reader.append_records(extra_count, subtype == 1U ? 2U : 5U, args);
+                // Original 0x48698..0x487ac: (x, y, group_count), then
+                // group_count independently counted lists of coordinate pairs.
+                // The third word is a count, not a 0/1/2 layout subtype.
+                const auto groups = args.back();
+                require(std::size_t(groups) <= reader.remaining_words(),
+                        "mission opcode 7 groups exceed resource at byte " +
+                            std::to_string(reader.position()));
+                for (std::size_t group = 0; group < groups; ++group) {
+                    const auto pairs = reader.word();
+                    args.push_back(pairs);
+                    reader.append_records(pairs, 2U, args);
                 }
             }
         } else {

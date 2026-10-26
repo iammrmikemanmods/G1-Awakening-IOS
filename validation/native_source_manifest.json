@@ -1,7 +1,9 @@
 {
-  "scope": "Current source/documentation inventory excluding this manifest; native module bytes unchanged from the successful Apple build commit",
-  "tested_native_source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
-  "native_runtime_original_executable_present": false,
+  "schema": 2,
+  "scope": "Exact prepared scene source snapshot; host10suites passed; Apple/device results separate",
+  "prior_main": "b9a2f8d38360907306ec0c0a202a941a97ed80f7",
+  "contains_original_executable": false,
+  "contains_game_assets": false,
   "files": [
     {
       "path": ".gitattributes",
@@ -10,8 +12,8 @@
     },
     {
       "path": ".github/workflows/native-core.yml",
-      "bytes": 2604,
-      "sha256": "30005cfad350c676ca1982bf5c4161d14ebc7b9649392b79d4f4b3aaf7030334"
+      "bytes": 4736,
+      "sha256": "314acbf8ccacb5271b32463906c272f988b4013c588b7e16d842dab85d91678a"
     },
     {
       "path": ".gitignore",
@@ -25,13 +27,13 @@
     },
     {
       "path": "PORT_STATUS.json",
-      "bytes": 3457,
-      "sha256": "38a07ebe817bff65d581158d69e04642c189938e271124745f308edf4747fd9b"
+      "bytes": 5099,
+      "sha256": "3362de61b9066f1e8acdfc2e4d6b75ce08bc79fbc930f3d22aa1489d2890d8d7"
     },
     {
       "path": "README.md",
-      "bytes": 4496,
-      "sha256": "050119e0e561062f75650a63c90a78879429c49e85d14b4c114b3f73ecc07f25"
+      "bytes": 5659,
+      "sha256": "b4c76974aeba643c5ccc866b7bbdd680d4cb0bb4ac2c6bf723b5b419d3054051"
     },
     {
       "path": "analysis_tools/PRESERVATION.json",
@@ -60,8 +62,8 @@
     },
     {
       "path": "analysis_tools/inspect_game_data.py",
-      "bytes": 8521,
-      "sha256": "82f12ac0e23a05e29653e43645ce9df2eb6ea88ac0685237808f32544a3b7da2"
+      "bytes": 8850,
+      "sha256": "e9a03e9a7bc7b851dea5c801e8a1b7748428d9f7bcf332b50baff96754ac9925"
     },
     {
       "path": "analysis_tools/movement/cases.json",
@@ -84,14 +86,104 @@
       "sha256": "61add36fcbbea0ae6a1f8a0c2d0abc4a4b13171c0fab02cdef5e194e2d7a19f5"
     },
     {
+      "path": "analysis_tools/pc_reference/PC_REUSE_FINDINGS.md",
+      "bytes": 8212,
+      "sha256": "d84222f193c5fb64791d0ea4d06e631d17b48011fb5116187b428587ccf6e4de"
+    },
+    {
+      "path": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json",
+      "bytes": 67877,
+      "sha256": "bbb2a021780d652e8db909fe6e166a46b9d8ab1ecec3987209fc86dad2c2c762"
+    },
+    {
+      "path": "analysis_tools/pc_reference/inspect_pc_package.py",
+      "bytes": 11538,
+      "sha256": "543194afc3b1a679f5cf31010fa2666c5943ec3ed63c0e50191cb52f0ac73f40"
+    },
+    {
+      "path": "analysis_tools/sprite/README.md",
+      "bytes": 4110,
+      "sha256": "bf7eba337401312b6da6142029ec69a75335f39ae2b8627937df338b207b3176"
+    },
+    {
+      "path": "analysis_tools/sprite/animation_oracle.py",
+      "bytes": 10553,
+      "sha256": "055c46dbfc8b13fc7c63278e214d1c04c9ca61035d9513bad9dffa84f9dbf79b"
+    },
+    {
+      "path": "analysis_tools/sprite/animation_probe.cpp",
+      "bytes": 2113,
+      "sha256": "9ed6bb55dd04e7240bd0be5ed319665903183d1972c599336f4fb963e970d283"
+    },
+    {
+      "path": "analysis_tools/sprite/matrix_oracle.py",
+      "bytes": 7517,
+      "sha256": "678dd059c857de98c2a9aadcb0f7be3be65b273c6772893be0963ec1f5ef57d4"
+    },
+    {
+      "path": "analysis_tools/sprite/placement_oracle.py",
+      "bytes": 8148,
+      "sha256": "940f7010add66ec3188886f4b96147c1c4c16cbf8720c89f6d369b8682b85325"
+    },
+    {
+      "path": "analysis_tools/sprite/placement_probe.cpp",
+      "bytes": 1824,
+      "sha256": "a4c0b34ac1385e446da75c21aa0638f949ac32e431079f1b6a08a0ad2175d2a1"
+    },
+    {
+      "path": "analysis_tools/sprite/render_oracle.py",
+      "bytes": 13657,
+      "sha256": "f3fa8b4d3df77c82bfc3d249109f650e3ec6e9c5421fd29dcf81adb3d3e1124c"
+    },
+    {
+      "path": "analysis_tools/terrain/camera_oracle.py",
+      "bytes": 10408,
+      "sha256": "6f9f58ec84de10bf775268648520ca5d3c96f38d11e3b8bb06a29fac964abf59"
+    },
+    {
+      "path": "analysis_tools/terrain/geometry_oracle.py",
+      "bytes": 8923,
+      "sha256": "b6dee3a66421bd251cf9841c97129c10854e772a88bb09d6a609fe2d0a28d68d"
+    },
+    {
+      "path": "analysis_tools/terrain/map_oracle.py",
+      "bytes": 7323,
+      "sha256": "bdb206e5455a5246a064361e6648bf565464487e399249ce656d87554a9fc919"
+    },
+    {
+      "path": "analysis_tools/world/README.md",
+      "bytes": 2555,
+      "sha256": "f65a83066673d4906cd3a63c2a7595cbbc5dca8882257172bc6fe6bcc2a04206"
+    },
+    {
+      "path": "analysis_tools/world/REFERENCE.json",
+      "bytes": 1031,
+      "sha256": "fa44a30b51f883008cc61cac8a24038feabbb68a5ae6d9174268e93ef51c4262"
+    },
+    {
+      "path": "analysis_tools/world/world_oracle.py",
+      "bytes": 20643,
+      "sha256": "2c1fc1e53e27c8c0a16a248b4d724f6225f9fdcba05456a9d840cc21d1bc6a79"
+    },
+    {
+      "path": "docs/NATIVE_SCENE_TEST.md",
+      "bytes": 2408,
+      "sha256": "e90adb02758451b39ac17495e76039e17ee16bcddc02f705a26f9ae01ca5d424"
+    },
+    {
+      "path": "docs/README_MEMORY_ZIP_POLICY.md",
+      "bytes": 1421,
+      "sha256": "2f90499f5ab125f9e1baa8982135525bb97f907dd2bbb0e1bd348d92af0525d4"
+    },
+    {
       "path": "docs/TIMING_REQUIREMENT.md",
-      "bytes": 2576,
-      "sha256": "a185b8fff785e747136053f1713a5a8b82a12d90c8863b4a4f9dbb870ebf5ff9"
+      "bytes": 3887,
+      "sha256": "92703185a8111c51e2c70d9f21ac3d99af0fa6c12c394c1451a443c8f8b3710e"
     },
     {
       "path": "native/CMakeLists.txt",
-      "bytes": 1651,
-      "sha256": "ddffece70f56e509cfdc5a5b879cdba288b2abbe67b075780053740ed492c60f"
+      "bytes": 5875,
+      "sha256": "529a05031314e53ef77dfdaf2ab3f0ead4aecf580eb1e32f680b06e3b4ffd68e"
     },
     {
       "path": "native/include/g1/Archive.hpp",
@@ -102,6 +194,16 @@
       "path": "native/include/g1/Atlas.hpp",
       "bytes": 3325,
       "sha256": "7306580534598d1d1de640ae66e96dd05810fe1eef87d8a06b78864bd2f1381f"
+    },
+    {
+      "path": "native/include/g1/Image.hpp",
+      "bytes": 412,
+      "sha256": "b7a19e7f2473190d19fbc46380a5cfd288e5d2f08db9b1a41983a63627e79804"
+    },
+    {
+      "path": "native/include/g1/InitialPresentation.hpp",
+      "bytes": 753,
+      "sha256": "d93dfa36787ea2928c261372613b8a0b843aab62ad02f9f1bacb2021cfe90bf0"
     },
     {
       "path": "native/include/g1/M3G.hpp",
@@ -119,14 +221,79 @@
       "sha256": "3d6ae42658f6be7a10685e5153ec168b3f32d71b76db2468499fa832ce45f438"
     },
     {
+      "path": "native/include/g1/Scene.hpp",
+      "bytes": 1281,
+      "sha256": "26dda9945692d72f663909b427d745f93bd5c9e61cf72b6cbc22d69462c968d4"
+    },
+    {
+      "path": "native/include/g1/SpriteAnimation.hpp",
+      "bytes": 1669,
+      "sha256": "d73a3c7fe2f4075d8cc007acaa7c0eef0543893949cb3e8225eadaddc6eb140d"
+    },
+    {
+      "path": "native/include/g1/SpriteGeometry.hpp",
+      "bytes": 1700,
+      "sha256": "1356de05761e44485e90300083fcd99eaaecf5055c777530cd9f5430511611ac"
+    },
+    {
+      "path": "native/include/g1/SpritePlacement.hpp",
+      "bytes": 1267,
+      "sha256": "be73567877ec77644328abcbe73629526b0e1f12d4d1753d687c218083eb555d"
+    },
+    {
+      "path": "native/include/g1/Terrain.hpp",
+      "bytes": 4201,
+      "sha256": "23f270aa8360b59674c44925afbcdae25d146aeea81099db69143ca8c431bcc6"
+    },
+    {
+      "path": "native/include/g1/World.hpp",
+      "bytes": 3835,
+      "sha256": "b7fd4bb861ff3419989e55db5ddb31015f3a7888178c62c0a905f72b09f6d210"
+    },
+    {
+      "path": "native/platform/apple/Info.plist.in",
+      "bytes": 1639,
+      "sha256": "24631ccdd0e357dd92d8f2416e55263e21295d22cdfeade61d8f5d40f211350a"
+    },
+    {
+      "path": "native/platform/apple/MetalProbe.mm",
+      "bytes": 5857,
+      "sha256": "1643bd1db4b52e53530f6690d37a7c7d836a0dd52118d8319f30b6072da6eed3"
+    },
+    {
+      "path": "native/platform/apple/MetalRenderer.hpp",
+      "bytes": 1033,
+      "sha256": "4cd575225d20c1d456188b8fb2c00d293f5dccf9ad4550f3a1f2d7f6f37eae81"
+    },
+    {
+      "path": "native/platform/apple/MetalRenderer.mm",
+      "bytes": 7126,
+      "sha256": "3dc396a183761c9420392144f4e6d661ff64d03741bf5006059523dc59d9e1df"
+    },
+    {
+      "path": "native/platform/apple/NativeApp.mm",
+      "bytes": 23288,
+      "sha256": "9c335dcb03760152a591777b9d5c4fa8a403a724f77ec4f9fa24786ae83ff53b"
+    },
+    {
+      "path": "native/research/APP_SOURCE_REVIEW.json",
+      "bytes": 5057,
+      "sha256": "d3653b053b1006be3e0b5f9d6ad973575a72b1fc0a4373cdce192df5beb8dab3"
+    },
+    {
       "path": "native/research/ATLAS_DECODER.md",
       "bytes": 10294,
       "sha256": "8b77c30d48169c2f5a3c0811b93e40f96e7d7f8ed53c1d76e4c65064679897c8"
     },
     {
+      "path": "native/research/CAMERA_RECOVERY.md",
+      "bytes": 5321,
+      "sha256": "3d27dd469867ca68b16201b0778fb7e8ec15419e074e06594f3d52212faf35de"
+    },
+    {
       "path": "native/research/MISSION_DECODER.md",
-      "bytes": 8359,
-      "sha256": "d0781fe436358844256ab4f5f1f99960c46b89c90f3aadd8b6d980aab32555b8"
+      "bytes": 9403,
+      "sha256": "6384bfa5ae662bff83963b8e959838aec25a188daa388a442ce61187f82be9cd"
     },
     {
       "path": "native/research/MOVEMENT_RECOVERY.json",
@@ -139,6 +306,31 @@
       "sha256": "b3d5fa8883af45d2860dd193c9623d9d39a60b2ac052ccf4a5c238a48fa80c87"
     },
     {
+      "path": "native/research/SPRITE_RENDERING.json",
+      "bytes": 4559,
+      "sha256": "70e39ff36b221463fad03ca45bca57bee7d1cf7b0eefe91fbd29d90970d689c4"
+    },
+    {
+      "path": "native/research/SPRITE_RENDERING.md",
+      "bytes": 15004,
+      "sha256": "77dea23a8e2a196d55bdc116f09c73ac645dc8b26869c00469b693de0dd2c88f"
+    },
+    {
+      "path": "native/research/TERRAIN_DECODER.md",
+      "bytes": 9031,
+      "sha256": "fbc389c203731090e160cebbb2917b90651cc8f9ddebe8ac108af8bdf1e63078"
+    },
+    {
+      "path": "native/research/WORLD_BOOTSTRAP.json",
+      "bytes": 6804,
+      "sha256": "65a7badb34d3eb5e24d9cfcd00a7472f1c937021644c23bd2533e8875d4c4602"
+    },
+    {
+      "path": "native/research/WORLD_BOOTSTRAP.md",
+      "bytes": 10672,
+      "sha256": "887125491e7490414777560fb7de4d06dd68dbccf6249d6d11af3230e9ccdd96"
+    },
+    {
       "path": "native/research/atlas_validation/native_atlas_validation.json",
       "bytes": 40297,
       "sha256": "47688d06d6621bbc5eb29df7ca3668d75b18edde90b966b3d5cf166515ac50d1"
@@ -147,6 +339,11 @@
       "path": "native/research/atlas_validation/original_quad_oracle.json",
       "bytes": 8720,
       "sha256": "2822faa4884e297ad8655c9b05a75e031dfd8c67ad5d308bfc5183035ecf11f1"
+    },
+    {
+      "path": "native/research/image_validation/native_png_pixels.json",
+      "bytes": 40570,
+      "sha256": "49a4f6256a08bd8b0c8acff34ecdb92a742c17e795d4bcbab9d061b12b5e037b"
     },
     {
       "path": "native/research/mission_validation/MISSION_CHECKPOINT.json",
@@ -164,6 +361,16 @@
       "sha256": "55b70ec3e3bf800421f048ba64e28010e27b1788358e05ea466d84b563713a01"
     },
     {
+      "path": "native/research/mission_validation_opcode7/native_mission_validation.json",
+      "bytes": 144341,
+      "sha256": "afcf32c2afcc92f57ca051bc82457e7ca91b35cab3cab35501c9989ba12ff148"
+    },
+    {
+      "path": "native/research/mission_validation_opcode7/reference_refresh.json",
+      "bytes": 591,
+      "sha256": "9708209f47afbb39f19a7c0327b40c6eb43be17c6cd1b2cb6e65de3bfc68b463"
+    },
+    {
       "path": "native/research/resource_validation/native_resource_inventory.tsv",
       "bytes": 24879,
       "sha256": "c82184845563e87a25699577bb8c287b91ba5eea6d7fcbf023c980c7156cf274"
@@ -172,6 +379,66 @@
       "path": "native/research/resource_validation/native_validation.json",
       "bytes": 3464,
       "sha256": "013bb2278366070de243752ed27dfef4c15910e73ae2be87cce4d5e915c1ad71"
+    },
+    {
+      "path": "native/research/scene_validation/first_scene_load.json",
+      "bytes": 909,
+      "sha256": "86de5da7bdb13fd44ef80141b80e1e1b351e9349992e639924478355fb46becf"
+    },
+    {
+      "path": "native/research/scene_validation/local_scene_validation.json",
+      "bytes": 1665,
+      "sha256": "54e78f90b490bf64f20bc0c0dc9807f80bc1841237fa87a31ef73959fd95c660"
+    },
+    {
+      "path": "native/research/sprite_validation/original_animation.json",
+      "bytes": 5946,
+      "sha256": "98a4635b26aa7577f6e0c1e14b5926c877167706c125e9ef9e0b3444a35b8832"
+    },
+    {
+      "path": "native/research/sprite_validation/original_matrix.json",
+      "bytes": 3933,
+      "sha256": "4b8177654819afab875ce908bcc737730f6d45e12742c40e7d6ea2c465a1a712"
+    },
+    {
+      "path": "native/research/sprite_validation/original_placement.json",
+      "bytes": 2340,
+      "sha256": "078c965d01611f8a498310fddd630978b0b51a3e11986ad5176c20fb56fbd99d"
+    },
+    {
+      "path": "native/research/sprite_validation/original_render_setup.json",
+      "bytes": 11820,
+      "sha256": "082428b9f9e232141b4eaa8753015f7a3897e2d6bd650e945528bf5abce25074"
+    },
+    {
+      "path": "native/research/terrain_validation/TERRAIN_CHECKPOINT.json",
+      "bytes": 2941,
+      "sha256": "06ab4748d3684ac789c97b11d5b618bc9dcc6f90b4aa80d3044d8da3b62428da"
+    },
+    {
+      "path": "native/research/terrain_validation/native_terrain_validation.json",
+      "bytes": 28497,
+      "sha256": "57722e6cc7835473056b495c7b17182454997bbeb3d81d7ea4a7218675743c61"
+    },
+    {
+      "path": "native/research/terrain_validation/original_camera_setup.json",
+      "bytes": 12750,
+      "sha256": "e1b7292f7b09607e40ecbbe1429634795050c63f237c0d10cb25f3d1728241f8"
+    },
+    {
+      "path": "native/research/terrain_validation/original_first_grid_oracle.json",
+      "bytes": 1801,
+      "sha256": "c1fdd81a0d5ebc17a706a8046141a433a4a62da4b4ab94f520e1fa4b1475bacb"
+    },
+    {
+      "path": "native/research/terrain_validation/original_terrain_oracle.json",
+      "bytes": 42906,
+      "sha256": "06ea8a192abc6e717a9022d28bce9867e2eebfaae6343e97c6ca8073dc166133"
+    },
+    {
+      "path": "native/research/world_validation/original_world_oracle.json",
+      "bytes": 7040,
+      "sha256": "ddfa2c079e2b156ea240dc8f53c3377210a94ae8715e04de09c3f74b91b4a0f8"
     },
     {
       "path": "native/src/Archive.cpp",
@@ -184,19 +451,59 @@
       "sha256": "5224165172d03bd54c7d8033c1d2e6ee44ce7ca1fa03526d74b61d1b1e156749"
     },
     {
+      "path": "native/src/Image.cpp",
+      "bytes": 2645,
+      "sha256": "a3f4d8e18f82699138ef6948bbd72e7402c98e2e4973c6cba5096cb220564e4f"
+    },
+    {
+      "path": "native/src/InitialPresentation.cpp",
+      "bytes": 2581,
+      "sha256": "bd2a16f05c1ce3b3eabbb92c2e433c9a0b68937cf7dd9eec3c82cf2c4250137f"
+    },
+    {
       "path": "native/src/M3G.cpp",
       "bytes": 4130,
       "sha256": "5a80cf51465903ec076bd18173235b801b90fe61217cb67d410060d6f17ba9ff"
     },
     {
       "path": "native/src/Mission.cpp",
-      "bytes": 4947,
-      "sha256": "36c003e35084c66d406323fadb372fbb87431f27dd4af7c633e74a745ab97e35"
+      "bytes": 5199,
+      "sha256": "8cfd2d9a7faf9c8b3ad89816d6220eeae29119d754b0bf371543d9c6ca116cf2"
     },
     {
       "path": "native/src/Movement.cpp",
       "bytes": 8163,
       "sha256": "20de5fe30ac8b69803b149bdc0a1a019a480c70d412f1bd0e474e6b1f70dbf04"
+    },
+    {
+      "path": "native/src/Scene.cpp",
+      "bytes": 2662,
+      "sha256": "20205229fbcc8ad80c8bf306f93f2006696d451687d48335771b4797f6140705"
+    },
+    {
+      "path": "native/src/SpriteAnimation.cpp",
+      "bytes": 3764,
+      "sha256": "af666ad4afd0e728ec1930020fab1ec36496038c7636635f34271764ed6c060f"
+    },
+    {
+      "path": "native/src/SpriteGeometry.cpp",
+      "bytes": 1942,
+      "sha256": "ad8bb1b6b324bcd39f1ce23b7e45cfa18d8d20b95a3a7afdf1da801a0d0c5f39"
+    },
+    {
+      "path": "native/src/SpritePlacement.cpp",
+      "bytes": 2598,
+      "sha256": "7615da12e273eb5bf5c6cb18707655b73b547c2dce0f7306f074619a37bb7ed0"
+    },
+    {
+      "path": "native/src/Terrain.cpp",
+      "bytes": 9589,
+      "sha256": "2baa7dbe5503e90379aa5950f5f5898a072a0e53cbec560612c7953c4582ef43"
+    },
+    {
+      "path": "native/src/World.cpp",
+      "bytes": 15309,
+      "sha256": "4c8501b4712a69cdde6920d7fcc981d6336149f18197ad6fdf059f6e09f8a064"
     },
     {
       "path": "native/tests/atlas_reference.json",
@@ -215,18 +522,33 @@
     },
     {
       "path": "native/tests/generate_mission_reference.py",
-      "bytes": 6180,
-      "sha256": "7f7a4d8a6bd05008f05cca2e6a11d3c1a714e7ef2bba52d7609b6f226dee2709"
+      "bytes": 6280,
+      "sha256": "3022d02273db82675701a12a2050ad92dab123a92076d40de9ed35c01071ae14"
+    },
+    {
+      "path": "native/tests/generate_terrain_reference.py",
+      "bytes": 8135,
+      "sha256": "9a5bccfa856356c281ba1440bd007d59325b80051132aa8c4f9b5037b218ba33"
+    },
+    {
+      "path": "native/tests/image_test.cpp",
+      "bytes": 1452,
+      "sha256": "05bfdbe80f59ebeb9815c1744b3ea5eb907dd0612e65533be8d24dcf06368ec8"
+    },
+    {
+      "path": "native/tests/initial_presentation_test.cpp",
+      "bytes": 1271,
+      "sha256": "7955f27f95a41b61853e121222d5a65fab460b04145e9e7a8f5c806d8365d1b2"
     },
     {
       "path": "native/tests/mission_reference.json",
-      "bytes": 28641,
-      "sha256": "1ef8f33c6b929ca330136d9c80d960b2a5e04a72b0a6cde114291301da3d77c9"
+      "bytes": 28663,
+      "sha256": "76b465dadb42c4a55c7b3d0bb5082a88ee8590ab207989ad1a8a76276b7df9d7"
     },
     {
       "path": "native/tests/mission_test.cpp",
-      "bytes": 4368,
-      "sha256": "720cf1d432c423bd4cadae262900db23e2ffc193e3631c98ddbc29e529963841"
+      "bytes": 4939,
+      "sha256": "a7c4df5a354d9775c1335a9da92381375b20be5d6d6c79e151fbfc8f5b66f21e"
     },
     {
       "path": "native/tests/movement_cases.txt",
@@ -244,9 +566,44 @@
       "sha256": "ba6ee933649e511ac917b7018a1313d32f39f2fbd7700ee7d84b22045ac479c7"
     },
     {
+      "path": "native/tests/sprite_animation_test.cpp",
+      "bytes": 4609,
+      "sha256": "e70a9e94c200a4b9d163f42323befda2dead98ef0547d5005460b882d8701baa"
+    },
+    {
+      "path": "native/tests/sprite_geometry_test.cpp",
+      "bytes": 4166,
+      "sha256": "62ef35a3933f7ad3a58d1978075f9e7335bdd5ff7edcab7b1e30d21225eb21e4"
+    },
+    {
+      "path": "native/tests/sprite_placement_test.cpp",
+      "bytes": 3142,
+      "sha256": "9e59f47a53049811d3e2631bf8062ce341ebcc9b8ffe585af37c213cf1fc5ed6"
+    },
+    {
+      "path": "native/tests/terrain_cases.txt",
+      "bytes": 29303,
+      "sha256": "5791215629f391e3400075ce012a4168a65931ea50fc8581f4c30e8d11c64345"
+    },
+    {
+      "path": "native/tests/terrain_reference.json",
+      "bytes": 14887,
+      "sha256": "e1d5940bc9acd1d1d89e475650e85f83fd9fdad7364b4ef1eec3a0f2fb7bee87"
+    },
+    {
+      "path": "native/tests/terrain_test.cpp",
+      "bytes": 7672,
+      "sha256": "91b8f0b9cf82012759180cb9c46c71e415ef7b68a80af5a187b5adde2d7dd28f"
+    },
+    {
       "path": "native/tests/verify_atlas.py",
       "bytes": 6322,
       "sha256": "5ab4a5b8774082254f801e80aa98587c5d03d5d5fe5110975b4294be27871f08"
+    },
+    {
+      "path": "native/tests/verify_images.py",
+      "bytes": 3292,
+      "sha256": "f3ab6b9c13c43998eb7fe72735604fd45e30759e49fd4f5667016d524909fc4c"
     },
     {
       "path": "native/tests/verify_missions.py",
@@ -259,14 +616,54 @@
       "sha256": "025799d510e7ccba2882ef875f0249755fa03b2f4c3cb063da863793ddccf1a9"
     },
     {
+      "path": "native/tests/verify_terrain.py",
+      "bytes": 8427,
+      "sha256": "851f7a94494e73f301223e8a46f5d8edd33107f21b0cd42db10d9592eafaa6f9"
+    },
+    {
+      "path": "native/tests/world_test.cpp",
+      "bytes": 12758,
+      "sha256": "07002542b4f132b318cee218843332141eadeaaedb68247c3d336d58beaee601"
+    },
+    {
+      "path": "native/third_party/lodepng/LICENSE",
+      "bytes": 886,
+      "sha256": "bdafa318b8e637d600ca1b60545e894881977a16a16b74809c95e805701621e3"
+    },
+    {
+      "path": "native/third_party/lodepng/UPSTREAM.json",
+      "bytes": 639,
+      "sha256": "cb2940d282b1bace1f30d5031dd0d4b436f67a37acbddd7d8c724b072d8453fe"
+    },
+    {
+      "path": "native/third_party/lodepng/lodepng.cpp",
+      "bytes": 312689,
+      "sha256": "6aec876971ec860527859458d3095220fc5ee1258ec37eb59e1e7dd9cf136a81"
+    },
+    {
+      "path": "native/third_party/lodepng/lodepng.h",
+      "bytes": 108843,
+      "sha256": "9a1fca0238c38333bdc8545336961b73fd0b76957bbacf033186991be9d7cf85"
+    },
+    {
       "path": "native/tools/atlas_probe.cpp",
       "bytes": 4042,
       "sha256": "a79260305f11fd65764a7b5b2d37e7d4067c82e015772422ffbac1334cd05e15"
     },
     {
+      "path": "native/tools/extract_terrain_tables.py",
+      "bytes": 6845,
+      "sha256": "bca928d01ef4dc25f335b75d761266fbb6750bb721efd2a8fa93d60511c2e9b0"
+    },
+    {
       "path": "native/tools/g1_asset_probe.cpp",
       "bytes": 1899,
       "sha256": "873af09ec06d65a14bec3ab30c0022df2f401c75262f266aca487ba4760ba5ac"
+    },
+    {
+      "path": "native/tools/image_probe.cpp",
+      "bytes": 768,
+      "sha256": "7ad7e4d5a7f0315438153d8f7b75a118c46865c0b61bc18356e270108e6cfea5"
     },
     {
       "path": "native/tools/m3g_probe.cpp",
@@ -277,6 +674,31 @@
       "path": "native/tools/mission_probe.cpp",
       "bytes": 2533,
       "sha256": "689ff449ce11f633a7d66c7fb8237501780d127af02c05e891efe6eb90042e46"
+    },
+    {
+      "path": "native/tools/scene_probe.cpp",
+      "bytes": 3031,
+      "sha256": "4ac7bf4026dae41475dcb3a6af1c77f8a3e3ce848fcf2d2c96e4c08b13c9fecb"
+    },
+    {
+      "path": "native/tools/terrain_probe.cpp",
+      "bytes": 4333,
+      "sha256": "f7d7013fda5001de7b6ed01da0873827345ce82b2b0d67833337fff0d7398a38"
+    },
+    {
+      "path": "native/tools/world_probe.cpp",
+      "bytes": 8226,
+      "sha256": "11d336a0211f90f35e54e9f0f1cd303b5017c0cc7c2d618957e454be87671820"
+    },
+    {
+      "path": "scripts/package-native-scene.py",
+      "bytes": 8205,
+      "sha256": "cb3a940fb62e1335ae6d4cabdc07bef55b9a88a644ece54debabcb05a12e725d"
+    },
+    {
+      "path": "scripts/verify-native-app.py",
+      "bytes": 4785,
+      "sha256": "475c8731ef75711038b67d9dfe9a535defa72558cbf99d5b45831e434667e207"
     },
     {
       "path": "scripts/verify-native-archive.py",

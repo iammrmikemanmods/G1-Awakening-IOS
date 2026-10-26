@@ -3,8 +3,10 @@
 
 Reads original IPA or FGIB through inspect_assets.py. Output is research metadata,
 not runnable gameplay. The command schema was derived from 30 resource streams;
-its byte consumption/counts are validated, but command meanings require tracing
-the native interpreter or observing the original game.
+its byte consumption/counts are validated. Opcode 7 was subsequently corrected
+from the original parser at 0x48698..0x487ac: its third site word is a group
+count, and each group contains an independently counted list of pairs. This
+tool does not execute the recovered command semantics.
 """
 import argparse
 from collections import Counter
@@ -20,7 +22,7 @@ HYPOTHESES = {3:"dialogue: first field resembles speaker/unit, second text index
               4:"camera focus: two coordinates and a mode",
               5:"delay: observed values include 200, 500, 1000",
               6:"place unit: unit/index sentinel, x, y, two flags",
-              7:"place structures with optional type-dependent records",
+              7:"site coordinates with independently counted groups of coordinate pairs",
               9:"load map/grid and terrain/style",
               10:"mission completion/transition parameter",
               12:"mission objective or blocking condition",
@@ -59,16 +61,17 @@ def decode_mission(data):
         elif opcode==7:
             n=take(1)[0]
             args=[n]
-            require(n<=len(words)//3, "structure list exceeds resource bounds")
+            require(n<=(len(words)-pos)//3, "site list exceeds resource bounds")
             for _ in range(n):
                 triple=take(3)
                 args+=triple
-                subtype=triple[2]
-                require(subtype in (0,1,2), "unknown structure-layout subtype")
-                if subtype:
+                groups=triple[2]
+                require(groups<=len(words)-pos, "site groups exceed resource bounds")
+                for _ in range(groups):
                     extra=take(1)[0]
                     args.append(extra)
-                    args+=take(extra*{1:2,2:5}[subtype])
+                    require(extra<=(len(words)-pos)//2, "site pairs exceed resource bounds")
+                    args+=take(extra*2)
         else:
             raise FormatError(f"unknown mission opcode {opcode} at word {start}")
         commands.append({"instruction_index":index,"byte_offset":2+2*start,
@@ -76,7 +79,7 @@ def decode_mission(data):
     require(pos==len(words), "mission command count did not consume the whole stream")
     return {"version":1,"declared_instruction_count":count,"commands":commands,
             "exact_framing_validated":True,
-            "semantic_status":"opcode meanings are hypotheses; native interpreter/runtime not yet verified"}
+            "semantic_status":"framing only; bounded native bootstrap evidence is documented separately in WORLD_BOOTSTRAP.md"}
 
 
 def inspect(path, output):
@@ -85,7 +88,7 @@ def inspect(path, output):
     by_id={e["resource_id"]:(e,d) for e,d in resources}
     result={"input":origin,"archive_sha256":sha256(raw),"roles":[],"mission_streams":[],"grids":[],
             "mission_opcode_meaning_hypotheses":{str(k):v for k,v in HYPOTHESES.items()},
-            "evidence_limits":["Mission framing is consistent across all 30 candidate streams; native opcode dispatch is not confirmed.",
+            "evidence_limits":["This tool validates mission framing, including the opcode7 group loop recovered from original 0x48698..0x487ac; it does not execute dispatch behavior.",
                                "Grid byte layouts are exact; tile meaning, orientation and mission-to-grid mapping are not proven.",
                                "ARM resources contain executable instructions; shader role is supported by texture/color operations but loader tracing remains necessary.",
                                "No known script VM signature is present at the start of any resource. Custom mission command streams are present."]}

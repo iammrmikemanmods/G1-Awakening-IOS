@@ -1,0 +1,2169 @@
+{
+  "scope": "Read-only static audit; no Windows executable run; no payload extracted or modified.",
+  "input": {
+    "path": "/workspace/scratch/cba553aafa20/upload/G1Awakening.exe",
+    "bytes": 28814848,
+    "sha256": "50dd5702e6cf6c0e79ec26757f84934c210be4576ff85a1d4d7303749b2e9cd7"
+  },
+  "original_ipa": {
+    "path": "/workspace/scratch/cba553aafa20/upload/G1awakening_v1.1.3_os30.ipa",
+    "sha256": "b24fbe5cc4d5cb603189a476c4f81dd2a6ecc18b025eae913262055a7fc443fd"
+  },
+  "launcher_pe": {
+    "machine": "0x8664",
+    "architecture": "x86_64",
+    "format": "PE32+",
+    "subsystem": 2,
+    "image_base": "0x140000000",
+    "entry_rva": "0x13e0",
+    "sections": [
+      {
+        "name": ".text",
+        "virtual_size": 353032,
+        "virtual_address": 4096,
+        "raw_size": 353280,
+        "raw_offset": 1024
+      },
+      {
+        "name": ".data",
+        "virtual_size": 2656,
+        "virtual_address": 360448,
+        "raw_size": 3072,
+        "raw_offset": 354304
+      },
+      {
+        "name": ".rdata",
+        "virtual_size": 28418592,
+        "virtual_address": 364544,
+        "raw_size": 28419072,
+        "raw_offset": 357376
+      },
+      {
+        "name": ".pdata",
+        "virtual_size": 7524,
+        "virtual_address": 28786688,
+        "raw_size": 7680,
+        "raw_offset": 28776448
+      },
+      {
+        "name": ".xdata",
+        "virtual_size": 19352,
+        "virtual_address": 28794880,
+        "raw_size": 19456,
+        "raw_offset": 28784128
+      },
+      {
+        "name": ".bss",
+        "virtual_size": 512,
+        "virtual_address": 28815360,
+        "raw_size": 0,
+        "raw_offset": 0
+      },
+      {
+        "name": ".idata",
+        "virtual_size": 5908,
+        "virtual_address": 28819456,
+        "raw_size": 6144,
+        "raw_offset": 28803584
+      },
+      {
+        "name": ".CRT",
+        "virtual_size": 96,
+        "virtual_address": 28827648,
+        "raw_size": 512,
+        "raw_offset": 28809728
+      },
+      {
+        "name": ".tls",
+        "virtual_size": 16,
+        "virtual_address": 28831744,
+        "raw_size": 512,
+        "raw_offset": 28810240
+      },
+      {
+        "name": ".rsrc",
+        "virtual_size": 2176,
+        "virtual_address": 28835840,
+        "raw_size": 2560,
+        "raw_offset": 28810752
+      },
+      {
+        "name": ".reloc",
+        "virtual_size": 1028,
+        "virtual_address": 28839936,
+        "raw_size": 1536,
+        "raw_offset": 28813312
+      }
+    ],
+    "section_raw_end": 28814848,
+    "bytes_after_sections": 0,
+    "clr_directory": [
+      0,
+      0
+    ],
+    "certificate_directory": [
+      0,
+      0
+    ],
+    "imports": [
+      {
+        "dll": "bcryptprimitives.dll",
+        "functions": [
+          "ProcessPrng"
+        ]
+      },
+      {
+        "dll": "api-ms-win-core-synch-l1-2-0.dll",
+        "functions": [
+          "WaitOnAddress",
+          "WakeByAddressAll",
+          "WakeByAddressSingle"
+        ]
+      },
+      {
+        "dll": "comctl32.dll",
+        "functions": [
+          "TaskDialogIndirect"
+        ]
+      },
+      {
+        "dll": "dbghelp.dll",
+        "functions": [
+          "MiniDumpWriteDump"
+        ]
+      },
+      {
+        "dll": "kernel32.dll",
+        "functions": [
+          "AddVectoredExceptionHandler",
+          "CloseHandle",
+          "ContinueDebugEvent",
+          "CreateDirectoryW",
+          "CreateFileMappingA",
+          "CreateFileW",
+          "CreateMutexW",
+          "CreateProcessW",
+          "CreateThread",
+          "DebugActiveProcessStop",
+          "DeleteFileW",
+          "DuplicateHandle",
+          "FindClose",
+          "FindFirstFileExW",
+          "FlsAlloc",
+          "FlsFree",
+          "FlsSetValue",
+          "FlushFileBuffers",
+          "FormatMessageW",
+          "GetCurrentProcess",
+          "GetCurrentProcessId",
+          "GetCurrentThread",
+          "GetCurrentThreadId",
+          "GetExitCodeProcess",
+          "GetFileAttributesW",
+          "GetFileInformationByHandle",
+          "GetFileInformationByHandleEx",
+          "GetFinalPathNameByHandleW",
+          "GetFullPathNameW",
+          "GetLastError",
+          "GetModuleFileNameW",
+          "GetModuleHandleA",
+          "GetModuleHandleExW",
+          "GetModuleHandleW",
+          "GetProcAddress",
+          "GetProcessHeap",
+          "GetProcessId",
+          "GetThreadContext",
+          "HeapAlloc",
+          "HeapFree",
+          "HeapReAlloc",
+          "InitOnceBeginInitialize",
+          "InitOnceComplete",
+          "IsThreadAFiber",
+          "K32GetModuleFileNameExW",
+          "MapViewOfFile",
+          "MoveFileExW",
+          "OpenThread",
+          "ReadProcessMemory",
+          "ReleaseMutex",
+          "RtlCaptureContext",
+          "RtlLookupFunctionEntry",
+          "RtlVirtualUnwind",
+          "SetFileInformationByHandle",
+          "SetFileTime",
+          "SetLastError",
+          "SetThreadStackGuarantee",
+          "SetUnhandledExceptionFilter",
+          "Sleep",
+          "SleepEx",
+          "TerminateProcess",
+          "TlsAlloc",
+          "TlsFree",
+          "TlsGetValue",
+          "TlsSetValue",
+          "UnmapViewOfFile",
+          "VirtualQueryEx",
+          "WaitForDebugEvent",
+          "WaitForSingleObject"
+        ]
+      },
+      {
+        "dll": "ntdll.dll",
+        "functions": [
+          "RtlNtStatusToDosError"
+        ]
+      },
+      {
+        "dll": "shell32.dll",
+        "functions": [
+          "ShellExecuteW"
+        ]
+      },
+      {
+        "dll": "user32.dll",
+        "functions": [
+          "MessageBoxW"
+        ]
+      },
+      {
+        "dll": "KERNEL32.dll",
+        "functions": [
+          "CompareStringOrdinal",
+          "CreateToolhelp32Snapshot",
+          "DeleteCriticalSection",
+          "EnterCriticalSection",
+          "FreeEnvironmentStringsW",
+          "GetConsoleMode",
+          "GetConsoleOutputCP",
+          "GetCurrentDirectoryW",
+          "GetEnvironmentStringsW",
+          "GetEnvironmentVariableW",
+          "GetStdHandle",
+          "GetSystemDirectoryW",
+          "GetSystemTimePreciseAsFileTime",
+          "GetWindowsDirectoryW",
+          "InitializeCriticalSection",
+          "LeaveCriticalSection",
+          "Module32FirstW",
+          "Module32NextW",
+          "MultiByteToWideChar",
+          "QueryPerformanceCounter",
+          "QueryPerformanceFrequency",
+          "RaiseException",
+          "ReadFileEx",
+          "RtlUnwindEx",
+          "SetEnvironmentVariableW",
+          "VirtualProtect",
+          "VirtualQuery",
+          "WriteConsoleW",
+          "WriteFileEx",
+          "__C_specific_handler"
+        ]
+      },
+      {
+        "dll": "msvcrt.dll",
+        "functions": [
+          "__getmainargs",
+          "__initenv",
+          "__iob_func",
+          "__set_app_type",
+          "__setusermatherr",
+          "_amsg_exit",
+          "_cexit",
+          "_commode",
+          "_fmode",
+          "_fpreset",
+          "_initterm",
+          "_onexit",
+          "abort",
+          "calloc",
+          "exit",
+          "fprintf",
+          "free",
+          "fwrite",
+          "malloc",
+          "memcmp",
+          "memcpy",
+          "memmove",
+          "memset",
+          "signal",
+          "strlen",
+          "strncmp",
+          "vfprintf",
+          "wcslen"
+        ]
+      },
+      {
+        "dll": "ntdll.dll",
+        "functions": [
+          "NtCreateNamedPipeFile",
+          "NtOpenFile",
+          "NtReadFile",
+          "NtWriteFile"
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "path": [
+          16,
+          1,
+          1033
+        ],
+        "file_offset": 28810912,
+        "bytes": 652,
+        "codepage": 0,
+        "sha256": "e86bb96cc6f0dcc30226ca0ac2b0f0a0d4850520f3720a75463fc0ebc84c1f2c",
+        "utf8_text": null
+      },
+      {
+        "path": [
+          24,
+          1,
+          1033
+        ],
+        "file_offset": 28811568,
+        "bytes": 1355,
+        "codepage": 0,
+        "sha256": "07d0aab5be4262b1cdfde20517ce9866be88032bbc3911f95c6c4abd3500d3fe",
+        "utf8_text": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<assembly xmlns=\"urn:schemas-microsoft-com:asm.v1\" manifestVersion=\"1.0\">\n  <assemblyIdentity version=\"0.5.0.0\" processorArchitecture=\"amd64\" name=\"G1Awakening.PC.Launcher\" type=\"win32\" />\n  <description>G1 Awakening PC test launcher</description>\n  <dependency><dependentAssembly>\n    <assemblyIdentity type=\"win32\" name=\"Microsoft.Windows.Common-Controls\" version=\"6.0.0.0\" processorArchitecture=\"amd64\" publicKeyToken=\"6595b64144ccf1df\" language=\"*\" />\n  </dependentAssembly></dependency>\n  <trustInfo xmlns=\"urn:schemas-microsoft-com:asm.v3\"><security><requestedPrivileges>\n    <requestedExecutionLevel level=\"asInvoker\" uiAccess=\"false\" />\n  </requestedPrivileges></security></trustInfo>\n  <application xmlns=\"urn:schemas-microsoft-com:asm.v3\"><windowsSettings>\n    <dpiAware xmlns=\"http://schemas.microsoft.com/SMI/2005/WindowsSettings\">true/pm</dpiAware>\n    <dpiAwareness xmlns=\"http://schemas.microsoft.com/SMI/2016/WindowsSettings\">PerMonitorV2</dpiAwareness>\n    <longPathAware xmlns=\"http://schemas.microsoft.com/SMI/2016/WindowsSettings\">true</longPathAware>\n  </windowsSettings></application>\n  <compatibility xmlns=\"urn:schemas-microsoft-com:compatibility.v1\"><application>\n    <supportedOS Id=\"{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}\" />\n  </application></compatibility>\n</assembly>\n\n"
+      }
+    ]
+  },
+  "embedded_zip": {
+    "file_offset": 370775,
+    "end_exclusive": 28727130,
+    "bytes": 28356355,
+    "sha256": "a606605adfcc89972d1586d5fe60673df0bc7e2c690cd02418a89e924302fc37",
+    "entries": 95,
+    "all_entry_crc_checks_passed": true
+  },
+  "members": [
+    {
+      "path": "G1-Classic.cmd",
+      "bytes": 707,
+      "compressed_bytes": 411,
+      "zip_crc32": "f9d2b953",
+      "sha256": "587195ae020dc020eac0e217aaa9efa68edc5c300688e043d31b201da2b22f61"
+    },
+    {
+      "path": "G1-High-Resolution-Experimental.cmd",
+      "bytes": 746,
+      "compressed_bytes": 430,
+      "zip_crc32": "2927323b",
+      "sha256": "3c2054aec32a2ce2036e1e4158d3b34a1bd815da98352a47a43370704fad567d"
+    },
+    {
+      "path": "G1-Windowed-Diagnostic.cmd",
+      "bytes": 695,
+      "compressed_bytes": 408,
+      "zip_crc32": "1a476aeb",
+      "sha256": "d4bc9a7f41b332859e0a9ea1e335e11ae28375bce6ba7370863b3245f05d3eb6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2107,
+      "compressed_bytes": 1142,
+      "zip_crc32": "1b954315",
+      "sha256": "a51483b68461aeeae42ad6eaef50159ff9228916775eccd4ae973c70ed3f6844"
+    },
+    {
+      "path": "README_MEMORY_ZIP_POLICY.md",
+      "bytes": 2259,
+      "compressed_bytes": 1211,
+      "zip_crc32": "ecb97447",
+      "sha256": "756afd7f695fb60c37be9f3693b255eeb18e0c436b0141e9826f4b6e713ebc7a"
+    },
+    {
+      "path": "SOURCE_PROVENANCE.json",
+      "bytes": 2346,
+      "compressed_bytes": 788,
+      "zip_crc32": "d6411b0a",
+      "sha256": "046a5a5e4facafa0009812ea452370fb2f765495ab443cdb1dd8e46fd9054af4"
+    },
+    {
+      "path": "build_provenance.json",
+      "bytes": 7046,
+      "compressed_bytes": 3258,
+      "zip_crc32": "c587a209",
+      "sha256": "14062da80be3e1840ae14c6a52fd134cf0f30e02fef715e8565476b267777491"
+    },
+    {
+      "path": "build_source/BUILD04_REBUILD.md",
+      "bytes": 1204,
+      "compressed_bytes": 707,
+      "zip_crc32": "fdab0e11",
+      "sha256": "d13d73dd65f0e5ec0da2e9fc220b245dd06779ad5f06c9ddbbe96dfd4d78abaf"
+    },
+    {
+      "path": "build_source/BUILD05_REBUILD.md",
+      "bytes": 1353,
+      "compressed_bytes": 814,
+      "zip_crc32": "ecb286aa",
+      "sha256": "f172a8d839bf1c6f5124918899a23d27512a51615d03659fef55f11e40029114"
+    },
+    {
+      "path": "build_source/Cargo.lock",
+      "bytes": 32149,
+      "compressed_bytes": 8217,
+      "zip_crc32": "5e6f0bee",
+      "sha256": "5a53712c94a267913b58fbbbed4e61de2f332c183d058fa26a89e198d3c1e20a"
+    },
+    {
+      "path": "build_source/build04_patch_application.json",
+      "bytes": 6246,
+      "compressed_bytes": 2239,
+      "zip_crc32": "2e73eefd",
+      "sha256": "2ae31f49a85f98435f307c6ee25383d5e1a6210d5c5d31039c2f8363366e4682"
+    },
+    {
+      "path": "build_source/build05_patch_application.json",
+      "bytes": 3777,
+      "compressed_bytes": 1841,
+      "zip_crc32": "b7a32792",
+      "sha256": "87f81b8a590f09e1ec1c298ee8f0b7a02cf9a1978bf78af0e67d1e0176cbd91a"
+    },
+    {
+      "path": "build_source/build_cross_static_runtime.sh",
+      "bytes": 2054,
+      "compressed_bytes": 963,
+      "zip_crc32": "2f9c7113",
+      "sha256": "e8dd5ff95c8840690159f50416e4712b22bf3bdae023ad82400dd8c2fa4a53c9"
+    },
+    {
+      "path": "build_source/build_windows_native.ps1",
+      "bytes": 3795,
+      "compressed_bytes": 1614,
+      "zip_crc32": "18effd83",
+      "sha256": "52c23adc84c031d665a3ac1d490ecba46c66f47e25a76ccf1167cdccd46e1239"
+    },
+    {
+      "path": "build_source/compiler_packages.json",
+      "bytes": 1277,
+      "compressed_bytes": 513,
+      "zip_crc32": "b0c6a8a9",
+      "sha256": "208afb9a180b72fa5538a4f2e4b5592ef8a9a590e23bb983998c49bf50e49c55"
+    },
+    {
+      "path": "build_source/touchhle_g1_graphics_diagnostic_pass04.patch",
+      "bytes": 23909,
+      "compressed_bytes": 7638,
+      "zip_crc32": "0eff6313",
+      "sha256": "ad3c4277857a513de55a4e732b325e6e28a09b54249be50be39770387f298da6"
+    },
+    {
+      "path": "build_source/touchhle_g1_resizable_window_pass04.patch",
+      "bytes": 18531,
+      "compressed_bytes": 5170,
+      "zip_crc32": "ec04f402",
+      "sha256": "17338b2fd4c710582c96e647deb96af534ee73a3a45c53339d38a54021bec2d2"
+    },
+    {
+      "path": "build_source/touchhle_g1_startup.patch",
+      "bytes": 19003,
+      "compressed_bytes": 4758,
+      "zip_crc32": "486bbded",
+      "sha256": "493cd68602518245043b3dc63824a128828a1f3b6893c1e8c1ade41b3f371f3a"
+    },
+    {
+      "path": "build_source/touchhle_g1_texture_limit_pass05.patch",
+      "bytes": 1505,
+      "compressed_bytes": 669,
+      "zip_crc32": "24475ea8",
+      "sha256": "e7a85d4a54fd3701d00591b9574171b72529f260f4b643fb64e2f6ac0b132c4d"
+    },
+    {
+      "path": "game/G1awakening.app/Entitlements.plist",
+      "bytes": 168,
+      "compressed_bytes": 132,
+      "zip_crc32": "24e71c83",
+      "sha256": "f604181b6597b963832e2a49835f0dc888be798d880575af8a92a95bfc6a5579"
+    },
+    {
+      "path": "game/G1awakening.app/G1awakening",
+      "bytes": 956496,
+      "compressed_bytes": 575718,
+      "zip_crc32": "6d970d27",
+      "sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd"
+    },
+    {
+      "path": "game/G1awakening.app/Icon.png",
+      "bytes": 8375,
+      "compressed_bytes": 8380,
+      "zip_crc32": "14b0d43d",
+      "sha256": "0909e66e811817fc79c44ddbaf36f5d1d7f909117329e4a7310fabc336859b47"
+    },
+    {
+      "path": "game/G1awakening.app/Icon@2x.png",
+      "bytes": 26670,
+      "compressed_bytes": 26680,
+      "zip_crc32": "3439b9ca",
+      "sha256": "8d903c6ebf11b835c94e0d148bd4de3a656c4e93ac0f4f1d247ed0f70a4a9f3b"
+    },
+    {
+      "path": "game/G1awakening.app/Info.plist",
+      "bytes": 854,
+      "compressed_bytes": 602,
+      "zip_crc32": "7e98f90c",
+      "sha256": "e3e4032eb44020656fe5ffd8ab86e8102992be3600e5403dd7e4bd466a23e487"
+    },
+    {
+      "path": "game/G1awakening.app/MainWindow.nib",
+      "bytes": 2173,
+      "compressed_bytes": 1538,
+      "zip_crc32": "f48827cc",
+      "sha256": "51a791b6f6a99133d8a7a0b1278d9bb7082e20bb39af999ba6e70e73c4866640"
+    },
+    {
+      "path": "game/G1awakening.app/PkgInfo",
+      "bytes": 8,
+      "compressed_bytes": 8,
+      "zip_crc32": "5b8a0449",
+      "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+    },
+    {
+      "path": "game/G1awakening.app/iphone.big",
+      "bytes": 6994213,
+      "compressed_bytes": 6942818,
+      "zip_crc32": "68acb422",
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+    },
+    {
+      "path": "game/G1awakening.app/most_uniQue",
+      "bytes": 38,
+      "compressed_bytes": 40,
+      "zip_crc32": "290a5a27",
+      "sha256": "b3f801b090b0d60ee1954ec1c871ee83041b57ffe0276b50fdb6baebb6485554"
+    },
+    {
+      "path": "licenses/Boost_LICENSE.txt",
+      "bytes": 1338,
+      "compressed_bytes": 752,
+      "zip_crc32": "0c53b40c",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+    },
+    {
+      "path": "licenses/Dynarmic_LICENSE.txt",
+      "bytes": 651,
+      "compressed_bytes": 420,
+      "zip_crc32": "261a4a61",
+      "sha256": "14ef8e5ce8e564bbbe28bc7a306de80c786124de34955b2b4e868cb64bbe9faa"
+    },
+    {
+      "path": "licenses/Dynarmic_dependencies.txt",
+      "bytes": 11356,
+      "compressed_bytes": 3258,
+      "zip_crc32": "aeedba51",
+      "sha256": "6c622b377c92c4ff26bf7b96bd1baa2ab8b60ee84f2b89e81dcbfc069edc1abc"
+    },
+    {
+      "path": "licenses/GCC_runtime_copyright.txt",
+      "bytes": 75729,
+      "compressed_bytes": 13711,
+      "zip_crc32": "1faec2f5",
+      "sha256": "a481f772f7a53335f13b32c6c54eb1c8577ce97704edd3757ab7ed4287a8e96a"
+    },
+    {
+      "path": "licenses/MinGW_runtime_copyright.txt",
+      "bytes": 37808,
+      "compressed_bytes": 7869,
+      "zip_crc32": "b7bd3c0c",
+      "sha256": "af23297b7d17e8e31817a5d58088de6fdafe34705bb5a7d1d330f08711b31314"
+    },
+    {
+      "path": "licenses/OpenAL_LGPL-2.0.txt",
+      "bytes": 23330,
+      "compressed_bytes": 8280,
+      "zip_crc32": "1f8af0e6",
+      "sha256": "d808ce217e5b611854da622b57ec29fe545584c48bc5352fae72a4b6e5074a15"
+    },
+    {
+      "path": "licenses/PVRTDecompress_LICENSE.txt",
+      "bytes": 1093,
+      "compressed_bytes": 638,
+      "zip_crc32": "b61f5bcf",
+      "sha256": "b1aea79afab593649ede742eccbb7feb74d216d52d120b99c4d349133871ba9f"
+    },
+    {
+      "path": "licenses/Rust_dependencies.txt",
+      "bytes": 9468,
+      "compressed_bytes": 2039,
+      "zip_crc32": "123fd5f6",
+      "sha256": "5a862574f1ea8c5fb5496533bb445bb897fd5a58d13ac6c638f294e2a57a72a2"
+    },
+    {
+      "path": "licenses/SDL2_LICENSE.txt",
+      "bytes": 884,
+      "compressed_bytes": 483,
+      "zip_crc32": "845beea8",
+      "sha256": "9928507f684c1965d07f2b6ef4b4723d5efc2f6b4ab731f743a413c51c319927"
+    },
+    {
+      "path": "licenses/stb_LICENSE.txt",
+      "bytes": 2510,
+      "compressed_bytes": 1074,
+      "zip_crc32": "3591319a",
+      "sha256": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63"
+    },
+    {
+      "path": "licenses/touchHLE_BINARY_GPL-3.0.txt",
+      "bytes": 35149,
+      "compressed_bytes": 12106,
+      "zip_crc32": "97673d00",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "licenses/touchHLE_SOURCE_MPL-2.0.txt",
+      "bytes": 16727,
+      "compressed_bytes": 5294,
+      "zip_crc32": "33fe46b2",
+      "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
+    },
+    {
+      "path": "linkage_audit.json",
+      "bytes": 1138,
+      "compressed_bytes": 573,
+      "zip_crc32": "893f42f7",
+      "sha256": "6c5b5c07bd91498c088eb6b6f13ccc6d96f30bea635f6ff8bbffd89b098667d0"
+    },
+    {
+      "path": "pe_import_audit.json",
+      "bytes": 1377,
+      "compressed_bytes": 568,
+      "zip_crc32": "201bed60",
+      "sha256": "384716763cd4bb824edbcd055b9e33f681a768a943cc73e49ee1f58c3d5aa48f"
+    },
+    {
+      "path": "runtime_file_hashes.json",
+      "bytes": 10734,
+      "compressed_bytes": 3674,
+      "zip_crc32": "182a25a9",
+      "sha256": "f51a5495ff003b07b2c1086ff86cb54c4cbf748273e35e1b133c2fa8b0e12deb"
+    },
+    {
+      "path": "touchHLE.exe",
+      "bytes": 39630811,
+      "compressed_bytes": 9117929,
+      "zip_crc32": "d96c0a41",
+      "sha256": "56d92bb44f51671fe9b2e1008325e9545a22a9af8092143e05952ba8074d0c3d"
+    },
+    {
+      "path": "touchHLE_default_options.txt",
+      "bytes": 13928,
+      "compressed_bytes": 4108,
+      "zip_crc32": "f5426adf",
+      "sha256": "012bc44ca9b47862cbafa9f4ff6d2033fb96eafee6e372496604bc96cc50e700"
+    },
+    {
+      "path": "touchHLE_dylibs/COPYING.libgcc",
+      "bytes": 18002,
+      "compressed_bytes": 6830,
+      "zip_crc32": "ee569a13",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "path": "touchHLE_dylibs/COPYING.libsqlite3",
+      "bytes": 3848,
+      "compressed_bytes": 1510,
+      "zip_crc32": "a3b6e617",
+      "sha256": "9f2f6a13fc880c9ae10cb3a67f028a5e76d028759dc41eee593165400bfd1661"
+    },
+    {
+      "path": "touchHLE_dylibs/COPYING.libstdcxx",
+      "bytes": 18002,
+      "compressed_bytes": 6830,
+      "zip_crc32": "ee569a13",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    {
+      "path": "touchHLE_dylibs/COPYING.libxml2",
+      "bytes": 3645,
+      "compressed_bytes": 1244,
+      "zip_crc32": "edd7d21c",
+      "sha256": "bca221453b9e9d05efca45c0892213318a9f5a6d2839b88f02ac7bfb961cdb61"
+    },
+    {
+      "path": "touchHLE_dylibs/COPYING.libz",
+      "bytes": 965,
+      "compressed_bytes": 515,
+      "zip_crc32": "623efacb",
+      "sha256": "2ee2908f36082b6b7facdebbb640f401e61e4f1d0e19754b80e372460be3fbdd"
+    },
+    {
+      "path": "touchHLE_dylibs/README.md",
+      "bytes": 17598,
+      "compressed_bytes": 6259,
+      "zip_crc32": "52b1700d",
+      "sha256": "99966c843c71d5096e564464f701f6e6ea9515ad9c8620cae52cf746ed8d50e9"
+    },
+    {
+      "path": "touchHLE_dylibs/libgcc_s.1.dylib",
+      "bytes": 200448,
+      "compressed_bytes": 81331,
+      "zip_crc32": "624eff12",
+      "sha256": "d758fbf1ac952532955d62866bd02df55315c0599f64bdd978ff941fccbdcf83"
+    },
+    {
+      "path": "touchHLE_dylibs/libsqlite3.dylib",
+      "bytes": 299552,
+      "compressed_bytes": 191296,
+      "zip_crc32": "1bcdfb8d",
+      "sha256": "d3795f741db6ade461fa07edf13962858fcebc75c738c4c32634c390c93131b6"
+    },
+    {
+      "path": "touchHLE_dylibs/libstdc++.6.0.9.dylib",
+      "bytes": 1552832,
+      "compressed_bytes": 481546,
+      "zip_crc32": "2d5ef88d",
+      "sha256": "22bb45b80a1e590ca6f2e0bd07581084ac56b347b0c6005b05ca5551ef27142a"
+    },
+    {
+      "path": "touchHLE_dylibs/libxml2.2.dylib",
+      "bytes": 843676,
+      "compressed_bytes": 444722,
+      "zip_crc32": "a867c0fb",
+      "sha256": "40607187ac35748e7aa0e515acd44c1cffbed5be3c0e05c51060e8b1d4cc697c"
+    },
+    {
+      "path": "touchHLE_dylibs/libz.1.2.3.dylib",
+      "bytes": 53452,
+      "compressed_bytes": 32375,
+      "zip_crc32": "263ddeb9",
+      "sha256": "9f008d19994def560a2565533ae3f93b1c033df3ef9622c90fe80b21ac66dd17"
+    },
+    {
+      "path": "touchHLE_fonts/LICENSE.liberation",
+      "bytes": 4414,
+      "compressed_bytes": 1978,
+      "zip_crc32": "5926bf68",
+      "sha256": "93fed46019c38bbe566b479d22148e2e8a1e85ada614accb0211c37b2c61c19b"
+    },
+    {
+      "path": "touchHLE_fonts/LICENSE.noto",
+      "bytes": 4301,
+      "compressed_bytes": 1896,
+      "zip_crc32": "898314c0",
+      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationMono-Bold.ttf",
+      "bytes": 307996,
+      "compressed_bytes": 174181,
+      "zip_crc32": "da53a43a",
+      "sha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationMono-BoldItalic.ttf",
+      "bytes": 284068,
+      "compressed_bytes": 166435,
+      "zip_crc32": "cabc0a5e",
+      "sha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationMono-Italic.ttf",
+      "bytes": 281536,
+      "compressed_bytes": 164011,
+      "zip_crc32": "490fc3f7",
+      "sha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationMono-Regular.ttf",
+      "bytes": 319508,
+      "compressed_bytes": 178843,
+      "zip_crc32": "a17a14e8",
+      "sha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSans-Bold.ttf",
+      "bytes": 414456,
+      "compressed_bytes": 211884,
+      "zip_crc32": "8e81c5b6",
+      "sha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSans-BoldItalic.ttf",
+      "bytes": 408996,
+      "compressed_bytes": 213590,
+      "zip_crc32": "4f03d237",
+      "sha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSans-Italic.ttf",
+      "bytes": 415816,
+      "compressed_bytes": 217191,
+      "zip_crc32": "d0ea9637",
+      "sha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSans-Regular.ttf",
+      "bytes": 410712,
+      "compressed_bytes": 210703,
+      "zip_crc32": "8d46e268",
+      "sha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSerif-Bold.ttf",
+      "bytes": 370096,
+      "compressed_bytes": 201374,
+      "zip_crc32": "a5d5ea71",
+      "sha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSerif-BoldItalic.ttf",
+      "bytes": 376772,
+      "compressed_bytes": 211260,
+      "zip_crc32": "0f23ec0d",
+      "sha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSerif-Italic.ttf",
+      "bytes": 375632,
+      "compressed_bytes": 210032,
+      "zip_crc32": "d2ca6cdf",
+      "sha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e"
+    },
+    {
+      "path": "touchHLE_fonts/LiberationSerif-Regular.ttf",
+      "bytes": 393576,
+      "compressed_bytes": 211289,
+      "zip_crc32": "a872fada",
+      "sha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74"
+    },
+    {
+      "path": "touchHLE_fonts/NotoSansJP-Bold.otf",
+      "bytes": 4656448,
+      "compressed_bytes": 4004810,
+      "zip_crc32": "5b21101e",
+      "sha256": "1b0edfb500b73a4fa8a4fcaae1bbbd403994e08e73e3e0da37e70d3853f42c5f"
+    },
+    {
+      "path": "touchHLE_fonts/NotoSansJP-Regular.otf",
+      "bytes": 4533028,
+      "compressed_bytes": 3882698,
+      "zip_crc32": "c2e8c4bd",
+      "sha256": "dff723ba59d57d136764a04b9b2d03205544f7cd785a711442d6d2d085ac5073"
+    },
+    {
+      "path": "touchHLE_fonts/README.md",
+      "bytes": 472,
+      "compressed_bytes": 250,
+      "zip_crc32": "d4893592",
+      "sha256": "dd159a8743de67dffb6c9694abf8e2e085bdb7eec98c455bb085a0e4106edc73"
+    },
+    {
+      "path": "README_BUILD05.md",
+      "bytes": 9806,
+      "compressed_bytes": 4380,
+      "zip_crc32": "1206eda4",
+      "sha256": "1de0b203bfa6815373c551fae06761acc8839f6f59658ebdbd50b6d6c5f615b7"
+    },
+    {
+      "path": "launcher_notices/adler-1.0.2/LICENSE-0BSD",
+      "bytes": 665,
+      "compressed_bytes": 425,
+      "zip_crc32": "c86223b5",
+      "sha256": "861399f8c21c042b110517e76dc6b63a2b334276c8cf17412fc3c8908ca8dc17"
+    },
+    {
+      "path": "launcher_notices/adler-1.0.2/LICENSE-APACHE",
+      "bytes": 10860,
+      "compressed_bytes": 3924,
+      "zip_crc32": "63e1a2b3",
+      "sha256": "8ada45cd9f843acf64e4722ae262c622a2b3b3007c7310ef36ac1061a30f6adb"
+    },
+    {
+      "path": "launcher_notices/adler-1.0.2/LICENSE-MIT",
+      "bytes": 1023,
+      "compressed_bytes": 601,
+      "zip_crc32": "e68e2343",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+    },
+    {
+      "path": "launcher_notices/byteorder-1.4.3/COPYING",
+      "bytes": 126,
+      "compressed_bytes": 93,
+      "zip_crc32": "681a8f6d",
+      "sha256": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f"
+    },
+    {
+      "path": "launcher_notices/byteorder-1.4.3/LICENSE-MIT",
+      "bytes": 1081,
+      "compressed_bytes": 636,
+      "zip_crc32": "638cde13",
+      "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+    },
+    {
+      "path": "launcher_notices/cfg-if-1.0.0/LICENSE-APACHE",
+      "bytes": 10847,
+      "compressed_bytes": 3922,
+      "zip_crc32": "403aa20f",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    {
+      "path": "launcher_notices/cfg-if-1.0.0/LICENSE-MIT",
+      "bytes": 1057,
+      "compressed_bytes": 628,
+      "zip_crc32": "2e14e252",
+      "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+    },
+    {
+      "path": "launcher_notices/crc32fast-1.3.2/LICENSE-APACHE",
+      "bytes": 11358,
+      "compressed_bytes": 3949,
+      "zip_crc32": "753025d7",
+      "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+    },
+    {
+      "path": "launcher_notices/crc32fast-1.3.2/LICENSE-MIT",
+      "bytes": 1097,
+      "compressed_bytes": 647,
+      "zip_crc32": "62ee876f",
+      "sha256": "61d383b05b87d78f94d2937e2580cce47226d17823c0430fbcad09596537efcf"
+    },
+    {
+      "path": "launcher_notices/flate2-1.0.25/LICENSE-APACHE",
+      "bytes": 10847,
+      "compressed_bytes": 3922,
+      "zip_crc32": "403aa20f",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    {
+      "path": "launcher_notices/flate2-1.0.25/LICENSE-MIT",
+      "bytes": 1057,
+      "compressed_bytes": 628,
+      "zip_crc32": "2e14e252",
+      "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+    },
+    {
+      "path": "launcher_notices/miniz_oxide-0.6.2/LICENSE",
+      "bytes": 1063,
+      "compressed_bytes": 626,
+      "zip_crc32": "cb2d330a",
+      "sha256": "e190940e8ad3cdd4fca962a6508ed6865d589d314b1cb055f86000e124b88d8d"
+    },
+    {
+      "path": "launcher_notices/miniz_oxide-0.6.2/LICENSE-APACHE.md",
+      "bytes": 10174,
+      "compressed_bytes": 3562,
+      "zip_crc32": "1ea3b7b0",
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+    },
+    {
+      "path": "launcher_notices/miniz_oxide-0.6.2/LICENSE-MIT.md",
+      "bytes": 1063,
+      "compressed_bytes": 626,
+      "zip_crc32": "cb2d330a",
+      "sha256": "e190940e8ad3cdd4fca962a6508ed6865d589d314b1cb055f86000e124b88d8d"
+    },
+    {
+      "path": "launcher_notices/miniz_oxide-0.6.2/LICENSE-ZLIB.md",
+      "bytes": 835,
+      "compressed_bytes": 443,
+      "zip_crc32": "56c082bb",
+      "sha256": "c89bcc058da12a0fb24402b8ea4542a21515dd1da2e8c67bba4ed9bd269f1c96"
+    },
+    {
+      "path": "launcher_notices/windows-link-0.2.0/license-apache-2.0",
+      "bytes": 11351,
+      "compressed_bytes": 3950,
+      "zip_crc32": "8fbee683",
+      "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+    },
+    {
+      "path": "launcher_notices/windows-link-0.2.0/license-mit",
+      "bytes": 1141,
+      "compressed_bytes": 637,
+      "zip_crc32": "40348758",
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "launcher_notices/windows-sys-0.61.0/license-apache-2.0",
+      "bytes": 11351,
+      "compressed_bytes": 3950,
+      "zip_crc32": "8fbee683",
+      "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b"
+    },
+    {
+      "path": "launcher_notices/windows-sys-0.61.0/license-mit",
+      "bytes": 1141,
+      "compressed_bytes": 637,
+      "zip_crc32": "40348758",
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+    },
+    {
+      "path": "launcher_notices/zip-0.6.4/LICENSE",
+      "bytes": 1084,
+      "compressed_bytes": 638,
+      "zip_crc32": "795c385f",
+      "sha256": "6ac8711fb340c62ce0a4ecd463342d3fa0e8e70de697c863a2e1c0c53006003c"
+    },
+    {
+      "path": "DIAGNOSTIC_PAYLOAD.json",
+      "bytes": 16381,
+      "compressed_bytes": 5251,
+      "zip_crc32": "928189aa",
+      "sha256": "2815a1e6bbfc5276a897f24e289a7c37e05e7132a1965340dc6b21d5057c6080"
+    }
+  ],
+  "original_app_comparison": [
+    {
+      "path": "game/G1awakening.app/G1awakening",
+      "source_member": "Payload/G1awakening.app/G1awakening",
+      "bytes": 956496,
+      "sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/Info.plist",
+      "source_member": "Payload/G1awakening.app/Info.plist",
+      "bytes": 854,
+      "sha256": "e3e4032eb44020656fe5ffd8ab86e8102992be3600e5403dd7e4bd466a23e487",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/most_uniQue",
+      "source_member": "Payload/G1awakening.app/most_uniQue",
+      "bytes": 38,
+      "sha256": "b3f801b090b0d60ee1954ec1c871ee83041b57ffe0276b50fdb6baebb6485554",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/Entitlements.plist",
+      "source_member": "Payload/G1awakening.app/Entitlements.plist",
+      "bytes": 168,
+      "sha256": "f604181b6597b963832e2a49835f0dc888be798d880575af8a92a95bfc6a5579",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/Icon.png",
+      "source_member": "Payload/G1awakening.app/Icon.png",
+      "bytes": 8375,
+      "sha256": "0909e66e811817fc79c44ddbaf36f5d1d7f909117329e4a7310fabc336859b47",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/Icon@2x.png",
+      "source_member": "Payload/G1awakening.app/Icon@2x.png",
+      "bytes": 26670,
+      "sha256": "8d903c6ebf11b835c94e0d148bd4de3a656c4e93ac0f4f1d247ed0f70a4a9f3b",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/MainWindow.nib",
+      "source_member": "Payload/G1awakening.app/MainWindow.nib",
+      "bytes": 2173,
+      "sha256": "51a791b6f6a99133d8a7a0b1278d9bb7082e20bb39af999ba6e70e73c4866640",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/PkgInfo",
+      "source_member": "Payload/G1awakening.app/PkgInfo",
+      "bytes": 8,
+      "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0",
+      "byte_identical_to_original_ipa": true
+    },
+    {
+      "path": "game/G1awakening.app/iphone.big",
+      "source_member": "Payload/G1awakening.app/iphone.big",
+      "bytes": 6994213,
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4",
+      "byte_identical_to_original_ipa": true
+    }
+  ],
+  "payload_manifest_comparison": [
+    {
+      "manifest": "runtime_file_hashes.json",
+      "entries_checked": 63,
+      "failures": []
+    },
+    {
+      "manifest": "DIAGNOSTIC_PAYLOAD.json",
+      "entries_checked": 94,
+      "failures": []
+    }
+  ],
+  "runtime_pe": {
+    "machine": "0x8664",
+    "architecture": "x86_64",
+    "format": "PE32+",
+    "subsystem": 3,
+    "image_base": "0x140000000",
+    "entry_rva": "0x1410",
+    "sections": [
+      {
+        "name": ".text",
+        "virtual_size": 14973840,
+        "virtual_address": 4096,
+        "raw_size": 14973952,
+        "raw_offset": 1024
+      },
+      {
+        "name": ".data",
+        "virtual_size": 790928,
+        "virtual_address": 14979072,
+        "raw_size": 791040,
+        "raw_offset": 14974976
+      },
+      {
+        "name": ".rdata",
+        "virtual_size": 3450080,
+        "virtual_address": 15773696,
+        "raw_size": 3450368,
+        "raw_offset": 15766016
+      },
+      {
+        "name": ".pdata",
+        "virtual_size": 425064,
+        "virtual_address": 19226624,
+        "raw_size": 425472,
+        "raw_offset": 19216384
+      },
+      {
+        "name": ".xdata",
+        "virtual_size": 776568,
+        "virtual_address": 19652608,
+        "raw_size": 776704,
+        "raw_offset": 19641856
+      },
+      {
+        "name": ".bss",
+        "virtual_size": 3888,
+        "virtual_address": 20430848,
+        "raw_size": 0,
+        "raw_offset": 0
+      },
+      {
+        "name": ".idata",
+        "virtual_size": 22892,
+        "virtual_address": 20434944,
+        "raw_size": 23040,
+        "raw_offset": 20418560
+      },
+      {
+        "name": ".CRT",
+        "virtual_size": 112,
+        "virtual_address": 20459520,
+        "raw_size": 512,
+        "raw_offset": 20441600
+      },
+      {
+        "name": ".tls",
+        "virtual_size": 16,
+        "virtual_address": 20463616,
+        "raw_size": 512,
+        "raw_offset": 20442112
+      },
+      {
+        "name": ".reloc",
+        "virtual_size": 175848,
+        "virtual_address": 20467712,
+        "raw_size": 176128,
+        "raw_offset": 20442624
+      }
+    ],
+    "section_raw_end": 20618752,
+    "bytes_after_sections": 19012059,
+    "clr_directory": [
+      0,
+      0
+    ],
+    "certificate_directory": [
+      0,
+      0
+    ],
+    "imports": [
+      {
+        "dll": "ADVAPI32.dll",
+        "functions": [
+          "RegCloseKey",
+          "RegOpenKeyExW",
+          "RegQueryValueExW",
+          "SystemFunction036"
+        ]
+      },
+      {
+        "dll": "bcrypt.dll",
+        "functions": [
+          "BCryptGenRandom"
+        ]
+      },
+      {
+        "dll": "GDI32.dll",
+        "functions": [
+          "BitBlt",
+          "ChoosePixelFormat",
+          "CombineRgn",
+          "CreateBitmap",
+          "CreateCompatibleBitmap",
+          "CreateCompatibleDC",
+          "CreateDCW",
+          "CreateDIBSection",
+          "CreateFontIndirectW",
+          "CreateFontW",
+          "CreatePen",
+          "CreateRectRgn",
+          "CreateSolidBrush",
+          "DeleteDC",
+          "DeleteObject",
+          "DescribePixelFormat",
+          "ExtTextOutW",
+          "GetDIBits",
+          "GetDeviceCaps",
+          "GetDeviceGammaRamp",
+          "GetICMProfileW",
+          "GetPixelFormat",
+          "GetTextExtentPoint32A",
+          "GetTextExtentPoint32W",
+          "GetTextMetricsW",
+          "Rectangle",
+          "SelectObject",
+          "SetBkMode",
+          "SetDeviceGammaRamp",
+          "SetPixelFormat",
+          "SetTextColor",
+          "SwapBuffers"
+        ]
+      },
+      {
+        "dll": "IMM32.dll",
+        "functions": [
+          "ImmAssociateContext",
+          "ImmGetCandidateListW",
+          "ImmGetCompositionStringW",
+          "ImmGetContext",
+          "ImmGetIMEFileNameA",
+          "ImmNotifyIME",
+          "ImmReleaseContext",
+          "ImmSetCandidateWindow",
+          "ImmSetCompositionStringW",
+          "ImmSetCompositionWindow"
+        ]
+      },
+      {
+        "dll": "KERNEL32.dll",
+        "functions": [
+          "CreateEventA",
+          "FileTimeToSystemTime",
+          "GetHandleInformation",
+          "GetProcessAffinityMask",
+          "GetProcessTimes",
+          "GetSystemTimeAdjustment",
+          "GetSystemTimeAsFileTime",
+          "GetThreadContext",
+          "GetThreadPriority",
+          "GetThreadTimes",
+          "GetTickCount64",
+          "InitializeCriticalSection",
+          "IsDBCSLeadByteEx",
+          "OpenProcess",
+          "OutputDebugStringA",
+          "RemoveVectoredExceptionHandler",
+          "ResumeThread",
+          "RtlUnwindEx",
+          "SetEvent",
+          "SetProcessAffinityMask",
+          "SetSystemTime",
+          "SetThreadContext",
+          "SuspendThread",
+          "VirtualQuery",
+          "__C_specific_handler"
+        ]
+      },
+      {
+        "dll": "msvcrt.dll",
+        "functions": [
+          "___lc_codepage_func",
+          "___mb_cur_max_func",
+          "__getmainargs",
+          "__initenv",
+          "__iob_func",
+          "__set_app_type",
+          "__setusermatherr",
+          "_aligned_free",
+          "_aligned_malloc",
+          "_amsg_exit",
+          "_assert",
+          "_beginthreadex",
+          "_cexit",
+          "_commode",
+          "_endthreadex",
+          "_errno",
+          "_filelengthi64",
+          "_fileno",
+          "_fmode",
+          "_fpreset",
+          "_fstat64",
+          "_get_osfhandle",
+          "_hypot",
+          "_i64toa",
+          "_initterm",
+          "_isatty",
+          "_isctype",
+          "_lock",
+          "_lseeki64",
+          "_ltoa",
+          "_onexit",
+          "_resetstkoflw",
+          "_setjmp",
+          "_stricmp",
+          "_strnicmp",
+          "_strrev",
+          "_strupr",
+          "_ui64toa",
+          "_ultoa",
+          "_unlock",
+          "_wcsicmp",
+          "_wcsnicmp",
+          "_wfopen",
+          "_wgetcwd",
+          "_wgetenv",
+          "abort",
+          "acos",
+          "acosf",
+          "asin",
+          "asinf",
+          "atan",
+          "atan2",
+          "atan2f",
+          "atanf",
+          "atof",
+          "atoi",
+          "bsearch",
+          "calloc",
+          "ceil",
+          "ceilf",
+          "clearerr",
+          "cos",
+          "cosf",
+          "cosh",
+          "coshf",
+          "exit",
+          "exp",
+          "expf",
+          "fclose",
+          "ferror",
+          "fflush",
+          "fgetpos",
+          "fgets",
+          "floor",
+          "floorf",
+          "fmod",
+          "fmodf",
+          "fopen",
+          "fprintf",
+          "fputc",
+          "fputs",
+          "fread",
+          "free",
+          "fseek",
+          "fsetpos",
+          "ftell",
+          "fwrite",
+          "getc",
+          "getenv",
+          "isalnum",
+          "isalpha",
+          "iscntrl",
+          "isgraph",
+          "islower",
+          "isprint",
+          "ispunct",
+          "isspace",
+          "isupper",
+          "tanh",
+          "iswctype",
+          "isxdigit",
+          "ldexp",
+          "localeconv",
+          "log",
+          "log10",
+          "log10f",
+          "logf",
+          "longjmp",
+          "malloc",
+          "memchr",
+          "memcmp",
+          "memcpy",
+          "memmove",
+          "memset",
+          "modf",
+          "pow",
+          "powf",
+          "printf",
+          "puts",
+          "qsort",
+          "realloc",
+          "rewind",
+          "setlocale",
+          "setvbuf",
+          "signal",
+          "sin",
+          "sinf",
+          "sinh",
+          "sinhf",
+          "sqrt",
+          "sqrtf",
+          "strchr",
+          "strcmp",
+          "strcoll",
+          "strerror",
+          "strftime",
+          "strlen",
+          "strncmp",
+          "strrchr",
+          "strstr",
+          "strtol",
+          "strtoul",
+          "strxfrm",
+          "tan",
+          "tanf",
+          "tolower",
+          "toupper",
+          "towlower",
+          "towupper",
+          "ungetc",
+          "vfprintf",
+          "wcscmp",
+          "wcscoll",
+          "wcsftime",
+          "wcslen",
+          "wcsncmp",
+          "wcsstr",
+          "wcsxfrm",
+          "_strtoui64",
+          "_strtoi64",
+          "_strlwr",
+          "_write",
+          "_strdup",
+          "_read",
+          "_itoa",
+          "_fileno",
+          "_fdopen"
+        ]
+      },
+      {
+        "dll": "ntdll.dll",
+        "functions": [
+          "NtCreateNamedPipeFile"
+        ]
+      },
+      {
+        "dll": "ole32.dll",
+        "functions": [
+          "CLSIDFromString",
+          "CoCreateInstance",
+          "CoInitialize",
+          "CoInitializeEx",
+          "CoTaskMemFree",
+          "CoUninitialize",
+          "PropVariantClear",
+          "StringFromCLSID"
+        ]
+      },
+      {
+        "dll": "SETUPAPI.dll",
+        "functions": [
+          "CM_Get_Device_IDA",
+          "CM_Get_Parent",
+          "CM_Locate_DevNodeA",
+          "SetupDiDestroyDeviceInfoList",
+          "SetupDiEnumDeviceInfo",
+          "SetupDiEnumDeviceInterfaces",
+          "SetupDiGetClassDevsA",
+          "SetupDiGetDeviceInterfaceDetailA",
+          "SetupDiGetDeviceRegistryPropertyA"
+        ]
+      },
+      {
+        "dll": "SHELL32.dll",
+        "functions": [
+          "DragAcceptFiles",
+          "DragFinish",
+          "DragQueryFileW",
+          "ExtractIconExW",
+          "SHGetFolderPathW",
+          "SHGetSpecialFolderPathW",
+          "ShellExecuteW"
+        ]
+      },
+      {
+        "dll": "USER32.dll",
+        "functions": [
+          "AdjustWindowRectEx",
+          "AttachThreadInput",
+          "CallNextHookEx",
+          "CallWindowProcW",
+          "ChangeDisplaySettingsExW",
+          "ClientToScreen",
+          "ClipCursor",
+          "CloseClipboard",
+          "CopyImage",
+          "CreateIconFromResource",
+          "CreateIconIndirect",
+          "CreateWindowExA",
+          "CreateWindowExW",
+          "DefWindowProcW",
+          "DestroyIcon",
+          "DestroyWindow",
+          "DialogBoxIndirectParamW",
+          "DispatchMessageW",
+          "DrawTextW",
+          "EmptyClipboard",
+          "EndDialog",
+          "EnumDisplayDevicesW",
+          "EnumDisplayMonitors",
+          "EnumDisplaySettingsW",
+          "FillRect",
+          "FlashWindowEx",
+          "GetAsyncKeyState",
+          "GetClassInfoExW",
+          "GetClientRect",
+          "GetClipCursor",
+          "GetClipboardData",
+          "GetClipboardSequenceNumber",
+          "GetCursorPos",
+          "GetDC",
+          "GetDesktopWindow",
+          "GetDlgItem",
+          "GetDoubleClickTime",
+          "GetFocus",
+          "GetForegroundWindow",
+          "GetKeyState",
+          "GetKeyboardLayout",
+          "GetKeyboardState",
+          "GetMenu",
+          "GetMessageExtraInfo",
+          "GetMessageW",
+          "GetMonitorInfoW",
+          "GetParent",
+          "GetPropW",
+          "GetRawInputData",
+          "GetRawInputDeviceInfoA",
+          "GetRawInputDeviceList",
+          "GetSystemMetrics",
+          "GetUpdateRect",
+          "GetWindowLongPtrW",
+          "GetWindowLongW",
+          "GetWindowRect",
+          "GetWindowTextLengthW",
+          "GetWindowTextW",
+          "GetWindowThreadProcessId",
+          "IntersectRect",
+          "InvalidateRect",
+          "IsClipboardFormatAvailable",
+          "IsIconic",
+          "IsRectEmpty",
+          "KillTimer",
+          "LoadCursorW",
+          "LoadIconW",
+          "MapVirtualKeyW",
+          "MessageBoxA",
+          "MonitorFromPoint",
+          "MonitorFromRect",
+          "MonitorFromWindow",
+          "OpenClipboard",
+          "PeekMessageW",
+          "PostMessageW",
+          "PostThreadMessageW",
+          "PtInRect",
+          "RegisterClassExA",
+          "RegisterClassExW",
+          "RegisterClassW",
+          "RegisterDeviceNotificationW",
+          "RegisterRawInputDevices",
+          "RegisterWindowMessageA",
+          "ReleaseCapture",
+          "ReleaseDC",
+          "RemovePropW",
+          "ScreenToClient",
+          "SendMessageW",
+          "SetActiveWindow",
+          "SetCapture",
+          "SetClipboardData",
+          "SetCursor",
+          "SetCursorPos",
+          "SetFocus",
+          "SetForegroundWindow",
+          "SetLayeredWindowAttributes",
+          "SetPropW",
+          "SetTimer",
+          "SetWindowLongPtrW",
+          "SetWindowLongW",
+          "SetWindowPos",
+          "SetWindowRgn",
+          "SetWindowTextW",
+          "SetWindowsHookExW",
+          "ShowWindow",
+          "SystemParametersInfoA",
+          "SystemParametersInfoW",
+          "ToUnicode",
+          "TrackMouseEvent",
+          "TranslateMessage",
+          "UnhookWindowsHookEx",
+          "UnregisterClassA",
+          "UnregisterClassW",
+          "UnregisterDeviceNotification",
+          "ValidateRect"
+        ]
+      },
+      {
+        "dll": "VERSION.dll",
+        "functions": [
+          "GetFileVersionInfoA",
+          "GetFileVersionInfoSizeA",
+          "VerQueryValueA"
+        ]
+      },
+      {
+        "dll": "WINMM.dll",
+        "functions": [
+          "timeBeginPeriod",
+          "timeEndPeriod",
+          "waveInAddBuffer",
+          "waveInClose",
+          "waveInGetDevCapsW",
+          "waveInGetNumDevs",
+          "waveInOpen",
+          "waveInPrepareHeader",
+          "waveInReset",
+          "waveInStart",
+          "waveInStop",
+          "waveInUnprepareHeader",
+          "waveOutClose",
+          "waveOutGetDevCapsW",
+          "waveOutGetErrorTextW",
+          "waveOutGetNumDevs",
+          "waveOutOpen",
+          "waveOutPrepareHeader",
+          "waveOutReset",
+          "waveOutUnprepareHeader",
+          "waveOutWrite"
+        ]
+      },
+      {
+        "dll": "kernel32.dll",
+        "functions": [
+          "AddVectoredExceptionHandler",
+          "CancelIo",
+          "CompareStringA",
+          "CompareStringOrdinal",
+          "CopyFileExW",
+          "CreateDirectoryW",
+          "CreateEventW",
+          "CreateFileA",
+          "CreateFileMappingA",
+          "CreateFileW",
+          "CreateHardLinkW",
+          "CreatePipe",
+          "CreateProcessW",
+          "CreateSemaphoreA",
+          "CreateSemaphoreW",
+          "CreateSymbolicLinkW",
+          "CreateThread",
+          "CreateToolhelp32Snapshot",
+          "CreateWaitableTimerExW",
+          "DebugBreak",
+          "DeleteCriticalSection",
+          "DeleteFileW",
+          "DeleteProcThreadAttributeList",
+          "DeviceIoControl",
+          "DuplicateHandle",
+          "EnterCriticalSection",
+          "ExitProcess",
+          "FindClose",
+          "FindFirstFileExW",
+          "FindFirstFileW",
+          "FindNextFileW",
+          "FlsAlloc",
+          "FlsFree",
+          "FlsSetValue",
+          "FlushFileBuffers",
+          "FormatMessageA",
+          "FormatMessageW",
+          "FreeEnvironmentStringsW",
+          "GetCommandLineW",
+          "GetConsoleMode",
+          "GetConsoleOutputCP",
+          "GetCurrentDirectoryW",
+          "GetCurrentProcess",
+          "GetCurrentProcessId",
+          "GetCurrentThread",
+          "GetCurrentThreadId",
+          "GetEnvironmentStringsW",
+          "GetEnvironmentVariableA",
+          "GetEnvironmentVariableW",
+          "GetExitCodeProcess",
+          "GetFileAttributesW",
+          "GetFileInformationByHandle",
+          "GetFileInformationByHandleEx",
+          "GetFileSizeEx",
+          "GetFileType",
+          "GetFinalPathNameByHandleW",
+          "GetFullPathNameW",
+          "GetLocaleInfoA",
+          "GetModuleFileNameW",
+          "GetModuleHandleA",
+          "GetModuleHandleExW",
+          "GetModuleHandleW",
+          "GetOverlappedResult",
+          "GetProcAddress",
+          "GetProcessHeap",
+          "GetProcessId",
+          "GetStdHandle",
+          "GetSystemDirectoryW",
+          "GetSystemInfo",
+          "GetSystemPowerStatus",
+          "GetSystemTimePreciseAsFileTime",
+          "GetTempPathW",
+          "GetTickCount",
+          "GetWindowsDirectoryW",
+          "GlobalMemoryStatusEx",
+          "HeapAlloc",
+          "HeapReAlloc",
+          "InitOnceBeginInitialize",
+          "InitOnceComplete",
+          "InitializeCriticalSectionAndSpinCount",
+          "InitializeProcThreadAttributeList",
+          "IsDebuggerPresent",
+          "IsThreadAFiber",
+          "LeaveCriticalSection",
+          "LoadLibraryA",
+          "LoadLibraryExW",
+          "LoadLibraryW",
+          "LockFileEx",
+          "MapViewOfFile",
+          "Module32FirstW",
+          "Module32NextW",
+          "MoveFileExW",
+          "MulDiv",
+          "MultiByteToWideChar",
+          "OutputDebugStringW",
+          "QueryPerformanceCounter",
+          "QueryPerformanceFrequency",
+          "RaiseException",
+          "ReadConsoleW",
+          "ReadFile",
+          "ReadFileEx",
+          "ReleaseSemaphore",
+          "RemoveDirectoryW",
+          "ResetEvent",
+          "RtlAddFunctionTable",
+          "RtlCaptureContext",
+          "RtlDeleteFunctionTable",
+          "RtlLookupFunctionEntry",
+          "RtlVirtualUnwind",
+          "SetCurrentDirectoryW",
+          "SetEnvironmentVariableA",
+          "SetEnvironmentVariableW",
+          "SetErrorMode",
+          "SetFileAttributesW",
+          "SetFileInformationByHandle",
+          "SetFilePointer",
+          "SetFilePointerEx",
+          "SetFileTime",
+          "SetHandleInformation",
+          "SetLastError",
+          "SetStdHandle",
+          "SetThreadExecutionState",
+          "SetThreadPriority",
+          "SetThreadStackGuarantee",
+          "SetUnhandledExceptionFilter",
+          "SetWaitableTimer",
+          "Sleep",
+          "SleepEx",
+          "SwitchToThread",
+          "TerminateProcess",
+          "TlsAlloc",
+          "TlsFree",
+          "TlsGetValue",
+          "TlsSetValue",
+          "TryEnterCriticalSection",
+          "UnlockFile",
+          "UnmapViewOfFile",
+          "UpdateProcThreadAttribute",
+          "VerSetConditionMask",
+          "VerifyVersionInfoW",
+          "VirtualProtect",
+          "WaitForMultipleObjects",
+          "WaitForSingleObject",
+          "WaitForSingleObjectEx",
+          "WideCharToMultiByte",
+          "WriteConsoleW",
+          "WriteFile",
+          "WriteFileEx",
+          "lstrlenW"
+        ]
+      },
+      {
+        "dll": "ntdll.dll",
+        "functions": [
+          "NtCreateFile",
+          "NtOpenFile",
+          "NtReadFile",
+          "NtSetInformationFile",
+          "NtWriteFile",
+          "RtlNtStatusToDosError"
+        ]
+      },
+      {
+        "dll": "userenv.dll",
+        "functions": [
+          "GetUserProfileDirectoryW"
+        ]
+      },
+      {
+        "dll": "ws2_32.dll",
+        "functions": [
+          "GetHostNameW",
+          "WSADuplicateSocketW",
+          "WSAGetLastError",
+          "WSARecv",
+          "WSASend",
+          "WSASocketW",
+          "WSAStartup",
+          "accept",
+          "bind",
+          "closesocket",
+          "connect",
+          "freeaddrinfo",
+          "getaddrinfo",
+          "getpeername",
+          "getsockname",
+          "getsockopt",
+          "ioctlsocket",
+          "listen",
+          "recv",
+          "recvfrom",
+          "select",
+          "send",
+          "sendto",
+          "setsockopt",
+          "shutdown"
+        ]
+      },
+      {
+        "dll": "api-ms-win-core-synch-l1-2-0.dll",
+        "functions": [
+          "WaitOnAddress",
+          "WakeByAddressAll",
+          "WakeByAddressSingle"
+        ]
+      },
+      {
+        "dll": "bcryptprimitives.dll",
+        "functions": [
+          "ProcessPrng"
+        ]
+      },
+      {
+        "dll": "kernel32.dll",
+        "functions": [
+          "CloseHandle",
+          "FreeLibrary",
+          "GetLastError",
+          "GlobalAlloc",
+          "GlobalLock",
+          "GlobalUnlock",
+          "HeapFree",
+          "LocalFree",
+          "VirtualAlloc",
+          "VirtualFree"
+        ]
+      },
+      {
+        "dll": "oleaut32.dll",
+        "functions": [
+          "SysFreeString"
+        ]
+      }
+    ],
+    "resources": []
+  },
+  "original_game_macho": {
+    "magic": "0xfeedface",
+    "cpu_type": 12,
+    "cpu_subtype": 6,
+    "architecture": "ARMv6",
+    "format": "Mach-O 32-bit little endian",
+    "file_type": 2,
+    "load_commands": 26,
+    "load_command_bytes": 3200,
+    "sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd"
+  },
+  "recorded_build_provenance": {
+    "recorded_utc": "2026-10-26T04:42:53.207745+00:00",
+    "source_url": "https://github.com/touchHLE/touchHLE",
+    "source_commit": "ca1de89c578e79746f33c1332e28efd106c334ba",
+    "startup_patch_sha256": "493cd68602518245043b3dc63824a128828a1f3b6893c1e8c1ade41b3f371f3a",
+    "extra_windows_source_changes": [],
+    "target": "x86_64-pc-windows-gnu",
+    "host": "x86_64-unknown-linux-gnu",
+    "rustc": "1.99.1 (58cf8f9c3 2026-10-13)",
+    "cmake": "3.31.6",
+    "mingw_gcc_package_version": "13.2.0-6ubuntu1+26.1",
+    "mingw_headers_version": "11.0.1-3build1",
+    "cargo_command": "bash research/windows/build_cross_static_runtime.sh",
+    "cargo_lock_sha256": "5a53712c94a267913b58fbbbed4e61de2f332c183d058fa26a89e198d3c1e20a",
+    "features": "default/static",
+    "binary": {
+      "file": "touchHLE.exe",
+      "bytes": 39630811,
+      "sha256": "56d92bb44f51671fe9b2e1008325e9545a22a9af8092143e05952ba8074d0c3d",
+      "pe_machine": "0x8664 AMD64",
+      "optional_header_magic": "0x020b PE32+",
+      "imports": [
+        "ADVAPI32.dll",
+        "api-ms-win-core-synch-l1-2-0.dll",
+        "bcrypt.dll",
+        "bcryptprimitives.dll",
+        "GDI32.dll",
+        "IMM32.dll",
+        "KERNEL32.dll",
+        "kernel32.dll",
+        "msvcrt.dll",
+        "ntdll.dll",
+        "ole32.dll",
+        "oleaut32.dll",
+        "SETUPAPI.dll",
+        "SHELL32.dll",
+        "USER32.dll",
+        "userenv.dll",
+        "VERSION.dll",
+        "WINMM.dll",
+        "ws2_32.dll"
+      ]
+    },
+    "windows_execution_tested": false,
+    "submodules": {
+      "vendor/SDL": "07d0f51fa292895443f563f0cbde4cb3802d87fa",
+      "vendor/dynarmic": "e0f6bd9d0b48ed6e536672c0c9abbe87961be861",
+      "vendor/openal-soft": "23c8a35505fe6ab7a5c87754911a133b23ac75cf",
+      "vendor/stb": "9f1776a36d2a3d63c52f705c3a84b372cfed4340"
+    },
+    "patched_source_files": [
+      {
+        "file": "src/frameworks/cf_network.rs",
+        "sha256": "e4b877a2451399c86424b7d867341329bedded0a812997e860131d8daeb50dbd"
+      },
+      {
+        "file": "src/frameworks/cf_network/cf_host.rs",
+        "sha256": "857e0534845e2a897bfee821afcff8ad1f002a9369355b69c0c535efdce9e352"
+      },
+      {
+        "file": "src/frameworks/core_foundation.rs",
+        "sha256": "73802c5a797dc07d460e4f2c680ac00da079c6b3401b5a6433c3842c8e4bcfd0"
+      },
+      {
+        "file": "src/frameworks/core_foundation/cf_stream.rs",
+        "sha256": "68a5c6d3745a0b50f19af96417ab1364e73b9b58a667bd3f57d4760afd544f75"
+      },
+      {
+        "file": "src/frameworks/opengles.rs",
+        "sha256": "15ae05ae7be4d8e1f0966c4db1fec02e68904b563283d37ac0cdca21cd9261e3"
+      },
+      {
+        "file": "src/frameworks/opengles/eagl.rs",
+        "sha256": "92d960052ae206b6c5c26440e79db61358a8c3ecd4e90d0938860a8b96e85f45"
+      },
+      {
+        "file": "src/frameworks/opengles/gles_guest.rs",
+        "sha256": "91da1d704b273ee6829b32584acc00108bea8e4b39cc54c9ca68de529d89b82d"
+      },
+      {
+        "file": "src/frameworks/uikit/ui_view.rs",
+        "sha256": "e25082c71c86a8849caf9853f13084bf008e432e427267d7b0e672bc9a172bb0"
+      },
+      {
+        "file": "src/frameworks/uikit/ui_view/g1_coordinate_tests.rs",
+        "sha256": "d01ba9470826033c1741328915779d0e392c19d9ec97ddbdf33169b946eecbdd"
+      },
+      {
+        "file": "src/gles.rs",
+        "sha256": "c9773d20aff20d34565782001965e978260f4554bf1d3f9ef1a26b930b28bd7b"
+      },
+      {
+        "file": "src/gles/g1_gl_diagnostics.rs",
+        "sha256": "8f29a7b1a3dde1ee469fda7b7b548a601f25fd19987535c447eb7714fef7754a"
+      },
+      {
+        "file": "src/gles/gles1_on_gl2.rs",
+        "sha256": "8b102829e3e5c2cbb3517578ca1ec4268e3a06a52bde9bddcf4f35dc47a431ee"
+      },
+      {
+        "file": "src/window.rs",
+        "sha256": "43cb5c5cd2bf197c0a60764ed83cf2f0bcbbd39e683b7a5c711c42e3ca3ac0df"
+      },
+      {
+        "file": "src/window/resize_tests.rs",
+        "sha256": "e2040d10915d23ad59336acae25e9627cdfd3adcb3808762094e46233b051a71"
+      }
+    ],
+    "build_notes": [
+      "Build04 startup, static C++ linkage, bounded graphics diagnostics and resizable-window behavior are retained.",
+      "The only additional production patch limits the texture capability reported to com.glu.transg1 to min(native_limit, 16384).",
+      "This targets a reproduced original-game signed-16-bit sprite clipping overflow; Windows rendering still needs the user's test.",
+      "No scale-target, widescreen, original game executable, timer or simulation patches are included.",
+      "All nine original app members remain byte-identical; no generated test saves are included.",
+      "The parent GUI retains native crash capture and presentation-cap selection. Diagnostics remain enabled via G1_GL_DIAGNOSTICS=1."
+    ],
+    "build_id": "Build05_G1TextureCapability",
+    "baseline_exe_sha256": "6ad410dd04f3ff90c3a6c936ad02761be339545002480ec1645ee50ccbc76902",
+    "baseline_windows_failure": "Build04 resized successfully and exited normally, but guest sprite vertices/UVs were corrupted when native MAX_TEXTURE_SIZE was 32768",
+    "windows_execution_status": "Awaiting the user's Windows test of the targeted texture-capability correction",
+    "native_linkage": {
+      "CXXSTDLIB_x86_64_pc_windows_gnu": "static=stdc++",
+      "RUSTFLAGS": "-L native=<matching MinGW GCC13 directory> plus final --start-group/--end-group archive arguments in build_cross_static_runtime.sh",
+      "final_archive_group": [
+        "<matching libstdc++.a>",
+        "-lgcc_eh",
+        "-l:libpthread.a",
+        "-lmingwex",
+        "-lmingw32",
+        "-lgcc",
+        "-lmsvcrt",
+        "-lkernel32"
+      ],
+      "static_libstdcxx_sha256": "b8212bed7472ad2e3ddca7927db62f64b47615af14ab0c1a2058da434463205e",
+      "dynamic_gnu_runtime_dlls": [],
+      "single_emutls_helper_verified_by_disassembly": true
+    },
+    "packaging_policy": {
+      "source": "README_MEMORY_ZIP_POLICY.md",
+      "path": "README_MEMORY_ZIP_POLICY.md",
+      "bytes": 2259,
+      "sha256": "756afd7f695fb60c37be9f3693b255eeb18e0c436b0141e9826f4b6e713ebc7a",
+      "copied_unchanged": true
+    },
+    "baseline_runtime_manifest_sha256": "aa9980f5c506a4ae6af351767fd25ab220c347cd2b3d6a340b0a3eccad5cd884",
+    "diagnostic_patch": {
+      "file": "build_source/touchhle_g1_graphics_diagnostic_pass04.patch",
+      "sha256": "ad3c4277857a513de55a4e732b325e6e28a09b54249be50be39770387f298da6",
+      "application_proof_sha256": "2ae31f49a85f98435f307c6ee25383d5e1a6210d5c5d31039c2f8363366e4682",
+      "environment": {
+        "G1_GL_DIAGNOSTICS": "1"
+      }
+    },
+    "desktop_resize_patch": {
+      "file": "build_source/touchhle_g1_resizable_window_pass04.patch",
+      "sha256": "17338b2fd4c710582c96e647deb96af534ee73a3a45c53339d38a54021bec2d2",
+      "scope": "Desktop window resize and viewport/input mapping only"
+    },
+    "graphics_cap_patch": {
+      "file": "build_source/touchhle_g1_texture_limit_pass05.patch",
+      "sha256": "e7a85d4a54fd3701d00591b9574171b72529f260f4b643fb64e2f6ac0b132c4d",
+      "application_proof_sha256": "87f81b8a590f09e1ec1c298ee8f0b7a02cf9a1978bf78af0e67d1e0176cbd91a",
+      "application_identifier": "com.glu.transg1",
+      "reported_max_texture_size": "min(native_limit, 16384)",
+      "scope": "G1 guest GL_MAX_TEXTURE_SIZE query only; no desktop/renderbuffer resolution limit",
+      "test_only_hooks_included": false
+    }
+  },
+  "source_checkout_comparison": [
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/cf_network.rs",
+      "recorded_sha256": "e4b877a2451399c86424b7d867341329bedded0a812997e860131d8daeb50dbd",
+      "actual_sha256": "e4b877a2451399c86424b7d867341329bedded0a812997e860131d8daeb50dbd",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/cf_network/cf_host.rs",
+      "recorded_sha256": "857e0534845e2a897bfee821afcff8ad1f002a9369355b69c0c535efdce9e352",
+      "actual_sha256": "857e0534845e2a897bfee821afcff8ad1f002a9369355b69c0c535efdce9e352",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/core_foundation.rs",
+      "recorded_sha256": "73802c5a797dc07d460e4f2c680ac00da079c6b3401b5a6433c3842c8e4bcfd0",
+      "actual_sha256": "73802c5a797dc07d460e4f2c680ac00da079c6b3401b5a6433c3842c8e4bcfd0",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/core_foundation/cf_stream.rs",
+      "recorded_sha256": "68a5c6d3745a0b50f19af96417ab1364e73b9b58a667bd3f57d4760afd544f75",
+      "actual_sha256": "68a5c6d3745a0b50f19af96417ab1364e73b9b58a667bd3f57d4760afd544f75",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/opengles.rs",
+      "recorded_sha256": "15ae05ae7be4d8e1f0966c4db1fec02e68904b563283d37ac0cdca21cd9261e3",
+      "actual_sha256": "15ae05ae7be4d8e1f0966c4db1fec02e68904b563283d37ac0cdca21cd9261e3",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/opengles/eagl.rs",
+      "recorded_sha256": "92d960052ae206b6c5c26440e79db61358a8c3ecd4e90d0938860a8b96e85f45",
+      "actual_sha256": "92d960052ae206b6c5c26440e79db61358a8c3ecd4e90d0938860a8b96e85f45",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/opengles/gles_guest.rs",
+      "recorded_sha256": "91da1d704b273ee6829b32584acc00108bea8e4b39cc54c9ca68de529d89b82d",
+      "actual_sha256": "91da1d704b273ee6829b32584acc00108bea8e4b39cc54c9ca68de529d89b82d",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/uikit/ui_view.rs",
+      "recorded_sha256": "e25082c71c86a8849caf9853f13084bf008e432e427267d7b0e672bc9a172bb0",
+      "actual_sha256": "e25082c71c86a8849caf9853f13084bf008e432e427267d7b0e672bc9a172bb0",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/frameworks/uikit/ui_view/g1_coordinate_tests.rs",
+      "recorded_sha256": "d01ba9470826033c1741328915779d0e392c19d9ec97ddbdf33169b946eecbdd",
+      "actual_sha256": "d01ba9470826033c1741328915779d0e392c19d9ec97ddbdf33169b946eecbdd",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/gles.rs",
+      "recorded_sha256": "c9773d20aff20d34565782001965e978260f4554bf1d3f9ef1a26b930b28bd7b",
+      "actual_sha256": "c9773d20aff20d34565782001965e978260f4554bf1d3f9ef1a26b930b28bd7b",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/gles/g1_gl_diagnostics.rs",
+      "recorded_sha256": "8f29a7b1a3dde1ee469fda7b7b548a601f25fd19987535c447eb7714fef7754a",
+      "actual_sha256": "8f29a7b1a3dde1ee469fda7b7b548a601f25fd19987535c447eb7714fef7754a",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/gles/gles1_on_gl2.rs",
+      "recorded_sha256": "8b102829e3e5c2cbb3517578ca1ec4268e3a06a52bde9bddcf4f35dc47a431ee",
+      "actual_sha256": "8b102829e3e5c2cbb3517578ca1ec4268e3a06a52bde9bddcf4f35dc47a431ee",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/window.rs",
+      "recorded_sha256": "43cb5c5cd2bf197c0a60764ed83cf2f0bcbbd39e683b7a5c711c42e3ca3ac0df",
+      "actual_sha256": "43cb5c5cd2bf197c0a60764ed83cf2f0bcbbd39e683b7a5c711c42e3ca3ac0df",
+      "matches": true
+    },
+    {
+      "file": "/tmp/g1-touchhle-windows/src/window/resize_tests.rs",
+      "recorded_sha256": "e2040d10915d23ad59336acae25e9627cdfd3adcb3808762094e46233b051a71",
+      "actual_sha256": "e2040d10915d23ad59336acae25e9627cdfd3adcb3808762094e46233b051a71",
+      "matches": true
+    }
+  ],
+  "outer_launcher_relevant_strings": [
+    "Choose a frame-rate limit and display mode. The limit is a ceiling; the game's own update timing can keep actual FPS lower.Run in a window",
+    "Find the runtime log, crash report and optional dump.60 FPS limit144 FPS limitUnlimited ",
+    "Local\\G1AwakeningPCLauncherG1 Awakening is already open. Close that game or launcher before starting another copy.$Create launcher lock: Windows error ",
+    "LOCALAPPDATAWindows LOCALAPPDATA is unavailableG1AwakeningRuntimeReports",
+    "game/G1awakening.appGame path is not Unicode--gles1=gles1_on_gl2--scale-hack=1--no-error-popup--print-fps",
+    "--fps-limit=",
+    "G1_GL_DIAGNOSTICS1touchHLE.exeexit.txt",
+    "touchHLE_sandbox",
+    "touchhle.exegame/g1awakening.app/g1awakeninggame/g1awakening.app/iphone.bigreadme_memory_zip_policy.md",
+    "CreateProcessW",
+    "  <assemblyIdentity version=\"0.5.0.0\" processorArchitecture=\"amd64\" name=\"G1Awakening.PC.Launcher\" type=\"win32\" />"
+  ],
+  "interpretation": {
+    "gameplay_source": "Original ARMv6 executable hosted by touchHLE/Dynarmic",
+    "native_windows_components": [
+      "launcher",
+      "compatibility runtime"
+    ],
+    "native_recovered_gameplay_found": false,
+    "windows_playability_tested_by_this_audit": false,
+    "package_metadata_can_predate_user_report": true
+  }
+}

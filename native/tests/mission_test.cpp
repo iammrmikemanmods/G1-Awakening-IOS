@@ -50,13 +50,13 @@ int main() {
         rejects(stream(1, {11}), "unobserved opcode 11 accepted");
         rejects(stream(1, {0xffff}), "unknown opcode accepted");
         rejects(stream(1, {12, 4, 0, 0, 0, 0}), "unknown opcode 12 subtype accepted");
-        rejects(stream(1, {7, 1, 10, 11, 3}), "unknown opcode 7 subtype accepted");
+        rejects(stream(1, {7, 1, 10, 11, 3}), "missing opcode 7 groups accepted");
         rejects(stream(1, {15, 0xffff}), "oversized one-word record list accepted");
         rejects(stream(1, {17, 0xffff}), "oversized three-word record list accepted");
         rejects(stream(1, {21, 0xffff}), "oversized four-word record list accepted");
         rejects(stream(1, {7, 0xffff}), "oversized outer nested list accepted");
         rejects(stream(1, {7, 1, 10, 11, 1, 0xffff}), "oversized nested pairs accepted");
-        rejects(stream(1, {7, 1, 10, 11, 2, 0xffff}), "oversized nested five-word records accepted");
+        rejects(stream(1, {7, 1, 10, 11, 2, 0xffff}), "oversized nested group accepted");
         rejects(g1::Bytes(g1::Archive::max_resource_size + 1U, 0), "resource byte cap not enforced");
 
         auto original = stream(1, {6, 1, 0x8000, 0xfffe, 0xffff, 42});
@@ -76,11 +76,20 @@ int main() {
               "variable-layout command boundaries incorrect");
 
         const auto nested = stream(1, {7, 2, 10, 11, 1, 2, 12, 13, 14, 15,
-                                      20, 21, 2, 1, 22, 23, 24, 25, 26});
+                                      20, 21, 2, 1, 22, 23, 1, 25, 26});
         const g1::MissionStream parsed_nested(nested);
         check(parsed_nested.commands()[0].argument_words_u16.size() == 18U &&
               parsed_nested.commands()[0].byte_size == nested.size() - 2U,
               "nested record boundaries incorrect");
+        const auto three_groups = stream(2, {7, 1, 4, 5, 3,
+                                              0, 1, 6, 7, 2, 8, 9, 10, 11, 0});
+        const g1::MissionStream general(three_groups);
+        check(general.commands()[0].argument_words_u16 ==
+                  std::vector<std::uint16_t>({1, 4, 5, 3, 0, 1, 6, 7, 2, 8, 9, 10, 11}),
+              "opcode 7 independent group counts not preserved");
+        check(general.commands()[1].opcode == 0U &&
+              general.commands()[1].byte_offset == 30U,
+              "opcode 7 third group consumed the following opcode");
         for (std::size_t size = 0; size < nested.size(); ++size) {
             const g1::Bytes truncated(nested.begin(), nested.begin() + static_cast<std::ptrdiff_t>(size));
             rejects(truncated, "nested command prefix accepted as complete");

@@ -1,4 +1,4 @@
-name: Validate native C++ core
+name: Build native scene test
 
 on:
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
 
   iphoneos-arm64:
     runs-on: macos-26
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     steps:
@@ -65,11 +65,49 @@ jobs:
           -DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY
           -DCMAKE_BUILD_TYPE=Release
           -DBUILD_TESTING=OFF
+          -DG1_BUILD_APP=ON
+          -DG1_SOURCE_COMMIT=${{ github.sha }}
       - name: Compile native ARM64 sources
         run: cmake --build build/iphoneos --parallel 2
-      - name: Verify native archive object targets
-        run: python3 scripts/verify-native-archive.py build/iphoneos/libg1_resources.a
+      - name: Verify native archives and app target
+        run: |
+          mkdir -p artifacts
+          python3 scripts/verify-native-archive.py build/iphoneos/libg1_resources.a > artifacts/native-core-objects.json
+          python3 scripts/verify-native-archive.py build/iphoneos/libg1_png.a > artifacts/native-png-objects.json
+          python3 scripts/verify-native-archive.py build/iphoneos/libg1_metal.a > artifacts/native-metal-objects.json
+          python3 scripts/verify-native-app.py build/iphoneos/G1AwakeningNative.app --out artifacts/native-app-validation.json
+      - name: Compile macOS offscreen Metal probe
+        run: |
+          cmake -S native -B build/macos -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+          cmake --build build/macos --target g1_metal_probe --parallel 2
+      - name: Check actual offscreen Metal pixels when a device is available
+        shell: bash
+        run: |
+          set +e
+          build/macos/g1_metal_probe artifacts/metal-corners.png > artifacts/metal-report.json
+          g1_probe_status=$?
+          set -e
+          cat artifacts/metal-report.json
+          if [ "$g1_probe_status" -eq 77 ]; then
+            echo 'No Metal device on runner; GPU pixel test was skipped.' >> "$GITHUB_STEP_SUMMARY"
+          elif [ "$g1_probe_status" -ne 0 ]; then
+            exit "$g1_probe_status"
+          fi
+      - name: Prepare unsigned native code artifact
+        run: |
+          cp -R build/iphoneos/G1AwakeningNative.app artifacts/
+          mkdir -p artifacts/G1AwakeningNative.app/Licenses
+          cp LICENSE artifacts/G1AwakeningNative.app/Licenses/Native-Port-MPL-2.0.txt
+          cp native/third_party/lodepng/LICENSE artifacts/G1AwakeningNative.app/Licenses/LodePNG-Zlib.txt
+          cp docs/README_MEMORY_ZIP_POLICY.md artifacts/README_MEMORY_ZIP_POLICY.md
+      - name: Preserve native scene code and evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: G1-native-scene-unsigned-code
+          path: artifacts/
+          retention-days: 14
+          if-no-files-found: error
       - name: Record validation boundary
         run: |
-          echo '## Native core compilation only' >> "$GITHUB_STEP_SUMMARY"
-          echo 'This job builds native ARM64 object code. It does not build a playable app or verify rendering, campaign completion, device performance, or 60 FPS.' >> "$GITHUB_STEP_SUMMARY"
+          echo '## Native first-mission scene test' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Builds new ARM64 app code for iPhone XR on iOS 17.5. Original assets are packaged locally. A successful build does not verify iPhone XR execution, full gameplay, saves, sustained 60 FPS, or campaign completion.' >> "$GITHUB_STEP_SUMMARY"

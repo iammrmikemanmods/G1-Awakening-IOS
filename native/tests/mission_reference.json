@@ -6,13 +6,13 @@
     "archive_member": "Payload/G1awakening.app/iphone.big",
     "archive_sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4",
     "archive_size": 6994213,
-    "original_inventory_sha256": "b3a879163cf22db03a4e0406bf15827ca9d72ed91fc41cbd627a08d1cca01ff4",
+    "original_inventory_sha256": "860d473eb5d644fac3e6b1460c8cb0e813ac27e75b34dd1b62679c4ff4e1f9cf",
     "original_manifest_sha256": "49ae20ea549c5d7d893f1c0aa47b24cfa1899953de06ea56e1dfcb71a3aeefaa",
     "oracle_files_sha256": {
       "inspect_assets.py": "8c2e133dfdb6c5cca2cf2d5331090f024d8d4d0724a7e9819f2a4a03e36c2d99",
-      "inspect_game_data.py": "82f12ac0e23a05e29653e43645ce9df2eb6ea88ac0685237808f32544a3b7da2"
+      "inspect_game_data.py": "e9a03e9a7bc7b851dea5c801e8a1b7748428d9f7bcf332b50baff96754ac9925"
     },
-    "generator_sha256": "7f7a4d8a6bd05008f05cca2e6a11d3c1a714e7ef2bba52d7609b6f226dee2709",
+    "generator_sha256": "3022d02273db82675701a12a2050ad92dab123a92076d40de9ed35c01071ae14",
     "expectations_derived_from_native_code": false
   },
   "expected_counts": {
@@ -44,17 +44,17 @@
     "21": 2
   },
   "observed_layout_subtype_counts": {
-    "7": {
-      "0": 69,
-      "1": 4,
-      "2": 1
-    },
     "12": {
       "0": 3,
       "1": 1,
       "2": 25,
       "3": 2
     }
+  },
+  "observed_opcode7_group_counts": {
+    "0": 69,
+    "1": 4,
+    "2": 1
   },
   "streams": [
     {
@@ -1355,10 +1355,10 @@
       "replacement_u16": 65535
     },
     {
-      "case": "opcode7_unknown_layout_subtype",
+      "case": "opcode7_group_count_exceeds_resource",
       "resource_id": 310,
       "word_byte_offset": 168,
-      "replacement_u16": 3
+      "replacement_u16": 65535
     },
     {
       "case": "opcode12_unknown_layout_subtype",
@@ -1367,7 +1367,7 @@
       "replacement_u16": 4
     },
     {
-      "case": "opcode7_subtype1_nested_count_exceeds_resource",
+      "case": "opcode7_1groups_pair_count_exceeds_resource",
       "resource_id": 315,
       "word_byte_offset": 48,
       "replacement_u16": 65535
@@ -1379,7 +1379,7 @@
       "replacement_u16": 65535
     },
     {
-      "case": "opcode7_subtype2_nested_count_exceeds_resource",
+      "case": "opcode7_2groups_pair_count_exceeds_resource",
       "resource_id": 333,
       "word_byte_offset": 24,
       "replacement_u16": 65535

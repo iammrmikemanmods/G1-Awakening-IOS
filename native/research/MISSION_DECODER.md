@@ -46,17 +46,26 @@ instruction count. Every subsequent opcode and argument is a big-endian u16.
 | 17 | Count followed by that many three-word records |
 | 21 | Count followed by that many four-word records |
 | 12 | Leading subtype selects total argument length: 0 → 4, 1 → 6, 2 → 3, 3 → 5 words |
-| 7 | Count followed by records whose first three words include a subtype in word three; subtype 0 ends that record, 1 adds a count and pairs, 2 adds a count and five-word records |
+| 7 | Site count; each site has two words followed by a group count; each group has its own pair count followed by that many two-word pairs |
 
 All unsigned argument values, including `0xffff` and `0xfffe`, are preserved.
 The decoder does not reinterpret these values as signed integers, unit IDs,
 coordinates, text references, or runtime flags. Those meanings need separate
 evidence from the original native implementation.
 
-The original corpus covers every supported opcode and subtype. Opcode 7
-contains 69 subtype-0, four subtype-1, and one subtype-2 records; opcode 12
+The original corpus covers every supported opcode and opcode-12 subtype. Opcode 7
+contains 69 zero-group, four one-group, and one two-group records; opcode 12
 contains three subtype-0, one subtype-1, 25 subtype-2, and two subtype-3
 instructions. Opcode 11 does not occur and has no established layout.
+
+The initial empirical opcode-7 decoder interpreted the third site word as a
+subtype and happened to match every supplied stream. Direct inspection of the
+original parser at **0x48698–0x487ac** establishes a more general grammar: that
+word is the number of independently counted groups. The native decoder now
+implements that loop. Original decoded words and byte spans remain unchanged
+for all 30 streams; new source-only cases include three groups of differing
+lengths and reject incomplete groups. This correction does not infer what a
+site or group does during gameplay.
 
 ## Bounds and rejection behavior
 
@@ -98,9 +107,14 @@ The compact reference was generated with `tests/generate_mission_reference.py`
 from the original audit inventory and manifest. Its provenance records their
 hashes, the earlier Python decoder source hashes, the original IPA hash, and
 the generator hash. The generator does not read or execute the native decoder
-and does not derive expected values from its output. The original independent
-inventory SHA256 is
-`b3a879163cf22db03a4e0406bf15827ca9d72ed91fc41cbd627a08d1cca01ff4`.
+and does not derive expected values from its output. The refreshed independent inventory SHA256 is
+`860d473eb5d644fac3e6b1460c8cb0e813ac27e75b34dd1b62679c4ff4e1f9cf`.
+The earlier inventory hash
+`b3a879163cf22db03a4e0406bf15827ca9d72ed91fc41cbd627a08d1cca01ff4`
+remains a historical audit reference. The refresh corrects the Python
+opcode-7 grammar and its metadata labels; all 30 canonical command decode
+hashes and all stream identity records remain exactly unchanged. That
+comparison is recorded in `research/mission_validation_opcode7/reference_refresh.json`.
 To regenerate this metadata from the complete original research checkpoint:
 
 ```sh
@@ -132,6 +146,8 @@ top-level lists, and invalid resource lookups. This is bounded parser evidence,
 not a proof that every arbitrary input or every gameplay path has been tested.
 Detailed source hashes, compiler command, per-resource matches, and rejection
 messages are in the retained `research/mission_validation/native_mission_validation.json`.
+The same full original-data check after the opcode-7 correction is recorded in
+`research/mission_validation_opcode7/native_mission_validation.json`.
 
 The normal CMake build also includes this module and probe:
 
@@ -154,11 +170,10 @@ decoder remains part of the native static library.
 
 ## What remains for native mission execution
 
-The next engine work must connect the observed layouts to the actual original
-opcode handlers and state transitions. Dialogue, camera, unit placement,
-objective, and roster labels in the asset audit are hypotheses until their
-dispatch behavior is traced. A future native executor should implement only
-proven operations and report an unsupported operation explicitly; it must not
-silently skip unknown behavior to simulate progress. Rendering, AI, combat,
-save/load, audio, campaign completion, and iPhone XR performance are outside
-this decoder milestone.
+The decoder remains a framing component. The separate native `World` module
+connects a bounded first-mission initialization prefix to recovered dispatch
+behavior, retaining the next command and stopping before the first dialogue
+handler. Other objective and trigger semantics still need recovery. An
+executor must report unsupported behavior explicitly rather than silently
+skip it. Rendering, AI, combat, save/load, audio, campaign completion, and
+iPhone XR performance are outside this decoder milestone.

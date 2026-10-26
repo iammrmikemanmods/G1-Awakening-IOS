@@ -1,0 +1,27 @@
+{
+  "development_only": true,
+  "never_linked_or_shipped_in_app": true,
+  "source_sha256": "2c1fc1e53e27c8c0a16a248b4d724f6225f9fdcba05456a9d840cc21d1bc6a79",
+  "original_executable_sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd",
+  "original_archive_sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4",
+  "external_dependencies": [
+    "Python3",
+    "Unicorn2.1.4",
+    "analysis_tools/movement/oracle.py",
+    "compiled native world_probe"
+  ],
+  "libgcc_binary_required": false,
+  "libgcc_boundary": "___divsi3 at0xba288 is explicitly supplied as signed integer arithmetic; no original library is loaded",
+  "inputs_not_in_repository": [
+    "original ARMv6 executable",
+    "iphone.big"
+  ],
+  "result_report": "native/research/world_validation/original_world_oracle.json",
+  "native_source_evidence": "native/research/WORLD_BOOTSTRAP.md",
+  "bounded_calls": {
+    "spawn": 2,
+    "map_style": 66,
+    "movement_integration": 2
+  },
+  "source_code_patches_to_original": 0
+}

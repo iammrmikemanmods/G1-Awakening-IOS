@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+    <key>CFBundleDevelopmentRegion</key><string>en</string>
+    <key>CFBundleDisplayName</key><string>G1 Native Test</string>
+    <key>CFBundleExecutable</key><string>G1AwakeningNative</string>
+    <key>CFBundleIdentifier</key><string>org.g1awakening.native.test</string>
+    <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+    <key>CFBundleName</key><string>G1AwakeningNative</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>0.2.0</string>
+    <key>CFBundleVersion</key><string>2</string>
+    <key>CFBundleSupportedPlatforms</key><array><string>iPhoneOS</string></array>
+    <key>MinimumOSVersion</key><string>17.5</string>
+    <key>UIDeviceFamily</key><array><integer>1</integer></array>
+    <key>UIRequiredDeviceCapabilities</key><array><string>arm64</string><string>metal</string></array>
+    <key>UISupportedInterfaceOrientations</key><array>
+        <string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UIRequiresFullScreen</key><true/>
+    <key>UIStatusBarHidden</key><true/>
+    <key>UIViewControllerBasedStatusBarAppearance</key><true/>
+    <key>UILaunchScreen</key><dict/>
+    <key>ITSAppUsesNonExemptEncryption</key><false/>
+    <key>G1SourceCommit</key><string>@G1_SOURCE_COMMIT@</string>
+    <key>G1ArtifactKind</key><string>Native first-mission scene test; unfinished gameplay</string>
+</dict></plist>

@@ -31,7 +31,8 @@ def main():
     mutations = []
     mutated = set()
     opcodes = Counter()
-    subtypes = {"7": Counter(), "12": Counter()}
+    subtypes = {"12": Counter()}
+    site_group_counts = Counter()
     for item in inventory["mission_streams"]:
         member = members[item["member_index"]]
         if member["resource_id"] != item["resource_id"] or member["sha256"] != item["sha256"]:
@@ -61,14 +62,14 @@ def main():
             elif opcode == 7:
                 position = 1
                 for _ in range(words[0]):
-                    subtype = words[position + 2]
-                    subtypes["7"][subtype] += 1
-                    mutation("opcode7_unknown_layout_subtype", offset + 2 + 2 * (position + 2), 3)
+                    groups = words[position + 2]
+                    site_group_counts[groups] += 1
+                    mutation("opcode7_group_count_exceeds_resource", offset + 2 + 2 * (position + 2), 65535)
                     position += 3
-                    if subtype:
-                        mutation(f"opcode7_subtype{subtype}_nested_count_exceeds_resource",
+                    for _ in range(groups):
+                        mutation(f"opcode7_{groups}groups_pair_count_exceeds_resource",
                                  offset + 2 + 2 * position, 65535)
-                        position += 1 + words[position] * {1: 2, 2: 5}[subtype]
+                        position += 1 + words[position] * 2
                 if position != len(words):
                     raise ValueError("prior opcode 7 framing does not consume all argument words")
         expected = {"version": item["version"], "declared_instruction_count": item["declared_instruction_count"],
@@ -105,6 +106,7 @@ def main():
         "expected_counts": counts,
         "opcode_counts": dict(sorted(opcodes.items())),
         "observed_layout_subtype_counts": {k: dict(sorted(v.items())) for k, v in subtypes.items()},
+        "observed_opcode7_group_counts": dict(sorted(site_group_counts.items())),
         "streams": streams, "source_data_mutations": mutations,
         "not_established": ["opcode gameplay semantics", "30 campaign levels", "iOS build", "device behavior"],
     }
