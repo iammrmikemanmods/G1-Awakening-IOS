@@ -6,7 +6,7 @@
 namespace g1 {
 UnitAnimationTable decode_unit_animation_table(const Bytes& bytes) {
     // Original resource309 is a counted BYTE vector (207 bytes), with the
-    // type/form/action accessor establishing the nine-byte row stride.
+    // type/form/facing accessor establishing the nine-byte row stride.
     if (bytes.size() != 208 || bytes[0] != 207)
         throw FormatError("unit animation table requires a 207-byte counted vector");
     UnitAnimationTable table{};
@@ -36,7 +36,7 @@ std::vector<InitialPresentation> initial_presentations(const Archive& archive,
                 if (std::any_of(group.begin(),group.end(),matches))
                     throw FormatError("initial site-group presentation is not implemented");
         }
-        const auto animation = table[unit.type][1]; // form0, action1.
+        const auto animation = table[unit.type][1]; // form0, facing down1.
         if (animation >= sprite.descriptor.animations().size())
             throw FormatError("unit animation table points outside sprite descriptor");
         const auto placement = make_unit_sprite_placement({unit.x,unit.y,unit.form,0,0,false,false});

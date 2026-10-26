@@ -74,6 +74,7 @@ jobs:
           mkdir -p artifacts
           python3 scripts/verify-native-archive.py build/iphoneos/libg1_resources.a > artifacts/native-core-objects.json
           python3 scripts/verify-native-archive.py build/iphoneos/libg1_png.a > artifacts/native-png-objects.json
+          python3 scripts/verify-native-archive.py build/iphoneos/libg1_vorbis.a > artifacts/native-vorbis-objects.json
           python3 scripts/verify-native-archive.py build/iphoneos/libg1_metal.a > artifacts/native-metal-objects.json
           python3 scripts/verify-native-app.py build/iphoneos/G1AwakeningNative.app --out artifacts/native-app-validation.json
       - name: Compile macOS offscreen Metal probe
@@ -99,6 +100,7 @@ jobs:
           mkdir -p artifacts/G1AwakeningNative.app/Licenses
           cp LICENSE artifacts/G1AwakeningNative.app/Licenses/Native-Port-MPL-2.0.txt
           cp native/third_party/lodepng/LICENSE artifacts/G1AwakeningNative.app/Licenses/LodePNG-Zlib.txt
+          cp native/third_party/stb/LICENSE artifacts/G1AwakeningNative.app/Licenses/STB-MIT-Public-Domain.txt
           cp docs/README_MEMORY_ZIP_POLICY.md artifacts/README_MEMORY_ZIP_POLICY.md
       - name: Preserve native scene code and evidence
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

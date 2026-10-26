@@ -1,0 +1,217 @@
+{
+  "source_commit": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
+  "run_id": 40273944347,
+  "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40273944347",
+  "conclusion": "success",
+  "jobs": {
+    "host-tests": 121412566376,
+    "iphoneos-arm64": 121412566579
+  },
+  "host_ctest_passed": 10,
+  "host_ctest_total": 10,
+  "toolchain": {
+    "xcode": "26.6",
+    "xcode_build": "17F113",
+    "iphoneos_sdk": "26.5",
+    "apple_clang": "21.0.0.21000101",
+    "cmake": "4.4.4"
+  },
+  "app": {
+    "architecture": "arm64",
+    "executable_sha256": "97ee2cd25f160c422be8105697233bca530f7699bcc7569188e30c97824bad74",
+    "executable_bytes": 384360,
+    "system_dependencies": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/MetalKit.framework/MetalKit",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/usr/lib/libz.1.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "platform": "iPhoneOS",
+    "minimum_os": "17.5",
+    "sdk_encoded": 1705216,
+    "source_commit": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
+    "bundle_identifier": "org.g1awakening.native.test",
+    "version": "0.2.0",
+    "artifact_kind": "native first-mission scene test",
+    "original_assets_bundled": false,
+    "device_execution_verified": false,
+    "full_playthrough_verified": false
+  },
+  "archives": {
+    "native-core-objects.json": {
+      "archive": "build/iphoneos/libg1_resources.a",
+      "sha256": "1259b5a323dee642f69d8cfc38d72c89451824f38be912c4b816dfdc85bbf641",
+      "object_count": 13,
+      "objects": [
+        {
+          "member": "Archive.cpp.o",
+          "sha256": "bb3edb27bea05525303025ab96096e8796ad5015c4e75247e8f2cb2c3c479cfb",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "M3G.cpp.o",
+          "sha256": "3537027f4662deec5b57cdb104c3d6b52b6d1eff83da7d3907ee8a846dcee252",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "Mission.cpp.o",
+          "sha256": "6c6b550bd96a4ca8702f83699020c2b8c4600ca2d770cffa38d319e34e9de81a",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "Movement.cpp.o",
+          "sha256": "16471bc6657d7bdee6f1b18d75d3ce805186dc56cc28505cffdd6d5ba388a4cc",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "Atlas.cpp.o",
+          "sha256": "1619ba653fd807747d7593d565e1b92072d94df3271ef20bbaae1e6c5b6e68ed",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "Image.cpp.o",
+          "sha256": "5dd8e1e2843996cacb9174f9b71b69d1273993971fed0c0584718407cfdd1dd2",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "SpriteGeometry.cpp.o",
+          "sha256": "fb71d4b91f654841ac6082ea16d2f7610e4ac3b1264a6a49577450a82be50e2b",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "SpriteAnimation.cpp.o",
+          "sha256": "2f530a4616dd9a38f0adf863a1cbf8e96afed802415b8d4c33fd317b7269d74e",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "SpritePlacement.cpp.o",
+          "sha256": "4a4f9c64c94db6f079f2600d428d14f840fd6be0eae89ad05332b6d77380ecf7",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "Terrain.cpp.o",
+          "sha256": "4d31bf4d7c7ca42575839020496a4bdc70b3388c23dc9a4011d453f05dfa4f12",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "World.cpp.o",
+          "sha256": "c522a0cc1e39999504b6d72c4eabc024ba6b4b0ca0430276af6199cf54899c5a",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "Scene.cpp.o",
+          "sha256": "76fe8564d6a4beb87652e7a24157945b60650db3245bd60632c4af94d554c164",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        },
+        {
+          "member": "InitialPresentation.cpp.o",
+          "sha256": "735c5a6b493b532e19379e890eae810cdc2459434d77fbb5ab80b68cd6e87c61",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        }
+      ],
+      "playable_app": false,
+      "device_execution_verified": false
+    },
+    "native-png-objects.json": {
+      "archive": "build/iphoneos/libg1_png.a",
+      "sha256": "eb4afec49fd4ab4c5c11eae212884618ec968b72552eb432980569604c8ad7e5",
+      "object_count": 1,
+      "objects": [
+        {
+          "member": "lodepng.cpp.o",
+          "sha256": "ed89a4d6552fe21c64331304f193969561cffebdec5a2681a21bfe4ec3b8f819",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        }
+      ],
+      "playable_app": false,
+      "device_execution_verified": false
+    },
+    "native-metal-objects.json": {
+      "archive": "build/iphoneos/libg1_metal.a",
+      "sha256": "910aefec5beffe2793f86bd6a28e62513d2295e84ab6af0b4275ebdcf1a39ab6",
+      "object_count": 1,
+      "objects": [
+        {
+          "member": "MetalRenderer.mm.o",
+          "sha256": "8a220cae5478f19d683e08491dd6685d7ed82e7b34f6c915d104bb6d206ad2d1",
+          "architecture": "arm64",
+          "platform": "iPhoneOS",
+          "minimum_os": "17.5",
+          "sdk_encoded": 1705216
+        }
+      ],
+      "playable_app": false,
+      "device_execution_verified": false
+    }
+  },
+  "metal_offscreen_probe": {
+    "metal_device_available": true,
+    "device": "Apple Paravirtual device",
+    "pixel_checks": 6,
+    "pixel_channels_compared": 24,
+    "result": "passed",
+    "original_game_data_used": false,
+    "iphone_execution": false
+  },
+  "code_artifact": {
+    "id": 12629436962,
+    "bytes": 172048,
+    "sha256": "753ac6bcdd387dcaee05165476e3d7ebd22af402a3818b594487f89e1a7c1d11",
+    "original_game_assets_in_artifact": false
+  },
+  "limits": [
+    "macOS Metal pixel test uses synthetic data",
+    "No iPhone XR launch or installation test",
+    "No full gameplay, native save/reload or campaign completion",
+    "No sustained device performance result"
+  ]
+}

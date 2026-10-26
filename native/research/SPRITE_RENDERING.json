@@ -23,7 +23,7 @@
     "analysis_tools/sprite/animation_probe.cpp": "9ed6bb55dd04e7240bd0be5ed319665903183d1972c599336f4fb963e970d283",
     "analysis_tools/sprite/placement_probe.cpp": "a4c0b34ac1385e446da75c21aa0638f949ac32e431079f1b6a08a0ad2175d2a1",
     "analysis_tools/sprite/README.md": "bf7eba337401312b6da6142029ec69a75335f39ae2b8627937df338b207b3176",
-    "native/research/SPRITE_RENDERING.md": "77dea23a8e2a196d55bdc116f09c73ac645dc8b26869c00469b693de0dd2c88f"
+    "native/research/SPRITE_RENDERING.md": "ac643637a10c20eedf835098adf8a4cd329fd61cb54fb7dfab97a4b6362fb730"
   },
   "local_contracts": {
     "geometry": 21,
@@ -78,7 +78,8 @@
       "image": 961,
       "animation": 0,
       "repeats": -1,
-      "reverse": false
+      "reverse": false,
+      "facing": 1
     },
     {
       "type": 19,
@@ -91,7 +92,8 @@
       "image": 961,
       "animation": 0,
       "repeats": -1,
-      "reverse": false
+      "reverse": false,
+      "facing": 1
     }
   ],
   "native_product_requires_original_executable": false,
@@ -110,5 +112,40 @@
     "save persistence",
     "audio",
     "device and full-playthrough validation"
-  ]
+  ],
+  "facing_lookup": {
+    "formula": "type*9 + form*4 + facing",
+    "unit_field": "0x4b",
+    "directions": {
+      "up": 0,
+      "down": 1,
+      "left": 2,
+      "right": 3
+    },
+    "type11_row": [
+      0,
+      0,
+      2,
+      1,
+      5,
+      4,
+      6,
+      7,
+      3
+    ],
+    "type19_row": [
+      0,
+      0,
+      2,
+      1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1
+    ],
+    "first_spawn_delta_multiplier": 1,
+    "special_animation_double_rate_predicate": "current animation equals row[type*9+8] and sprite+0x75 is zero",
+    "form_transition_flag": "unit+0x2e set by0x43a54, consumed at0x6cdae..0x6cdca"
+  }
 }

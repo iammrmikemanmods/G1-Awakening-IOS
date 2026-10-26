@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-26T05:41:23.704812+00:00",
+  "scope": "Integrated portable native components on Linux; not app/device/full-playthrough execution",
+  "cmake_build_result": "passed",
+  "ctest_suites_passed": 15,
+  "ctest_suites_total": 15,
+  "ctest_log_sha256": "4f33e3012065d77932f0a1239dd9c68078b0548889295030194550acfa39d6a7",
+  "original_audio_files_compared": 24,
+  "original_audio_pcm_samples_compared": 7261392,
+  "audio_decode_report": "native/research/audio_decode_validation.json",
+  "source_hashes": [
+    {
+      "path": "native/include/g1/Audio.hpp",
+      "sha256": "8b690383d255e4f08a2d99d41f799e563cfa6fbe8088654fbfb963b496c8453f"
+    },
+    {
+      "path": "native/src/Audio.cpp",
+      "sha256": "297a62c64cfcb9f1ef5af80c7e8c2bc1b1d0e74d034473e24bbc8af6eb2bfc52"
+    },
+    {
+      "path": "native/include/g1/MovementAction.hpp",
+      "sha256": "4de89a3a714fd9cfc570e2fadf539c7b2728d05b255e1617df1a1ec2b9539992"
+    },
+    {
+      "path": "native/src/MovementAction.cpp",
+      "sha256": "4c519b8c7c1cb75a8cb696f9852452f6f7bae60e855f0cc26b5fe1ab558ae4f9"
+    },
+    {
+      "path": "native/include/g1/MovementArrival.hpp",
+      "sha256": "4d2f2cd05b78ad730c08184b9f13ea7b64d4e321f83c2ac86c0bdc7ee38ad3d3"
+    },
+    {
+      "path": "native/src/MovementArrival.cpp",
+      "sha256": "a929d215d24ceaceba6e5ae0a9492f2834400d117e7b9ca6c8c5789db68fae23"
+    },
+    {
+      "path": "native/include/g1/Text.hpp",
+      "sha256": "7e78e6b25dfe6e65ed7b98ec47809b1a0560428145a8e8d32ec5ea40b5134df0"
+    },
+    {
+      "path": "native/src/Text.cpp",
+      "sha256": "77f0edbdf3a6f9b9979a89175ce7a2efe3068c2039394cdc9b33b70e0fa17058"
+    },
+    {
+      "path": "native/include/g1/MissionExecution.hpp",
+      "sha256": "22d7eb9909cacc5a0d55ee6592fdeec45b53613eff4eb42e61fe35e3470b2ffc"
+    },
+    {
+      "path": "native/src/MissionExecution.cpp",
+      "sha256": "5f705097c45aa339b8eae52384a5026699c4ff2a892d2fa9e587ce56c7c0cbf2"
+    },
+    {
+      "path": "native/src/TextIndexMap.inc",
+      "sha256": "cfdb86ff805a4a75b65aa1f79c943bb4f671d18e47d40dfe1b02561709201ad4"
+    },
+    {
+      "path": "native/tests/audio_test.cpp",
+      "sha256": "ea594168a918d6e298e41f226595aba82a0c4a0f98caba74651ad7375396d25d"
+    },
+    {
+      "path": "native/tests/verify_audio.py",
+      "sha256": "8f95d8d960b118623d35b60eee86863a867c58914780b2888849ba8ac603dc8c"
+    },
+    {
+      "path": "native/tests/movement_action_test.cpp",
+      "sha256": "38fe7b67b0b18f73e0bb5cb3859fd6c114dac3861b75af132a3306fe5465ba6b"
+    },
+    {
+      "path": "native/tests/movement_arrival_test.cpp",
+      "sha256": "0d053b16109499cc3af12160fc80e48f7c636b359ef0bcddb4531427eace28c7"
+    },
+    {
+      "path": "native/tests/text_test.cpp",
+      "sha256": "d4252e42c8a4fc98d3054bd2d12c81ff00e4a2a677309b479be036b4192d864c"
+    },
+    {
+      "path": "native/tests/mission_execution_test.cpp",
+      "sha256": "a7c1364f3f62a52f7c2c54907932f4d11529412ea631ea69da0b00a9de217084"
+    },
+    {
+      "path": "native/tests/text_index_original_vectors.txt",
+      "sha256": "cd329716c58c072847af3a476a6abd6ed7792301cbc1663f952c22100585daac"
+    },
+    {
+      "path": "native/tests/dialogue_original_vectors.txt",
+      "sha256": "4254fffddd56e8c4c6be760b614ea71df0838f56abb1d7350f5bfc804134bf41"
+    },
+    {
+      "path": "native/tests/capture_original_vectors.txt",
+      "sha256": "e31a5a7359ef7a29da6359d993d8ee19328e9728d56a7242a8857ad0eb5acb8f"
+    },
+    {
+      "path": "native/tests/mission_clock_original_vectors.txt",
+      "sha256": "d2d5007a408aee4d9289bd8d64cc9611fd1b8afa446cec54c78f6fdadf69a1d0"
+    },
+    {
+      "path": "native/tools/audio_probe.cpp",
+      "sha256": "e553a793ac72af426ff8080d3e3db00f53a23b8c0003dde1a9ce684b5cb6e75d"
+    },
+    {
+      "path": "native/tools/mission_execution_probe.cpp",
+      "sha256": "30202022383afff7b4a96d9e16c7a2a212de12cac3ac63bac98919148bb185ce"
+    },
+    {
+      "path": "native/tools/scene_export.cpp",
+      "sha256": "0363e4e69deea5b25131dd326ea9406af4841f92ed8ed79ff50c1c20efadb053"
+    }
+  ],
+  "full_gameplay_implemented": false,
+  "iphone_execution_verified": false,
+  "full_campaign_verified": false
+}

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-10-26T05:19:35.807449+00:00",
+  "updated_utc": "2026-10-26T05:40:37.100938+00:00",
   "goal": {
     "game": "Transformers G1 Awakening 1.1.3",
     "device": "iPhone XR",
@@ -26,17 +26,19 @@
     "archive_reader": "implemented; all559 payload hashes match",
     "m3g_container": "implemented; all36 object inventories match; renderer not implemented",
     "mission_stream": "Original nested opcode7 grammar corrected; all30 streams/803commands unchanged; bootstrap executes bounded initial prefix only",
-    "movement_rules": "Costs/ranges recovered and connected to real first-world state; route execution and turn logic unfinished",
-    "tactical_renderer": "New Metal/UIKit first-scene app source written; Apple compilation pending for this source; inspection camera and interior terrain only",
+    "movement_rules": "Original movement costs, route reconstruction, per-tick move state, ordinary undo, and arrival target/facing implemented; broader arrival, capture and turn integration unfinished",
+    "tactical_renderer": "Native Metal/UIKit first-scene app compiled; actual macOS offscreenMetalpixelchecks pass; inspectioncamera/interiorterrain only; XR executionunverified",
     "combat": "not implemented",
     "ai": "not implemented",
     "native_saves": "not implemented",
-    "audio": "not implemented",
+    "audio": "Native Vorbis decoding verified against independent decoder for all24 source files; event selection, mixing and output playback unfinished",
     "campaign_execution": "not implemented",
     "sprite_descriptors": "Original geometry, normalized UV, type factory, initial placement/model transform and millisecond animation implemented",
     "world_bootstrap": "Original cold-start mission315/map268/style0; two initialunits; stopped before cursor9/opcode3",
     "png_decoder": "Native LodePNG;140sourceimages/12222652RGBAbytes match Pillow",
-    "sprite_animation": "1616original-function cases/124432scalar comparisons pass; full gameplay timing unverified"
+    "sprite_animation": "1616original-function cases/124432scalar comparisons pass; full gameplay timing unverified",
+    "mission_continuation": "Native first-script dialogue, camera requests, timers, transitions and capture predicate; effects require gameplay integration; opcode8 completion and opcode10 handoff remain explicit boundaries",
+    "localization": "All511 original UTF8 strings decoded; all486 script indices in both variants checked against original mapper"
   },
   "release_gates": {
     "native_playable_ipa": false,
@@ -47,9 +49,9 @@
     "sustained_60fps": false,
     "full_campaign": false,
     "native_core_apple_sdk_compile": true,
-    "native_scene_app_apple_compile": false,
-    "native_scene_ipa_packaged": false,
-    "native_gpu_probe_passed": false
+    "native_scene_app_apple_compile": true,
+    "native_scene_ipa_packaged": true,
+    "native_gpu_probe_passed": true
   },
   "ci_scope": "Compiles native ARM64 scene-testapp, inspects executable and runs macOSMetalpixelprobe ifGPUavailable. Originaldata packagedlocally. Doesnotverifydevice/fullgame.",
   "completion_eta": "Not established; remaining reverse engineering and full game implementation are unresolved.",
@@ -61,8 +63,8 @@
     "retirement_commit": "dba8521ff61f961755169f83715bfc796a4a3045"
   },
   "local_native_tests": {
-    "cmake_ctest_suites_passed": 10,
-    "cmake_ctest_suites_total": 10,
+    "cmake_ctest_suites_passed": 15,
+    "cmake_ctest_suites_total": 15,
     "mission_original_streams": 30,
     "mission_original_commands": 803,
     "mission_malformed_rejections": 855,
@@ -71,7 +73,7 @@
     "atlas_contract_checks": 71,
     "resource_payload_hashes": 559,
     "m3g_container_inventory_matches": 36,
-    "scope": "Native host component checks; no native game/app/device claim",
+    "scope": "Native Linux host component checks at this checkpoint. Cloud scene-build evidence below applies only to its recorded earlier source commit; no complete-game/device claim.",
     "atlas_original_descriptors": 38,
     "atlas_original_quad_comparisons": 3639,
     "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded",
@@ -82,7 +84,16 @@
     "sprite_animation_scalar_comparisons": 124432,
     "sprite_placement_original_cases": 130,
     "sprite_placement_matrix_comparisons": 2080,
-    "world_contract_checks": 90
+    "world_contract_checks": 90,
+    "vorbis_files_compared": 24,
+    "vorbis_pcm_samples_compared": 7261392,
+    "movement_action_original_cases": 136,
+    "movement_action_state_scalar_comparisons": 91580,
+    "movement_arrival_original_cases": 192,
+    "text_mapper_original_cases": 972,
+    "dialogue_original_cases": 476,
+    "capture_predicate_original_cases": 164,
+    "mission_clock_original_cases": 48
   },
   "prior_native_cloud_validation": {
     "source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
@@ -95,8 +106,21 @@
     "ipa_produced": false
   },
   "native_cloud_validation": {
-    "status": "not yet run for current scene-app source",
-    "ipa_produced": false
+    "status": "success",
+    "source_commit": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
+    "run_id": 40273944347,
+    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40273944347",
+    "host_ctest_suites_passed": 10,
+    "native_core_iphoneos_objects": 13,
+    "native_png_iphoneos_objects": 1,
+    "native_metal_iphoneos_objects": 1,
+    "app_executable_bytes": 384360,
+    "app_executable_sha256": "97ee2cd25f160c422be8105697233bca530f7699bcc7569188e30c97824bad74",
+    "metal_pixel_checks_passed": 6,
+    "metal_pixel_channels_compared": 24,
+    "metal_device": "Apple Paravirtual device",
+    "iphone_execution_verified": false,
+    "ipa_produced_locally": true
   },
   "source_pc_reference": {
     "uploaded_exe_sha256": "50dd5702e6cf6c0e79ec26757f84934c210be4576ff85a1d4d7303749b2e9cd7",
@@ -105,5 +129,15 @@
     "recovered_native_gameplay_source": false,
     "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
   },
-  "next_work": "Applecompile/package native scene; then originalUI/missionexecution/actionlogic. Fullplaythrough and reliable savesremainunfinished."
+  "next_work": "Integrate mission dialogue and movement into native gameplay; recover capture/transform, combat, turns/AI, completion/campaign and saves. Validate actual XR behavior and full campaign before release.",
+  "native_scene_test_ipa": {
+    "file_name": "G1_Awakening_Native_Scene_Test_002.ipa",
+    "bytes": 7106909,
+    "sha256": "cfa6f6958eef39e634418af5b056e791d55ead86ad8d3a82ab0d294d738451a5",
+    "source_commit": "4b5708924b8aa51bf01faec470c33623d1dbb5c0",
+    "signed": false,
+    "full_gameplay_implemented": false,
+    "device_installation_verified": false,
+    "validation": "validation/NATIVE_SCENE_IPA_002.json"
+  }
 }

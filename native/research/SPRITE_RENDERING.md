@@ -41,7 +41,7 @@ Each original part is a separate four-vertex triangle strip starting at vertex z
 
 The original factory `0x66d58` uses the 38-entry table at `0xcf5b0`. For types below 64 it uses the type as the index; for types 64 and above it uses `type - 41`. Native code rejects any resulting index outside the recovered table: supported types are 0–37 and 64–78.
 
-The descriptor sequence is preserved in `SpriteGeometry.cpp`. All entries use image resource **961**, a 512×512 RGBA PNG, and resource key `0xf4e02223`. Its payload SHA-256 is `fec01805fd0e58b17085dfaccfb7c7e74591d5347cc128d420bd70622aad9979`. Type 11 selects descriptor **868**; type 19 selects **517**. Form and action-state animation selection is a separate lookup, not an invented `type*2` descriptor mapping.
+The descriptor sequence is preserved in `SpriteGeometry.cpp`. All entries use image resource **961**, a 512×512 RGBA PNG, and resource key `0xf4e02223`. Its payload SHA-256 is `fec01805fd0e58b17085dfaccfb7c7e74591d5347cc128d420bd70622aad9979`. Type 11 selects descriptor **868**; type 19 selects **517**. Form and facing animation selection is a separate lookup, not an invented `type*2` descriptor mapping.
 
 The seven empty descriptor framing exceptions in `ATLAS_DECODER.md` remain explicit. Their native metadata framing is verified; their original zero-rectangle loader path remains unresolved. Empty frames emit no quads.
 
@@ -58,7 +58,7 @@ The renderer owner stores this same core at `+8`: `0x6432a` calls `0x62c64`, whi
          → 0x6526c / 0x65bd0 / 0x6d624 → 0x72cc0
 ```
 
-The portable player accepts a caller-supplied millisecond delta; it does not impose a display refresh rate or speed up game time. The original live-unit update also has a state-dependent two-times rate at `0x6ce0e`–`0x6ce14`; deciding when that state applies belongs to recovered world/gameplay logic, not the generic animation player.
+The portable player accepts a caller-supplied millisecond delta; it does not impose a display refresh rate or speed up game time. The original live-unit update also has a two-times rate at `0x6ce0e`–`0x6ce14` while the sprite's current animation equals resource309's special row-eight animation and completion byte `+75` is zero. The form-change routine `0x43a54` sets unit `+2e`; renderer `0x6cdae..0x6cdca` consumes that flag and selects the special animation, choosing reverse when the new form is zero. Ordinary movement mode `+8` is not the predicate for doubling. This state belongs to the unit renderer, not the generic animation player.
 
 ### Preserved original semantics
 
@@ -80,9 +80,11 @@ The original shared configuration object is established by `0x2f702` (allocation
 
 `0x5d2ea` loads tagged resource `0x03000135` (309), `0x5d2fe` reads the owner `+0x7c` object, and `0x5d304` calls `0x2a714`. Its resource-309 branch at `0x2a818`–`0x2a854` invokes counted-byte decoder `0x2a3ac` and stores the vector at object `+0x20`.
 
-Resource 309 contains a count byte 207 followed by 23 nine-byte rows; payload SHA-256 `41f078c506c57432a3a5280db79433a29c9309c6c04878da45a49104eaaec3dc`. Original lookup `0x5d17a` reads a signed byte at `type*9 + form*4 + actionColumn`, returning zero for an index beyond the vector count.
+Resource 309 contains a count byte 207 followed by 23 nine-byte rows; payload SHA-256 `41f078c506c57432a3a5280db79433a29c9309c6c04878da45a49104eaaec3dc`. Original lookup `0x5d17a` reads a signed byte at `type*9 + form*4 + facing`, returning zero for an index beyond the vector count. Renderer `0x6cdda..0x6cde2` passes unit byte `+4b` as this last argument. Travel helpers `0x431da` and `0x43212` prove the facing values: up 0, down 1, left 2, right 3. No separate stationary-versus-travelling selector is used by this lookup.
 
-Spawn `0x4333a` initializes form 0, action state 1 and both movement offsets to zero. Sprite creation `0x652e4` uses that lookup and starts `0x72d80` with repeats −1 and reverse false. The first mission places type 11 at (1,2) and type 19 at (4,7); both rows select animation **0** for form 0/action 1. Both animations initially display frame 0. These choices follow the original configuration/consumer chain, not a screenshot-based guess. Full future form/action-state selection is not implemented by the generic animation player.
+Spawn `0x4333a` initializes form 0, facing 1 (down) and both movement offsets to zero. Sprite creation `0x652e4` uses that lookup and starts `0x72d80` with repeats −1 and reverse false. The first mission places type 11 at (1,2) and type 19 at (4,7); both rows select animation **0** for form 0/facing 1. Both animations initially display frame 0. These choices follow the original configuration/consumer chain, not a screenshot-based guess. Future facing/form transitions must be handled by the unit renderer; the generic animation player does not choose them.
+
+The exact type11 row is `[0,0,2,1,5,4,6,7,3]`; the type19 row is `[0,0,2,1,-1,-1,-1,-1,-1]` after signed-byte interpretation. Getter `0x5c9ca` selects row index 8, so the two initial animation-zero sprites differ from their special indices 3 and -1. Consequently the first-spawn idle delta multiplier is **1**, independently of completion byte `+75`. This proof does not assume a tick rate or infer speed from rendered frames.
 
 ## Unit placement and model matrix
 

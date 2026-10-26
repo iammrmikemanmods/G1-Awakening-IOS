@@ -1,0 +1,16 @@
+{
+  "original_function_reference": "native/research/mission_execution_validation/original_mission_execution_reference.json",
+  "native_resource_validation": "native/research/mission_execution_validation/native_mission_execution_validation.json",
+  "module_report": "native/research/MISSION_EXECUTION.json",
+  "local_inputs_not_in_repository": [
+    "original G1awakening ARMv6 executable with recorded SHA256",
+    "original iphone.big with recorded SHA256"
+  ],
+  "dependency": "unicorn==2.1.4",
+  "source_files_identical_to_research_originals": true,
+  "tool_sha256": {
+    "oracle.py": "17c89000f86d327946602d621ba10729d5a6880a80e0140dc5592f5532bf0c8f",
+    "validate_resources.py": "f32f83cffced3a2159ec2747477041f98fd87aba00665ba78c0e1a0529a663ca",
+    "requirements.txt": "56bce36af734e3b9aeff2be4301bbc2a2c2b58ea1ea1e6ee6e792db84f96fbd4"
+  }
+}

@@ -11,6 +11,15 @@ and native Metal rendering. It stops before the first mission presentation
 command. It does not yet implement playable turns, combat, AI, saves, audio or
 campaign completion. A test IPA must never be described as the completed port.
 
+The first native scene app build now passed at source
+`4b5708924b8aa51bf01faec470c33623d1dbb5c0`
+([run40273944347](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40273944347)).
+All10 host suites and six actual offscreen Metal pixel checks passed. The
+unsigned `G1_Awakening_Native_Scene_Test_002.ipa` was then packaged locally from
+that new ARM64 executable and verified source data (7,106,909 bytes). These
+results do not establish iPhone execution or playable missions. Full evidence is
+in `validation/APPLE_NATIVE_SCENE_BUILD.json` and `validation/NATIVE_SCENE_IPA_002.json`.
+
 ## Current native implementation
 
 | Component | Implemented and checked | Boundary |
@@ -99,3 +108,15 @@ native deliverable. This project does not use the GTA repository.
 There is no reliable full-game completion estimate yet. The remaining work is
 original UI/mission execution, movement actions, turns/combat/AI, model/battle
 animation, audio, native save/load and a complete device-tested campaign.
+
+## Native gameplay component checkpoint
+
+Movement route execution, ordinary undo, arrival target/facing, localization,
+and the first mission's dialogue/timer/objective control flow now compile in
+the portable core. All15 host CTest suites pass. Native Vorbis decoding agrees
+with an independent decoder for all24 original audio files. These components
+are not yet connected into a complete playable mission. The scene IPA above
+was built from its separately recorded source commit and does not include
+these later gameplay components. See `native/research/MOVEMENT_ACTION.md`,
+`native/research/MISSION_EXECUTION.md`, `native/research/AUDIO_DECODING.md`, and
+`native/research/TIMER_RUNTIME_OBSERVATION.md` for exact evidence and limits.

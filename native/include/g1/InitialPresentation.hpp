@@ -13,8 +13,8 @@ struct InitialPresentation {
     bool reverse{};
 };
 
-// The bootstrap's original spawn sets form0, action1, zero position offsets.
-// Resource309 maps [type*9 + form*4 + action] to descriptor animation identity.
+// The bootstrap's original spawn sets form0, facing down1, zero position offsets.
+// Resource309 maps [type*9 + form*4 + facing] to descriptor animation identity.
 // This handles the proven initial two units, before movement/actions/dialogue.
 // Initial site-dependent poses outside that prefix fail explicitly.
 std::vector<InitialPresentation> initial_presentations(const Archive&, const FirstMissionScene&);

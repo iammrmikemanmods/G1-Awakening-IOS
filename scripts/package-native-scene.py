@@ -28,7 +28,8 @@ def sha(data):
 
 def read_code_artifact(path):
     allowed = {'Info.plist', 'G1AwakeningNative', 'PkgInfo',
-               'Licenses/Native-Port-MPL-2.0.txt', 'Licenses/LodePNG-Zlib.txt'}
+               'Licenses/Native-Port-MPL-2.0.txt', 'Licenses/LodePNG-Zlib.txt',
+               'Licenses/STB-MIT-Public-Domain.txt'}
     prefix = 'G1AwakeningNative.app/'
     files, seen = {}, set()
     with zipfile.ZipFile(path) as source:
