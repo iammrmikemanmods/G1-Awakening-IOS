@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "source_commit": "f8a1dccf8a9855238a1f1f00fc3e4de94f1a4790",
+  "run_id": 40280079431,
+  "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40280079431",
+  "overall_conclusion": "failure",
+  "host_suites": {
+    "passed": 29,
+    "total": 29
+  },
+  "iphoneos_arm64_app_compilation": "passed",
+  "native_app_validation": "passed",
+  "failure": {
+    "job_id": 121431241994,
+    "step": "Compile macOS offscreen Metal probe",
+    "file": "native/tests/save_store_test.cpp",
+    "diagnostic": "use of undeclared identifier 'mkdtemp'",
+    "cause": "Test source relied on an indirect declaration not supplied by Darwin headers.",
+    "fix": "Include cstdlib explicitly in the test."
+  },
+  "gpu_pixel_check": "not run",
+  "macos_profile_test": "not run",
+  "artifact_uploaded": false,
+  "physical_device_tested": false
+}
