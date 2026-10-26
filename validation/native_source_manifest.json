@@ -1,7 +1,7 @@
 {
   "schema": 2,
-  "scope": "Exact prepared scene source snapshot; host10suites passed; Apple/device results separate",
-  "prior_main": "b9a2f8d38360907306ec0c0a202a941a97ed80f7",
+  "scope": "Scene source snapshot after direct CoreGraphics link fix; previous Apple compile reached final link; rerun required",
+  "prior_main": "7725cfee5d11955669ce4a3735531187e058d3da",
   "contains_original_executable": false,
   "contains_game_assets": false,
   "files": [
@@ -182,8 +182,8 @@
     },
     {
       "path": "native/CMakeLists.txt",
-      "bytes": 5875,
-      "sha256": "529a05031314e53ef77dfdaf2ab3f0ead4aecf580eb1e32f680b06e3b4ffd68e"
+      "bytes": 5901,
+      "sha256": "5d62ff14f79c226d7e45f4f7b188f0259d6a0a5c7880724f4f3e0005161bbde8"
     },
     {
       "path": "native/include/g1/Archive.hpp",
@@ -709,6 +709,11 @@
       "path": "validation/APPLE_NATIVE_CORE_BUILD.json",
       "bytes": 2984,
       "sha256": "3e845d2a639bf8da660486cfb10887d0f710db4e1a0e7c55ce27e0bc38ea880c"
+    },
+    {
+      "path": "validation/NATIVE_SCENE_BUILD_001.json",
+      "bytes": 806,
+      "sha256": "08032de58ede929ebc0b847b046a7d4e70573975e27eb781655841fc520f77a1"
     },
     {
       "path": "validation/native_workflow_local_validation.json",

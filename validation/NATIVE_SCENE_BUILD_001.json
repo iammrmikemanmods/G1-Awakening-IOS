@@ -1,0 +1,20 @@
+{
+  "source_commit": "7725cfee5d11955669ce4a3735531187e058d3da",
+  "run_id": 40273825593,
+  "apple_job_id": 121412209506,
+  "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40273825593",
+  "result": "failed at final app link",
+  "native_cpp_modules_compiled": 13,
+  "png_codec_compiled": true,
+  "metal_backend_compiled": true,
+  "uikit_app_object_compiled": true,
+  "link_failure": "Direct CoreGraphics framework dependency missing for CGPointZero and CGRect functions",
+  "correction": "Add CoreGraphics to the native app target's framework link list",
+  "xcode": "26.6 (17F113)",
+  "iphoneos_sdk": "26.5",
+  "compiler": "AppleClang 21.0.0.21000101",
+  "target": "arm64 / iPhoneOS 17.5",
+  "app_executable_produced": false,
+  "ipa_produced": false,
+  "device_execution": false
+}

@@ -76,7 +76,7 @@ if(APPLE)
         set(G1_SOURCE_COMMIT "unknown" CACHE STRING "Source commit recorded in the test app")
         add_executable(G1AwakeningNative MACOSX_BUNDLE platform/apple/NativeApp.mm)
         target_link_libraries(G1AwakeningNative PRIVATE g1_metal
-            "-framework UIKit" "-framework MetalKit" "-framework QuartzCore")
+            "-framework UIKit" "-framework MetalKit" "-framework QuartzCore" "-framework CoreGraphics")
         target_compile_options(G1AwakeningNative PRIVATE -fobjc-arc)
         set_target_properties(G1AwakeningNative PROPERTIES
             OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED YES
