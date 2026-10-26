@@ -1,0 +1,389 @@
+--- a/src/mem.rs
++++ b/src/mem.rs
+@@ -153,9 +153,8 @@
+         // Real 32-bit ARM (ARMv7-A) computes addresses modulo 2^32: pointer
+         // arithmetic silently wraps around the 4 GiB address space and never
+         // traps. A fault only occurs when the resulting address is actually
+-        // *accessed* and points at unmapped memory — and `Mem::bytes_at` /
+-        // `bytes_at_mut` already handle that case gracefully via the null/OOB
+-        // stub pages. Using `checked_*().unwrap()` here instead turned benign
++        // *accessed* and fails the memory-access checks in `Mem::bytes_at`
++        // or `bytes_at_mut`. Using `checked_*().unwrap()` here instead turned benign
+         // (or already-corrupt, but guest-local) pointer math into a hard host
+         // panic, e.g. when a buggy guest computes `base + (size_t)(-N)` while
+         // building a `std::string`/shader buffer. Mirror the hardware: wrap.
+@@ -345,17 +344,7 @@
+     /// See [crate::Environment] for more info.
+     pub(super) zero_memory_on_free: bool,
+ 
+-    /// HACK: stub page for null-page READ accesses.
+-    /// Filled with zeros so that reading *(void**)NULL returns NULL.
+-    /// This page is NEVER written to by guest code — writes go to
+-    /// `null_write_sink` instead.
+-    null_stub_page: *mut u8,
+-
+-    /// HACK: separate write-sink page for null-page WRITE accesses.
+-    /// Writes to the null page go here and are silently discarded.
+-    /// This prevents write operations from corrupting the zero-filled
+-    /// read stub page.
+-    null_write_sink: *mut u8,
++
+ }
+ 
+ impl Drop for Mem {
+@@ -363,16 +352,7 @@
+         unsafe {
+             crate::mem::host::free_guest_memory(self.bytes.cast(), std::mem::size_of::<Bytes>())
+                 .unwrap();
+-            // Free the read stub page
+-            if !self.null_stub_page.is_null() {
+-                crate::mem::host::free_memory(self.null_stub_page.cast(), PAGE_SIZE as usize)
+-                    .unwrap();
+-            }
+-            // Free the write sink page
+-            if !self.null_write_sink.is_null() {
+-                crate::mem::host::free_memory(self.null_write_sink.cast(), PAGE_SIZE as usize)
+-                    .unwrap();
+-            }
++
+         }
+     }
+ }
+@@ -403,33 +383,12 @@
+         );
+         let bytes = ptr as *mut Bytes;
+ 
+-        // Allocate read stub page for null-page reads (4KB, zero-filled).
+-        // Data reads of a NULL pointer (e.g. `*(void**)0`) return NULL.
+-        let null_stub_page = unsafe {
+-            let page = crate::mem::host::allocate_memory(PAGE_SIZE as usize).unwrap();
+-            let stub_slice = std::slice::from_raw_parts_mut(page as *mut u8, PAGE_SIZE as usize);
+-            stub_slice.fill(0);
+-            page as *mut u8
+-        };
+-
+-        // Allocate a separate write-sink page for null-page writes (4KB).
+-        // Writes to the null page are absorbed here so that they don't
+-        // corrupt the read stub page's zeros.
+-        let null_write_sink = unsafe {
+-            let page = crate::mem::host::allocate_memory(PAGE_SIZE as usize).unwrap();
+-            let sink_slice = std::slice::from_raw_parts_mut(page as *mut u8, PAGE_SIZE as usize);
+-            sink_slice.fill(0);
+-            page as *mut u8
+-        };
+-
+         let allocator = allocator::Allocator::new();
+         Mem {
+             bytes,
+             null_segment_size: 0,
+             allocator,
+             zero_memory_on_free: true,
+-            null_stub_page,
+-            null_write_sink,
+         }
+     }
+ 
+@@ -476,83 +435,25 @@
+         unsafe { &mut *self.bytes }
+     }
+ 
+-    // Soft handler for null-page accesses. No panic; returns a stub page.
+-    // Rate-limited: only the first N unique (addr, is_write) pairs are logged,
+-    // further occurrences are silently counted. This prevents the log from
+-    // being flooded when the game repeatedly probes null-page addresses.
++    // the performance characteristics of this hasn't been profiled, but it
++    // seems like a good idea to help the compiler optimise for the fast path
+     #[cold]
+-    fn null_check_fail(at: VAddr, size: GuestUSize, is_write: bool, caller: &str) {
+-        use std::collections::HashSet;
+-        use std::sync::Mutex;
+-        static SEEN: Mutex<Option<HashSet<(VAddr, bool)>>> = Mutex::new(None);
+-        const MAX_UNIQUE_LOGS: usize = 64;
+-
+-        let mut guard = SEEN.lock().unwrap();
+-        let set = guard.get_or_insert_with(HashSet::new);
+-        let key = (at, is_write);
+-        if set.contains(&key) {
+-            return;
+-        }
+-        if set.len() >= MAX_UNIQUE_LOGS {
+-            if set.len() == MAX_UNIQUE_LOGS {
+-                // Insert a sentinel to emit the notice only once.
+-                set.insert((0xFFFF_FFFE, false));
+-                log!(
+-                    "touchHLE::mem: further NULL-PAGE warnings silenced after {} unique sites",
+-                    MAX_UNIQUE_LOGS
+-                );
+-            }
+-            return;
+-        }
+-        set.insert(key);
+-        let op_type = if is_write { "WRITE" } else { "READ" };
+-        // Provide helpful context: small offsets are typically field accesses
+-        // on a nil Objective-C object pointer (nil + ivar offset). This is
+-        // defined behavior in ObjC (returns 0/nil) and is NOT a crash — just
+-        // a sign that the app is accessing a nil object's fields.
+-        let context = if !is_write && at < 0x1000 {
+-            " (likely nil ObjC object field access — returning zero)"
+-        } else if is_write && at < 0x1000 {
+-            " (likely nil ObjC object field write — discarding)"
+-        } else {
+-            " — returning stub page"
+-        };
+-        log!(
+-            "touchHLE::mem: NULL-PAGE {} at 0x{:08x} (size: 0x{:x}) from {}{} \
+-             (unique sites logged: {}/{})",
+-            op_type,
+-            at,
+-            size,
+-            caller,
+-            context,
+-            set.len(),
+-            MAX_UNIQUE_LOGS
+-        );
++    fn null_check_fail(at: VAddr, size: GuestUSize) {
++        panic!("Attempted null-page access at {at:#x} ({size:#x} bytes)")
+     }
+ 
+     /// Special version of [Self::bytes_at] that returns [None] rather than
+-    /// panicking on failure.
+-    /// Only for use by [crate::gdb::GdbServer].
++    /// panicking on failure. Only for use by [crate::gdb::GdbServer].
+     pub fn get_bytes_fallible(&self, addr: ConstVoidPtr, count: GuestUSize) -> Option<&[u8]> {
+         if addr.to_bits() < self.null_segment_size {
+-            // Для GDB возвращаем stub-страницу
+-            let offset = (addr.to_bits() % PAGE_SIZE) as usize;
+-            let count_usize = count as usize;
+-            let stub_slice = unsafe {
+-                std::slice::from_raw_parts(
+-                    self.null_stub_page.add(offset),
+-                    PAGE_SIZE as usize - offset,
+-                )
+-            };
+-            return Some(&stub_slice[..count_usize.min(stub_slice.len())]);
++            return None;
+         }
+         self.bytes()
+             .get(addr.to_bits() as usize..)?
+             .get(..count as usize)
+     }
+     /// Special version of [Self::bytes_at_mut] that returns [None] rather than
+-    /// panicking on failure.
+-    /// Only for use by [crate::gdb::GdbServer].
++    /// panicking on failure. Only for use by [crate::gdb::GdbServer].
+     pub fn get_bytes_fallible_mut(
+         &mut self,
+         addr: ConstVoidPtr,
+@@ -560,15 +461,13 @@
+     ) -> Option<&mut [u8]> {
+         if addr.to_bits() < self.null_segment_size {
+             return None;
+-            // GDB не должен писать в null-page
+         }
+         self.bytes_mut()
+             .get_mut(addr.to_bits() as usize..)?
+             .get_mut(..count as usize)
+     }
+ 
+-    /// Get a slice for reading `count` bytes.
+-    /// This is the basic primitive for
++    /// Get a slice for reading `count` bytes. This is the basic primitive for
+     /// safe read-only memory access.
+     ///
+     /// This will panic when `ptr` is within the null page, even if `count` is
+@@ -576,37 +475,10 @@
+     /// when deriving a pointer from the slice consistent (though you should use
+     /// [Self::ptr_at] for that).
+     pub fn bytes_at<const MUT: bool>(&self, ptr: Ptr<u8, MUT>, count: GuestUSize) -> &[u8] {
+-        // ХАК: Вместо паники логируем и возвращаем данные из stub-страницы
+         if ptr.to_bits() < self.null_segment_size {
+-            Self::null_check_fail(ptr.to_bits(), count, false, "bytes_at");
+-            // Возвращаем данные из stub-страницы вместо реальной памяти
+-            // Это предотвращает UndefinedInstruction когда игра использует
+-            // прочитанные значения как указатели на функции
+-            let offset = (ptr.to_bits() % PAGE_SIZE) as usize;
+-            let count_usize = count as usize;
+-            let available = PAGE_SIZE as usize - offset;
+-            let actual_count = count_usize.min(available);
+-            return unsafe {
+-                std::slice::from_raw_parts(self.null_stub_page.add(offset), actual_count)
+-            };
+-        }
+-        // Guard against out-of-bounds reads near the top of the 32-bit address
+-        // space. If `ptr + count` wraps around or exceeds the backing array,
+-        // return the stub page. This prevents panics when a game uses -1 or
+-        // another near-max address as a pointer (corrupted pointer arithmetic).
+-        let addr = ptr.to_bits() as usize;
+-        let end = addr.saturating_add(count as usize);
+-        if end > self.bytes().len() || end < addr {
+-            Self::null_check_fail(ptr.to_bits(), count, false, "bytes_at(OOB)");
+-            let offset = (ptr.to_bits() % PAGE_SIZE) as usize;
+-            let count_usize = count as usize;
+-            let available = PAGE_SIZE as usize - offset;
+-            let actual_count = count_usize.min(available);
+-            return unsafe {
+-                std::slice::from_raw_parts(self.null_stub_page.add(offset), actual_count)
+-            };
+-        }
+-        &self.bytes()[addr..][..count as usize]
++            Self::null_check_fail(ptr.to_bits(), count)
++        }
++        &self.bytes()[ptr.to_bits() as usize..][..count as usize]
+     }
+     /// Get a slice for reading `count` bytes without a null-page check.
+     ///
+@@ -618,22 +490,9 @@
+         ptr: Ptr<u8, MUT>,
+         count: GuestUSize,
+     ) -> &[u8] {
+-        let addr = ptr.to_bits() as usize;
+-        let end = addr.saturating_add(count as usize);
+-        if end > self.bytes().len() || end < addr {
+-            Self::null_check_fail(ptr.to_bits(), count, false, "unchecked_bytes_at(OOB)");
+-            let offset = (ptr.to_bits() % PAGE_SIZE) as usize;
+-            let count_usize = count as usize;
+-            let available = PAGE_SIZE as usize - offset;
+-            let actual_count = count_usize.min(available);
+-            return unsafe {
+-                std::slice::from_raw_parts(self.null_stub_page.add(offset), actual_count)
+-            };
+-        }
+-        &self.bytes()[addr..][..count as usize]
+-    }
+-    /// Get a slice for reading or writing `count` bytes.
+-    /// This is the basic
++        &self.bytes()[ptr.to_bits() as usize..][..count as usize]
++    }
++    /// Get a slice for reading or writing `count` bytes. This is the basic
+     /// primitive for safe read-write memory access.
+     ///
+     /// This will panic when `ptr` is within the null page, even if `count` is
+@@ -641,35 +500,10 @@
+     /// when deriving a pointer from the slice consistent (though you should use
+     /// [Self::ptr_at_mut] for that).
+     pub fn bytes_at_mut(&mut self, ptr: MutPtr<u8>, count: GuestUSize) -> &mut [u8] {
+-        // ХАК: Вместо паники логируем и возвращаем данные из stub-страницы
+         if ptr.to_bits() < self.null_segment_size {
+-            Self::null_check_fail(ptr.to_bits(), count, true, "bytes_at_mut");
+-            // For writes to null-page, return the write-sink page so that
+-            // writes are silently absorbed without corrupting the read stub
+-            // page's zeros.
+-            let offset = (ptr.to_bits() % PAGE_SIZE) as usize;
+-            let count_usize = count as usize;
+-            let available = PAGE_SIZE as usize - offset;
+-            let actual_count = count_usize.min(available);
+-            return unsafe {
+-                std::slice::from_raw_parts_mut(self.null_write_sink.add(offset), actual_count)
+-            };
+-        }
+-        // Guard against out-of-bounds writes near the top of the 32-bit
+-        // address space (e.g. corrupted pointer = 0xFFFFFFFF).
+-        let addr = ptr.to_bits() as usize;
+-        let end = addr.saturating_add(count as usize);
+-        if end > self.bytes().len() || end < addr {
+-            Self::null_check_fail(ptr.to_bits(), count, true, "bytes_at_mut(OOB)");
+-            let offset = (ptr.to_bits() % PAGE_SIZE) as usize;
+-            let count_usize = count as usize;
+-            let available = PAGE_SIZE as usize - offset;
+-            let actual_count = count_usize.min(available);
+-            return unsafe {
+-                std::slice::from_raw_parts_mut(self.null_write_sink.add(offset), actual_count)
+-            };
+-        }
+-        &mut self.bytes_mut()[addr..][..count as usize]
++            Self::null_check_fail(ptr.to_bits(), count)
++        }
++        &mut self.bytes_mut()[ptr.to_bits() as usize..][..count as usize]
+     }
+ 
+     /// Get a pointer for reading an array of `count` elements of type `T`.
+@@ -780,78 +614,20 @@
+         unsafe { ptr.write_unaligned(value) }
+     }
+ 
+-    /// C-style `memmove`.
+-    ///
+-    /// Sanity-checks the arguments. If `src + size` or `dest + size` would
+-    /// run off the end of the 4 GiB guest address space, the operation is
+-    /// logged and skipped instead of panicking. This is a defensive measure
+-    /// for guest code that calls `memmove`/`memcpy` with corrupted arguments
+-    /// (for example, an uninitialised `std::string` whose internal length
+-    /// happens to be wildly out of range): a guest bug shouldn't take down
+-    /// the whole emulator.
++    /// C-style `memmove`, with checked source and destination ranges.
++    /// Invalid nonempty accesses stop execution instead of being discarded.
+     pub fn memmove(&mut self, dest: MutVoidPtr, src: ConstVoidPtr, size: GuestUSize) {
+-        let src_addr = src.to_bits() as usize;
+-        let dest_addr = dest.to_bits() as usize;
+-        let size_us = size as usize;
+-        let max = self.bytes_mut().len();
+-
+-        // Early reject: if size looks like a negative i32 cast to u32
+-        // (>= 0x8000_0000), it's almost certainly corrupted. Guest code on
+-        // 32-bit ARM that passes (size_t)(-1) or similar huge values is
+-        // buggy — skip the operation to keep the emulator alive.
+-        if size >= 0x8000_0000 {
+-            log!(
+-                "WARNING: memmove with likely-negative size ({:#x} = {}); \
+-                 src={:#x}, dest={:#x} — skipping",
+-                size,
+-                size as i32,
+-                src_addr,
+-                dest_addr,
+-            );
++        if size == 0 {
+             return;
+         }
+-
+-        // Also reject NULL source — real memmove(dest, NULL, n) is UB
+-        // but guest games (Geometry Dash) trigger it via corrupted strings.
+-        if src_addr == 0 && size > 0 {
+-            log!(
+-                "WARNING: memmove from NULL (dest={:#x}, size={:#x}) — skipping",
+-                dest_addr,
+-                size_us,
+-            );
+-            return;
+-        }
+-
+-        let src_end = match src_addr.checked_add(size_us) {
+-            Some(v) if v <= max => v,
+-            _ => {
+-                log!(
+-                    "WARNING: memmove with bogus args (src={:#x}, dest={:#x}, \
+-                     size={:#x}) — skipping to avoid host crash",
+-                    src_addr,
+-                    dest_addr,
+-                    size_us
+-                );
+-                return;
+-            }
+-        };
+-        let dest_end = match dest_addr.checked_add(size_us) {
+-            Some(v) if v <= max => v,
+-            _ => {
+-                log!(
+-                    "WARNING: memmove with bogus args (src={:#x}, dest={:#x}, \
+-                     size={:#x}) — skipping to avoid host crash",
+-                    src_addr,
+-                    dest_addr,
+-                    size_us
+-                );
+-                return;
+-            }
+-        };
+-        let _ = (src_end, dest_end);
+-
+-        self.bytes_mut()
+-            .copy_within(src_addr..src_addr + size_us, dest_addr)
++        // Validate both ranges before changing any destination bytes. The
++        // temporary borrows end before the overlapping copy below.
++        self.bytes_at(src.cast(), size);
++        self.bytes_at_mut(dest.cast(), size);
++        let src = src.to_bits() as usize;
++        let dest = dest.to_bits() as usize;
++        let size = size as usize;
++        self.bytes_mut().copy_within(src..src + size, dest);
+     }
+ 
+     /// Allocate `size` bytes.

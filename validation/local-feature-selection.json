@@ -1,0 +1,14 @@
+{
+  "selected_features": {
+    "touchHLE": [
+      "compact-memory",
+      "cpu-interpreter",
+      "dynamic-sdl"
+    ],
+    "touchhle-ios-entry": [
+      "compact-memory",
+      "cpu-interpreter"
+    ]
+  },
+  "status": "passed"
+}

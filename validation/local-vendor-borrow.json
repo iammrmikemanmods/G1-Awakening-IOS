@@ -1,0 +1,7 @@
+{
+  "scope": "Local Cargo feature-resolution preparation only; borrowed existing clean pinned rust-sdl2 via a temporary symlink. No source compilation or Apple build.",
+  "submodule": "vendor/rust-sdl2",
+  "commit": "c4422f6481f3748a65e489b357f2121dc45cdfc0",
+  "pinned_gitlink_matches": true,
+  "borrowed_source_clean": true
+}

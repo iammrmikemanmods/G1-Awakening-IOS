@@ -1,0 +1,177 @@
+{
+  "base_commit": "c75278bda86c80cbcec2d8d1493b5be9d5a9e0d1",
+  "manifest_sha256": "47b1e8c37974433fd08c193f986ae57869252ddcf52ab28d42f94f340e8c54d3",
+  "patch_count": 7,
+  "patches": [
+    {
+      "file": "patches/01_applesauce_nojit.patch",
+      "sha256": "875620886f38c71cb34c04f7f15fe7534f8f5f99898261122abd2518836df2eb",
+      "bytes": 313626,
+      "checkpoint_source": "research/interpreter/applesauce_nojit.patch"
+    },
+    {
+      "file": "patches/02_applesauce_ios_nojit_host.patch",
+      "sha256": "356c8f2af248c0816259d5cc43e1093c7fe29692045608ea771c9959323d2aef",
+      "bytes": 4265,
+      "checkpoint_source": "research/interpreter/applesauce_ios_nojit_host.patch"
+    },
+    {
+      "file": "patches/03_strict_runtime.patch",
+      "sha256": "139aaf7ab5ebc07935a368de96f35adfc58eb398b098c3abcf969e12b29ea9cb",
+      "bytes": 14596,
+      "checkpoint_source": "research/approaches/strict_runtime.patch"
+    },
+    {
+      "file": "patches/04_applesauce_strict_memory.patch",
+      "sha256": "9dfd3f0e6cd4eb8bbd264336787ae67f36d2eb2bf8f62a861da1973335c13e8a",
+      "bytes": 17377,
+      "checkpoint_source": "research/memory/strict_v1/applesauce_strict_memory.patch"
+    },
+    {
+      "file": "patches/05_compact_feature.patch",
+      "sha256": "a4d551c94363f86851c57a1d56897f763a92dab2a483e628797121a18b34d9d1",
+      "bytes": 390,
+      "checkpoint_source": "research/compact_memory/compact_feature.patch"
+    },
+    {
+      "file": "patches/06_compact_memory.patch",
+      "sha256": "5af17cff59459760fb1a8ac2cd98986ee6e59679190ca16d122cd7ad6b260b01",
+      "bytes": 14468,
+      "checkpoint_source": "research/compact_memory/compact_memory.patch"
+    },
+    {
+      "file": "patches/07_applesauce_ios_compact_selection.patch",
+      "sha256": "151e7a3ec754d9d888745fbeafb65b255e1cf1e0e5a6eb09346044d70f41b16d",
+      "bytes": 1976,
+      "checkpoint_source": "research/interpreter/applesauce_ios_compact_selection.patch"
+    }
+  ],
+  "submodules_initialized": false,
+  "submodule_revisions": [
+    "Not initialized: source-preparation-only local check"
+  ],
+  "reviewed_snapshot_checks": [
+    {
+      "file": "src/cpu/interpreter/vfp.rs",
+      "sha256": "7abc253432a616dac5a876bf871319dcd4c82566882c3e3b389a45edff2c5592"
+    },
+    {
+      "file": "src/mem.rs",
+      "sha256": "fcc88ad422e4850ee8d897138e1f040887cc3db6faba6421f082f31a4d304d19"
+    },
+    {
+      "file": "src/mem/compact.rs",
+      "sha256": "4858ef940b26a1626165fb1af6c1574cb04e9f4f8b2e44b9c25855a4d935e3fd"
+    },
+    {
+      "file": "src/mem/allocator.rs",
+      "sha256": "f8935d6849666f84cde171cfa4fc720ecf18cbdef2dcdbcaa61b785f65b331e0"
+    },
+    {
+      "file": "platform/ios/Sources/NativeHost.swift",
+      "sha256": "d0f1c2be4dc546216941312fe97a5c2e797cce33efe13652243a2093d29ccc4c"
+    },
+    {
+      "file": "platform/ios/scripts/build-rust.sh",
+      "sha256": "5eea05bb0ec907fe0f4e651ac08fdeb474bd718ccdc053a2f9e38897296cad13"
+    },
+    {
+      "file": "platform/ios/rust-entry/Cargo.toml",
+      "sha256": "903903efab5216467f615d46335dc3c3807029d5ad7ea7f67d4fb7e3ba65d814"
+    }
+  ],
+  "patched_source_files": [
+    {
+      "file": "Cargo.toml",
+      "sha256": "a5724c50efd95deaea1161baa7e31276b995d5d2e05aa2f6b770f7994ea452d5"
+    },
+    {
+      "file": "platform/ios/Sources/EmulatorCore.swift",
+      "sha256": "445bad94202ed7e6c1c74ff5678ed00cf00f057549a55074d270a3a94e1182e5"
+    },
+    {
+      "file": "platform/ios/Sources/NativeHost.swift",
+      "sha256": "d0f1c2be4dc546216941312fe97a5c2e797cce33efe13652243a2093d29ccc4c"
+    },
+    {
+      "file": "platform/ios/rust-entry/Cargo.toml",
+      "sha256": "903903efab5216467f615d46335dc3c3807029d5ad7ea7f67d4fb7e3ba65d814"
+    },
+    {
+      "file": "platform/ios/rust-entry/src/lib.rs",
+      "sha256": "0cf9c0ec15274612b807f8e3e21995b2272771d196dc5a786136c53c6d92f02f"
+    },
+    {
+      "file": "platform/ios/scripts/build-rust.sh",
+      "sha256": "5eea05bb0ec907fe0f4e651ac08fdeb474bd718ccdc053a2f9e38897296cad13"
+    },
+    {
+      "file": "src/cpu.rs",
+      "sha256": "887d904240ade9ca60e54a56f3baaa203724b11157bc7a5d709a26bf1fed7502"
+    },
+    {
+      "file": "src/cpu/dynarmic.rs",
+      "sha256": "44eb1c38f8d6783bd42d9788598756507606cbfe9be9ff4fdc6ad4de68b51491"
+    },
+    {
+      "file": "src/cpu/interpreter/LICENSE",
+      "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04"
+    },
+    {
+      "file": "src/cpu/interpreter/PROVENANCE.md",
+      "sha256": "519dd5b807338fe1f6a7ffb1f0b0c59eedf6f4a18931bdee28119ccf9ec3b6b4"
+    },
+    {
+      "file": "src/cpu/interpreter/arm.rs",
+      "sha256": "533797a17228f461b8cb20383e483d0b9cbc7b6d9c0abcc16a7591fd855f9345"
+    },
+    {
+      "file": "src/cpu/interpreter/mod.rs",
+      "sha256": "8a483d3492fc047d63bde9fb125507b2a754220a954b8fdcc3d15f931e612dde"
+    },
+    {
+      "file": "src/cpu/interpreter/thumb16.rs",
+      "sha256": "22dfb9e0cc6a2d97c4cb320636004ae44c17047e6688268593b53c4597553465"
+    },
+    {
+      "file": "src/cpu/interpreter/thumb32.rs",
+      "sha256": "dd6b89a74d17bfb8fc7a92477106da82c63e2f4245249cbc88a67794d5f6201a"
+    },
+    {
+      "file": "src/cpu/interpreter/vfp.rs",
+      "sha256": "7abc253432a616dac5a876bf871319dcd4c82566882c3e3b389a45edff2c5592"
+    },
+    {
+      "file": "src/cpu/interpreter_backend.rs",
+      "sha256": "8ac7a738f556ff734dd4c64c65df65e406d34d411561c6ce9cb3789b77b0979a"
+    },
+    {
+      "file": "src/dyld.rs",
+      "sha256": "5a5c04ab05958c1ccbf4dafc18e7e8453ff9024c9be4254d39b45f1e44a211cf"
+    },
+    {
+      "file": "src/gles/present.rs",
+      "sha256": "f4deb5d5b7a25bac760f4997b861fb4627524c733dc94989310d862f263ab3cb"
+    },
+    {
+      "file": "src/mem.rs",
+      "sha256": "fcc88ad422e4850ee8d897138e1f040887cc3db6faba6421f082f31a4d304d19"
+    },
+    {
+      "file": "src/mem/allocator.rs",
+      "sha256": "f8935d6849666f84cde171cfa4fc720ecf18cbdef2dcdbcaa61b785f65b331e0"
+    },
+    {
+      "file": "src/mem/compact.rs",
+      "sha256": "4858ef940b26a1626165fb1af6c1574cb04e9f4f8b2e44b9c25855a4d935e3fd"
+    },
+    {
+      "file": "src/window.rs",
+      "sha256": "16cb69540fcb63a6610bcd4d17767067318aaeb73d84ddd1685679c8dcb1e68e"
+    }
+  ],
+  "cargo_lock_sha256": "9b7fa52b9fdc1dc212fb78667d3b996b4c6f84295f246487bf78af371f9f7c94",
+  "source_only_validation": true,
+  "apple_sdk_build_performed_by_preparation": false,
+  "game_payload_present": false
+}
