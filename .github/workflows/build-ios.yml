@@ -1,4 +1,4 @@
-name: Build G1 no-JIT iOS test host
+name: Retire compatibility-host build
 
 on:
   workflow_dispatch:
@@ -6,78 +6,21 @@ on:
     branches: [main]
     paths:
       - .github/workflows/build-ios.yml
-      - build-manifest.json
-      - patches/**
-      - scripts/**
-  pull_request:
-    branches: [main]
-    paths:
-      - .github/workflows/build-ios.yml
-      - build-manifest.json
-      - patches/**
-      - scripts/**
 
 permissions:
   contents: read
 
+# Use the former build's group to cancel its in-progress macOS job.
 concurrency:
   group: g1-ios-build-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  unsigned-ios-host:
-    runs-on: macos-26
-    timeout-minutes: 180
-    env:
-      HOMEBREW_NO_AUTO_UPDATE: "1"
+  record-native-port-requirement:
+    runs-on: ubuntu-latest
     steps:
-      - name: Check out build kit
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Prepare, build and verify unsigned ARM64 IPA
-        run: bash scripts/build-ios.sh
-
-      - name: Upload ZIP artifact containing the verified IPA
-        if: success()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: g1-ios-unsigned-ipa
-          path: artifacts/G1-Awakening-nojit-test-host-unsigned.ipa
-          archive: true
-          compression-level: 0
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Upload build logs and verification records
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: g1-ios-build-records-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            artifacts/logs/
-            artifacts/metadata/
-            artifacts/*.sha256
-          if-no-files-found: warn
-          retention-days: 7
-
-      - name: Summarize actual build status
-        if: always()
-        shell: bash
+      - name: Record the requested native-port scope
         run: |
-          python3 - <<'PY'
-          import json, os
-          from pathlib import Path
-          status_path = Path('artifacts/metadata/build-status.json')
-          status = json.loads(status_path.read_text()) if status_path.exists() else {}
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
-              summary.write('## G1 iOS build\n\n')
-              summary.write(f"Last stage: `{status.get('last_stage', 'no build record')}`.\n\n")
-              summary.write(f"Build exit code: `{status.get('exit_code', 'unknown')}`.\n\n")
-              if status.get('exit_code') == 0 and status.get('ipa_validation_completed'):
-                  summary.write('The unsigned ARM64 test host passed package checks. Extract the IPA from the g1-ios-unsigned-ipa ZIP artifact and sign it locally with Sideloadly. Import the original game through the host after installation.\n\n')
-              else:
-                  summary.write('No verified IPA is being advertised. Download the build records to inspect the first failing stage.\n\n')
-              summary.write('An Apple build does not establish XR execution, sustained 60 FPS, audio, save persistence, or a full playthrough. No Apple credentials or original game are used by this workflow.\n')
-          PY
+          echo '## Native ARM64 port required' >> "$GITHUB_STEP_SUMMARY"
+          echo 'The user explicitly rejected the interpreter/compatibility-host approach. That build is retired. No compatibility IPA is a project deliverable.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Continue with native source reconstruction and modern iOS rendering, input, audio and saves. Preserve the earlier experiment only as historical research.' >> "$GITHUB_STEP_SUMMARY"
