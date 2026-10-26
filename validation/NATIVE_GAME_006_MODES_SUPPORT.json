@@ -1,0 +1,2285 @@
+{
+  "schema": 1,
+  "scope": "Complete native Showdown and Arena headless runs with actual source-asset support presentation preparation",
+  "baseline_commit": "2f157e530a0a80e9fab1da6ec8258af58177a2cd",
+  "native_gameplay_core_used": true,
+  "original_executable_executed": false,
+  "gameplay_state_forced": false,
+  "unlock_flags_forced": false,
+  "gpu_rendered": false,
+  "physical_device_test": false,
+  "presentation_feedback": "synthetic; real support clocks and CPU source-asset geometry preparation before existing synthetic battle acknowledgement",
+  "limitations": [
+    "Synthetic orthographic map projection; native UIKit tactical camera/easing and Metal drawable callbacks are not exercised.",
+    "No audio, GPU pixel, physical iPhone XR or touch-driven full-playthrough conclusion follows from these runs.",
+    "Only support counts observed in the recorded histogram occurred in these actual campaign/mode encounters; separate original-function and controller fixtures cover counts0..6."
+  ],
+  "inputs": {
+    "mode_pilot": {
+      "bytes": 1043312,
+      "sha256": "00898d2fe1af51da3f6c0655e54881348c1d0a3a9cf4b0c2a01c98341b396a99"
+    },
+    "archive": {
+      "bytes": 6994213,
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+    },
+    "terrain_tables": {
+      "bytes": 480,
+      "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8"
+    },
+    "completed_story_profile": {
+      "bytes": 330,
+      "sha256": "bc7f1b4d472ed8f41937d563663ebd273f91d597d8b7e0f605395c529efd6a56"
+    },
+    "completed_showdown_profile": {
+      "bytes": 330,
+      "sha256": "eaeffce146ffc4a2bd508fa6a33f9f337f1ca7ece340bda31ef87ab135dd9a85"
+    }
+  },
+  "source_files": {
+    "native/tools/SupportPilotValidation.hpp": {
+      "bytes": 10489,
+      "sha256": "6c914bd666f6f479b66bd352296aa2ce2c6be82fadf5fca7b6fdbf02382184ef"
+    },
+    "native/tools/session_mode_playthrough_probe.cpp": {
+      "bytes": 106688,
+      "sha256": "9b11606c225515baf569cbaad0ff2c68bdc14d3a238ed38c3d7d45874cefec30"
+    },
+    "native/tools/session_playthrough_probe.cpp": {
+      "bytes": 99187,
+      "sha256": "15ab20f3105fe3bdae1e167a8374505665a5e6376e0a1d840c869cfae5ab7444"
+    },
+    "native/include/g1/SupportPresentation.hpp": {
+      "bytes": 4207,
+      "sha256": "28613be8423e20f791195c0221a77945ba2d98bdf20527883b6db4c8f3a69e94"
+    },
+    "native/src/SupportPresentation.cpp": {
+      "bytes": 2205,
+      "sha256": "0c97b08039ea4c4dcde3717c33adfbba590e414e70b46535b004beb33810aebc"
+    },
+    "native/include/g1/SupportGeometry.hpp": {
+      "bytes": 1009,
+      "sha256": "b2fc01ee40b21df4fc9cf70e155d19c15532bf6a6e53f67d654854911945b353"
+    },
+    "native/src/SupportGeometry.cpp": {
+      "bytes": 3973,
+      "sha256": "71fb9096b8957bb1af2d908c0fab99def4e5eb6a872d385a513b147c0931116f"
+    },
+    "native/include/g1/SupportOverlayAssets.hpp": {
+      "bytes": 610,
+      "sha256": "259e0116a5fb9d35866882669a6b0a4faf93ebdcf49ca8fa88638653c87d9c24"
+    },
+    "native/src/SupportOverlayAssets.cpp": {
+      "bytes": 2221,
+      "sha256": "699633d8016590e477f846b91642d221bae4fa0b00ef07997872e791a3654807"
+    },
+    "native/include/g1/IndexedBitmap.hpp": {
+      "bytes": 687,
+      "sha256": "933ea2775323910ec7828ece4b684684cb31f119698f228ef39c2c39ebe2dd39"
+    },
+    "native/src/IndexedBitmap.cpp": {
+      "bytes": 4353,
+      "sha256": "f673518475f618256a2f3e7442377029d80bb2e2fb0276ce639d00ca8cdb09a8"
+    },
+    "native/include/g1/OverlayDescriptor.hpp": {
+      "bytes": 1628,
+      "sha256": "687ae5b9a18ba8059a889cf874d8cb45b02dcf3018e41029e489d49f2b9b06b8"
+    },
+    "native/src/OverlayDescriptor.cpp": {
+      "bytes": 4973,
+      "sha256": "ada026d44b021d7ee41c525310871744fc73737beb4339e7a48925e563dd9234"
+    },
+    "native/include/g1/Combat.hpp": {
+      "bytes": 6749,
+      "sha256": "fc1f6dd59d05cecb5893e268a971bee03fe0ae99112ffc0192c6ad067d53c1ef"
+    },
+    "native/src/Combat.cpp": {
+      "bytes": 15869,
+      "sha256": "5c12046a548dd62ac71e500eaa18f6b4dfc34cb136906b72efbadfabacb3e39d"
+    },
+    "native/include/g1/GameSession.hpp": {
+      "bytes": 12320,
+      "sha256": "0cdd1fbc96866ec1778cc7357c9712d410cc3ba51ad3f08f011e068ac474810c"
+    },
+    "native/src/GameSession.cpp": {
+      "bytes": 23302,
+      "sha256": "30493df76286d552172df72f3f911aef8559bd8d3e76aae239a60cc9a255c566"
+    },
+    "native/src/SpriteAnimation.cpp": {
+      "bytes": 4410,
+      "sha256": "80159bac9e3e9e52178a54a3d53666326142bd7863e47721d75a24703882c07e"
+    }
+  },
+  "reproduction": {
+    "wrapper_reference_commit": "2f157e530a0a80e9fab1da6ec8258af58177a2cd",
+    "wrapper_files": {
+      "analysis_tools/playthrough/run_arena_matrix.py": "fd6f88a4e6bcc072ab4f9e25a4f85f31b63cbe87",
+      "analysis_tools/playthrough/run_mode_probe.py": "04b82b381955633c29cefa057c138a825e2b1fee"
+    },
+    "shared_arguments": {
+      "seed": "0x4741",
+      "max_ticks": 200000,
+      "max_human_turns": 220,
+      "verify_support": 1
+    },
+    "showdown_arguments": {
+      "group": 1,
+      "start_mission": 0,
+      "strategy": "mode-hybrid",
+      "followup_policy": "aggressive",
+      "max_missions": 8,
+      "max_seconds": 180,
+      "initial_profile": "actual newly completed Story profile"
+    },
+    "arena_arguments": {
+      "group": 2,
+      "start_mission": "0..4",
+      "arena_faction": "0..1",
+      "arena_opponent": "0..1",
+      "strategy": "native-planner-all",
+      "followup_policy": "baseline",
+      "max_missions": 1,
+      "max_seconds": 45,
+      "initial_profile": "actual newly completed Showdown profile",
+      "parallel_workers": 2
+    }
+  },
+  "showdown": {
+    "outcome": "native_campaign_ending",
+    "ticks": 5915,
+    "actions": {
+      "commands": 666,
+      "selections": 350,
+      "moves": 81,
+      "attacks": 51,
+      "captures": 13,
+      "transforms": 29,
+      "heals": 46,
+      "upgrades": 120,
+      "productions": 4,
+      "human_end_turns": 322,
+      "ai_turn_entries": 322
+    },
+    "live_replay_checkpoint_matches": 643,
+    "profile_writes": 8,
+    "checkpoint_writes": 8,
+    "native_handoffs": [
+      {
+        "group": 1,
+        "index": 0,
+        "resource": 324,
+        "handoff": "next_mission",
+        "first_tick": 0,
+        "last_tick": 517,
+        "active_counts": [
+          1,
+          0
+        ],
+        "record": [
+          17,
+          2,
+          0
+        ],
+        "profile_written": true
+      },
+      {
+        "group": 1,
+        "index": 1,
+        "resource": 325,
+        "handoff": "next_mission",
+        "first_tick": 518,
+        "last_tick": 1223,
+        "active_counts": [
+          3,
+          0
+        ],
+        "record": [
+          26,
+          3,
+          1
+        ],
+        "profile_written": true
+      },
+      {
+        "group": 1,
+        "index": 2,
+        "resource": 327,
+        "handoff": "next_mission",
+        "first_tick": 1224,
+        "last_tick": 3572,
+        "active_counts": [
+          4,
+          0
+        ],
+        "record": [
+          128,
+          3,
+          0
+        ],
+        "profile_written": true
+      },
+      {
+        "group": 1,
+        "index": 3,
+        "resource": 328,
+        "handoff": "next_mission",
+        "first_tick": 3573,
+        "last_tick": 3805,
+        "active_counts": [
+          1,
+          0
+        ],
+        "record": [
+          3,
+          1,
+          0
+        ],
+        "profile_written": true
+      },
+      {
+        "group": 1,
+        "index": 4,
+        "resource": 329,
+        "handoff": "next_mission",
+        "first_tick": 3806,
+        "last_tick": 4193,
+        "active_counts": [
+          2,
+          0
+        ],
+        "record": [
+          7,
+          3,
+          0
+        ],
+        "profile_written": true
+      },
+      {
+        "group": 1,
+        "index": 5,
+        "resource": 330,
+        "handoff": "next_mission",
+        "first_tick": 4194,
+        "last_tick": 5451,
+        "active_counts": [
+          2,
+          0
+        ],
+        "record": [
+          133,
+          4,
+          1
+        ],
+        "profile_written": true
+      },
+      {
+        "group": 1,
+        "index": 6,
+        "resource": 331,
+        "handoff": "next_mission",
+        "first_tick": 5452,
+        "last_tick": 5637,
+        "active_counts": [
+          1,
+          0
+        ],
+        "record": [
+          4,
+          6,
+          0
+        ],
+        "profile_written": true
+      },
+      {
+        "group": 1,
+        "index": 7,
+        "resource": 332,
+        "handoff": "campaign_ending",
+        "first_tick": 5638,
+        "last_tick": 5915,
+        "active_counts": [
+          2,
+          0
+        ],
+        "record": [
+          6,
+          2,
+          0
+        ],
+        "profile_written": true
+      }
+    ],
+    "story_profile_records_preserved": true,
+    "known_build005_baseline_metrics_match": true,
+    "support_validation": {
+      "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+      "gpu_rendered": false,
+      "physical_device_test": false,
+      "presentation_feedback": "synthetic; unchanged command pilot",
+      "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+      "viewport": [
+        1792,
+        828
+      ],
+      "simulation_step_ms": 30,
+      "asset_loads": 1,
+      "image_resource": 997,
+      "descriptor_resource": 256,
+      "animation_index": 2,
+      "battles_checked": 228,
+      "helper_count_histogram": [
+        204,
+        14,
+        7,
+        3,
+        0,
+        0,
+        0
+      ],
+      "simulated_visible_cues": 37,
+      "support_simulation_ticks": 2479,
+      "effect_frames_prepared": 2072,
+      "empty_blink_frames": 444,
+      "completed_effect_hidden_ticks": 407,
+      "vertices_prepared": 9768,
+      "lethal_battles": 26,
+      "live_state_comparisons": 2935,
+      "checks": 113770,
+      "passed": true
+    },
+    "raw_result": {
+      "bytes": 4150,
+      "sha256": "4e87448716dfd722790a2d1f315e9543774961502b6eefb72a55416d60250dd0"
+    },
+    "raw_support_validation": {
+      "bytes": 763,
+      "sha256": "bc0b102b7509a103924ee013f4730670d05b6a860134ed9322a63a6f432b5b07"
+    },
+    "raw_events": {
+      "bytes": 635119,
+      "sha256": "a4d7052f5afaa400319fd1d93fd168d2ae5b3153bf641d1a61714641c0e88bb8"
+    }
+  },
+  "arena": {
+    "configurations": 20,
+    "finished": 20,
+    "player_win_counts": [
+      11,
+      9
+    ],
+    "commands": 1270,
+    "all_profile_bytes_preserved": true,
+    "human_opponent_configurations": 10,
+    "human_opponent_ai_turn_entries": 0,
+    "known_build005_baseline_command_and_winner_totals_match": true,
+    "support_totals": {
+      "battles_checked": 393,
+      "simulated_visible_cues": 64,
+      "support_simulation_ticks": 4288,
+      "effect_frames_prepared": 3584,
+      "empty_blink_frames": 768,
+      "completed_effect_hidden_ticks": 704,
+      "vertices_prepared": 16896,
+      "lethal_battles": 124,
+      "live_state_comparisons": 5074,
+      "checks": 219721,
+      "helper_count_histogram": [
+        338,
+        46,
+        9,
+        0,
+        0,
+        0,
+        0
+      ],
+      "observed_helper_counts": [
+        0,
+        1,
+        2
+      ],
+      "unobserved_helper_counts": [
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "rows": [
+      {
+        "mission": 0,
+        "faction": 0,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 1095,
+        "actions": {
+          "commands": 110,
+          "selections": 61,
+          "moves": 50,
+          "attacks": 24,
+          "captures": 8,
+          "transforms": 8,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 1,
+          "human_end_turns": 19,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 0,
+          "resource": 310,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 1095,
+          "active_counts": [
+            0,
+            3
+          ],
+          "record": [
+            20,
+            0,
+            6
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 24,
+          "helper_count_histogram": [
+            17,
+            5,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 9,
+          "support_simulation_ticks": 603,
+          "effect_frames_prepared": 504,
+          "empty_blink_frames": 108,
+          "completed_effect_hidden_ticks": 99,
+          "vertices_prepared": 2376,
+          "lethal_battles": 6,
+          "live_state_comparisons": 651,
+          "checks": 29396,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3836,
+          "sha256": "ceb7c7272137560e3029a4fe32882e49d1e7ad16a58884f4d7ea6cfc76ac3e8e"
+        },
+        "raw_support_validation": {
+          "bytes": 753,
+          "sha256": "4623d6faead7226ecc27792542d7628147386eab9222d423a0b200929feed025"
+        },
+        "raw_events": {
+          "bytes": 39545,
+          "sha256": "659fa9032d516d6bae0a42ac0194a2b0974a33ca51cf08e7042947354b030bd5"
+        }
+      },
+      {
+        "mission": 0,
+        "faction": 0,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 902,
+        "actions": {
+          "commands": 39,
+          "selections": 21,
+          "moves": 16,
+          "attacks": 7,
+          "captures": 2,
+          "transforms": 6,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 1,
+          "human_end_turns": 7,
+          "ai_turn_entries": 7
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 0,
+          "resource": 310,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 902,
+          "active_counts": [
+            0,
+            4
+          ],
+          "record": [
+            8,
+            0,
+            5
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 18,
+          "helper_count_histogram": [
+            14,
+            2,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 6,
+          "support_simulation_ticks": 402,
+          "effect_frames_prepared": 336,
+          "empty_blink_frames": 72,
+          "completed_effect_hidden_ticks": 66,
+          "vertices_prepared": 1584,
+          "lethal_battles": 5,
+          "live_state_comparisons": 438,
+          "checks": 19594,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3830,
+          "sha256": "98f0502f84cb1756d93a44cedc87c85a17138969cb3fa87e2de8500ce399171b"
+        },
+        "raw_support_validation": {
+          "bytes": 752,
+          "sha256": "a549c7522a81cb38837869fb4178010103b3e1bfae23568c79e2265ace1ba26e"
+        },
+        "raw_events": {
+          "bytes": 26627,
+          "sha256": "43573003321625a07ba842a17fd5184ad42e47a8538ff863383745b7b0ad3ec1"
+        }
+      },
+      {
+        "mission": 0,
+        "faction": 1,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 1054,
+        "actions": {
+          "commands": 102,
+          "selections": 59,
+          "moves": 47,
+          "attacks": 23,
+          "captures": 5,
+          "transforms": 8,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 1,
+          "human_end_turns": 18,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 0,
+          "resource": 310,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 1054,
+          "active_counts": [
+            2,
+            0
+          ],
+          "record": [
+            19,
+            0,
+            7
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 23,
+          "helper_count_histogram": [
+            14,
+            7,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 11,
+          "support_simulation_ticks": 737,
+          "effect_frames_prepared": 616,
+          "empty_blink_frames": 132,
+          "completed_effect_hidden_ticks": 121,
+          "vertices_prepared": 2904,
+          "lethal_battles": 7,
+          "live_state_comparisons": 783,
+          "checks": 35441,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3836,
+          "sha256": "84138d35bded48971916a39e712505d3de38a0b7b627c4c51fcdd6cafab78ef2"
+        },
+        "raw_support_validation": {
+          "bytes": 755,
+          "sha256": "7e75b78404fbf8d4f920337851c6a74b1acdab6665b4f126b820ada24e547e8d"
+        },
+        "raw_events": {
+          "bytes": 37262,
+          "sha256": "75034e7e99c99553e9ffad445abcdc2f531073629d3e6435c34f733ecd02712e"
+        }
+      },
+      {
+        "mission": 0,
+        "faction": 1,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 721,
+        "actions": {
+          "commands": 36,
+          "selections": 22,
+          "moves": 15,
+          "attacks": 10,
+          "captures": 2,
+          "transforms": 2,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 7,
+          "ai_turn_entries": 7
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 0,
+          "resource": 310,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 721,
+          "active_counts": [
+            2,
+            0
+          ],
+          "record": [
+            7,
+            5,
+            2
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 19,
+          "helper_count_histogram": [
+            12,
+            6,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 8,
+          "support_simulation_ticks": 536,
+          "effect_frames_prepared": 448,
+          "empty_blink_frames": 96,
+          "completed_effect_hidden_ticks": 88,
+          "vertices_prepared": 2112,
+          "lethal_battles": 7,
+          "live_state_comparisons": 574,
+          "checks": 25875,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3830,
+          "sha256": "19b50994daf4f465e1d3c0b7438e4600c8b83fa3178aef3188e620f3d0d3dbda"
+        },
+        "raw_support_validation": {
+          "bytes": 752,
+          "sha256": "0b1a7560ac00a7fff3263e9bebd706ad4941b505ce1dcb9acb58df0fedfaff1d"
+        },
+        "raw_events": {
+          "bytes": 23820,
+          "sha256": "79b80f8a7078596aef5410c1f65540a4a7d7ec56192990635c0a6130e35d39ec"
+        }
+      },
+      {
+        "mission": 1,
+        "faction": 0,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 274,
+        "actions": {
+          "commands": 41,
+          "selections": 23,
+          "moves": 11,
+          "attacks": 15,
+          "captures": 5,
+          "transforms": 4,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 6,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 1,
+          "resource": 311,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 274,
+          "active_counts": [
+            0,
+            2
+          ],
+          "record": [
+            7,
+            0,
+            6
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 15,
+          "helper_count_histogram": [
+            15,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 0,
+          "support_simulation_ticks": 0,
+          "effect_frames_prepared": 0,
+          "empty_blink_frames": 0,
+          "completed_effect_hidden_ticks": 0,
+          "vertices_prepared": 0,
+          "lethal_battles": 6,
+          "live_state_comparisons": 30,
+          "checks": 675,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3701,
+          "sha256": "86aee2f4c52097c28129ac6a2054b201728b3a2547291305ee8c0a1a5b92724f"
+        },
+        "raw_support_validation": {
+          "bytes": 740,
+          "sha256": "22bb6f344777aacc2367bc32f8cffa5b958d536830c790d39ba5bd9f030be36a"
+        },
+        "raw_events": {
+          "bytes": 16160,
+          "sha256": "525b71ad87bcf483b3e24d3e5da946e2f3fe42bf8b90779a7d7dfd2be37eda36"
+        }
+      },
+      {
+        "mission": 1,
+        "faction": 0,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 249,
+        "actions": {
+          "commands": 24,
+          "selections": 12,
+          "moves": 7,
+          "attacks": 6,
+          "captures": 4,
+          "transforms": 3,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 4,
+          "ai_turn_entries": 4
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 1,
+          "resource": 311,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 249,
+          "active_counts": [
+            0,
+            2
+          ],
+          "record": [
+            4,
+            2,
+            4
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 16,
+          "helper_count_histogram": [
+            16,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 0,
+          "support_simulation_ticks": 0,
+          "effect_frames_prepared": 0,
+          "empty_blink_frames": 0,
+          "completed_effect_hidden_ticks": 0,
+          "vertices_prepared": 0,
+          "lethal_battles": 6,
+          "live_state_comparisons": 32,
+          "checks": 720,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3698,
+          "sha256": "300246ea3b31db9c445383cfb6fc514e746f7c1f2e1422fa385b5975b0b85d6c"
+        },
+        "raw_support_validation": {
+          "bytes": 740,
+          "sha256": "1f9101711cc2319b0c38363c6c41441039fb76d08258bb1daa2c6bbf81d048d9"
+        },
+        "raw_events": {
+          "bytes": 14838,
+          "sha256": "9a61fd22a1ed57be61903fa06ea425ba95b992fd89b7432f6cd7bcc29204052d"
+        }
+      },
+      {
+        "mission": 1,
+        "faction": 1,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 399,
+        "actions": {
+          "commands": 53,
+          "selections": 30,
+          "moves": 18,
+          "attacks": 15,
+          "captures": 8,
+          "transforms": 0,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 12,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 1,
+          "resource": 311,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 399,
+          "active_counts": [
+            2,
+            0
+          ],
+          "record": [
+            13,
+            0,
+            6
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 15,
+          "helper_count_histogram": [
+            15,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 0,
+          "support_simulation_ticks": 0,
+          "effect_frames_prepared": 0,
+          "empty_blink_frames": 0,
+          "completed_effect_hidden_ticks": 0,
+          "vertices_prepared": 0,
+          "lethal_battles": 6,
+          "live_state_comparisons": 30,
+          "checks": 675,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3706,
+          "sha256": "7e5f399c24452fcee68f6e2780444114ec91dda0cc5ab6ba7695b9030a770a4f"
+        },
+        "raw_support_validation": {
+          "bytes": 740,
+          "sha256": "22bb6f344777aacc2367bc32f8cffa5b958d536830c790d39ba5bd9f030be36a"
+        },
+        "raw_events": {
+          "bytes": 21950,
+          "sha256": "dd4b1f129cade7ae69a318359a6f6fe56746b894ce98b269a00be103b5684ef3"
+        }
+      },
+      {
+        "mission": 1,
+        "faction": 1,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 472,
+        "actions": {
+          "commands": 36,
+          "selections": 20,
+          "moves": 10,
+          "attacks": 12,
+          "captures": 6,
+          "transforms": 0,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 8,
+          "ai_turn_entries": 8
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 1,
+          "resource": 311,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 472,
+          "active_counts": [
+            1,
+            0
+          ],
+          "record": [
+            9,
+            4,
+            3
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 25,
+          "helper_count_histogram": [
+            23,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 2,
+          "support_simulation_ticks": 134,
+          "effect_frames_prepared": 112,
+          "empty_blink_frames": 24,
+          "completed_effect_hidden_ticks": 22,
+          "vertices_prepared": 528,
+          "lethal_battles": 7,
+          "live_state_comparisons": 184,
+          "checks": 7377,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3703,
+          "sha256": "c53868af85efcc0a68678b804d82c436d10e9490797f2d148bd38f3f9ff0b991"
+        },
+        "raw_support_validation": {
+          "bytes": 750,
+          "sha256": "d889fc6d55dd31df5ce0f98c3b096b260a3691dc737ccafd1c95d41f4441ab65"
+        },
+        "raw_events": {
+          "bytes": 25616,
+          "sha256": "0b2eb53f67a7285e332ee9618de8c2b2b1d1e97b230b55da8ff16fcb4d18f84a"
+        }
+      },
+      {
+        "mission": 2,
+        "faction": 0,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 881,
+        "actions": {
+          "commands": 106,
+          "selections": 58,
+          "moves": 45,
+          "attacks": 17,
+          "captures": 12,
+          "transforms": 12,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 1,
+          "human_end_turns": 19,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 2,
+          "resource": 312,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 881,
+          "active_counts": [
+            0,
+            3
+          ],
+          "record": [
+            20,
+            0,
+            6
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 17,
+          "helper_count_histogram": [
+            15,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 2,
+          "support_simulation_ticks": 134,
+          "effect_frames_prepared": 112,
+          "empty_blink_frames": 24,
+          "completed_effect_hidden_ticks": 22,
+          "vertices_prepared": 528,
+          "lethal_battles": 6,
+          "live_state_comparisons": 168,
+          "checks": 7203,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3975,
+          "sha256": "ccb801494648732f11620a6c50116e8e32517c133a55af07ef07e6206aa7e8d9"
+        },
+        "raw_support_validation": {
+          "bytes": 750,
+          "sha256": "870deead0501cc2f6ba39cfaae7c32921878f42e1bd39fbd156932fee8afd27e"
+        },
+        "raw_events": {
+          "bytes": 37025,
+          "sha256": "0b74ba80aa64e8252f662b14eee1467fe666a1c39be54e0dbef6446683bb38bf"
+        }
+      },
+      {
+        "mission": 2,
+        "faction": 0,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 958,
+        "actions": {
+          "commands": 41,
+          "selections": 21,
+          "moves": 15,
+          "attacks": 6,
+          "captures": 5,
+          "transforms": 6,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 1,
+          "human_end_turns": 8,
+          "ai_turn_entries": 8
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 2,
+          "resource": 312,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 958,
+          "active_counts": [
+            0,
+            3
+          ],
+          "record": [
+            8,
+            1,
+            5
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 14,
+          "helper_count_histogram": [
+            13,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 1,
+          "support_simulation_ticks": 67,
+          "effect_frames_prepared": 56,
+          "empty_blink_frames": 12,
+          "completed_effect_hidden_ticks": 11,
+          "vertices_prepared": 264,
+          "lethal_battles": 6,
+          "live_state_comparisons": 95,
+          "checks": 3796,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3968,
+          "sha256": "ea4465583adc85e5978e6503b7b10518da716ee0316c16891cf08ee60933fa71"
+        },
+        "raw_support_validation": {
+          "bytes": 747,
+          "sha256": "6cb2f708c39299682158f91e6a88646b90c92685ad4dea1c596f022a421fdaea"
+        },
+        "raw_events": {
+          "bytes": 26798,
+          "sha256": "c1fa5b2c826095ad87fe587f9333c3141672149ddd1ed421c803003fdba7ed2a"
+        }
+      },
+      {
+        "mission": 2,
+        "faction": 1,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 1132,
+        "actions": {
+          "commands": 143,
+          "selections": 79,
+          "moves": 49,
+          "attacks": 37,
+          "captures": 13,
+          "transforms": 16,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 2,
+          "human_end_turns": 26,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 2,
+          "resource": 312,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 1132,
+          "active_counts": [
+            1,
+            0
+          ],
+          "record": [
+            27,
+            0,
+            9
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 37,
+          "helper_count_histogram": [
+            29,
+            8,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 8,
+          "support_simulation_ticks": 536,
+          "effect_frames_prepared": 448,
+          "empty_blink_frames": 96,
+          "completed_effect_hidden_ticks": 88,
+          "vertices_prepared": 2112,
+          "lethal_battles": 9,
+          "live_state_comparisons": 610,
+          "checks": 27873,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3978,
+          "sha256": "2f1c15aa701c69613bfad399a642436b40c1f26d86178ff3813e9978e5c3752f"
+        },
+        "raw_support_validation": {
+          "bytes": 752,
+          "sha256": "d280f0bf0a5d0e163502efad6d7e4b094c96d5f2de9eac0ffff27cf0929125ad"
+        },
+        "raw_events": {
+          "bytes": 51088,
+          "sha256": "f689afedb4aab469a75411800cd1ba0c62cff2b41f5df9c34fed867e5b8a7193"
+        }
+      },
+      {
+        "mission": 2,
+        "faction": 1,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 997,
+        "actions": {
+          "commands": 49,
+          "selections": 27,
+          "moves": 20,
+          "attacks": 9,
+          "captures": 6,
+          "transforms": 4,
+          "heals": 0,
+          "upgrades": 1,
+          "productions": 0,
+          "human_end_turns": 9,
+          "ai_turn_entries": 9
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 2,
+          "resource": 312,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 997,
+          "active_counts": [
+            2,
+            0
+          ],
+          "record": [
+            9,
+            6,
+            2
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 22,
+          "helper_count_histogram": [
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 0,
+          "support_simulation_ticks": 0,
+          "effect_frames_prepared": 0,
+          "empty_blink_frames": 0,
+          "completed_effect_hidden_ticks": 0,
+          "vertices_prepared": 0,
+          "lethal_battles": 8,
+          "live_state_comparisons": 44,
+          "checks": 1046,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3969,
+          "sha256": "68580e0fcb537c622abc7c59350da290b688586eca10d43a008baa79f878ea44"
+        },
+        "raw_support_validation": {
+          "bytes": 741,
+          "sha256": "2ab0935f97bf707d2f2f52ab557744f2fd565f4f8098b4cba621358e1207afbe"
+        },
+        "raw_events": {
+          "bytes": 30695,
+          "sha256": "6ef83e66eacc42d287d32752cb8950d59494a711374906551fbc8a0d9e170294"
+        }
+      },
+      {
+        "mission": 3,
+        "faction": 0,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 379,
+        "actions": {
+          "commands": 96,
+          "selections": 86,
+          "moves": 15,
+          "attacks": 42,
+          "captures": 2,
+          "transforms": 6,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 3,
+          "human_end_turns": 28,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 3,
+          "resource": 313,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 379,
+          "active_counts": [
+            3,
+            0
+          ],
+          "record": [
+            29,
+            0,
+            8
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 42,
+          "helper_count_histogram": [
+            42,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 0,
+          "support_simulation_ticks": 0,
+          "effect_frames_prepared": 0,
+          "empty_blink_frames": 0,
+          "completed_effect_hidden_ticks": 0,
+          "vertices_prepared": 0,
+          "lethal_battles": 8,
+          "live_state_comparisons": 84,
+          "checks": 2082,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 4178,
+          "sha256": "7b3445bf3278b9df349ff53fc8c23837413d5ecbbea00f2732ea0d2f64358c9b"
+        },
+        "raw_support_validation": {
+          "bytes": 741,
+          "sha256": "300034115270635bba99b64eddde35f9917da39ce6fe8e4d6d87a7d8f5039d82"
+        },
+        "raw_events": {
+          "bytes": 43592,
+          "sha256": "8e5dfe641b6dd8f54084a339f8a7027580996903d74c93a505560a1e03a96a45"
+        }
+      },
+      {
+        "mission": 3,
+        "faction": 0,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 543,
+        "actions": {
+          "commands": 41,
+          "selections": 29,
+          "moves": 12,
+          "attacks": 9,
+          "captures": 3,
+          "transforms": 6,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 1,
+          "human_end_turns": 10,
+          "ai_turn_entries": 10
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 3,
+          "resource": 313,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 543,
+          "active_counts": [
+            0,
+            2
+          ],
+          "record": [
+            10,
+            2,
+            5
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 22,
+          "helper_count_histogram": [
+            22,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 0,
+          "support_simulation_ticks": 0,
+          "effect_frames_prepared": 0,
+          "empty_blink_frames": 0,
+          "completed_effect_hidden_ticks": 0,
+          "vertices_prepared": 0,
+          "lethal_battles": 7,
+          "live_state_comparisons": 44,
+          "checks": 1046,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3833,
+          "sha256": "2b9fe9aaa0caff1128ca6330cb8ba0b65bb45693269fd3b1b7767be9931051e2"
+        },
+        "raw_support_validation": {
+          "bytes": 741,
+          "sha256": "d1e8fddced09c180c24b036db259b1d6991aa090d324410534b35275181fe69b"
+        },
+        "raw_events": {
+          "bytes": 28356,
+          "sha256": "d6544ab8f95b79ad28566f18758394912dc3841df86936fddb42c48c412c70f8"
+        }
+      },
+      {
+        "mission": 3,
+        "faction": 1,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 324,
+        "actions": {
+          "commands": 50,
+          "selections": 45,
+          "moves": 14,
+          "attacks": 14,
+          "captures": 2,
+          "transforms": 8,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 12,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 3,
+          "resource": 313,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 324,
+          "active_counts": [
+            4,
+            0
+          ],
+          "record": [
+            13,
+            0,
+            4
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 14,
+          "helper_count_histogram": [
+            10,
+            4,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 4,
+          "support_simulation_ticks": 268,
+          "effect_frames_prepared": 224,
+          "empty_blink_frames": 48,
+          "completed_effect_hidden_ticks": 44,
+          "vertices_prepared": 1056,
+          "lethal_battles": 4,
+          "live_state_comparisons": 296,
+          "checks": 13134,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3661,
+          "sha256": "e6e7d69209d3518f3fefa86de3d638bddcfb80ece61bf11df366487ec1ca0d86"
+        },
+        "raw_support_validation": {
+          "bytes": 752,
+          "sha256": "6795f860cb014bb6f750b01788c84a83c6885f60316491614a75211a23f1cbe3"
+        },
+        "raw_events": {
+          "bytes": 20672,
+          "sha256": "685f7670e1d0bf3292a9845b6d5cbbaa47494bbf646e1f80dfecebb2404f8fe9"
+        }
+      },
+      {
+        "mission": 3,
+        "faction": 1,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 392,
+        "actions": {
+          "commands": 29,
+          "selections": 32,
+          "moves": 8,
+          "attacks": 9,
+          "captures": 2,
+          "transforms": 2,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 8,
+          "ai_turn_entries": 8
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 3,
+          "resource": 313,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 392,
+          "active_counts": [
+            4,
+            0
+          ],
+          "record": [
+            8,
+            4,
+            0
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 17,
+          "helper_count_histogram": [
+            13,
+            4,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 4,
+          "support_simulation_ticks": 268,
+          "effect_frames_prepared": 224,
+          "empty_blink_frames": 48,
+          "completed_effect_hidden_ticks": 44,
+          "vertices_prepared": 1056,
+          "lethal_battles": 4,
+          "live_state_comparisons": 302,
+          "checks": 13269,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3656,
+          "sha256": "aedab5b63640e63ab51b38a76ab8398c8353b7b75ba8bad943e003d3cebbfa5e"
+        },
+        "raw_support_validation": {
+          "bytes": 752,
+          "sha256": "156931689aa6c32c3a295a681e17079a0394b08120e8c002e3812c5ffcea105d"
+        },
+        "raw_events": {
+          "bytes": 21576,
+          "sha256": "de33f3173ac561b6e8c670d308e77705e0d9651b4ce1e503df2995c1a026c829"
+        }
+      },
+      {
+        "mission": 4,
+        "faction": 0,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 879,
+        "actions": {
+          "commands": 98,
+          "selections": 49,
+          "moves": 39,
+          "attacks": 13,
+          "captures": 11,
+          "transforms": 18,
+          "heals": 0,
+          "upgrades": 2,
+          "productions": 0,
+          "human_end_turns": 15,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 4,
+          "resource": 314,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 879,
+          "active_counts": [
+            0,
+            2
+          ],
+          "record": [
+            16,
+            0,
+            6
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 13,
+          "helper_count_histogram": [
+            11,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 3,
+          "support_simulation_ticks": 201,
+          "effect_frames_prepared": 168,
+          "empty_blink_frames": 36,
+          "completed_effect_hidden_ticks": 33,
+          "vertices_prepared": 792,
+          "lethal_battles": 6,
+          "live_state_comparisons": 227,
+          "checks": 9963,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3802,
+          "sha256": "7b1893c17f11c77670bd32c93f116c493778aa617dfa829b474fdd041e89f291"
+        },
+        "raw_support_validation": {
+          "bytes": 750,
+          "sha256": "54435c71a3ca4d06e1f138ca49d13aee914371ffbfb9498ed2d703f5c475a0e1"
+        },
+        "raw_events": {
+          "bytes": 30584,
+          "sha256": "272309c8b277c445c6e7cec45ff914fbc9c1239776e8fdda29886d85c22b2a1e"
+        }
+      },
+      {
+        "mission": 4,
+        "faction": 0,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 1,
+        "ticks": 936,
+        "actions": {
+          "commands": 55,
+          "selections": 25,
+          "moves": 18,
+          "attacks": 7,
+          "captures": 6,
+          "transforms": 16,
+          "heals": 0,
+          "upgrades": 1,
+          "productions": 0,
+          "human_end_turns": 7,
+          "ai_turn_entries": 7
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 4,
+          "resource": 314,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 936,
+          "active_counts": [
+            0,
+            2
+          ],
+          "record": [
+            7,
+            2,
+            4
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 14,
+          "helper_count_histogram": [
+            11,
+            2,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 4,
+          "support_simulation_ticks": 268,
+          "effect_frames_prepared": 224,
+          "empty_blink_frames": 48,
+          "completed_effect_hidden_ticks": 44,
+          "vertices_prepared": 1056,
+          "lethal_battles": 6,
+          "live_state_comparisons": 296,
+          "checks": 13134,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3795,
+          "sha256": "7103caca6cf61194fb42c83fe02da58778ef76d829a59f9c3a8e271501419598"
+        },
+        "raw_support_validation": {
+          "bytes": 752,
+          "sha256": "fb53c519a56e441c3a24ebe96544373d02dd0820df49a14bde0202fd36d9ac4b"
+        },
+        "raw_events": {
+          "bytes": 25802,
+          "sha256": "2066e13a77442778aaf31da39b8511c2400b1d65ad6e622a6a961238cb9bcd52"
+        }
+      },
+      {
+        "mission": 4,
+        "faction": 1,
+        "opponent": 0,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 772,
+        "actions": {
+          "commands": 82,
+          "selections": 44,
+          "moves": 30,
+          "attacks": 13,
+          "captures": 9,
+          "transforms": 16,
+          "heals": 0,
+          "upgrades": 1,
+          "productions": 0,
+          "human_end_turns": 13,
+          "ai_turn_entries": 0
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 4,
+          "resource": 314,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 772,
+          "active_counts": [
+            3,
+            0
+          ],
+          "record": [
+            14,
+            0,
+            5
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 13,
+          "helper_count_histogram": [
+            12,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 1,
+          "support_simulation_ticks": 67,
+          "effect_frames_prepared": 56,
+          "empty_blink_frames": 12,
+          "completed_effect_hidden_ticks": 11,
+          "vertices_prepared": 264,
+          "lethal_battles": 5,
+          "live_state_comparisons": 93,
+          "checks": 3711,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3796,
+          "sha256": "d4b05bd97c375e1d349e2ee43b2516667ee24cde2fc32b0d9145d0ab626eca76"
+        },
+        "raw_support_validation": {
+          "bytes": 747,
+          "sha256": "701ce98955482151af475b3f7b1f1db8324b449e25b5b4c75ec1811b365450cb"
+        },
+        "raw_events": {
+          "bytes": 26506,
+          "sha256": "54b500e54410ad3e18eda7db364d540cdb78554a8bf653c9c9f9b352186743aa"
+        }
+      },
+      {
+        "mission": 4,
+        "faction": 1,
+        "opponent": 1,
+        "outcome": "native_arena_finished",
+        "winner_player": 0,
+        "ticks": 856,
+        "actions": {
+          "commands": 39,
+          "selections": 25,
+          "moves": 16,
+          "attacks": 10,
+          "captures": 4,
+          "transforms": 2,
+          "heals": 0,
+          "upgrades": 0,
+          "productions": 0,
+          "human_end_turns": 7,
+          "ai_turn_entries": 7
+        },
+        "native_handoff": {
+          "group": 2,
+          "index": 4,
+          "resource": 314,
+          "handoff": "campaign_menu",
+          "first_tick": 0,
+          "last_tick": 856,
+          "active_counts": [
+            3,
+            0
+          ],
+          "record": [
+            7,
+            4,
+            1
+          ],
+          "profile_written": true
+        },
+        "profile_bytes_preserved": true,
+        "support_validation": {
+          "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+          "gpu_rendered": false,
+          "physical_device_test": false,
+          "presentation_feedback": "synthetic; unchanged command pilot",
+          "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+          "viewport": [
+            1792,
+            828
+          ],
+          "simulation_step_ms": 30,
+          "asset_loads": 1,
+          "image_resource": 997,
+          "descriptor_resource": 256,
+          "animation_index": 2,
+          "battles_checked": 13,
+          "helper_count_histogram": [
+            12,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "simulated_visible_cues": 1,
+          "support_simulation_ticks": 67,
+          "effect_frames_prepared": 56,
+          "empty_blink_frames": 12,
+          "completed_effect_hidden_ticks": 11,
+          "vertices_prepared": 264,
+          "lethal_battles": 5,
+          "live_state_comparisons": 93,
+          "checks": 3711,
+          "passed": true
+        },
+        "raw_result": {
+          "bytes": 3793,
+          "sha256": "16c8e4bea0d3a1f7913b4d2e7ab783f5528f249b9ae26ad6823d61dc8b62ae50"
+        },
+        "raw_support_validation": {
+          "bytes": 747,
+          "sha256": "701ce98955482151af475b3f7b1f1db8324b449e25b5b4c75ec1811b365450cb"
+        },
+        "raw_events": {
+          "bytes": 23214,
+          "sha256": "cfc3e6ce9b30bd1d6f9985d75a30886691823af51b667a35632f42c4a30c8af7"
+        }
+      }
+    ]
+  },
+  "modes_support_totals": {
+    "battles_checked": 621,
+    "simulated_visible_cues": 101,
+    "support_simulation_ticks": 6767,
+    "effect_frames_prepared": 5656,
+    "empty_blink_frames": 1212,
+    "completed_effect_hidden_ticks": 1111,
+    "vertices_prepared": 26664,
+    "lethal_battles": 150,
+    "live_state_comparisons": 8009,
+    "checks": 333491,
+    "helper_count_histogram": [
+      542,
+      60,
+      16,
+      3,
+      0,
+      0,
+      0
+    ],
+    "observed_helper_counts": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "unobserved_helper_counts": [
+      4,
+      5,
+      6
+    ]
+  },
+  "completed_story_reference": {
+    "native_handoffs": 17,
+    "ticks": 17422,
+    "commands": 1140,
+    "live_replay_checkpoint_matches": 797,
+    "support_validation": {
+      "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+      "gpu_rendered": false,
+      "physical_device_test": false,
+      "presentation_feedback": "synthetic; unchanged command pilot",
+      "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+      "viewport": [
+        1792,
+        828
+      ],
+      "simulation_step_ms": 30,
+      "asset_loads": 1,
+      "image_resource": 997,
+      "descriptor_resource": 256,
+      "animation_index": 2,
+      "battles_checked": 476,
+      "helper_count_histogram": [
+        331,
+        109,
+        32,
+        4,
+        0,
+        0,
+        0
+      ],
+      "simulated_visible_cues": 185,
+      "support_simulation_ticks": 12395,
+      "effect_frames_prepared": 10360,
+      "empty_blink_frames": 2220,
+      "completed_effect_hidden_ticks": 2035,
+      "vertices_prepared": 48840,
+      "lethal_battles": 87,
+      "live_state_comparisons": 13347,
+      "checks": 647484,
+      "passed": true
+    },
+    "raw_result": {
+      "bytes": 5167,
+      "sha256": "65d31081bc9c2d465826ec2e4ea7c00666c5866474de1321e5df856d5fb52f94"
+    },
+    "raw_support_validation": {
+      "bytes": 772,
+      "sha256": "bd66b7c6a99e44a4a4600f83d5b6752ff0784228d3a85ae85d7bedc21e5f843a"
+    }
+  },
+  "story_showdown_arena_support_totals": {
+    "battles_checked": 1097,
+    "simulated_visible_cues": 286,
+    "support_simulation_ticks": 19162,
+    "effect_frames_prepared": 16016,
+    "empty_blink_frames": 3432,
+    "completed_effect_hidden_ticks": 3146,
+    "vertices_prepared": 75504,
+    "lethal_battles": 237,
+    "live_state_comparisons": 21356,
+    "checks": 980975,
+    "helper_count_histogram": [
+      873,
+      169,
+      48,
+      7,
+      0,
+      0,
+      0
+    ],
+    "observed_helper_counts": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "unobserved_helper_counts": [
+      4,
+      5,
+      6
+    ]
+  },
+  "all_passed": true
+}

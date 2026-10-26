@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-10-26T22:44:51.228476+00:00",
+  "updated_utc": "2026-10-26T22:59:06.671931+00:00",
   "goal": {
     "game": "Transformers G1 Awakening 1.1.3",
     "device": "iPhone XR",
@@ -57,8 +57,8 @@
     "current_m3g_gpu_pixels_verified": true,
     "native_game_test_ipa_packaged": true
   },
-  "ci_scope": "Commit083057b passes all55 portable suites on both Linux and Apple ARM64, iPhoneOS ARM64 app compilation, exact runtime shader compilation,6 tactical and12 M3G offscreen Metal pixel checks. Physical XR execution is not covered.",
-  "completion_eta": "Build005 IPA is available for Sideloadly testing. A full-game completion date remains unestablished while original presentation/sound gaps and physical-device acceptance remain.",
+  "ci_scope": "Commit97809786653cbf9e99976b0c69bcac093c5ed148 passes59 portable suites on Linux and AppleARM64, iPhoneOS app/runtime shader compilation,14 tactical/support and12M3G offscreen pixel checks. Hosted GPU geometry is synthetic; physicalXR is untested.",
+  "completion_eta": "Build006 native IPA is available for Sideloadly testing. Full-playthrough release timing remains unestablished pending remaining original presentation/sound work and physical-device acceptance.",
   "retired_approach": {
     "archive_branch": "archive/compatibility-experiment",
     "workflow_run_id": 40268562956,
@@ -77,7 +77,7 @@
     "atlas_contract_checks": 71,
     "resource_payload_hashes": 559,
     "m3g_container_inventory_matches": 36,
-    "scope": "Build006 source passes59 Linux portable suites including actual support assets, timing, geometry, async display gate and lethal-exchange/RNG preservation. Prior headless campaign and Apple evidence remain separately pinned.",
+    "scope": "Build006 source passes59 Linux portable suites. Fresh17Story,8Showdown and20Arena headless runs preserve known baseline gameplay results while validating actual support asset/controller/CPU geometry without changing live gameplay/RNG; separate Apple/device layers apply.",
     "atlas_original_descriptors": 38,
     "atlas_original_quad_comparisons": 3639,
     "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded",
@@ -116,7 +116,7 @@
     "consecutive_story_successes": 17,
     "continuous_story_terminal_loss_index": null,
     "full_playthrough_verified": false,
-    "final_staged_report": "validation/NATIVE_GAME_005_FOLLOWUP_HOST.json",
+    "final_staged_report": "validation/NATIVE_GAME_006_HOST.json",
     "continuous_story_profile_file_writes": 17,
     "continuous_story_checkpoint_file_writes": 0,
     "continuous_story_in_memory_checkpoint_comparisons": 797,
@@ -166,7 +166,7 @@
     "recovered_native_gameplay_source": false,
     "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
   },
-  "next_work": "Finish source-specific Apple build006 validation and package its native IPA. Then physical XR installation/rendering/input/audio, support-to-battle and save/relaunch testing; original first-use support tutorial, UI/artwork/camera and sound-event coverage remain.",
+  "next_work": "Test build006 on physical XR: installation, real rendering/input/audio, support-to-M3G handoff, pause/background/resume, save/relaunch Continue and sustained frame pacing. Complete original first-use support tutorial, UI/artwork/camera and sound-event coverage; record rendered campaign/mode playthrough evidence.",
   "native_scene_test_ipa": {
     "file_name": "G1_Awakening_Native_Scene_Test_002.ipa",
     "bytes": 7106909,
@@ -215,21 +215,22 @@
   },
   "current_campaign_cloud_validation": {
     "status": "success",
-    "published_source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
-    "run_id": 40368043701,
-    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701",
+    "published_source_commit": "97809786653cbf9e99976b0c69bcac093c5ed148",
+    "run_id": 40415854056,
+    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40415854056",
     "iphoneos_arm64_app_compiled": true,
     "iphoneos_runtime_shader_compiled": true,
-    "linux_host_test_passes": 55,
-    "linux_host_test_total": 55,
-    "apple_host_test_passes": 55,
-    "apple_host_test_total": 55,
-    "tactical_metal_pixel_checks": 6,
+    "linux_host_test_passes": 59,
+    "linux_host_test_total": 59,
+    "apple_host_test_passes": 59,
+    "apple_host_test_total": 59,
+    "tactical_metal_pixel_checks": 14,
+    "support_overlay_metal_pixel_checks": 8,
     "m3g_metal_pixel_checks": 12,
     "gpu_device": "Apple Paravirtual device",
     "gpu_checks_skipped": false,
     "device_tested": false,
-    "validation": "validation/APPLE_NATIVE_GAME_005.json"
+    "validation": "validation/APPLE_NATIVE_GAME_006.json"
   },
   "validation_layers": {
     "native_core_changed_state_save_reload": true,
@@ -248,7 +249,12 @@
     "native_battle_metal_execution_scope": "12 synthetic M3G mesh/Sprite3D pixel cases; original assets and the whole game have not been rendered on a physical device.",
     "native_showdown_full_completion": true,
     "native_arena_configuration_finishes": 20,
-    "native_other_modes_completion_scope": "Headless public-input native runs with synthetic world/battle/dialogue/results presentation; no physical device claim."
+    "native_other_modes_completion_scope": "Headless public-input native runs with synthetic world/battle/dialogue/results presentation; no physical device claim.",
+    "native_support_source_pixels": true,
+    "native_support_controller_and_geometry": true,
+    "native_support_gpu_synthetic_pixels": true,
+    "native_support_actual_encounters_headless": 1097,
+    "native_support_physical_device": false
   },
   "publication_history": [
     {
@@ -266,6 +272,13 @@
       "outcome": "success",
       "commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
       "apple_run": 40368043701,
+      "ipa_packaged": true
+    },
+    {
+      "action": "Native support integration publication",
+      "outcome": "success",
+      "commit": "97809786653cbf9e99976b0c69bcac093c5ed148",
+      "apple_run": 40415854056,
       "ipa_packaged": true
     }
   ],
@@ -285,12 +298,12 @@
     "device_tested": false
   },
   "native_game_test_ipa": {
-    "file_name": "G1_Awakening_Native_Game_Test_005.ipa",
-    "bytes": 7572942,
-    "sha256": "92988b5eedb10149f1863fe3cb4a5ac2799c0fe7a0e946901bfa0fca4b028563",
-    "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
-    "version": "0.5.0",
-    "build": 5,
+    "file_name": "G1_Awakening_Native_Game_Test_006.ipa",
+    "bytes": 7596333,
+    "sha256": "ef2a7fce7c50eccbce36c796ea0a030d0386971ed45ba45d6fb249537e3da337",
+    "source_commit": "97809786653cbf9e99976b0c69bcac093c5ed148",
+    "version": "0.6.0",
+    "build": 6,
     "signed": false,
     "requires_sideloadly_signing": true,
     "contains_compatibility_runtime": false,
@@ -298,14 +311,7 @@
     "device_installation_verified": false,
     "full_gameplay_implemented": false,
     "full_playthrough_verified": false,
-    "validation": "validation/NATIVE_GAME_IPA_005.json"
-  },
-  "research_not_in_shipped_ipa": {
-    "support_phase_and_clock": "native/research/support_presentation_recovery/README.md",
-    "v1_overlay_and_resource_mapping": "native/research/overlay_validation/README.md",
-    "publication_path_review": "validation/NATIVE_GAME_005_RESEARCH_REVIEW.json",
-    "production_integration": true,
-    "scope": "Historical recovery folders remain unchanged; support components are promoted into build006 source, while packaged build005 has no support display."
+    "validation": "validation/NATIVE_GAME_IPA_006.json"
   },
   "current_support_validation": {
     "version": "0.6.0",
@@ -313,8 +319,8 @@
     "host_suites_passed": 59,
     "host_suites_total": 59,
     "host_report": "validation/NATIVE_GAME_006_HOST.json",
-    "apple_status": "pending",
-    "ipa_packaged": false,
+    "apple_status": "success",
+    "ipa_packaged": true,
     "device_tested": false,
     "story": {
       "missions_completed": 17,
@@ -332,6 +338,57 @@
       "live_state_comparisons": 13347,
       "headless_only": true,
       "report": "validation/NATIVE_GAME_006_STORY_SUPPORT.json"
-    }
+    },
+    "source_commit": "97809786653cbf9e99976b0c69bcac093c5ed148",
+    "apple_report": "validation/APPLE_NATIVE_GAME_006.json",
+    "showdown_missions_completed": 8,
+    "arena_configurations_finished": 20,
+    "complete_modes_report": "validation/NATIVE_GAME_006_MODES_SUPPORT.json",
+    "headless_support_battles_checked": 1097,
+    "headless_support_cues": 286,
+    "headless_support_lethal_exchanges": 237,
+    "headless_support_live_state_comparisons": 21356,
+    "headless_support_checks": 980975
+  },
+  "build005_campaign_cloud_validation": {
+    "status": "success",
+    "published_source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+    "run_id": 40368043701,
+    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701",
+    "iphoneos_arm64_app_compiled": true,
+    "iphoneos_runtime_shader_compiled": true,
+    "linux_host_test_passes": 55,
+    "linux_host_test_total": 55,
+    "apple_host_test_passes": 55,
+    "apple_host_test_total": 55,
+    "tactical_metal_pixel_checks": 6,
+    "m3g_metal_pixel_checks": 12,
+    "gpu_device": "Apple Paravirtual device",
+    "gpu_checks_skipped": false,
+    "device_tested": false,
+    "validation": "validation/APPLE_NATIVE_GAME_005.json"
+  },
+  "previous_native_game_test_ipa": {
+    "file_name": "G1_Awakening_Native_Game_Test_005.ipa",
+    "bytes": 7572942,
+    "sha256": "92988b5eedb10149f1863fe3cb4a5ac2799c0fe7a0e946901bfa0fca4b028563",
+    "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+    "version": "0.5.0",
+    "build": 5,
+    "signed": false,
+    "requires_sideloadly_signing": true,
+    "contains_compatibility_runtime": false,
+    "contains_original_executable": false,
+    "device_installation_verified": false,
+    "full_gameplay_implemented": false,
+    "full_playthrough_verified": false,
+    "validation": "validation/NATIVE_GAME_IPA_005.json"
+  },
+  "support_recovery_history": {
+    "support_phase_and_clock": "native/research/support_presentation_recovery/README.md",
+    "v1_overlay_and_resource_mapping": "native/research/overlay_validation/README.md",
+    "publication_path_review": "validation/NATIVE_GAME_005_RESEARCH_REVIEW.json",
+    "production_integration": true,
+    "scope": "Historical research folders and build005 remain unchanged. Their bounded support asset/phase evidence is promoted into build006 native runtime."
   }
 }

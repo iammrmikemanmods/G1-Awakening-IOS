@@ -6,6 +6,28 @@ adds the recovered tactical support presentation before the ordinary 3D
 battle. It is a test build; a complete physical-device playthrough and
 sustained 60 FPS have not been recorded.
 
+## Build identity
+
+| Field | Value |
+| --- | --- |
+| File | `G1_Awakening_Native_Game_Test_006.ipa` |
+| Version / build | 0.6.0 / 6 |
+| Size | 7,596,333 bytes |
+| Source | `97809786653cbf9e99976b0c69bcac093c5ed148` |
+| Minimum system | iPhoneOS 17.5, ARM64 |
+| Apple workflow | [40415854056](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40415854056) — success |
+| Portable suites | 59/59 Linux and 59/59 Apple ARM64 |
+| Actual hosted GPU checks | 14 tactical/support plus12 M3G; synthetic geometry |
+| Physical XR / full playthrough | Not verified |
+
+IPA SHA-256: `ef2a7fce7c50eccbce36c796ea0a030d0386971ed45ba45d6fb249537e3da337`.
+
+Fresh headless runs complete 17 Story missions, 8 Showdown missions and all 20 Arena
+configurations with support validation enabled. Across 1,097 actual battles,
+286 support cues and 237 lethal exchanges, the validator performs 980,975 checks
+and preserves live gameplay/RNG. These are CPU geometry preparations with
+synthetic host acknowledgements.
+
 ## Runtime changes
 
 The app loads the original support image through property resource 1000,

@@ -14,9 +14,9 @@ battles. The battle path uses the real models, forms, texture replacements,
 cameras, animation clips, shot/hit/destruction effects and completion sequence.
 The updated Apple build has passed and the unsigned native game test IPA is
 packaged for Sideloadly. Physical iPhone XR validation is still pending.
-The build006 source now integrates the original tactical support percentage
-artwork, helper order and timing before the 3D cinematic. Its Apple validation
-and packaging are tracked separately from the verified build005 below.
+Build 006 integrates the original tactical support percentage artwork, helper
+order and timing before the 3D cinematic. It has passed Apple validation and
+is packaged for Sideloadly testing.
 Original HUD/site-marker/tactical camera/font fidelity, the first-use support
 tutorial and remaining sound-event coverage remain release work.
 Mission, battle and menu music maintenance are now connected with the original
@@ -105,14 +105,32 @@ presentation updates and 217 prepared frames, keeps gameplay RNG unchanged,
 and retains its real pending token until explicit host feedback. These are
 CPU integration results; they do not establish Metal or physical output.
 
-**The current package is `G1_Awakening_Native_Game_Test_005.ipa`, version 0.5.0 /
-build 5**, compiled from `083057b20b3b10269ca48e0d9816a62b3214869b`. It is 7,572,942
-bytes, unsigned, and ready for Sideloadly signing. Its SHA-256 is
-`92988b5eedb10149f1863fe3cb4a5ac2799c0fe7a0e946901bfa0fca4b028563`.
+**The current package is `G1_Awakening_Native_Game_Test_006.ipa`, version 0.6.0 /
+build 6**, compiled from `97809786653cbf9e99976b0c69bcac093c5ed148`. It is
+7,596,333 bytes, unsigned, and ready for Sideloadly signing. Its SHA-256 is
+`ef2a7fce7c50eccbce36c796ea0a030d0386971ed45ba45d6fb249537e3da337`.
 The packager verified the ARM64 executable, original data hashes, file inventory
-and ZIP contents. See [device test notes](docs/NATIVE_GAME_TEST_005.md) and
-`validation/NATIVE_GAME_IPA_005.json`. Installation and a rendered playthrough
-remain physical-device checks.
+and ZIP contents. See [device test notes](docs/NATIVE_GAME_TEST_006.md) and
+`validation/NATIVE_GAME_IPA_006.json`. Installation and a rendered playthrough
+remain physical-device checks. Build 005's reports and source remain preserved.
+
+Build 006 passed [Apple run 40415854056](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40415854056):
+all 59 portable suites on Linux and Apple ARM64, actual iPhoneOS app and shader
+compilation, 14 tactical/support and 12M3G offscreen pixel checks. The eight new
+support pixel cases verify crop, palette, sampling, part order and depth
+isolation through the runtime renderer on synthetic geometry. The GPU is the
+hosted Apple Paravirtual device, not an iPhone XR. See
+`validation/APPLE_NATIVE_GAME_006.json`.
+
+Fresh complete 17 Story, 8 Showdown and 20 Arena headless runs retain the previous
+baseline outcomes, including 11 player-0 and 9 player-1 Arena wins. They validate
+1,097 actual battle support preparations, 286 visible cues and 237 lethal
+exchanges while preserving live gameplay and full RNG state. Actual encounters
+cover helper counts 0–3; separate original-function/controller fixtures cover
+0–6. See `validation/NATIVE_GAME_006_STORY_SUPPORT.json` and
+`validation/NATIVE_GAME_006_MODES_SUPPORT.json`. Their presentation feedback is
+synthetic and their geometry is CPU-prepared; they do not establish a rendered
+physical-device playthrough.
 
 The previously packaged `G1_Awakening_Native_Scene_Test_002.ipa` was built from
 `4b5708924b8aa51bf01faec470c33623d1dbb5c0`. It is an earlier scene test and does
@@ -124,15 +142,15 @@ comparisons, synthetic integration checks, Apple compilation and physical
 device evidence. `PORT_STATUS.json` keeps the full-game release gates explicit.
 No physical XR playthrough is currently recorded.
 
-Build006 promotes the bounded evidence under
+Build 006 promotes the bounded evidence under
 `native/research/support_presentation_recovery/` and
 `native/research/overlay_validation/` into native asset decoding and host
 presentation. It retains pre-combat rendering snapshots, exact helper identity
 and a separately tested presentation gate, while leaving gameplay/RNG intact.
-See [build006 integration notes](docs/NATIVE_GAME_TEST_006.md),
+See [build 006 integration notes](docs/NATIVE_GAME_TEST_006.md),
 `validation/NATIVE_GAME_006_HOST.json` and the
 [applied recovery guide profile](docs/PORTING_SKILL_PROFILE.md). The historical
-research packages and build005 remain unchanged.
+research packages and build 005 remain unchanged.
 
 ## Build and package
 

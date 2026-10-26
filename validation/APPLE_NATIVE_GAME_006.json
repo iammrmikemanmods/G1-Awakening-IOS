@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "updated_utc": "2026-10-26T22:59:06.671931+00:00",
+  "source_commit": "97809786653cbf9e99976b0c69bcac093c5ed148",
+  "source_tree": "fe7843947ac20c8299469b40996da448a754bfed",
+  "run_id": 40415854056,
+  "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40415854056",
+  "conclusion": "success",
+  "jobs": {
+    "linux": 121897870112,
+    "apple": 121897870495
+  },
+  "toolchain": {
+    "xcode": "26.6",
+    "build": "17F113",
+    "iphoneos_sdk": "26.5",
+    "minimum_os": "17.5"
+  },
+  "portable_tests": {
+    "linux_passed": 59,
+    "linux_total": 59,
+    "apple_passed": 59,
+    "apple_total": 59
+  },
+  "iphoneos_app_compiled": true,
+  "exact_iphoneos_m3g_runtime_shader_compiled": true,
+  "native_app": {
+    "architecture": "arm64",
+    "executable_sha256": "ce53d9c9b5670b681d89db7f28a4147dfb86a47de74a85d57b53de8d9a3efde5",
+    "executable_bytes": 1570912,
+    "system_dependencies": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/MetalKit.framework/MetalKit",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+      "/usr/lib/libz.1.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "platform": "iPhoneOS",
+    "minimum_os": "17.5",
+    "sdk_encoded": 1705216,
+    "source_commit": "97809786653cbf9e99976b0c69bcac093c5ed148",
+    "bundle_identifier": "org.g1awakening.native.test",
+    "version": "0.6.0",
+    "artifact_kind": "Native campaign integration test",
+    "feature_scope": "Native tactical gameplay, continuous turns, campaign and checkpoint restore, original support artwork and timing before animated M3G battles; full playthrough, original output fidelity and physical iPhone XR validation remain outstanding",
+    "original_assets_bundled": false,
+    "device_execution_verified": false,
+    "full_playthrough_verified": false
+  },
+  "tactical_metal": {
+    "metal_device_available": true,
+    "device": "Apple Paravirtual device",
+    "pixel_checks": 14,
+    "pixel_channels_compared": 56,
+    "support_overlay_pixel_checks": 8,
+    "support_overlay_geometry": "synthetic",
+    "result": "passed",
+    "original_game_data_used": false,
+    "iphone_execution": false
+  },
+  "m3g_metal": {
+    "metal_device_available": true,
+    "device": "Apple Paravirtual device",
+    "pixel_checks": 12,
+    "pixel_channels_compared": 48,
+    "result": "passed",
+    "original_game_data_used": false,
+    "iphone_execution": false
+  },
+  "gpu_probes_skipped": false,
+  "artifact": {
+    "id": 12694318403,
+    "name": "G1-native-game-unsigned-code",
+    "bytes": 685984,
+    "sha256": "56364a55d7859671e9152ec8fc0e32ca8a0d4e74ea1d6eab48c05c7d1f9f5514"
+  },
+  "physical_iphone_xr_tested": false,
+  "full_device_playthrough_verified": false,
+  "scope": "Successful Apple ARM64 native app and shader build; portable behavior suites and actual offscreen Metal execution on synthetic geometry. No original-scene/device/GPU parity or sustained60FPS claim."
+}
