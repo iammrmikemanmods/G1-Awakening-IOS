@@ -1,5 +1,7 @@
 {
-  "scope": "Native source publication inventory; no original game payload or runtime emulator",
+  "scope": "Current source/documentation inventory excluding this manifest; native module bytes unchanged from the successful Apple build commit",
+  "tested_native_source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
+  "native_runtime_original_executable_present": false,
   "files": [
     {
       "path": ".gitattributes",
@@ -23,13 +25,63 @@
     },
     {
       "path": "PORT_STATUS.json",
-      "bytes": 3081,
-      "sha256": "439b22612363f5d976d5ffd28ba13af9f4244c94a6bdffa7c5dfba9fed6bd428"
+      "bytes": 3457,
+      "sha256": "38a07ebe817bff65d581158d69e04642c189938e271124745f308edf4747fd9b"
     },
     {
       "path": "README.md",
-      "bytes": 4038,
-      "sha256": "f6165898c647a2d795b3104fbc1d753b6eb1f51960dc58fda805488bf1a0901b"
+      "bytes": 4496,
+      "sha256": "050119e0e561062f75650a63c90a78879429c49e85d14b4c114b3f73ecc07f25"
+    },
+    {
+      "path": "analysis_tools/PRESERVATION.json",
+      "bytes": 2192,
+      "sha256": "37efd877a885ba4c6d07149c5fb195e1e4d5d5cc2f9882d776c900e62a6b8b43"
+    },
+    {
+      "path": "analysis_tools/README.md",
+      "bytes": 3552,
+      "sha256": "e8bb0d9b0f547ebdedc9c3a84d5d35b15a75433ede067927484a28aed3e9d7e5"
+    },
+    {
+      "path": "analysis_tools/atlas/ATLAS_FREEZE.json",
+      "bytes": 1631,
+      "sha256": "bd6d7f7e432d605f7fbb9a4f9154dae4ee02638f02a199d55ec8668deb7717f8"
+    },
+    {
+      "path": "analysis_tools/atlas/quad_oracle_frozen.py",
+      "bytes": 9197,
+      "sha256": "7daa9ed55617d34867549fa0d75656eef07734bb6e65893a33dd840ece4a89d2"
+    },
+    {
+      "path": "analysis_tools/inspect_assets.py",
+      "bytes": 21092,
+      "sha256": "8c2e133dfdb6c5cca2cf2d5331090f024d8d4d0724a7e9819f2a4a03e36c2d99"
+    },
+    {
+      "path": "analysis_tools/inspect_game_data.py",
+      "bytes": 8521,
+      "sha256": "82f12ac0e23a05e29653e43645ce9df2eb6ea88ac0685237808f32544a3b7da2"
+    },
+    {
+      "path": "analysis_tools/movement/cases.json",
+      "bytes": 350558,
+      "sha256": "8339a517a8757e70a25adc42e7b0ce2b164b8da062b3e7529aea944de3899bae"
+    },
+    {
+      "path": "analysis_tools/movement/make_cases.py",
+      "bytes": 5927,
+      "sha256": "abc56504d92482a1dd227431238bd811c3f06f30940b4964847add5201e9d1fa"
+    },
+    {
+      "path": "analysis_tools/movement/oracle.py",
+      "bytes": 10551,
+      "sha256": "ded6e06bc41c9bb6c8189b5f84e8636053d4ae296f925160de978660e61946a0"
+    },
+    {
+      "path": "analysis_tools/movement/original_results.json",
+      "bytes": 158376,
+      "sha256": "61add36fcbbea0ae6a1f8a0c2d0abc4a4b13171c0fab02cdef5e194e2d7a19f5"
     },
     {
       "path": "docs/TIMING_REQUIREMENT.md",
@@ -230,6 +282,11 @@
       "path": "scripts/verify-native-archive.py",
       "bytes": 4215,
       "sha256": "a830660e024f3ffbd0320bde22a0f3e51a43b5ac13f89a31f03501b2d9ebf6bb"
+    },
+    {
+      "path": "validation/APPLE_NATIVE_CORE_BUILD.json",
+      "bytes": 2984,
+      "sha256": "3e845d2a639bf8da660486cfb10887d0f710db4e1a0e7c55ce27e0bc38ea880c"
     },
     {
       "path": "validation/native_workflow_local_validation.json",

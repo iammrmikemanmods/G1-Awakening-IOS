@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-10-26T04:38:08.987206+00:00",
+  "updated_utc": "2026-10-26T04:41:11.559228+00:00",
   "goal": {
     "game": "Transformers G1 Awakening 1.1.3",
     "device": "iPhone XR",
@@ -39,7 +39,7 @@
     "correct_game_timing": false,
     "sustained_60fps": false,
     "full_campaign": false,
-    "native_core_apple_sdk_compile": false
+    "native_core_apple_sdk_compile": true
   },
   "ci_scope": "Compiles and validates native C++ core only; no app/IPA output.",
   "completion_eta": "Not established; remaining reverse engineering and full game implementation are unresolved.",
@@ -65,5 +65,15 @@
     "atlas_original_descriptors": 38,
     "atlas_original_quad_comparisons": 3639,
     "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded"
+  },
+  "native_cloud_validation": {
+    "source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
+    "run_id": 40270134442,
+    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40270134442",
+    "conclusion": "success",
+    "native_arm64_iphoneos_objects": 5,
+    "minimum_ios": "17.5",
+    "host_ctest_suites_passed": 3,
+    "ipa_produced": false
   }
 }

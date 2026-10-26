@@ -1,0 +1,46 @@
+{
+  "native/include/g1/Atlas.hpp": {
+    "size": 3325,
+    "sha256": "7306580534598d1d1de640ae66e96dd05810fe1eef87d8a06b78864bd2f1381f"
+  },
+  "native/src/Atlas.cpp": {
+    "size": 7960,
+    "sha256": "5224165172d03bd54c7d8033c1d2e6ee44ce7ca1fa03526d74b61d1b1e156749"
+  },
+  "native/tools/atlas_probe.cpp": {
+    "size": 4042,
+    "sha256": "a79260305f11fd65764a7b5b2d37e7d4067c82e015772422ffbac1334cd05e15"
+  },
+  "native/tests/atlas_test.cpp": {
+    "size": 7090,
+    "sha256": "b66a127f098faada423a51149e43d2438f2e2a388164138948e4a2efc6e50f6f"
+  },
+  "native/tests/generate_atlas_reference.py": {
+    "size": 9377,
+    "sha256": "1cda792238f2967a973206af136283bb9568e9d7d6dff38ec2cecb8a10a44dbb"
+  },
+  "native/tests/verify_atlas.py": {
+    "size": 6322,
+    "sha256": "5ab4a5b8774082254f801e80aa98587c5d03d5d5fe5110975b4294be27871f08"
+  },
+  "native/tests/atlas_reference.json": {
+    "size": 25805,
+    "sha256": "56fc4b6637852f51a0377b2a6583e1ad62503501af2b636ad34e381ea73d9adf"
+  },
+  "native/research/ATLAS_DECODER.md": {
+    "size": 10294,
+    "sha256": "8b77c30d48169c2f5a3c0811b93e40f96e7d7f8ed53c1d76e4c65064679897c8"
+  },
+  "native/research/atlas_validation/native_atlas_validation.json": {
+    "size": 40297,
+    "sha256": "47688d06d6621bbc5eb29df7ca3668d75b18edde90b966b3d5cf166515ac50d1"
+  },
+  "native/research/atlas_validation/original_quad_oracle.json": {
+    "size": 8720,
+    "sha256": "2822faa4884e297ad8655c9b05a75e031dfd8c67ad5d308bfc5183035ecf11f1"
+  },
+  "research/native_renderer/quad_oracle.py": {
+    "size": 9197,
+    "sha256": "7daa9ed55617d34867549fa0d75656eef07734bb6e65893a33dd840ece4a89d2"
+  }
+}

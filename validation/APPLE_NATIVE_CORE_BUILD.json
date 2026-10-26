@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
+  "repository": "iammrmikemanmods/G1-Awakening-IOS",
+  "workflow_run_id": 40270134442,
+  "workflow_run_url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40270134442",
+  "conclusion": "success",
+  "completed_utc": "2026-10-26T04:39:25Z",
+  "scope": "Actual Apple SDK compilation of the five native C++ modules into an iPhoneOS ARM64 static library; not an application or device test.",
+  "apple_toolchain": {
+    "xcode": "26.6",
+    "xcode_build": "17F113",
+    "iphoneos_sdk": "26.5",
+    "compiler": "AppleClang 21.0.0.21000101",
+    "cmake": "4.4.4",
+    "runner": "macos-26"
+  },
+  "apple_job_id": 121400954938,
+  "host_test_job_id": 121400954778,
+  "host_ctest": {
+    "suites_passed": 3,
+    "suites_total": 3,
+    "failed": 0,
+    "suites": [
+      "mission_format_contract",
+      "movement_original_function_vectors",
+      "atlas_format_geometry_contract"
+    ]
+  },
+  "artifact": {
+    "archive": "build/iphoneos/libg1_resources.a",
+    "sha256": "0cef567c883147795dfd47936874cd17163d68a230243c4d540c47ccb0312c68",
+    "object_count": 5,
+    "objects": [
+      {
+        "member": "Archive.cpp.o",
+        "sha256": "bb3edb27bea05525303025ab96096e8796ad5015c4e75247e8f2cb2c3c479cfb",
+        "architecture": "arm64",
+        "platform": "iPhoneOS",
+        "minimum_os": "17.5",
+        "sdk_encoded": 1705216
+      },
+      {
+        "member": "M3G.cpp.o",
+        "sha256": "3537027f4662deec5b57cdb104c3d6b52b6d1eff83da7d3907ee8a846dcee252",
+        "architecture": "arm64",
+        "platform": "iPhoneOS",
+        "minimum_os": "17.5",
+        "sdk_encoded": 1705216
+      },
+      {
+        "member": "Mission.cpp.o",
+        "sha256": "870b2f39bd06c1e36fdf9b17c6e44f68bd671da271b65d82cb3589a204917f4f",
+        "architecture": "arm64",
+        "platform": "iPhoneOS",
+        "minimum_os": "17.5",
+        "sdk_encoded": 1705216
+      },
+      {
+        "member": "Movement.cpp.o",
+        "sha256": "16471bc6657d7bdee6f1b18d75d3ce805186dc56cc28505cffdd6d5ba388a4cc",
+        "architecture": "arm64",
+        "platform": "iPhoneOS",
+        "minimum_os": "17.5",
+        "sdk_encoded": 1705216
+      },
+      {
+        "member": "Atlas.cpp.o",
+        "sha256": "1619ba653fd807747d7593d565e1b92072d94df3271ef20bbaae1e6c5b6e68ed",
+        "architecture": "arm64",
+        "platform": "iPhoneOS",
+        "minimum_os": "17.5",
+        "sdk_encoded": 1705216
+      }
+    ],
+    "playable_app": false,
+    "device_execution_verified": false
+  },
+  "product_boundary": {
+    "native_core_compiled": true,
+    "playable_native_app": false,
+    "ipa_produced": false,
+    "iphone_xr_executed": false,
+    "sustained_60fps_verified": false,
+    "full_campaign_verified": false
+  },
+  "original_function_reference_tools": "Used only during development to produce/check source-derived fixtures. No original executable or CPU interpreter is linked into the native library."
+}

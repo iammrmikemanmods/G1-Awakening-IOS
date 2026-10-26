@@ -8,6 +8,14 @@ The user will sign and install the eventual IPA using Sideloadly from a PC.
 native source reconstruction and resource decoding work. A successful native
 core build is not a playable game or a completed port.
 
+The first native cloud check passed: all five modules compiled using Apple's
+toolchain to ARM64 objects targeting iPhoneOS 17.5, and all three host CTest
+suites passed. The tested source is commit
+`7a041985e331696ac174d094bd2a67b1e32e6ab6`; the
+[build run](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40270134442)
+and `validation/APPLE_NATIVE_CORE_BUILD.json` record the actual result and its
+limits. No IPA was created by that check.
+
 ## Required implementation
 
 - Compile recovered gameplay logic and the new platform integration directly

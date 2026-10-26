@@ -1,0 +1,53 @@
+{
+  "scope": "Development-only reference tools and synthetic numerical results; no original executable/assets; not native core or application dependencies",
+  "files": [
+    {
+      "path": "analysis_tools/movement/oracle.py",
+      "original_checkpoint_path": "research/binary/native_movement/oracle.py",
+      "bytes": 10551,
+      "sha256": "ded6e06bc41c9bb6c8189b5f84e8636053d4ae296f925160de978660e61946a0"
+    },
+    {
+      "path": "analysis_tools/movement/make_cases.py",
+      "original_checkpoint_path": "research/binary/native_movement/make_cases.py",
+      "bytes": 5927,
+      "sha256": "abc56504d92482a1dd227431238bd811c3f06f30940b4964847add5201e9d1fa"
+    },
+    {
+      "path": "analysis_tools/movement/cases.json",
+      "original_checkpoint_path": "research/binary/native_movement/cases.json",
+      "bytes": 350558,
+      "sha256": "8339a517a8757e70a25adc42e7b0ce2b164b8da062b3e7529aea944de3899bae"
+    },
+    {
+      "path": "analysis_tools/movement/original_results.json",
+      "original_checkpoint_path": "research/binary/native_movement/original_results.json",
+      "bytes": 158376,
+      "sha256": "61add36fcbbea0ae6a1f8a0c2d0abc4a4b13171c0fab02cdef5e194e2d7a19f5"
+    },
+    {
+      "path": "analysis_tools/atlas/quad_oracle_frozen.py",
+      "original_checkpoint_path": "research/native_renderer/quad_oracle.py",
+      "bytes": 9197,
+      "sha256": "7daa9ed55617d34867549fa0d75656eef07734bb6e65893a33dd840ece4a89d2"
+    },
+    {
+      "path": "analysis_tools/atlas/ATLAS_FREEZE.json",
+      "original_checkpoint_path": "research/native_renderer/ATLAS_FREEZE.json",
+      "bytes": 1631,
+      "sha256": "bd6d7f7e432d605f7fbb9a4f9154dae4ee02638f02a199d55ec8668deb7717f8"
+    },
+    {
+      "path": "analysis_tools/inspect_assets.py",
+      "original_checkpoint_path": "research/assets/inspect_assets.py",
+      "bytes": 21092,
+      "sha256": "8c2e133dfdb6c5cca2cf2d5331090f024d8d4d0724a7e9819f2a4a03e36c2d99"
+    },
+    {
+      "path": "analysis_tools/inspect_game_data.py",
+      "original_checkpoint_path": "research/assets/inspect_game_data.py",
+      "bytes": 8521,
+      "sha256": "82f12ac0e23a05e29653e43645ce9df2eb6ea88ac0685237808f32544a3b7da2"
+    }
+  ]
+}
