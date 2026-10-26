@@ -205,9 +205,9 @@ local IPA:
 python3 scripts/package-native-scene.py \
   --code-artifact G1-native-game-unsigned-code.zip \
   --source-ipa G1awakening_v1.1.3_os30.ipa \
-  --out G1_Awakening_Native_Game_Test_006.ipa \
-  --report G1_Awakening_Native_Game_Test_006.validation.json \
-  --expected-commit SOURCE_COMMIT_FROM_THE_RUN
+  --out G1_Awakening_Native_Game_Test_007.ipa \
+  --report G1_Awakening_Native_Game_Test_007.validation.json \
+  --expected-commit COMPILED_SOURCE_COMMIT_FROM_APP_VALIDATION
 ```
 
 The script retains its historical filename. It verifies the original source,
