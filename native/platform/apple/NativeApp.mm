@@ -10,6 +10,10 @@
 #include "g1/AudioMaintenance.hpp"
 #include "g1/MenuMusic.hpp"
 #include "g1/SpriteAnimation.hpp"
+#include "g1/SupportPresentation.hpp"
+#include "g1/SupportDisplayGate.hpp"
+#include "g1/SupportOverlayAssets.hpp"
+#include "g1/SupportGeometry.hpp"
 #include "g1/InitialPresentation.hpp"
 #include "g1/GameSession.hpp"
 #include "g1/SessionSave.hpp"
@@ -164,6 +168,7 @@ struct NativeTransformCompletion {
 };
 
 struct NativePresentedFrame {
+    using Support=g1::SupportFrameReceipt;
     struct Battle {
         std::uint64_t token{},revision{};
         bool complete{};
@@ -175,6 +180,7 @@ struct NativePresentedFrame {
     std::optional<std::uint64_t> world;
     std::vector<NativeTransformCompletion> transforms;
     std::optional<Battle> battle;
+    std::optional<Support> support;
 };
 
 // Both asynchronous Metal facts are required before any core acknowledgement.
@@ -196,6 +202,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)installSession:(std::unique_ptr<g1::GameSession>)session;
 - (void)rebuildScene:(BOOL)resetPlayback;
 - (void)prepareBattle;
+- (void)showSupportHelper;
 - (void)maintainMusicAfterStep:(g1::MusicMaintenanceSite)site;
 - (void)finishBattleFrame:(const NativePresentedFrame::Battle&)frame;
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame;
@@ -254,6 +261,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     std::unique_ptr<g1::MetalRenderer> _renderer;
     std::unique_ptr<g1::MetalM3GRenderer> _m3gRenderer;
     std::unique_ptr<g1::M3GBattlePresentation> _battlePresentation;
+    std::unique_ptr<g1::SupportOverlayAssets> _supportAssets;
+    std::unique_ptr<g1::SupportPresentation> _supportPresentation;
+    id<MTLTexture> _supportTexture;
+    std::vector<g1::MetalDraw> _supportUnitDraws;
+    std::shared_ptr<g1::MetalMesh> _supportCursor;
+    std::optional<g1::WorldCoordinate> _supportSavedCursor;
+    NSString* _supportSavedTitle;
+    g1::SupportDisplayGate _supportDisplay;
+    std::uint64_t _supportTicks,_supportPresentedFrames,_supportSequences;
     std::vector<std::shared_ptr<g1::MetalM3GModel>> _battleModels;
     std::unique_ptr<g1::MissionScene> _scene;
     std::unique_ptr<g1::GameSession> _session;
@@ -615,6 +631,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)showPanel:(NativePanel)purpose title:(NSString*)title body:(NSString*)body token:(std::uint64_t)token {
     const bool changed=_panelPurpose!=purpose || _panelToken!=token;
+    if(changed){_supportDisplay.invalidate();}
     _panelPurpose=purpose;_panelToken=token;
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
@@ -652,6 +669,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)hidePanel {
+    _supportDisplay.invalidate();
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
     [_campaignCanvas resetPresentation];
@@ -906,6 +924,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _lastMissionMode = 255; _lastSelection.reset();
     _pendingCompletionRequests.clear(); _completedBattles.clear();
     _battlePresentation.reset(); _battleModels.clear(); _battlePresentedToken=0;
+    _supportPresentation.reset(); _supportUnitDraws.clear(); _supportCursor.reset();
+    _supportSavedCursor.reset(); _supportDisplay.invalidate();
+    _supportSavedTitle=nil;
     _presentedMessageIds.clear();
     _notice = nil; _noticeUntil = 0;
     _checkpointCommand=std::numeric_limits<std::size_t>::max();
@@ -1226,6 +1247,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _metalView.paused = YES;
     _clockStarted = false;
     _simulationClock.reset();
+    _supportDisplay.invalidate();
     _inputEdges = 0;
     if (_session) _previousUnits = _session->units();
     _frameStats.times.clear();
@@ -1535,6 +1557,68 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)prepareBattle {
     if (!_session || !_session->battle()) return;
     const auto& pending = *_session->battle();
+    if (!_supportPresentation || _supportPresentation->status().token!=pending.token) {
+        if(pending.exchange.support_types.size()!=pending.exchange.support_units.size() ||
+           pending.units_before.size()!=_session->units().size())
+            throw g1::FormatError("Pending battle has an inconsistent support snapshot");
+        for(std::size_t i=0;i<pending.exchange.support_units.size();++i) {
+            const auto index=pending.exchange.support_units[i];
+            if(index>=pending.units_before.size() || !pending.units_before[index].active ||
+               _session->world().units.at(index).type!=pending.exchange.support_types[i])
+                throw g1::FormatError("Support helper identity differs from its pre-combat unit");
+        }
+        if(!pending.exchange.support_units.empty() && !_supportAssets) {
+            auto assets=std::make_unique<g1::SupportOverlayAssets>(g1::load_support_overlay_assets(*_archive));
+            id<MTLTexture> texture=_renderer->texture(assets->image);
+            _supportAssets=std::move(assets);_supportTexture=texture;
+        }
+        auto support=std::make_unique<g1::SupportPresentation>(pending.token,pending.exchange.support_units,
+            _supportAssets ? _supportAssets->descriptor.animations().at(g1::support_effect_animation) :
+                std::vector<g1::AtlasStep>{});
+        std::vector<g1::MetalDraw> snapshots;
+        if(!support->status().complete) {
+            for(std::size_t i=0;i<_scene->sprites.size();++i) {
+                const auto& sprite=_scene->sprites[i];
+                const auto& unit=pending.units_before.at(sprite.unit_index);
+                if(!unit.active)continue;
+                std::size_t frame;
+                if(_animations.at(i))frame=_animations[i]->current_frame();
+                else {
+                    // A new roster may be rebuilt after damage. Reconstruct
+                    // its pre-combat idle pose without changing gameplay.
+                    if(unit.form>1 || unit.facing>3)throw g1::FormatError("Invalid support sprite pose");
+                    const auto type=_session->world().units.at(sprite.unit_index).type;
+                    const auto animation=_animationTable.at(type).at(unit.form*4+unit.facing);
+                    if(animation>=sprite.descriptor.animations().size())
+                        throw g1::FormatError("Missing pre-combat support sprite animation");
+                    frame=sprite.descriptor.animations()[animation].front().frame_index;
+                }
+                snapshots.push_back({_spriteMeshes.at(i).at(frame),_textures[@(sprite.resource.image_id)],
+                    unit_model(_session->world(),unit),{{1,1,1,1}},true});
+            }
+        }
+        _supportSavedCursor=_returnCursor;
+        _supportSavedTitle=[_title.text copy];
+        if(!_supportSavedCursor) {
+            // The live core may already have deselected a lethal attacker.
+            // Keep a presentation-only tile using its pre-combat snapshot.
+            const auto selectedIndex=_session->selected().value_or(pending.attacker);
+            const auto& selected=pending.units_before.at(selectedIndex);
+            _supportSavedCursor=g1::WorldCoordinate{selected.tile_x,selected.tile_y};
+        }
+        _supportUnitDraws=std::move(snapshots);_supportPresentation=std::move(support);
+        _supportDisplay.invalidate();
+        // These are host selection visuals. The already-resolved core, its
+        // selected unit, damage and random stream remain untouched.
+        _range.reset();_cursor.reset();_attackRange.reset();_healRange.reset();_productionRange.reset();
+        _moveMode=false;_attackMode=false;_healMode=false;
+        _pendingDestination.reset();_productionMode.reset();_productionType.reset();_productionPlacement.reset();
+        if(!_supportPresentation->status().complete) {
+            ++_supportSequences;[self showSupportHelper];
+            _clockStarted=false;_simulationClock.reset();++_contentGeneration;
+        }
+    }
+    if(!_supportPresentation->status().complete)return;
     if (_battlePresentation && _battlePresentation->status().token == pending.token) return;
     g1::M3GBattleRequest request;
     request.token=pending.token; request.terrain_style=_session->world().style;
@@ -1547,12 +1631,38 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     // Publish only a complete original-asset/GPU set. Allocation or unsupported
     // state failures preserve the pending gameplay token and stop visibly.
     _battleModels=std::move(models); _battlePresentation=std::move(presentation);
+    _supportCursor.reset();_supportUnitDraws.clear();_returnCursor=_supportSavedCursor;
+    _title.text=_supportSavedTitle ?: [self originalText:715];
     _battlePresentedToken=0;
     [_battleCanvas resetPresentation];
     for (const auto request:_battlePresentation->take_audio_requests()) [self dispatchAudio:request];
     // Asset-loading time is not a simulation catch-up interval. The first
     // matching drawable must be shown before the 30ms battle clock advances.
     _clockStarted=false; _simulationClock.reset();
+    ++_contentGeneration;
+}
+
+- (void)showSupportHelper {
+    if(!_supportPresentation || _supportPresentation->status().complete || !_session->battle())return;
+    const auto status=_supportPresentation->status();
+    const auto index=status.helper_unit.value();
+    const auto& unit=_session->battle()->units_before.at(index);
+    const auto type=_session->world().units.at(index).type;
+    const auto& definition=_session->world().unit_definitions.at(type);
+    const auto primary=g1::script_text_id(g1::unit_text_index(definition.raw_text_indices.at(0)));
+    _title.text=[NSString stringWithFormat:@"%@ %@",native_text(_text->at(primary)),
+        native_text(_text->at(g1::support_text_id))];
+    // Immediate focus uses the existing native inspection camera. Its easing
+    // is not asserted to reproduce the original tactical camera.
+    _camera.center_x=(unit.tile_x+0.5F)*0.32F;
+    _camera.center_z=(unit.tile_y+0.5F)*0.32F;
+    g1::TerrainMesh cursor;cursor.position_scale=_scene->terrain.position_scale;
+    for(const auto& quad:_controlQuads)
+        if(quad.tile_x==unit.tile_x && quad.tile_y==unit.tile_y)cursor.quads.push_back(quad);
+    auto vertices=g1::terrain_vertices(cursor);
+    for(auto& vertex:vertices){vertex.position[1]+=0.006F;vertex.uv={{0,0}};}
+    _supportCursor=_renderer->mesh(vertices);
+    _supportDisplay.invalidate();
     ++_contentGeneration;
 }
 
@@ -1576,19 +1686,26 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         _healMode = false;
         _productionMode.reset();_productionType.reset();_productionPlacement.reset();
     }
-    [self refreshRange];
+    if(!_session->battle())[self refreshRange];
     const auto& mission = _session->mission();
     const bool battle = _session->battle().has_value();
     _battlePanel.hidden = !battle;
     _title.hidden=battle; _hint.hidden=battle; _worldLegend.hidden=battle;
     if (battle) {
         [self prepareBattle];
+        _commands.hidden=YES;_dialoguePanel.hidden=YES;
+        if(_supportPresentation && !_supportPresentation->status().complete) {
+            _battlePanel.hidden=YES;_title.hidden=NO;
+            _hint.hidden=YES;_worldLegend.hidden=YES;
+            return;
+        }
         const auto status=_battlePresentation->status();
         const auto name = [&](std::size_t side) {
             const auto& definition = _session->world().unit_definitions.at(status.types[side]);
             return native_text(_text->at(g1::script_text_id(g1::unit_text_index(definition.raw_text_indices.at(status.forms[side])))));
         };
         [_battleCanvas showStatus:status left:name(0) right:name(1)];
+        return;
     }
     const bool dialogue = mission.gate == g1::MissionGate::dialogue && mission.dialogue.has_value();
     _dialoguePanel.hidden = !dialogue || battle;
@@ -1831,6 +1948,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     // This conditional query is not an invented music-resume/loop request.
     [self dispatchAudio:g1::MissionAudioRequest{2,0}];
     _battlePresentation.reset(); _battleModels.clear(); _battlePresentedToken=0;
+    _supportPresentation.reset();_supportUnitDraws.clear();_supportCursor.reset();
+    _supportSavedCursor.reset();_supportDisplay.invalidate();
+    _supportSavedTitle=nil;
     _checkpointRequested=true; _rangeDirty=true; _attackMode=false; _notice=nil;
     _clockStarted=false; _simulationClock.reset(); ++_contentGeneration;
     [self refreshControls];
@@ -1898,8 +2018,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)maintainMusicAfterStep:(g1::MusicMaintenanceSite)site {
     if (!_loaded || _failed || !_session || _panelPurpose!=NativePanel::none || _typeListOpen ||
         _session->mission().stop!=g1::MissionStop::none) return;
-    if ((site==g1::MusicMaintenanceSite::map_update && _session->battle()) ||
-        (site==g1::MusicMaintenanceSite::ordinary_battle && !_session->battle())) return;
+    const bool mainBattle=_session->battle() && _battlePresentation &&
+        _battlePresentation->status().token==_session->battle()->token;
+    if ((site==g1::MusicMaintenanceSite::map_update && mainBattle) ||
+        (site==g1::MusicMaintenanceSite::ordinary_battle && !mainBattle)) return;
     // Native active-session dispatch corresponds to the original app mode100.
     // Results, menus and pending campaign handoffs are excluded above; they
     // must not restart terrain music while their own presentation is active.
@@ -2184,7 +2306,22 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         _previousUnits = _session->units();
         [self refreshControls];
         if (_session->battle()) {
-            if (_battlePresentation && _battlePresentedToken==_battlePresentation->status().token &&
+            if(_supportPresentation && !_supportPresentation->status().complete) {
+                const auto status=_supportPresentation->status();
+                // Native host policy: each cue must appear once. Subsequent
+                // simulation ticks do not wait for each animation revision.
+                if(_supportDisplay.can_advance(status)) {
+                    const auto action=_supportPresentation->advance(g1::SimulationClock::step_ms);
+                    ++_supportTicks;++_contentGeneration;
+                    if(action==g1::SupportPresentationAction::start_main_battle) {
+                        [self prepareBattle];break;
+                    }
+                    [self maintainMusicAfterStep:g1::MusicMaintenanceSite::map_update];
+                    if(action==g1::SupportPresentationAction::show_next_helper) {
+                        [self showSupportHelper];break;
+                    }
+                }
+            } else if (_battlePresentation && _battlePresentedToken==_battlePresentation->status().token &&
                 !_battlePresentation->status().complete) {
                 _battlePresentation->advance(g1::SimulationClock::step_ms);
                 for (const auto request:_battlePresentation->take_audio_requests()) [self dispatchAudio:request];
@@ -2221,13 +2358,18 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         if (result.movement_finished || result.world_changed || result.turn_transition) {
             _rangeDirty = true;_checkpointRequested=true;
         }
+        if(_session->battle()) {
+            // An AI attack may have created the battle in this very tick.
+            // Preserve pre-combat sprite playback and pending transforms.
+            [self prepareBattle];break;
+        }
         [self advanceSprites:g1::SimulationClock::step_ms];
         [self showNextMessage];
         if(_panelPurpose!=NativePanel::none)break;
         [self maintainMusicAfterStep:g1::MusicMaintenanceSite::map_update];
     }
     if(_panelPurpose!=NativePanel::none || _typeListOpen)return;
-    [self advanceCamera:0];
+    if(!_session->battle())[self advanceCamera:0];
     [self refreshControls];
     if(_session->checkpoint_available() && _checkpointCommand!=_session->mission().command_index)
         _checkpointRequested=true;
@@ -2260,9 +2402,21 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     if (frame->content_generation != _lastPresentedContent) {
         ++_presentedContentChanges; _lastPresentedContent = frame->content_generation;
     }
+    if(time-_lastHudTime>=0.5 && _frameStats.times.size()>=2) {
+        _lastHudTime=time;
+        _fps.text=[NSString stringWithFormat:@"%.1f presented fps · target %ld",_frameStats.fps(),
+            static_cast<long>(_metalView.preferredFramesPerSecond)];
+    }
     if(_panelPurpose!=NativePanel::none || _typeListOpen)return;
     try {
-        if (frame->battle) {
+        if(frame->support) {
+            ++_supportPresentedFrames;
+            if(_session->battle() && _supportPresentation &&
+               _session->battle()->token==frame->support->token)
+                _supportDisplay.observe(_supportPresentation->status(),*frame->support);
+            // A support drawable is never a tactical or main-battle ack.
+            return;
+        } else if (frame->battle) {
             ++_battlePresentedFrames; _battleQueuedDrawsPresented+=frame->battle->queued_draws;
             if (_session->battle() && _battlePresentation &&
                 _session->battle()->token==frame->battle->token &&
@@ -2308,10 +2462,6 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         }
         [self saveCheckpoint];
     } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
-    if (time - _lastHudTime < 0.5 || _frameStats.times.size() < 2) return;
-    _lastHudTime = time;
-    _fps.text = [NSString stringWithFormat:@"%.1f presented fps · target %ld",_frameStats.fps(),
-        static_cast<long>(_metalView.preferredFramesPerSecond)];
 }
 
 - (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision {
@@ -2342,8 +2492,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             auto frame = std::make_shared<NativePresentedFrame>();
             frame->content_generation = _contentGeneration;
             frame->scene_revision = _sceneRevision;
-            if (_session->battle()) {
-                [self prepareBattle];
+            if(_session->battle())[self prepareBattle];
+            const bool support=_session->battle() && _supportPresentation &&
+                !_supportPresentation->status().complete;
+            if (_session->battle() && !support) {
                 std::vector<const g1::M3GRenderAsset*> uploaded;
                 for (const auto& model:_battleModels) uploaded.push_back(&model->asset());
                 const auto size=view.drawableSize;
@@ -2398,12 +2550,36 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                         g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true});
                 for(const auto& overlay:_worldOverlays)
                     draws.push_back({overlay.mesh,_white,camera,overlay.tint,false});
-                if (_range) draws.push_back({_range,_white,camera,{{0.12F,0.9F,0.85F,0.36F}},false});
-                if (_cursor) draws.push_back({_cursor,_white,camera,{{1,0.82F,0.12F,0.6F}},false});
-                if (_attackRange) draws.push_back({_attackRange,_white,camera,{{1,0.18F,0.14F,0.48F}},false});
-                if(_healRange)draws.push_back({_healRange,_white,camera,{{0.20F,1,0.35F,0.48F}},false});
-                if(_productionRange)draws.push_back({_productionRange,_white,camera,{{0.25F,0.85F,1,0.48F}},false});
+                if(!support) {
+                    if (_range) draws.push_back({_range,_white,camera,{{0.12F,0.9F,0.85F,0.36F}},false});
+                    if (_cursor) draws.push_back({_cursor,_white,camera,{{1,0.82F,0.12F,0.6F}},false});
+                    if (_attackRange) draws.push_back({_attackRange,_white,camera,{{1,0.18F,0.14F,0.48F}},false});
+                    if(_healRange)draws.push_back({_healRange,_white,camera,{{0.20F,1,0.35F,0.48F}},false});
+                    if(_productionRange)draws.push_back({_productionRange,_white,camera,{{0.25F,0.85F,1,0.48F}},false});
+                } else if(_supportCursor)
+                    draws.push_back({_supportCursor,_white,camera,{{1,0.82F,0.12F,0.6F}},false});
                 std::vector<std::size_t> order;
+                if(support) {
+                    // Freeze ordinary tactical playback in its pre-combat
+                    // pose; only the separately recovered effect advances.
+                    auto snapshots=_supportUnitDraws;
+                    for(auto& draw:snapshots)draw.matrix=g1::multiply_matrix(camera,draw.matrix);
+                    std::stable_sort(snapshots.begin(),snapshots.end(),[](const auto& a,const auto& b) {
+                        return transform(a.matrix,{{0,0,0,1}})[2]>transform(b.matrix,{{0,0,0,1}})[2];
+                    });
+                    draws.insert(draws.end(),snapshots.begin(),snapshots.end());
+                    const auto status=_supportPresentation->status();
+                    if(!status.effect_complete) {
+                        const auto& unit=_session->battle()->units_before.at(status.helper_unit.value());
+                        const auto size=view.drawableSize;
+                        const auto vertices=g1::support_overlay_vertices(_supportAssets->descriptor,status.effect_frame,
+                            _supportAssets->image.width,_supportAssets->image.height,camera,unit.tile_x,unit.tile_y,
+                            static_cast<float>(size.width),static_cast<float>(size.height));
+                        if(!vertices.empty())draws.push_back({_renderer->mesh(vertices),_supportTexture,
+                            g1::identity_matrix(),{{1,1,1,1}},false,{},true,true});
+                    }
+                    frame->support=_supportDisplay.receipt(status,bool([_title currentTextDrawn]));
+                } else {
                 for (std::size_t i = 0; i < _animations.size(); ++i)
                     if (_session->units().at(_scene->sprites[i].unit_index).active && _animations[i]) order.push_back(i);
                 std::stable_sort(order.begin(),order.end(),[&](std::size_t a,std::size_t b) {
@@ -2416,8 +2592,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
                         g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true});
                 }
+                }
                 _renderer->encode(command,pass,draws);
-                if(_panelPurpose==NativePanel::none && _preparedWorldToken && _session->world_presentation() &&
+                if(!support && _panelPurpose==NativePanel::none && _preparedWorldToken && _session->world_presentation() &&
                    _session->world_presentation()->token==*_preparedWorldToken && [_title currentTextDrawn]) {
                     bool rosterReady=true;
                     for(std::size_t i=0;i<_scene->sprites.size();++i) {
@@ -2428,7 +2605,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     }
                     if(rosterReady)frame->world=*_preparedWorldToken;
                 }
-                if (_cameraPan && _cameraPan->reached) {
+                if (!support && _cameraPan && _cameraPan->reached) {
                     if (_cameraPan->session_focus && _session->focus_request() &&
                         _session->focus_request()->token == _cameraPan->token)
                         frame->session_focus = _cameraPan->token;
@@ -2436,7 +2613,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                         _session->mission().command_index == _cameraPan->token)
                         frame->mission_camera = static_cast<std::size_t>(_cameraPan->token);
                 }
-                for (const auto i : order) {
+                if(!support)for (const auto i : order) {
                     const auto& pending = _pendingTransformCompletions[i];
                     if (pending && _session->unit_transform_waiting(pending->unit_index) &&
                         _session->unit_transform_generation(pending->unit_index) == pending->transform_generation &&
@@ -2614,6 +2791,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"friendly_destination_policy":@"Reachable occupied taps reach the core's original carrier admission; no UI blanket occupancy rejection",
         @"battle_presentations_acknowledged": @(_battleAcknowledgements),
         @"battle_presentation_ticks": @(_battlePresentationTicks),
+        @"support_sequences_started":@(_supportSequences),
+        @"support_simulation_ticks":@(_supportTicks),
+        @"support_frames_presented":@(_supportPresentedFrames),
+        @"support_active":@(_supportPresentation && !_supportPresentation->status().complete),
+        @"support_helper_slot":@(_supportPresentation ? int(_supportPresentation->status().slot) : -1),
+        @"support_presentation":@"Original helper order, primary-name banner and keyed percentage artwork; separate effect ends at1680ms, cue hands off at2010ms; at most five helpers displayed without reducing six-helper combat",
+        @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original tutorial/camera/GPU parity remains unverified",
         @"battle_metal_frames_prepared": @(_battlePreparedFrames),
         @"battle_metal_frames_presented": @(_battlePresentedFrames),
         @"battle_queued_draws_in_presented_frames": @(_battleQueuedDrawsPresented),
@@ -2642,7 +2826,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"random_seed": @(_randomSeed), @"units":unitState, @"sites":siteState,
         @"full_gameplay_implemented": @NO, @"full_campaign_verified": @NO,
         @"native_save_reload_verified": @NO,
-        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, battle GPU/output fidelity and sustained60Hz validation; original earlier tactical support-attack sequence, site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
+        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, battle/support GPU output fidelity and sustained60Hz validation; original first-use support tutorial, site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
         @"measurement_scope": @"Positive monotonic Metal presentedTime samples from current native scene; not full-game performance"
     };
     NSError* error = nil;

@@ -1,5 +1,6 @@
 #include "g1/CampaignController.hpp"
 #include "g1/SessionSave.hpp"
+#include "SupportPilotValidation.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -53,6 +54,7 @@ struct Options {
     std::uint32_t seed{0x4741U};
     std::size_t max_missions{17},max_ticks{200000},max_human_turns{500};
     double max_seconds{90};
+    bool verify_support{};
 };
 
 Options parse(int argc,char** argv) {
@@ -65,6 +67,10 @@ Options parse(int argc,char** argv) {
         else if(key=="--terrain-tables")result.tables=value;
         else if(key=="--output")result.output=value;
         else if(key=="--strategy")result.strategy=value;
+        else if(key=="--verify-support") {
+            if(value!="0" && value!="1")throw std::runtime_error("--verify-support must be 0 or 1");
+            result.verify_support=value=="1";
+        }
         else if(key=="--resume-checkpoint")result.resume_checkpoint=value;
         else if(key=="--resume-profile")result.resume_profile=value;
         else if(key=="--capture-mission")result.capture_mission=std::stoi(value);
@@ -88,7 +94,7 @@ Options parse(int argc,char** argv) {
        !std::isfinite(result.max_seconds) || result.max_seconds<=0)
         throw std::runtime_error("Usage: session_playthrough_probe --archive FILE --terrain-tables FILE "
             "--output NEW_DIRECTORY [--strategy direct --group 0 --start-mission 0 --seed 0x4741 "
-            "--max-missions 17 --max-ticks 200000 --max-human-turns 500 --max-seconds 90]");
+            "--max-missions 17 --max-ticks 200000 --max-human-turns 500 --max-seconds 90 --verify-support 0]");
     (void)g1::mission_resource_for_campaign(result.group,result.start);
     if(result.resume_checkpoint.empty()!=result.resume_profile.empty())
         throw std::runtime_error("A resume requires both the actual native checkpoint and profile");
@@ -305,6 +311,8 @@ public:
         std::filesystem::create_directories(output_);
         events_.open(output_/"events.jsonl");
         if(!events_)throw std::runtime_error("Cannot create event log");
+        if(options_.verify_support)
+            support_validation_=std::make_unique<g1::tools::SupportPilotValidation>(archive_);
         if(!options_.resume_checkpoint.empty()) {
             const auto profile=g1::read_file(options_.resume_profile);
             (void)g1::decode_campaign_profile(profile);
@@ -395,6 +403,7 @@ private:
     std::ofstream events_;
     std::unique_ptr<g1::GameSession> session_;
     std::unique_ptr<g1::CampaignController> controller_;
+    std::unique_ptr<g1::tools::SupportPilotValidation> support_validation_;
     Counters counts_;
     Clock::time_point started_;
     std::size_t actor_cursor_{},mission_first_tick_{};
@@ -509,6 +518,7 @@ private:
                 std::to_string(session_->combat_units()[battle.defender].health)+
                 ",\"attacker_health_after\":"+
                 std::to_string(session_->combat_units()[battle.attacker].health));
+            if(support_validation_)support_validation_->verify(*session_);
             session_->report_battle_finished(battle.token);++counts_.synthetic_battle;
         }
     }
@@ -1574,6 +1584,8 @@ private:
             <<','<<(controller_->profile().completed[1] ? "true" : "false")<<"],\"highest_unlocked\":["
             <<controller_->profile().highest_unlocked[0]<<','<<controller_->profile().highest_unlocked[1]<<"]}\n}\n";
         if(!out)throw std::runtime_error("Pilot result write failed");
+        if(support_validation_)
+            support_validation_->write_report((output_/"support_validation.json").string());
     }
 };
 }

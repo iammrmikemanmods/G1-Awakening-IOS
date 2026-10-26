@@ -11,6 +11,8 @@ target_include_directories(g1_vorbis PUBLIC third_party/stb)
 target_compile_features(g1_vorbis PUBLIC cxx_std_17)
 add_library(g1_resources STATIC src/Archive.cpp src/M3G.cpp src/M3GScene.cpp src/Mission.cpp src/Movement.cpp
     src/Atlas.cpp src/Image.cpp src/SpriteGeometry.cpp src/SpriteAnimation.cpp
+    src/OverlayDescriptor.cpp src/IndexedBitmap.cpp src/SupportOverlayAssets.cpp
+    src/SupportPresentation.cpp src/SupportGeometry.cpp
     src/SpritePlacement.cpp src/Terrain.cpp src/World.cpp src/Scene.cpp src/InitialPresentation.cpp
     src/Audio.cpp src/MovementAction.cpp src/MovementArrival.cpp src/Text.cpp src/MissionExecution.cpp
     src/CaptureAction.cpp src/Combat.cpp src/TransformAction.cpp src/GameSession.cpp
@@ -72,6 +74,11 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
     add_executable(mission_execution_probe tools/mission_execution_probe.cpp)
     target_link_libraries(mission_execution_probe PRIVATE g1_resources)
     if(BUILD_TESTING)
+        foreach(component assets presentation geometry display_gate)
+            add_executable(g1_support_${component}_tests tests/support_${component}_test.cpp)
+            target_link_libraries(g1_support_${component}_tests PRIVATE g1_resources)
+            add_test(NAME support_${component}_contract COMMAND g1_support_${component}_tests)
+        endforeach()
         add_executable(g1_m3g_scene_tests tests/m3g_scene_test.cpp)
         target_link_libraries(g1_m3g_scene_tests PRIVATE g1_resources)
         add_test(NAME m3g_scene_contract COMMAND g1_m3g_scene_tests)

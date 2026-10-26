@@ -42,6 +42,9 @@ struct SessionBattle {
     std::uint64_t token{};
     std::size_t attacker{},defender{};
     CombatUnitState attacker_before,defender_before;
+    // Read-only tactical presentation before resolved damage removes units.
+    // Pending battles cannot be checkpointed; this is not serialized state.
+    std::vector<MovementUnitState> units_before;
     CombatExchange exchange;
 };
 

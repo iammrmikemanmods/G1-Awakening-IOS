@@ -1,5 +1,6 @@
 #include "g1/Combat.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -10,6 +11,7 @@
 namespace {
 
 std::size_t checks{};
+std::size_t support_roster_cases{};
 
 void require(bool condition, const std::string& what) {
     ++checks;
@@ -145,6 +147,33 @@ Case battle_case(std::istream& input) {
     require(result.random_words==draws,"original exchange random draw count differs");
     require(random.state().index==index,"original exchange random state index differs");
     require(result.support_types==support,"original combined-support ordered participants differ");
+    require(result.support_units.size()==support.size(),"support helper indices were lost");
+    for(std::size_t i=0;i<support.size();++i) {
+        const auto found=std::find_if(c.units.begin(),c.units.end(),[&](const auto& unit) {
+            return unit.type==support[i];
+        });
+        require(found!=c.units.end() && result.support_units[i]==std::size_t(found-c.units.begin()),
+                "support helper index differs from original ordered participant");
+    }
+    if(!support.empty()) {
+        // Native roster order is independent of the original ascending-type
+        // helper order. Reversing it must preserve all damage and RNG outputs
+        // while mapping helpers to their new exact indices.
+        auto reversed=c.units;
+        std::reverse(reversed.begin(),reversed.end());
+        g1::GameRandom replay_random(c.seed);
+        const auto replay=g1::resolve_combat_exchange(c.rules(),reversed,
+            c.units.size()-1-c.attacker,c.units.size()-1-c.defender,replay_random);
+        require(replay.support_types==support,"roster order changed original helper type ordering");
+        require(replay.support_units.size()==result.support_units.size(),"roster permutation lost helper identities");
+        for(std::size_t i=0;i<replay.support_units.size();++i)
+            require(replay.support_units[i]==c.units.size()-1-result.support_units[i],
+                    "support helper identity did not follow its permuted roster index");
+        std::reverse(reversed.begin(),reversed.end());
+        require(unit_snapshot(reversed)==unit_snapshot(changed),"helper identity capture changed combat state");
+        require(same_random(replay_random.state(),random.state()),"helper identity capture changed combat RNG");
+        ++support_roster_cases;
+    }
     require((result.counterattack ? 2:1)==strikes,"original strike ordering/count differs");
     require(result.destroyed.size()==deaths,"original destruction count differs");
     compare_strike(input,result.attack);
@@ -304,6 +333,7 @@ int main(int argc,char** argv) {
         std::cout << "{\"rng_cases\":" << rng_cases << ",\"stat_cases\":" << stat_cases
                   << ",\"health_cases\":" << health_cases << ",\"battle_cases\":" << battle_cases
                   << ",\"direct_strike_cases\":" << direct_cases
+                  << ",\"support_roster_cases\":" << support_roster_cases
                   << ",\"checks\":" << checks << ",\"all_passed\":true}\n";
         return 0;
     } catch (const std::exception& e) {

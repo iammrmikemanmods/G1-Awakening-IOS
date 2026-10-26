@@ -14,8 +14,11 @@ battles. The battle path uses the real models, forms, texture replacements,
 cameras, animation clips, shot/hit/destruction effects and completion sequence.
 The updated Apple build has passed and the unsigned native game test IPA is
 packaged for Sideloadly. Physical iPhone XR validation is still pending.
-Earlier tactical support percentage presentation, original HUD/site-marker/tactical
-camera/font fidelity and remaining sound-event coverage also remain release work.
+The build006 source now integrates the original tactical support percentage
+artwork, helper order and timing before the 3D cinematic. Its Apple validation
+and packaging are tracked separately from the verified build005 below.
+Original HUD/site-marker/tactical camera/font fidelity, the first-use support
+tutorial and remaining sound-event coverage remain release work.
 Mission, battle and menu music maintenance are now connected with the original
 playing-state queries and menu exclusions.
 
@@ -27,7 +30,7 @@ playing-state queries and menu exclusions.
 | Missions | All 30 streams / 803 commands, actual world operations and four objective kinds; bounded host pilot completes all 17 Story missions through the campaign ending | Rendered and physical-device playthrough |
 | Human actions | Movement, capture, transformation, Undo, attack, upgrade, heal, production and carrier/tape transitions | Original control/presentation parity |
 | Enemy | Continuous production, movement, attack, capture and repair through actual native actions; turn reset/income | Broad gameplay and mission-balance verification |
-| Combat | Original damage/counterattack/death rules and connected animated M3G battles; actual controller health, ordered effects and presented-frame completion | Actual game-scene GPU/device output; earlier tactical support percentage sequence |
+| Combat | Original damage/counterattack/death rules, tactical support artwork/timing and connected animated M3G battles; actual controller health, ordered effects and presented-frame completion | Actual game-scene GPU/device output and original first-use support tutorial |
 | Rendering | All 23 unit descriptors and21 actual map/style pairs; native Metal sprites/terrain; all three styles' session-owned decoration; ordinary original 3D scene/model/effect assets | Visual/device validation and original tactical artwork/camera/font fidelity |
 | Modes | Story, Showdown and Cybertron Arena with profile gates and explicit Arena faction/opponent choices | Physical-device menu, results and ending validation |
 | Audio | Original event dispatcher, battle shot/hit cues, native AVAudioEngine, active mission/battle and menu music maintenance; persisted Music/Sound preferences | Remaining sound-event coverage and device output |
@@ -121,13 +124,15 @@ comparisons, synthetic integration checks, Apple compilation and physical
 device evidence. `PORT_STATUS.json` keeps the full-game release gates explicit.
 No physical XR playthrough is currently recorded.
 
-The remaining tactical support display now has bounded recovery evidence under
+Build006 promotes the bounded evidence under
 `native/research/support_presentation_recovery/` and
-`native/research/overlay_validation/`. Those packages verify the separate
-percentage-overlay resource mapping, phase timing, existing 2D animation player
-and palette keying. Their candidate code stays under research and is not
-linked into build 005. Original asset decoding, host presentation and device
-checks still need integration.
+`native/research/overlay_validation/` into native asset decoding and host
+presentation. It retains pre-combat rendering snapshots, exact helper identity
+and a separately tested presentation gate, while leaving gameplay/RNG intact.
+See [build006 integration notes](docs/NATIVE_GAME_TEST_006.md),
+`validation/NATIVE_GAME_006_HOST.json` and the
+[applied recovery guide profile](docs/PORTING_SKILL_PROFILE.md). The historical
+research packages and build005 remain unchanged.
 
 ## Build and package
 
@@ -155,8 +160,8 @@ local IPA:
 python3 scripts/package-native-scene.py \
   --code-artifact G1-native-game-unsigned-code.zip \
   --source-ipa G1awakening_v1.1.3_os30.ipa \
-  --out G1_Awakening_Native_Game_Test_005.ipa \
-  --report G1_Awakening_Native_Game_Test_005.validation.json \
+  --out G1_Awakening_Native_Game_Test_006.ipa \
+  --report G1_Awakening_Native_Game_Test_006.validation.json \
   --expected-commit SOURCE_COMMIT_FROM_THE_RUN
 ```
 
@@ -186,7 +191,7 @@ retained only on `archive/compatibility-experiment` and is not the requested
 native deliverable. This project does not use the GTA repository.
 
 A full-game completion estimate is not established. The outstanding release
-work includes the earlier tactical support percentage presentation, remaining sound events
+work includes the original first-use support tutorial, remaining sound events
 and original UI/artwork fidelity, rendered campaign/mode traversal, and
 actual XR testing of installation, saves/resume, native resolution and sustained
 60 Hz presentation.

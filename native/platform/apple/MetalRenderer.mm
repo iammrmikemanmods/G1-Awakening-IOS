@@ -81,13 +81,18 @@ MetalRenderer::MetalRenderer(id<MTLDevice> device) : device_(device) {
     sample.sAddressMode = MTLSamplerAddressModeClampToEdge;
     sample.tAddressMode = MTLSamplerAddressModeClampToEdge;
     sampler_ = [device_ newSamplerStateWithDescriptor:sample];
+    sample.minFilter = MTLSamplerMinMagFilterNearest;
+    sample.magFilter = MTLSamplerMinMagFilterNearest;
+    nearest_sampler_ = [device_ newSamplerStateWithDescriptor:sample];
     MTLDepthStencilDescriptor* depth = [MTLDepthStencilDescriptor new];
     depth.depthCompareFunction = MTLCompareFunctionLessEqual;
     depth.depthWriteEnabled = YES;
     depth_write_ = [device_ newDepthStencilStateWithDescriptor:depth];
     depth.depthWriteEnabled = NO;
     depth_read_ = [device_ newDepthStencilStateWithDescriptor:depth];
-    if (!sampler_ || !depth_write_ || !depth_read_)
+    depth.depthCompareFunction = MTLCompareFunctionAlways;
+    depth_none_ = [device_ newDepthStencilStateWithDescriptor:depth];
+    if (!sampler_ || !nearest_sampler_ || !depth_write_ || !depth_read_ || !depth_none_)
         throw metal_error("Metal render state allocation failed");
 }
 
@@ -129,12 +134,13 @@ void MetalRenderer::encode(id<MTLCommandBuffer> command, MTLRenderPassDescriptor
     // The recovered strip order is preserved. Culling is disabled in this
     // inspection renderer while original scene orientations are recovered.
     [encoder setCullMode:MTLCullModeNone];
-    [encoder setFragmentSamplerState:sampler_ atIndex:0];
     for (const auto& draw : draws) {
         if (!draw.mesh || draw.mesh->count == 0) continue;
         if (!draw.texture) { [encoder endEncoding]; throw metal_error("draw texture is missing"); }
         const Uniform uniform{draw.matrix, draw.tint,{{draw.uv_offset[0],draw.uv_offset[1],0,0}}};
-        [encoder setDepthStencilState:draw.depth_write ? depth_write_ : depth_read_];
+        [encoder setDepthStencilState:draw.screen_space ? depth_none_ :
+            (draw.depth_write ? depth_write_ : depth_read_)];
+        [encoder setFragmentSamplerState:draw.nearest ? nearest_sampler_ : sampler_ atIndex:0];
         [encoder setVertexBuffer:draw.mesh->vertices offset:0 atIndex:0];
         [encoder setVertexBytes:&uniform length:sizeof(uniform) atIndex:1];
         [encoder setFragmentTexture:draw.texture atIndex:0];

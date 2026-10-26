@@ -150,10 +150,10 @@ bool counter_allowed(const CombatRulesView& rules,
     return can_target(rules, units, defender, attacker);
 }
 
-std::vector<std::uint8_t> helpers(const CombatRulesView& rules,
+std::vector<std::size_t> helpers(const CombatRulesView& rules,
                                   const std::vector<CombatUnitState>& units,
                                   std::size_t attacker, std::size_t defender) {
-    std::vector<std::uint8_t> result;
+    std::vector<std::size_t> result;
     if (distance(units[attacker], units[defender]) != 1) return result;
     for (std::size_t i = 0; i != units.size(); ++i) {
         const auto& other = units[i];
@@ -161,9 +161,11 @@ std::vector<std::uint8_t> helpers(const CombatRulesView& rules,
             distance(other, units[defender]) != 1) continue;
         const auto& form = form_data(rules, other);
         if (signed8(form[3]) > 0 && signed8(form[1]) == 1)
-            result.push_back(other.type);
+            result.push_back(i);
     }
-    std::sort(result.begin(), result.end());
+    std::sort(result.begin(),result.end(),[&](std::size_t a,std::size_t b) {
+        return units[a].type<units[b].type;
+    });
     return result;
 }
 
@@ -312,13 +314,15 @@ CombatExchange resolve_combat_exchange(const CombatRulesView& rules,
     const bool can_counter = counter_allowed(rules, units, attacker, defender);
     auto attack_helpers = helpers(rules, units, attacker, defender);
     auto counter_helpers = can_counter ? helpers(rules, units, defender, attacker) :
-                                         std::vector<std::uint8_t>{};
+                                         std::vector<std::size_t>{};
     if (attack_helpers.size() + counter_helpers.size() > 6)
         throw std::invalid_argument("combat support exceeds the original six-slot storage");
     CombatExchange result;
     result.counter_eligible_before_attack = can_counter;
-    result.support_types = attack_helpers;
-    result.support_types.insert(result.support_types.end(), counter_helpers.begin(), counter_helpers.end());
+    result.support_units=attack_helpers;
+    result.support_units.insert(result.support_units.end(),counter_helpers.begin(),counter_helpers.end());
+    result.support_types.reserve(result.support_units.size());
+    for(const auto index:result.support_units)result.support_types.push_back(units[index].type);
     auto updated = units;
     auto next_random = random;
     const auto draw_begin = next_random.state().draws;

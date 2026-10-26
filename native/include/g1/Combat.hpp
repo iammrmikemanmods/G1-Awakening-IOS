@@ -123,6 +123,10 @@ struct CombatExchange {
     // Original support list order: attacker's helpers, then defender's helpers;
     // ascending original type within each owner list. At most6 original slots.
     std::vector<std::uint8_t> support_types;
+    // The same ordered helpers as indices into the combat/session roster.
+    // Captured before damage so native presentation never guesses a helper
+    // from its type or recalculates support against the post-combat state.
+    std::vector<std::size_t> support_units;
     std::vector<CombatDestruction> destroyed;
     std::uint32_t random_words{};
 };

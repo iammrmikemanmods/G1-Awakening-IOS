@@ -20,6 +20,8 @@ struct MetalDraw {
     std::array<float, 4> tint{{1, 1, 1, 1}};
     bool depth_write{true};
     std::array<float,2> uv_offset{};
+    bool screen_space{}; // 2D effects neither test nor write tactical depth.
+    bool nearest{}; // Explicit native pixel-art policy for the keyed BMP.
 };
 
 class MetalRenderer {
@@ -32,8 +34,8 @@ public:
 private:
     id<MTLDevice> device_;
     id<MTLRenderPipelineState> pipeline_;
-    id<MTLSamplerState> sampler_;
-    id<MTLDepthStencilState> depth_write_, depth_read_;
+    id<MTLSamplerState> sampler_, nearest_sampler_;
+    id<MTLDepthStencilState> depth_write_, depth_read_, depth_none_;
 };
 
 Matrix4 identity_matrix() noexcept;

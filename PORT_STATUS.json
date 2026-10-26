@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-10-26T17:32:14.969388+00:00",
+  "updated_utc": "2026-10-26T22:44:51.228476+00:00",
   "goal": {
     "game": "Transformers G1 Awakening 1.1.3",
     "device": "iPhone XR",
@@ -28,7 +28,7 @@
     "mission_stream": "All 30 streams / 803 commands decoded; general typed world commands, objectives and campaign handoff execute in the live native session.",
     "movement_rules": "Movement/arrival/capture/transform and transform-aware Undo with exact friendly-selection locks, human production and carrier/tape actions connected.",
     "tactical_renderer": "All 21 map/style pairs and 23 unit descriptors load. All three terrain styles now own their decorative simulation/RNG in GameSession; host reads geometry only. Physical and original-artwork/camera fidelity pending.",
-    "combat": "Native combat rules feed actual resolved exchanges into the original M3G ordinary battle controller and asset graph. Natural completion waits for matching successful Metal presentation and HUD draw. Earlier tactical support-fire sequence remains.",
+    "combat": "Native combat preserves exact helper identities and pre-combat rendering snapshots. The recovered support percentage artwork/clock now precedes original M3G ordinary battles; natural completion retains matching Metal/HUD requirements. Original tutorial and physical output remain unverified.",
     "ai": "Continuous native AI production/movement/attack/capture/heal and turn loop connected. Complete headless Story/Showdown paths and all20 Arena configurations verified;10 Arena configurations use human commands for both players. Device and wider choice coverage remain.",
     "native_saves": "Format3 persists complete gameplay, shared RNG, style1 pools and style0/2 sprite playback/attachments. 74 actual-file/session checks and 45 actual mission-entry cold round trips pass; XR lifecycle testing pending.",
     "audio": "Original dispatcher, all 24 decoded Vorbis resources, native AVAudioEngine, battle event cues and exact active map/battle/menu music maintenance connected. Remaining sound-event coverage and actual device output require verification.",
@@ -38,7 +38,8 @@
     "png_decoder": "Native LodePNG;140sourceimages/12222652RGBAbytes match Pillow",
     "sprite_animation": "1616original-function cases/124432scalar comparisons pass; full gameplay timing unverified",
     "mission_continuation": "Typed world mutations, objective/results flow, checked profile/handoff and ordinary3D battle presentation connected. Headless Story/Showdown endings and all20 Arena menu handoffs verified. Original output fidelity and physical-device completion remain.",
-    "localization": "All511 original UTF8 strings decoded; all486 script indices in both variants checked against original mapper"
+    "localization": "All511 original UTF8 strings decoded; all486 script indices in both variants checked against original mapper",
+    "support_presentation": "Build006 source integrates bounded v1 descriptor, indexed BMP/property keying, original helper/cue/effect timing, reverse parts and recovered anchor. Native320logical-height widescreen scaling, nearest sampling, inspection focus, frozen pre-combat unit poses and first-present-per-helper are explicit host policies."
   },
   "release_gates": {
     "native_playable_ipa": false,
@@ -66,8 +67,8 @@
     "retirement_commit": "dba8521ff61f961755169f83715bfc796a4a3045"
   },
   "local_native_tests": {
-    "cmake_ctest_suites_passed": 55,
-    "cmake_ctest_suites_total": 55,
+    "cmake_ctest_suites_passed": 59,
+    "cmake_ctest_suites_total": 59,
     "mission_original_streams": 30,
     "mission_original_commands": 803,
     "mission_malformed_rejections": 855,
@@ -76,7 +77,7 @@
     "atlas_contract_checks": 71,
     "resource_payload_hashes": 559,
     "m3g_container_inventory_matches": 36,
-    "scope": "Exact follow-up host build: 55 suites and fresh complete 17-mission Story path. Original camera matrices remain bit-exact after explicit target-libm boundary selection. No GPU/device/playthrough claim.",
+    "scope": "Build006 source passes59 Linux portable suites including actual support assets, timing, geometry, async display gate and lethal-exchange/RNG preservation. Prior headless campaign and Apple evidence remain separately pinned.",
     "atlas_original_descriptors": 38,
     "atlas_original_quad_comparisons": 3639,
     "atlas_quad_oracle_scope": "Original arithmetic with six recorded nongraphical infrastructure substitutions;7 empty descriptors excluded",
@@ -99,7 +100,7 @@
     "mission_clock_original_cases": 48,
     "ai_synthetic_cases": 512,
     "ai_synthetic_checks": 28989,
-    "native_session_checks": 86,
+    "native_session_checks": 1709,
     "native_session_file_resume_checks": 74,
     "actual_mission_entry_checkpoints": 45,
     "actual_world_operations_to_first_objectives": 540,
@@ -165,7 +166,7 @@
     "recovered_native_gameplay_source": false,
     "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
   },
-  "next_work": "Test build005 on the physical XR: installation, real rendering/input/audio, save/relaunch Continue, battle return and sustained frame pacing. Complete remaining tactical support percentage presentation, original UI/artwork/camera and sound-event coverage; record rendered campaign and Arena playthrough evidence.",
+  "next_work": "Finish source-specific Apple build006 validation and package its native IPA. Then physical XR installation/rendering/input/audio, support-to-battle and save/relaunch testing; original first-use support tutorial, UI/artwork/camera and sound-event coverage remain.",
   "native_scene_test_ipa": {
     "file_name": "G1_Awakening_Native_Scene_Test_002.ipa",
     "bytes": 7106909,
@@ -303,6 +304,34 @@
     "support_phase_and_clock": "native/research/support_presentation_recovery/README.md",
     "v1_overlay_and_resource_mapping": "native/research/overlay_validation/README.md",
     "publication_path_review": "validation/NATIVE_GAME_005_RESEARCH_REVIEW.json",
-    "production_integration": false
+    "production_integration": true,
+    "scope": "Historical recovery folders remain unchanged; support components are promoted into build006 source, while packaged build005 has no support display."
+  },
+  "current_support_validation": {
+    "version": "0.6.0",
+    "build": 6,
+    "host_suites_passed": 59,
+    "host_suites_total": 59,
+    "host_report": "validation/NATIVE_GAME_006_HOST.json",
+    "apple_status": "pending",
+    "ipa_packaged": false,
+    "device_tested": false,
+    "story": {
+      "missions_completed": 17,
+      "battles_checked": 476,
+      "visible_support_cues": 185,
+      "helper_count_histogram": [
+        331,
+        109,
+        32,
+        4,
+        0,
+        0,
+        0
+      ],
+      "live_state_comparisons": 13347,
+      "headless_only": true,
+      "report": "validation/NATIVE_GAME_006_STORY_SUPPORT.json"
+    }
   }
 }

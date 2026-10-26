@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-26T22:47:34.865673+00:00",
+  "scope": "Fresh complete native Story with actual support data/geometry preparation, synthetic presentation acknowledgements; no device/GPU rendering",
+  "inputs": {
+    "pilot": {
+      "bytes": 1025200,
+      "sha256": "89531ee7b23c828ff5af267d8b072b89d6c166bbd820d23d55af1810a59807c5"
+    },
+    "archive": {
+      "bytes": 6994213,
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+    },
+    "terrain_tables": {
+      "bytes": 480,
+      "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8"
+    }
+  },
+  "options": {
+    "strategy": "native-planner-tactical",
+    "followup_policy": "aggressive",
+    "group": 0,
+    "start_mission": 0,
+    "seed": "0x4741",
+    "max_missions": 17,
+    "max_ticks": 200000,
+    "max_human_turns": 150,
+    "max_seconds": 120,
+    "verify_support": 1
+  },
+  "files": {
+    "result.json": {
+      "bytes": 5167,
+      "sha256": "65d31081bc9c2d465826ec2e4ea7c00666c5866474de1321e5df856d5fb52f94"
+    },
+    "support_validation.json": {
+      "bytes": 772,
+      "sha256": "bd66b7c6a99e44a4a4600f83d5b6752ff0784228d3a85ae85d7bedc21e5f843a"
+    },
+    "events.jsonl": {
+      "bytes": 840169,
+      "sha256": "fa43728c1bed9ce58f0eaad2c1c28d4db7b434019d1d26956403bd5d6b72ec38"
+    }
+  },
+  "continuous_story_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "gameplay_state_forced": false,
+  "full_headless_story_completed": true,
+  "full_device_playthrough_verified": false,
+  "core_observed_counts_equal_build005": true,
+  "support": {
+    "scope": "headless source-asset support preparation before synthetic battle acknowledgement",
+    "gpu_rendered": false,
+    "physical_device_test": false,
+    "presentation_feedback": "synthetic; unchanged command pilot",
+    "projection": "synthetic orthographic map bounds; UIKit tactical camera not tested",
+    "viewport": [
+      1792,
+      828
+    ],
+    "simulation_step_ms": 30,
+    "asset_loads": 1,
+    "image_resource": 997,
+    "descriptor_resource": 256,
+    "animation_index": 2,
+    "battles_checked": 476,
+    "helper_count_histogram": [
+      331,
+      109,
+      32,
+      4,
+      0,
+      0,
+      0
+    ],
+    "simulated_visible_cues": 185,
+    "support_simulation_ticks": 12395,
+    "effect_frames_prepared": 10360,
+    "empty_blink_frames": 2220,
+    "completed_effect_hidden_ticks": 2035,
+    "vertices_prepared": 48840,
+    "lethal_battles": 87,
+    "live_state_comparisons": 13347,
+    "checks": 647484,
+    "passed": true
+  }
+}

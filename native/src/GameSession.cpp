@@ -321,6 +321,7 @@ void GameSession::begin_battle(std::size_t attacker,std::size_t defender) {
     presentation.attacker=attacker;presentation.defender=defender;
     presentation.attacker_before=combat_.at(attacker);
     presentation.defender_before=combat_.at(defender);
+    presentation.units_before=units_;
     presentation.exchange=resolve_combat_exchange(combat_rules(),combat_,attacker,defender,random_);
     units_[attacker].flag_2c=1; // Original action path430f4 after585c4.
     for (const auto& dead:presentation.exchange.destroyed) {

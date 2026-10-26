@@ -1,4 +1,6 @@
 #include "g1/GameSession.hpp"
+#include "g1/SupportDisplayGate.hpp"
+#include "support_presentation_fixture.hpp"
 
 #include <iostream>
 
@@ -139,6 +141,15 @@ int main() {
         battle_world.unit_definitions[11].forms[0][3]=100;
         battle_world.unit_definitions[11].forms[0][4]=100;
         battle_world.unit_definitions[19].forms[0][5]=0;
+        // Helper roster indices deliberately differ from original type order.
+        // The target dies immediately in gameplay, while support presentation
+        // still needs the unchanged pre-combat tactical view of all units.
+        battle_world.units.push_back({5,0,0,0,2,1,0,true,0});
+        battle_world.units.push_back({0,0,0,0,3,2,0,true,0});
+        battle_world.initialization_effects.push_back(
+            {g1::WorldInitializationEffectKind::debit_spawn_funds,2,0,0,{},1});
+        battle_world.initialization_effects.push_back(
+            {g1::WorldInitializationEffectKind::debit_spawn_funds,3,0,0,{},1});
         battle_world.commands={{0,0,6,3,{11,280}},{1,0,8,12,{2,245,19}},
                                {2,0,2,1,{}},{3,0,4,8,{202}}};
         g1::GameSession combat_session(std::move(battle_world),4321);
@@ -148,16 +159,106 @@ int main() {
         check(combat_session.selected_attack_targets()==std::vector<std::size_t>{1},
               "actual opponent target not exposed");
         check(!combat_session.attack_selected(0),"self attack admitted");
+        const auto before_battle_units=combat_session.units();
         check(combat_session.attack_selected(1),"actual enemy attack did not start");
         check(combat_session.battle().has_value() && combat_session.battle()->exchange.destroyed.size()==1 &&
               !combat_session.world().units[1].active && !combat_session.units()[1].active &&
               combat_session.combat_units()[1].health==0,
               "combat death did not synchronize native world and occupancy");
+        const auto& pending_battle=*combat_session.battle();
+        check(pending_battle.units_before.size()==before_battle_units.size() &&
+              pending_battle.units_before[1].active && pending_battle.defender_before.active &&
+              pending_battle.defender_before.health==1 && pending_battle.units_before[0].flag_2c==0,
+              "pending battle snapshot lost living target or pre-action attacker");
+        for(std::size_t i=0;i<before_battle_units.size();++i) {
+            const auto& before=before_battle_units[i];
+            const auto& saved=pending_battle.units_before[i];
+            check(saved.active==before.active && saved.form==before.form &&
+                  saved.tile_x==before.tile_x && saved.tile_y==before.tile_y &&
+                  saved.offset_x==before.offset_x && saved.offset_y==before.offset_y &&
+                  saved.facing==before.facing && saved.spent_budget==before.spent_budget &&
+                  saved.timer_ms==before.timer_ms && saved.anchor_x==before.anchor_x &&
+                  saved.anchor_y==before.anchor_y && saved.anchor_facing==before.anchor_facing &&
+                  saved.flag_2c==before.flag_2c && saved.flag_2d==before.flag_2d &&
+                  saved.flag_2f==before.flag_2f && saved.flag_38==before.flag_38 &&
+                  saved.flag_39==before.flag_39 && saved.flag_3a==before.flag_3a,
+                  "render-only pre-combat movement snapshot changed a unit field");
+        }
+        check(pending_battle.exchange.support_types==std::vector<std::uint8_t>{0,5} &&
+              pending_battle.exchange.support_units==std::vector<std::size_t>{3,2},
+              "pending battle did not retain exact helpers in original type order");
+        for(std::size_t i=0;i<pending_battle.exchange.support_units.size();++i) {
+            const auto index=pending_battle.exchange.support_units[i];
+            check(combat_session.world().units[index].type==pending_battle.exchange.support_types[i] &&
+                  pending_battle.units_before[index].active,
+                  "support identity does not reference its real pre-combat unit");
+        }
         check(combat_session.mission_record().value_278==1 &&
               combat_session.mission_record().value_27c==0 && combat_session.units()[0].flag_2c==1,
               "combat action/counters were not applied");
         check(!combat_session.select(0) && !combat_session.end_turn_available() &&
               combat_session.selected_attack_targets().empty(),"battle presentation did not block input");
+        // Exercise the actual portable support controller with the pending
+        // lethal exchange. Synthetic frame receipts exercise the production
+        // host gate, not UIKit/Metal presentation. No battle acknowledgement
+        // is permitted merely because these 134 support ticks have finished.
+        std::vector<g1::AtlasStep> support_steps;
+        for(const auto& pair:g1_support_fixture::effect_steps)
+            support_steps.push_back({static_cast<std::uint8_t>(pair[0]),pair[1]});
+        g1::SupportPresentation support(pending_battle.token,pending_battle.exchange.support_units,
+                                       std::move(support_steps));
+        g1::SupportDisplayGate support_gate;
+        const auto resolved_random=combat_session.random().state();
+        const auto resolved_units=combat_session.combat_units();
+        const auto pending_token=pending_battle.token;
+        std::size_t support_ticks=0;
+        while(!support.status().complete) {
+            const auto before=support.status();
+            if(!support_gate.can_advance(before)) {
+                check(!support_gate.observe(before,support_gate.receipt(before,false)),
+                      "support fixture released a helper without banner presentation");
+                check(support_gate.observe(before,support_gate.receipt(before,true)),
+                      "support fixture rejected its current first frame");
+            }
+            if(support_ticks==10) {
+                const auto queued=support_gate.receipt(before,true);
+                support_gate.invalidate();
+                check(!support_gate.can_advance(before) && !support_gate.observe(before,queued) &&
+                      support.status().elapsed_ms==before.elapsed_ms,
+                      "support pause consumed time or accepted an old frame");
+                check(support_gate.observe(before,support_gate.receipt(before,true)),
+                      "resumed support fixture did not accept a fresh frame");
+            }
+            for(unsigned render=0;render<3;++render)
+                check(support.status().revision==before.revision &&
+                      support.status().elapsed_ms==before.elapsed_ms,
+                      "render-only support queries advanced simulation");
+            check(support_gate.can_advance(before),"support fixture advanced before presentation");
+            const auto action=support.advance(g1::SimulationClock::step_ms);
+            ++support_ticks;
+            check(support_ticks<=134,"real two-helper exchange did not hand off after its original cues");
+            if(action==g1::SupportPresentationAction::show_next_helper)support_gate.invalidate();
+            const auto& now_random=combat_session.random().state();
+            check(now_random.words==resolved_random.words && now_random.index==resolved_random.index &&
+                  now_random.draws==resolved_random.draws,
+                  "support presentation changed the shared gameplay random stream");
+            check(combat_session.battle() && combat_session.battle()->token==pending_token &&
+                  !combat_session.checkpoint_available() &&
+                  combat_session.mission().gate==g1::MissionGate::objective,
+                  "support presentation acknowledged a battle, enabled save or advanced its objective");
+            check(combat_session.units()[0].flag_2c==1 && !combat_session.units()[1].active &&
+                  combat_session.battle()->units_before[1].active,
+                  "support presentation changed resolved action/death or its pre-combat snapshot");
+            for(std::size_t i=0;i<resolved_units.size();++i) {
+                const auto& actual=combat_session.combat_units()[i];
+                const auto& resolved=resolved_units[i];
+                check(actual.health==resolved.health && actual.active==resolved.active &&
+                      actual.support_bonus==resolved.support_bonus,
+                      "support presentation recalculated resolved combat state");
+            }
+        }
+        check(support_ticks==134 && !support_gate.can_advance(support.status()) && combat_session.battle(),
+              "support completion incorrectly completed the real pending battle");
         (void)combat_session.tick(30);
         check(combat_session.mission().gate==g1::MissionGate::objective,
               "battle presentation was skipped before observing its result");

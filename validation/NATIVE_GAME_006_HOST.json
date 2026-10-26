@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "updated_utc": "2026-10-26T22:44:03.969737+00:00",
+  "baseline_commit": "2f157e530a0a80e9fab1da6ec8258af58177a2cd",
+  "scope": "Linux portable and source-asset validation for native support integration; no Apple build, GPU, device or rendered playthrough claim",
+  "ctest": {
+    "passed": 59,
+    "total": 59,
+    "log_sha256": "e4fa74c6f4849ee255b98b1412483b668d0817863ed031ee1ce6cd096d5268f3"
+  },
+  "checks": {
+    "support_assets": {
+      "returncode": 0,
+      "stdout": "Support asset contracts passed: 23 checks, 711 malformed/unsupported inputs rejected; actual archive checked.\n",
+      "stderr": ""
+    },
+    "support_presentation": {
+      "returncode": 0,
+      "stdout": "{\"original_updates\":1280,\"state_comparisons\":5120,\"native_complete_sequences\":7,\"controller_complete_sequences\":7,\"controller_checks\":17515,\"passed\":true}\n",
+      "stderr": ""
+    },
+    "support_geometry": {
+      "returncode": 0,
+      "stdout": "{\"support_geometry_checks\":166,\"synthetic_descriptor\":true,\"physical_device_test\":false,\"passed\":true}\n",
+      "stderr": ""
+    },
+    "support_display_gate": {
+      "returncode": 0,
+      "stdout": "25 native support display-gate checks passed\n",
+      "stderr": ""
+    },
+    "native_session": {
+      "returncode": 0,
+      "stdout": "1709 native session/clock integration checks passed; synthetic mission, not a playthrough\n",
+      "stderr": ""
+    },
+    "combat": {
+      "returncode": 0,
+      "stdout": "{\"rng_cases\":6,\"stat_cases\":36,\"health_cases\":64,\"battle_cases\":192,\"direct_strike_cases\":16,\"support_roster_cases\":136,\"checks\":25219,\"all_passed\":true}\n",
+      "stderr": ""
+    },
+    "actual_session_battle": {
+      "returncode": 0,
+      "stdout": "{\"source\":\"real GameSession exchange; synthetic startup/host feedback; no GPU\",\"setup_ticks\":81,\"actual_attacker_type\":11,\"actual_defender_type\":19,\"attacker_health_after\":95,\"defender_health_after\":50,\"battle_updates\":534,\"prepared_frames\":217,\"read_only_sample_checks\":54,\"distinct_interpolation_cases\":46,\"rng_unchanged\":true,\"token_retained_until_host_report\":true,\"complete\":true}\n",
+      "stderr": ""
+    }
+  },
+  "source_pixels": {
+    "width": 69,
+    "height": 63,
+    "transparent": 1498,
+    "opaque": 2849,
+    "native_decoded_sha256": "3df200499e9a45936a3d7ae57d1a16fd847083e5366540e9387ad449c4c51e05"
+  },
+  "sanitizers": {
+    "asan_ubsan_new_parsers_controller_geometry": "passed in isolated agent runs",
+    "leak_sanitizer": "not run; container denies required proc task inspection"
+  },
+  "physical_iphone_xr_tested": false,
+  "full_playthrough_verified": false
+}
