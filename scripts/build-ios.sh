@@ -23,6 +23,9 @@ record = {'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat
           'exit_code': int(os.environ['G1_BUILD_EXIT_CODE']),
           'last_stage': os.environ['G1_STAGE'],
           'ipa_validation_completed': (root/'metadata/ipa-validation.json').exists(),
+          'ci': {name: os.environ.get(name) for name in
+                 ('GITHUB_REPOSITORY', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT',
+                  'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_EVENT_NAME')},
           'device_execution_verified': False, 'xr_60fps_verified': False,
           'full_playthrough_verified': False}
 (root/'metadata/build-status.json').write_text(json.dumps(record, indent=2)+'\n')
