@@ -14,6 +14,8 @@
 #include "g1/SupportDisplayGate.hpp"
 #include "g1/SupportOverlayAssets.hpp"
 #include "g1/SupportGeometry.hpp"
+#include "g1/SupportTutorial.hpp"
+#include "g1/PresentationEpoch.hpp"
 #include "g1/InitialPresentation.hpp"
 #include "g1/GameSession.hpp"
 #include "g1/SessionSave.hpp"
@@ -174,7 +176,7 @@ struct NativePresentedFrame {
         bool complete{};
         std::size_t queued_draws{};
     };
-    std::uint64_t scene_revision{}, content_generation{};
+    std::uint64_t scene_revision{}, content_generation{}, presentation_epoch{};
     std::optional<std::size_t> mission_camera;
     std::optional<std::uint64_t> session_focus;
     std::optional<std::uint64_t> world;
@@ -195,7 +197,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena, arena_opponent };
+enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -203,6 +205,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)rebuildScene:(BOOL)resetPlayback;
 - (void)prepareBattle;
 - (void)showSupportHelper;
+- (void)requestSupportTutorial;
+- (void)retrySupportTutorial;
 - (void)maintainMusicAfterStep:(g1::MusicMaintenanceSite)site;
 - (void)finishBattleFrame:(const NativePresentedFrame::Battle&)frame;
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame;
@@ -270,6 +274,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     NSString* _supportSavedTitle;
     g1::SupportDisplayGate _supportDisplay;
     std::uint64_t _supportTicks,_supportPresentedFrames,_supportSequences;
+    std::uint64_t _supportTutorialRequests;
+    bool _supportTutorialRetryRequired;
     std::vector<std::shared_ptr<g1::MetalM3GModel>> _battleModels;
     std::unique_ptr<g1::MissionScene> _scene;
     std::unique_ptr<g1::GameSession> _session;
@@ -342,6 +348,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     std::uint64_t _battlePresentedToken, _battlePreparedFrames, _battlePresentedFrames;
     std::uint64_t _lastBattleFinalToken, _lastBattleFinalRevision, _battleQueuedDrawsPresented;
     std::uint64_t _sceneRevision, _sceneRebuilds, _sessionInstalls;
+    g1::PresentationEpoch _presentationEpoch;
     std::uint64_t _focusReports, _transformReports, _spawnPlaybackResets;
     std::uint64_t _worldReports, _checkpointWrites, _checkpointLoads, _checkpointRetirements;
     std::uint64_t _healActions, _upgradeActions, _endTurnActions, _resultsReports, _endingReports;
@@ -577,6 +584,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         _terrainTables = g1::decode_terrain_tables(_terrainTableBytes);
         const auto& archive = *_archive;
         _text = std::make_unique<g1::TextTable>(g1::load_text_table(archive));
+        [_title loadOriginalFonts:archive];
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
@@ -631,7 +639,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)showPanel:(NativePanel)purpose title:(NSString*)title body:(NSString*)body token:(std::uint64_t)token {
     const bool changed=_panelPurpose!=purpose || _panelToken!=token;
-    if(changed){_supportDisplay.invalidate();}
+    if(changed){_supportDisplay.invalidate();_presentationEpoch.invalidate();}
     _panelPurpose=purpose;_panelToken=token;
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
@@ -670,6 +678,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)hidePanel {
     _supportDisplay.invalidate();
+    _presentationEpoch.invalidate();
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
     [_campaignCanvas resetPresentation];
@@ -908,6 +917,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     // repeat in a new session. Invalidate every old drawable callback before
     // replacing it, and clear UIKit caches before showing the new requests.
     ++_sceneRevision; ++_sessionInstalls;
+    _presentationEpoch.invalidate();
     _session = std::move(session);
     _title.text=[self originalText:715];
     _scene.reset(); _cameraPan.reset();
@@ -927,6 +937,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _supportPresentation.reset(); _supportUnitDraws.clear(); _supportCursor.reset();
     _supportSavedCursor.reset(); _supportDisplay.invalidate();
     _supportSavedTitle=nil;
+    _supportTutorialRetryRequired=false;
     _presentedMessageIds.clear();
     _notice = nil; _noticeUntil = 0;
     _checkpointCommand=std::numeric_limits<std::size_t>::max();
@@ -1248,6 +1259,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _clockStarted = false;
     _simulationClock.reset();
     _supportDisplay.invalidate();
+    _presentationEpoch.invalidate();
     _inputEdges = 0;
     if (_session) _previousUnits = _session->units();
     _frameStats.times.clear();
@@ -1256,6 +1268,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)active:(NSNotification*)notification {
     (void)notification;
+    _presentationEpoch.invalidate();
     _clockStarted = false;
     _simulationClock.reset();
     if (_session) _previousUnits = _session->units();
@@ -1616,6 +1629,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         if(!_supportPresentation->status().complete) {
             ++_supportSequences;[self showSupportHelper];
             _clockStarted=false;_simulationClock.reset();++_contentGeneration;
+            [self requestSupportTutorial];
         }
     }
     if(!_supportPresentation->status().complete)return;
@@ -1666,6 +1680,46 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     ++_contentGeneration;
 }
 
+- (void)requestSupportTutorial {
+    if(!_campaign || !_session || !_session->battle() || !_supportPresentation ||
+       _supportPresentation->status().complete)return;
+    const auto& pending=*_session->battle();
+    g1::SupportTutorialSlots owners{};
+    if(pending.exchange.support_units.size()>owners.size())
+        throw g1::FormatError("Support tutorial helper list exceeds original six slots");
+    for(std::size_t i=0;i<pending.exchange.support_units.size();++i)
+        owners[i]=_session->world().units.at(pending.exchange.support_units[i]).owner;
+    const auto player=_session->current_player();
+    const auto decision=g1::support_tutorial_entry(
+        _campaign->profile().support_tutorial_pending ? 1U : 0U,player,
+        _session->turn().controllers.at(player),owners);
+    if(!decision.request_message)return;
+    // Original code clears its profile flag before requesting this text.
+    // Native policy also persists that change atomically before the popup;
+    // a failed write keeps the pending battle and exposes an explicit retry.
+    const auto written=_campaign->consume_support_tutorial();
+    if(!written.succeeded) {
+        _supportTutorialRetryRequired=true;
+        [self showPanel:NativePanel::tutorial_save_error title:@"Tutorial progress could not be saved"
+            body:native_text(written.error) token:++_localPanelToken];
+        [self addCampaignButton:@"Retry save" action:@selector(retrySupportTutorial)];
+        return;
+    }
+    _supportTutorialRetryRequired=false;
+    _pendingMessageIds.push_back(g1::support_tutorial_text_resource);
+    ++_supportTutorialRequests;
+    [self showNextMessage];
+}
+
+- (void)retrySupportTutorial {
+    if(!_supportTutorialRetryRequired || _panelPurpose!=NativePanel::tutorial_save_error)return;
+    try {
+        [self hidePanel];
+        [self requestSupportTutorial];
+        [self refreshControls];
+    } catch(const std::exception& error) { [self fail:native_text(error.what())]; }
+}
+
 - (void)refreshControls {
     if (!_session || _failed) return;
     if(_panelPurpose!=NativePanel::none) {
@@ -1694,6 +1748,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     if (battle) {
         [self prepareBattle];
         _commands.hidden=YES;_dialoguePanel.hidden=YES;
+        // prepareBattle may have opened the original one-time explanation
+        // or a retryable profile-save error. Preserve that modal's ownership.
+        if(_panelPurpose!=NativePanel::none){_battlePanel.hidden=YES;return;}
         if(_supportPresentation && !_supportPresentation->status().complete) {
             _battlePanel.hidden=YES;_title.hidden=NO;
             _hint.hidden=YES;_worldLegend.hidden=YES;
@@ -1821,6 +1878,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)beginProduction { [self showProductionTypes:g1::ProductionMode::ordinary]; }
 - (void)beginDeploy { [self showProductionTypes:g1::ProductionMode::deploy]; }
 - (void)cancelProduction {
+    _presentationEpoch.invalidate();
     _typeListOpen=false;_productionMode.reset();_productionType.reset();_productionPlacement.reset();
     _pendingDestination.reset();_rangeDirty=true;_clockStarted=false;_simulationClock.reset();
     [self refreshControls];
@@ -1854,7 +1912,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             handler:^(UIAlertAction* action){(void)action;[weakSelf cancelProduction];}]];
         choices.popoverPresentationController.sourceView=_commands;
         choices.popoverPresentationController.sourceRect=_commands.bounds;
-        _typeListOpen=true;_simulationClock.reset();
+        _typeListOpen=true;_simulationClock.reset();_presentationEpoch.invalidate();
         [self presentViewController:choices animated:YES completion:nil];
         choices.presentationController.delegate=self;
     } catch(const std::exception& e){[self fail:native_text(e.what())];}
@@ -1865,7 +1923,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     if(session!=_sessionInstalls || !_session || !_session->selected() ||
        producer>=_session->units().size() || *_session->selected()!=producer ||
        _session->unit_spawn_generation(producer)!=spawn)return;
-    _typeListOpen=false;_clockStarted=false;_simulationClock.reset();
+    _typeListOpen=false;_clockStarted=false;_simulationClock.reset();_presentationEpoch.invalidate();
     try {
         const auto candidates=_session->selected_production_candidates(mode);
         if(std::find(candidates.begin(),candidates.end(),type)==candidates.end())
@@ -2305,6 +2363,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     for (std::uint32_t n=0;n<steps;++n) {
         _previousUnits = _session->units();
         [self refreshControls];
+        if(_panelPurpose!=NativePanel::none)break;
         if (_session->battle()) {
             if(_supportPresentation && !_supportPresentation->status().complete) {
                 const auto status=_supportPresentation->status();
@@ -2395,7 +2454,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame {
-    if (!frame || frame->scene_revision != _sceneRevision) return;
+    if (!frame || frame->scene_revision != _sceneRevision ||
+        !_presentationEpoch.matches(frame->presentation_epoch)) return;
     if (_failed || _metalView.paused || time <= 0 || !std::isfinite(time)) return;
     if (!_frameStats.times.empty() && time <= _frameStats.times.back()) return;
     _frameStats.add(time);
@@ -2464,8 +2524,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
 }
 
-- (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision {
-    if(revision!=_sceneRevision){++_staleGpuErrors;return;}
+- (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision epoch:(std::uint64_t)epoch {
+    if(revision!=_sceneRevision || !_presentationEpoch.matches(epoch)){++_staleGpuErrors;return;}
     [self fail:message];
 }
 
@@ -2493,6 +2553,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             frame->content_generation = _contentGeneration;
             frame->scene_revision = _sceneRevision;
             if(_session->battle())[self prepareBattle];
+            frame->presentation_epoch = _presentationEpoch.current();
             const bool support=_session->battle() && _supportPresentation &&
                 !_supportPresentation->status().complete;
             if (_session->battle() && !support) {
@@ -2637,7 +2698,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     NSString* reason = completed.error.localizedDescription ?: @"Metal command failed";
                     dispatch_async(dispatch_get_main_queue(),^{
                         delivery->failed=true;
-                        [weakSelf recordCommandFailure:reason revision:presentedFrame->scene_revision];
+                        [weakSelf recordCommandFailure:reason revision:presentedFrame->scene_revision
+                            epoch:presentedFrame->presentation_epoch];
                     });
                 } else if (completed.status == MTLCommandBufferStatusCompleted) {
                     dispatch_async(dispatch_get_main_queue(),^{
@@ -2655,6 +2717,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)shareReport {
+    if(self.presentedViewController)return;
     struct utsname system{};
     uname(&system);
     NSDictionary* info = NSBundle.mainBundle.infoDictionary;
@@ -2725,6 +2788,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"device": [NSString stringWithUTF8String:system.machine], @"ios": UIDevice.currentDevice.systemVersion,
         @"native_scene_loaded": @(_loaded), @"failure": _failure ?: NSNull.null,
         @"scene_revision":@(_sceneRevision),@"scene_rebuilds":@(_sceneRebuilds),
+        @"presentation_epoch":@(_presentationEpoch.current()),
         @"session_installs":@(_sessionInstalls),@"spawn_playback_resets":@(_spawnPlaybackResets),
         @"scene_sprite_asset_count":@(_scene ? _scene->sprites.size() : 0),
         @"scene_grid_resource":@(_scene ? _scene->world.grid_resource_id : 0),
@@ -2796,8 +2860,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"support_frames_presented":@(_supportPresentedFrames),
         @"support_active":@(_supportPresentation && !_supportPresentation->status().complete),
         @"support_helper_slot":@(_supportPresentation ? int(_supportPresentation->status().slot) : -1),
+        @"support_tutorial_requests":@(_supportTutorialRequests),
+        @"support_tutorial_pending":_campaign ? @(_campaign->profile().support_tutorial_pending) : NSNull.null,
+        @"support_tutorial_save_retry_required":@(_supportTutorialRetryRequired),
+        @"original_title_font_slot":@([_title originalFontSlot]),
+        @"title_font_policy":@"Original keyed bitmap glyphs and measured spacing for supported single-line titles/support banners; native17-point nominal height and nearest sampling; existing UIKit fallback for uncovered text. Dialogue layout remains TextKit",
+        @"native_profile_format":@2,
         @"support_presentation":@"Original helper order, primary-name banner and keyed percentage artwork; separate effect ends at1680ms, cue hands off at2010ms; at most five helpers displayed without reducing six-helper combat",
-        @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original tutorial/camera/GPU parity remains unverified",
+        @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original one-time tutorial predicate/text, with native atomic profile persistence and drawn-message acknowledgement. Original camera/GPU parity remains unverified",
         @"battle_metal_frames_prepared": @(_battlePreparedFrames),
         @"battle_metal_frames_presented": @(_battlePresentedFrames),
         @"battle_queued_draws_in_presented_frames": @(_battleQueuedDrawsPresented),
@@ -2826,7 +2896,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"random_seed": @(_randomSeed), @"units":unitState, @"sites":siteState,
         @"full_gameplay_implemented": @NO, @"full_campaign_verified": @NO,
         @"native_save_reload_verified": @NO,
-        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, battle/support GPU output fidelity and sustained60Hz validation; original first-use support tutorial, site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
+        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, tutorial/lifecycle and battle/support GPU output fidelity and sustained60Hz validation; site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
         @"measurement_scope": @"Positive monotonic Metal presentedTime samples from current native scene; not full-game performance"
     };
     NSError* error = nil;
@@ -2840,6 +2910,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     }
     UIActivityViewController* sheet = [[UIActivityViewController alloc]
         initWithActivityItems:@[file] applicationActivities:nil];
+    // A share sheet hides gameplay just like Pause. Keep a pre-existing
+    // message/menu intact; active gameplay requires an explicit Resume when
+    // the sheet closes, so battles cannot finish unseen behind diagnostics.
+    if(_session && !_failed && _panelPurpose==NativePanel::none)[self openMenu];
     sheet.popoverPresentationController.sourceView = _reportButton;
     sheet.popoverPresentationController.sourceRect = _reportButton.bounds;
     [self presentViewController:sheet animated:YES completion:nil];

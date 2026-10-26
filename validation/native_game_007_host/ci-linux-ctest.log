@@ -1,0 +1,130 @@
+2026-10-26T23:26:19.2974044Z Internal ctest changing into directory: /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/native
+2026-10-26T23:26:19.3540102Z Test project /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/native
+2026-10-26T23:26:19.3960656Z       Start  1: bitmap_font_original_functions
+2026-10-26T23:26:19.4125055Z  1/62 Test  #1: bitmap_font_original_functions .........................   Passed    0.01 sec
+2026-10-26T23:26:19.4208191Z       Start  2: presentation_epoch_delivery
+2026-10-26T23:26:19.4249673Z  2/62 Test  #2: presentation_epoch_delivery ............................   Passed    0.00 sec
+2026-10-26T23:26:19.4258013Z       Start  3: support_assets_contract
+2026-10-26T23:26:19.4266380Z  3/62 Test  #3: support_assets_contract ................................   Passed    0.00 sec
+2026-10-26T23:26:19.4267677Z       Start  4: support_presentation_contract
+2026-10-26T23:26:19.4284839Z  4/62 Test  #4: support_presentation_contract ..........................   Passed    0.00 sec
+2026-10-26T23:26:19.4285754Z       Start  5: support_geometry_contract
+2026-10-26T23:26:19.4304753Z  5/62 Test  #5: support_geometry_contract ..............................   Passed    0.00 sec
+2026-10-26T23:26:19.4305369Z       Start  6: support_display_gate_contract
+2026-10-26T23:26:19.4318204Z  6/62 Test  #6: support_display_gate_contract ..........................   Passed    0.00 sec
+2026-10-26T23:26:19.4320348Z       Start  7: support_tutorial_original_function_vectors
+2026-10-26T23:26:19.4344179Z  7/62 Test  #7: support_tutorial_original_function_vectors .............   Passed    0.00 sec
+2026-10-26T23:26:19.4346533Z       Start  8: m3g_scene_contract
+2026-10-26T23:26:19.4362946Z  8/62 Test  #8: m3g_scene_contract .....................................   Passed    0.00 sec
+2026-10-26T23:26:19.4365322Z       Start  9: m3g_animation_contract
+2026-10-26T23:26:19.4607780Z  9/62 Test  #9: m3g_animation_contract .................................   Passed    0.02 sec
+2026-10-26T23:26:19.4618427Z       Start 10: m3g_spline_contract
+2026-10-26T23:26:19.4628708Z 10/62 Test #10: m3g_spline_contract ....................................   Passed    0.00 sec
+2026-10-26T23:26:19.4631569Z       Start 11: m3g_scene_pose_contract
+2026-10-26T23:26:19.5376074Z 11/62 Test #11: m3g_scene_pose_contract ................................   Passed    0.07 sec
+2026-10-26T23:26:19.5376920Z       Start 12: m3g_camera_contract
+2026-10-26T23:26:19.5398821Z 12/62 Test #12: m3g_camera_contract ....................................   Passed    0.00 sec
+2026-10-26T23:26:19.5445842Z       Start 13: m3g_battle_timeline_contract
+2026-10-26T23:26:19.5461419Z 13/62 Test #13: m3g_battle_timeline_contract ...........................   Passed    0.00 sec
+2026-10-26T23:26:19.5464545Z       Start 14: m3g_render_asset_contract
+2026-10-26T23:26:19.5626441Z 14/62 Test #14: m3g_render_asset_contract ..............................   Passed    0.02 sec
+2026-10-26T23:26:19.5627304Z       Start 15: m3g_render_frame_contract
+2026-10-26T23:26:19.5644909Z 15/62 Test #15: m3g_render_frame_contract ..............................   Passed    0.00 sec
+2026-10-26T23:26:19.5646294Z       Start 16: m3g_bindings_contract
+2026-10-26T23:26:19.5741314Z 16/62 Test #16: m3g_bindings_contract ..................................   Passed    0.01 sec
+2026-10-26T23:26:19.5744384Z       Start 17: m3g_battle_camera_contract
+2026-10-26T23:26:19.5760530Z 17/62 Test #17: m3g_battle_camera_contract .............................   Passed    0.00 sec
+2026-10-26T23:26:19.5762417Z       Start 18: m3g_runtime_state_contract
+2026-10-26T23:26:19.5778514Z 18/62 Test #18: m3g_runtime_state_contract .............................   Passed    0.00 sec
+2026-10-26T23:26:19.5780747Z       Start 19: m3g_sprite3d_original_function_vectors
+2026-10-26T23:26:19.5798205Z 19/62 Test #19: m3g_sprite3d_original_function_vectors .................   Passed    0.00 sec
+2026-10-26T23:26:19.5801118Z       Start 20: m3g_material_overrides_original_vectors
+2026-10-26T23:26:19.5940349Z 20/62 Test #20: m3g_material_overrides_original_vectors ................   Passed    0.01 sec
+2026-10-26T23:26:19.5941053Z       Start 21: m3g_battle_controller_original_vectors
+2026-10-26T23:26:19.6033070Z 21/62 Test #21: m3g_battle_controller_original_vectors .................   Passed    0.01 sec
+2026-10-26T23:26:19.6033742Z       Start 22: mission_format_contract
+2026-10-26T23:26:19.6070810Z 22/62 Test #22: mission_format_contract ................................   Passed    0.00 sec
+2026-10-26T23:26:19.6071606Z       Start 23: movement_original_function_vectors
+2026-10-26T23:26:19.6101630Z 23/62 Test #23: movement_original_function_vectors .....................   Passed    0.00 sec
+2026-10-26T23:26:19.6102361Z       Start 24: movement_action_contract
+2026-10-26T23:26:19.6118741Z 24/62 Test #24: movement_action_contract ...............................   Passed    0.00 sec
+2026-10-26T23:26:19.6120699Z       Start 25: movement_arrival_contract
+2026-10-26T23:26:19.6134186Z 25/62 Test #25: movement_arrival_contract ..............................   Passed    0.00 sec
+2026-10-26T23:26:19.6136728Z       Start 26: text_original_function_vectors
+2026-10-26T23:26:19.6154432Z 26/62 Test #26: text_original_function_vectors .........................   Passed    0.00 sec
+2026-10-26T23:26:19.6155074Z       Start 27: mission_execution_original_function_vectors
+2026-10-26T23:26:19.6174125Z 27/62 Test #27: mission_execution_original_function_vectors ............   Passed    0.00 sec
+2026-10-26T23:26:19.6175728Z       Start 28: capture_action_contract
+2026-10-26T23:26:19.6188842Z 28/62 Test #28: capture_action_contract ................................   Passed    0.00 sec
+2026-10-26T23:26:19.6189559Z       Start 29: transform_action_contract
+2026-10-26T23:26:19.6202111Z 29/62 Test #29: transform_action_contract ..............................   Passed    0.00 sec
+2026-10-26T23:26:19.6202811Z       Start 30: combat_original_function_vectors
+2026-10-26T23:26:19.6261161Z 30/62 Test #30: combat_original_function_vectors .......................   Passed    0.00 sec
+2026-10-26T23:26:19.6263228Z       Start 31: native_session_integration
+2026-10-26T23:26:19.6469142Z 31/62 Test #31: native_session_integration .............................   Passed    0.00 sec
+2026-10-26T23:26:19.6477138Z       Start 32: mission_progression_original_function_vectors
+2026-10-26T23:26:19.6679392Z 32/62 Test #32: mission_progression_original_function_vectors ..........   Passed    0.00 sec
+2026-10-26T23:26:19.6680255Z       Start 33: turn_original_function_vectors
+2026-10-26T23:26:19.6886630Z 33/62 Test #33: turn_original_function_vectors .........................   Passed    0.01 sec
+2026-10-26T23:26:19.6898645Z       Start 34: mission_objectives_original_function_vectors
+2026-10-26T23:26:19.6905986Z 34/62 Test #34: mission_objectives_original_function_vectors ...........   Passed    0.01 sec
+2026-10-26T23:26:19.6908213Z       Start 35: ai_attack_original_function_vectors
+2026-10-26T23:26:19.6908607Z 35/62 Test #35: ai_attack_original_function_vectors ....................   Passed    0.01 sec
+2026-10-26T23:26:19.6908994Z       Start 36: ai_planner_original_function_vectors
+2026-10-26T23:26:19.6909377Z 36/62 Test #36: ai_planner_original_function_vectors ...................   Passed    0.01 sec
+2026-10-26T23:26:19.6909782Z       Start 37: ai_turn_admission_original_function_vectors
+2026-10-26T23:26:19.6910179Z 37/62 Test #37: ai_turn_admission_original_function_vectors ............   Passed    0.01 sec
+2026-10-26T23:26:19.6910568Z       Start 38: ai_site_original_function_vectors
+2026-10-26T23:26:19.6910934Z 38/62 Test #38: ai_site_original_function_vectors ......................   Passed    0.01 sec
+2026-10-26T23:26:19.6911316Z       Start 39: atlas_format_geometry_contract
+2026-10-26T23:26:19.6911974Z 39/62 Test #39: atlas_format_geometry_contract .........................   Passed    0.00 sec
+2026-10-26T23:26:19.6912365Z       Start 40: png_rgba_contract
+2026-10-26T23:26:19.6912682Z 40/62 Test #40: png_rgba_contract ......................................   Passed    0.00 sec
+2026-10-26T23:26:19.6913048Z       Start 41: sprite_geometry_contract
+2026-10-26T23:26:19.6913390Z 41/62 Test #41: sprite_geometry_contract ...............................   Passed    0.00 sec
+2026-10-26T23:26:19.6913780Z       Start 42: terrain_original_function_vectors
+2026-10-26T23:26:19.6975767Z 42/62 Test #42: terrain_original_function_vectors ......................   Passed    0.00 sec
+2026-10-26T23:26:19.6976512Z       Start 43: world_bootstrap_contract
+2026-10-26T23:26:19.6977275Z 43/62 Test #43: world_bootstrap_contract ...............................   Passed    0.00 sec
+2026-10-26T23:26:19.6978711Z       Start 44: sprite_animation_contract
+2026-10-26T23:26:19.6989343Z 44/62 Test #44: sprite_animation_contract ..............................   Passed    0.00 sec
+2026-10-26T23:26:19.6991124Z       Start 45: sprite_placement_contract
+2026-10-26T23:26:19.7005106Z 45/62 Test #45: sprite_placement_contract ..............................   Passed    0.00 sec
+2026-10-26T23:26:19.7008035Z       Start 46: initial_animation_table_contract
+2026-10-26T23:26:19.7023186Z 46/62 Test #46: initial_animation_table_contract .......................   Passed    0.00 sec
+2026-10-26T23:26:19.7028100Z       Start 47: vorbis_format_contract
+2026-10-26T23:26:19.7038561Z 47/62 Test #47: vorbis_format_contract .................................   Passed    0.00 sec
+2026-10-26T23:26:19.7039156Z       Start 48: audio_dispatch_original_function_vectors
+2026-10-26T23:26:19.7056862Z 48/62 Test #48: audio_dispatch_original_function_vectors ...............   Passed    0.00 sec
+2026-10-26T23:26:19.7059155Z       Start 49: audio_maintenance_original_function_vectors
+2026-10-26T23:26:19.7077973Z 49/62 Test #49: audio_maintenance_original_function_vectors ............   Passed    0.00 sec
+2026-10-26T23:26:19.7081471Z       Start 50: menu_music_original_function_vectors
+2026-10-26T23:26:19.7158733Z 50/62 Test #50: menu_music_original_function_vectors ...................   Passed    0.01 sec
+2026-10-26T23:26:19.7163081Z       Start 51: native_profile_atomic_file
+2026-10-26T23:26:19.7290212Z 51/62 Test #51: native_profile_atomic_file .............................   Passed    0.01 sec
+2026-10-26T23:26:19.7296385Z       Start 52: unit_spawn_original_function_vectors
+2026-10-26T23:26:19.7309853Z 52/62 Test #52: unit_spawn_original_function_vectors ...................   Passed    0.00 sec
+2026-10-26T23:26:19.7311685Z       Start 53: unit_actions_original_function_vectors
+2026-10-26T23:26:19.7409522Z 53/62 Test #53: unit_actions_original_function_vectors .................   Passed    0.01 sec
+2026-10-26T23:26:19.7410548Z       Start 54: ai_execution_original_function_vectors
+2026-10-26T23:26:19.7453209Z 54/62 Test #54: ai_execution_original_function_vectors .................   Passed    0.00 sec
+2026-10-26T23:26:19.7454159Z       Start 55: world_commands_original_function_vectors
+2026-10-26T23:26:19.7455084Z 55/62 Test #55: world_commands_original_function_vectors ...............   Passed    0.00 sec
+2026-10-26T23:26:19.7455750Z       Start 56: campaign_actual_save_and_handoff
+2026-10-26T23:26:19.7714353Z 56/62 Test #56: campaign_actual_save_and_handoff .......................   Passed    0.03 sec
+2026-10-26T23:26:19.7715184Z       Start 57: native_session_checkpoint_and_resume
+2026-10-26T23:26:19.7798105Z 57/62 Test #57: native_session_checkpoint_and_resume ...................   Passed    0.01 sec
+2026-10-26T23:26:19.7798835Z       Start 58: unit_interactions_original_functions
+2026-10-26T23:26:19.7950099Z 58/62 Test #58: unit_interactions_original_functions ...................   Passed    0.01 sec
+2026-10-26T23:26:19.7950928Z       Start 59: unit_commands_original_functions
+2026-10-26T23:26:19.7991474Z 59/62 Test #59: unit_commands_original_functions .......................   Passed    0.00 sec
+2026-10-26T23:26:19.7992208Z       Start 60: terrain_decorations_original_function_vectors
+2026-10-26T23:26:19.8030541Z 60/62 Test #60: terrain_decorations_original_function_vectors ..........   Passed    0.00 sec
+2026-10-26T23:26:19.8032557Z       Start 61: terrain_animated_original_function_vectors
+2026-10-26T23:26:19.8051690Z 61/62 Test #61: terrain_animated_original_function_vectors .............   Passed    0.00 sec
+2026-10-26T23:26:19.8053537Z       Start 62: terrain_sprite_decorations_original_function_vectors
+2026-10-26T23:26:19.8118550Z 62/62 Test #62: terrain_sprite_decorations_original_function_vectors ...   Passed    0.01 sec
+2026-10-26T23:26:19.8121757Z 
+2026-10-26T23:26:19.8122073Z 100% tests passed, 0 tests failed out of 62
+2026-10-26T23:26:19.8122607Z 
+2026-10-26T23:26:19.8122809Z Total Test time (real) =   0.46 sec
