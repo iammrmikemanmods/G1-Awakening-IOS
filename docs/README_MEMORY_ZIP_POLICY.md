@@ -7,7 +7,8 @@ release requires the separate gates recorded in `PORT_STATUS.json`.
 
 ## Source review archive
 
-`G1_Awakening_Native_Build_005_Source.zip` contains the reviewed native source,
+`G1_Awakening_Native_Build_005_Source.zip` is an earlier review checkpoint. It
+contains the reviewed native source,
 build workflow, development tools and validation evidence. It contains no
 compiled iPhone app, installable IPA, original game archive or original
 executable. Its root `README.md` describes implementation scope and remaining
@@ -19,10 +20,13 @@ The source connects native gameplay, enemy turns, campaign handoffs, saves,
 all three terrain styles and ordinary animated 3D battles. The current host
 pilot completes all seventeen Story missions and persists the campaign ending.
 Its presentation feedback is synthetic. That result is a complete headless Story path, not a rendered
-or device playthrough. Updated Apple/Metal validation, remaining support-fire,
-sound-event and original-presentation work, and physical XR checks remain.
+or device playthrough. Build 005 passed Apple app/shader compilation and both synthetic Metal pixel
+probes. A separate native mode pilot also completes all 8 Showdown missions and
+all 20 Arena configurations through natural handoffs. Remaining support
+percentage, sound-event and original-presentation work, and physical XR checks
+still apply. See docs/NATIVE_GAME_TEST_005.md for the exact shipped IPA identity.
 
-## Hosted code artifact and eventual IPA
+## Hosted code artifact and packaged test IPA
 
 After a successful Apple build, the separate cloud code artifact contains the
 new ARM64 app, source-commit metadata, licenses and build/render verification.

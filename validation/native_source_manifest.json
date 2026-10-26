@@ -1,6 +1,7 @@
 {
   "schema": 1,
-  "scope": "Exact follow-up integrated source and evidence, excluding this manifest itself",
+  "scope": "Exact delivered005 evidence and host/research source. The shipped IPA was compiled from083057b; runtime sources remain identical. This manifest excludes itself.",
+  "compiled_ipa_source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
   "files": [
     {
       "path": ".gitattributes",
@@ -24,13 +25,13 @@
     },
     {
       "path": "PORT_STATUS.json",
-      "bytes": 13312,
-      "sha256": "a1bd2f885be7dec469a358f7813c0f8311b4d0544895433689b8aeccae0328e5"
+      "bytes": 16744,
+      "sha256": "45fa6fc3a06dcea0ed57c543bd6f4ae108286bd419157da0850d8ee5670a009b"
     },
     {
       "path": "README.md",
-      "bytes": 10098,
-      "sha256": "34a50e75369a0ca1b3573c1b25ce259b694fdd3f35f94cd79c9a6c220d209ecd"
+      "bytes": 12210,
+      "sha256": "2ce6c33e2073c8cde8def2018c18b4d641ec2d2f3f857f5aeb41e8a1139b5004"
     },
     {
       "path": "analysis_tools/PRESERVATION.json",
@@ -428,6 +429,11 @@
       "sha256": "1d21de8e95fa83a4167b88aa96f0243716d36a3b3c411cb9eb7c3c08275d9c25"
     },
     {
+      "path": "analysis_tools/overlay/v1_descriptor_oracle.py",
+      "bytes": 16147,
+      "sha256": "ef26eb5b0e73d646519e51345e12e562a5be6c0f94e79578953d469c7d469153"
+    },
+    {
       "path": "analysis_tools/pc_reference/PC_REUSE_FINDINGS.md",
       "bytes": 8212,
       "sha256": "d84222f193c5fb64791d0ea4d06e631d17b48011fb5116187b428587ccf6e4de"
@@ -503,6 +509,11 @@
       "sha256": "a26455100ab48e1b28365a0860cf5642865740bd54d7f7115eb546f83b9c3f17"
     },
     {
+      "path": "analysis_tools/playthrough/history/mode_completion/run_mode_probe_initial.py",
+      "bytes": 6138,
+      "sha256": "5aff2a91ca7dfcb3b2180f0d4ea694be10f0955dd8dd797e71207a0c95fa1d71"
+    },
+    {
       "path": "analysis_tools/playthrough/history/story_completion/checkpoint_probe.cpp",
       "bytes": 93376,
       "sha256": "98b4f3a9c29ea9ea386f442645a6ad366c60b0eb200bdb657ab5819626dd3d03"
@@ -513,9 +524,19 @@
       "sha256": "d4b0d250b1d11e5c0dc2b6b1b21cbb030429f6cdc82bd70279c810c16c36b192"
     },
     {
+      "path": "analysis_tools/playthrough/run_arena_matrix.py",
+      "bytes": 2748,
+      "sha256": "edda704d8bebc60d5704f1dd2caf8c0264af6cca36557c146bbf10c3812068b8"
+    },
+    {
       "path": "analysis_tools/playthrough/run_complete_story_probe.py",
       "bytes": 4099,
       "sha256": "a71310d60587e149a4d0acd4f686045df7ef1dc6afe30c47269560bb0559d2f2"
+    },
+    {
+      "path": "analysis_tools/playthrough/run_mode_probe.py",
+      "bytes": 6347,
+      "sha256": "35d85e0901e2973862c4186eba3ef151eb2b450768e499f8142f26eef155daa5"
     },
     {
       "path": "analysis_tools/playthrough/run_probe.py",
@@ -763,14 +784,19 @@
       "sha256": "5a8279d8e165eea33a2c9b2da3563cf3b3dbf540e18e6c4e412b2987146a1a7a"
     },
     {
+      "path": "docs/NATIVE_GAME_TEST_005.md",
+      "bytes": 4888,
+      "sha256": "a4c2974daa58966257a10d31e5b8eaeea7cf66cf68df2689facbc9050c6d4fb4"
+    },
+    {
       "path": "docs/NATIVE_SCENE_TEST.md",
       "bytes": 2408,
       "sha256": "e90adb02758451b39ac17495e76039e17ee16bcddc02f705a26f9ae01ca5d424"
     },
     {
       "path": "docs/README_MEMORY_ZIP_POLICY.md",
-      "bytes": 2388,
-      "sha256": "bfd0a27aa334e050a5659342fc138866aa612018275d54e01762b22817839cda"
+      "bytes": 2688,
+      "sha256": "c2b322e933b8916c1f1987ee96f90a3c66dd121bd02b013ba325c57a88fed109"
     },
     {
       "path": "docs/TIMING_REQUIREMENT.md",
@@ -779,8 +805,8 @@
     },
     {
       "path": "native/CMakeLists.txt",
-      "bytes": 20478,
-      "sha256": "4c40661b6db933ea54f319ae4bb0bd0a23c642a2057bf1b843d168e644b91a92"
+      "bytes": 20655,
+      "sha256": "6be219512cda0f45262207c1107b1b4b8f1a18ebdb8765783ee6d6840250adf4"
     },
     {
       "path": "native/include/g1/AI.hpp",
@@ -1216,6 +1242,16 @@
       "path": "native/research/COMBAT_RECOVERY.md",
       "bytes": 13687,
       "sha256": "848dae829c62e5b55404f42b5c3a20ca221bfc4123a7879e7288da318c745000"
+    },
+    {
+      "path": "native/research/COMPLETE_MODES_HEADLESS.json",
+      "bytes": 35153,
+      "sha256": "3d77c7e2fcf4f9e622041f49e99dd83632eea72e0eff7f21c4affdbf00694f8e"
+    },
+    {
+      "path": "native/research/COMPLETE_MODES_HEADLESS.md",
+      "bytes": 9848,
+      "sha256": "6991284239c7fb8ea698eb02da1f29182db4ccf6a896362ac34b2f814de10768"
     },
     {
       "path": "native/research/COMPLETE_STORY_HEADLESS.json",
@@ -2013,6 +2049,41 @@
       "sha256": "32af51d9c98020354e86c897e9716c6302df3e5f34f06f824f95f4809ea4b08b"
     },
     {
+      "path": "native/research/overlay_validation/OVERLAY_ASSET_FREEZE.json",
+      "bytes": 2387,
+      "sha256": "a45dc9ecabec6a023a562c0c1c0f58840a4cafb470e28a5a17355a1e381dacd0"
+    },
+    {
+      "path": "native/research/overlay_validation/README.md",
+      "bytes": 8518,
+      "sha256": "001efa824922ccc9053287b7afb80711bc36b35afccddb60f10c4174fc5367fc"
+    },
+    {
+      "path": "native/research/overlay_validation/include/g1/OverlayDescriptor.hpp",
+      "bytes": 1628,
+      "sha256": "687ae5b9a18ba8059a889cf874d8cb45b02dcf3018e41029e489d49f2b9b06b8"
+    },
+    {
+      "path": "native/research/overlay_validation/original_overlay_descriptor.json",
+      "bytes": 4855,
+      "sha256": "580eded1861a399186dea0b09544f9bbaf557c56d245713200a6efc45d310fba"
+    },
+    {
+      "path": "native/research/overlay_validation/resource_256_mapping.json",
+      "bytes": 5705,
+      "sha256": "c3f50cb493f7eae047868436c9d480feb2f81cb4649e909de6e1a2ef1abb03ae"
+    },
+    {
+      "path": "native/research/overlay_validation/src/OverlayDescriptor.cpp",
+      "bytes": 4973,
+      "sha256": "ada026d44b021d7ee41c525310871744fc73737beb4339e7a48925e563dd9234"
+    },
+    {
+      "path": "native/research/overlay_validation/tests/overlay_descriptor_probe.cpp",
+      "bytes": 2539,
+      "sha256": "65128106069bff5b4bfc96ef2ffbb2855348db38f8eb2c38cec4b6377a25bbd5"
+    },
+    {
       "path": "native/research/playthrough_validation/BASELINE_PILOT01_PROVENANCE.json",
       "bytes": 12271,
       "sha256": "3ab7815196e27117ac84c9b149309945fd431ea4f601587a27bddeb9f49b7fb7"
@@ -2061,6 +2132,521 @@
       "path": "native/research/playthrough_validation/continuous_events.jsonl",
       "bytes": 190383,
       "sha256": "78eb261102f59d489241fa08852e1ae4b7177d4708eb3be3b1b86604f14f7c03"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/MODE_BUILD.json",
+      "bytes": 2792,
+      "sha256": "f0bf59e5b6b5731dbffc59932476f93c6d9bb2a159c569e2b249162ad32abde9"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/MODE_COMPLETION_FREEZE.json",
+      "bytes": 39970,
+      "sha256": "760ca743e1a88bdb25ac112e36a4cfb5d3ff05e516841508af88023b6086e7ac"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/MODE_CORE_SOURCE_COMPARISON.json",
+      "bytes": 37830,
+      "sha256": "2315352cafe3b8bbca4636a8e8129d26f737f344c4438a70e124c45e9505373e"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/MODE_DEVELOPMENT_RUNS.json",
+      "bytes": 147470,
+      "sha256": "a644f1ea9ce3d22fbece65d53c66ff4f0a844528f2461979df8fa131ee4bd099"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/ORIGIN.json",
+      "bytes": 595,
+      "sha256": "ba279c9ea85869a0a5f54884612de60fa8a826ff426c9dc255324822d4bd80a4"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_0_opponent_0/events.jsonl",
+      "bytes": 39570,
+      "sha256": "c45bfa97e8d4694c5b4a62547af33b9137048401adb2a106795b1bb68be0ab30"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_0_opponent_0/reproduction.json",
+      "bytes": 6838,
+      "sha256": "b6c028423bad8d3abc53962c92f7d1b3eb9b322c76f30b951d83ee6ed8570ee2"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_0_opponent_0/result.json",
+      "bytes": 3861,
+      "sha256": "f13b00835a4aa6ccc85c1b8272ba3427b44ec0e82d070a8925b185c5f4e5ef2d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_0_opponent_1/events.jsonl",
+      "bytes": 26652,
+      "sha256": "2b03936623621703e8ce85dfe0aae43b8cfcc2788ccf9ddf3144d2f0b6505c3a"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_0_opponent_1/reproduction.json",
+      "bytes": 6834,
+      "sha256": "bad41f63287bc315be78e36be95c89f556c25cc2a04a803d0d9fbf9ec0e80bae"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_0_opponent_1/result.json",
+      "bytes": 3854,
+      "sha256": "7b0038572c9edb8078382c16390a0d1b0fa9a0884390f1e5bc6ddb9e13a9bf73"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_1_opponent_0/events.jsonl",
+      "bytes": 37287,
+      "sha256": "99f4641229af6e48f107bfea7d3ac1d5b5450c50a683a58b66138858ad9c4a7b"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_1_opponent_0/reproduction.json",
+      "bytes": 6838,
+      "sha256": "0bd6c2f0d711270cf9eb217d7411224fcba6480a5a95addc188a877ed72b90aa"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_1_opponent_0/result.json",
+      "bytes": 3861,
+      "sha256": "5a184a8405c602393a742ea9c9fa0c691417cdefb304fdf9792758920dfe07c5"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_1_opponent_1/events.jsonl",
+      "bytes": 23845,
+      "sha256": "b064ee1bd4f66d46a39dfff0d133f23318555318a4d29ba664ba4ee6b4955431"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_1_opponent_1/reproduction.json",
+      "bytes": 6835,
+      "sha256": "131873280fb9fdc41ef9051c6674359cce564eebf71f2e407a986a81d9ccb071"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_0_faction_1_opponent_1/result.json",
+      "bytes": 3855,
+      "sha256": "35cfc2cfc8fca5b66070c040d3e886928006b3b34cdcbb528e4495e49c473aff"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_0_opponent_0/events.jsonl",
+      "bytes": 16185,
+      "sha256": "44e728a565318522c480768056fdd79ad533111a5558766ebe2de2bf92708eb6"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_0_opponent_0/reproduction.json",
+      "bytes": 6835,
+      "sha256": "a3bd499fd06d8b0a2cdbc784fa716cb2387bcabb02c9dab7cb65cc8a6b2a807c"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_0_opponent_0/result.json",
+      "bytes": 3726,
+      "sha256": "e17d368db5e0773c04b818abcdb555e7a44dd725a25cccd60e1b1babfd220d2e"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_0_opponent_1/events.jsonl",
+      "bytes": 14863,
+      "sha256": "7448d9258673148c9bac048c031f4b555845734760eee4e87586eea7e4659b5d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_0_opponent_1/reproduction.json",
+      "bytes": 6833,
+      "sha256": "ca803c99469ee0b164c36afaae4ed59017a8b72b0142eb1ae56467e7f7825d53"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_0_opponent_1/result.json",
+      "bytes": 3723,
+      "sha256": "e6e2047283a1a1542b8db8b9812b601e7c2bd84ab3a016411a7fab13587347c2"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_1_opponent_0/events.jsonl",
+      "bytes": 21975,
+      "sha256": "7a1323a13c40a8bd3b8d5c78e2a8bb034c9d16f8631c668a853caef9213fee96"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_1_opponent_0/reproduction.json",
+      "bytes": 6836,
+      "sha256": "c459fd30984cb112b5d752e5a6e3d1196cdf1df4fa096002395d0c24398b5f06"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_1_opponent_0/result.json",
+      "bytes": 3731,
+      "sha256": "6f906131eb2c8dfe065c3644847ca8d71adcae8ad7dc187e05111842fc0030b8"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_1_opponent_1/events.jsonl",
+      "bytes": 25641,
+      "sha256": "febe737f56aa6b5658ac37f6c0126b2b4b76416f8fc009f148ac51957e4cf9bb"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_1_opponent_1/reproduction.json",
+      "bytes": 6835,
+      "sha256": "6415980d1ea73109d851a5d234bc2162cdcf92ec8edeb8bf41e73309b31fa41d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_1_faction_1_opponent_1/result.json",
+      "bytes": 3728,
+      "sha256": "cc7a3f329233ad7de9e60dc054d071db8ee85c098ea10e78d00bb453d476908a"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_0_opponent_0/events.jsonl",
+      "bytes": 37050,
+      "sha256": "bcb6ca98a358510796d78740b642f625e41ecf3c4f1aa14e317812ab5a2ad695"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_0_opponent_0/reproduction.json",
+      "bytes": 6837,
+      "sha256": "d7ba593081d2d9a93d8bea987ce0cf74fcf59d16072451733ad7b9810c967acb"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_0_opponent_0/result.json",
+      "bytes": 4000,
+      "sha256": "553683309024171588f6d7fcc1a9becd80114409b2e2823fe749bafd84324e33"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_0_opponent_1/events.jsonl",
+      "bytes": 26823,
+      "sha256": "46408dd8f8b3dc6908276501732597c8e3fa698bb6c613e154afbceaa4c7dc5b"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_0_opponent_1/reproduction.json",
+      "bytes": 6834,
+      "sha256": "b542e369c1d6802fe4d6558ae53b4dc21320b3fcde044487e1007462ed515304"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_0_opponent_1/result.json",
+      "bytes": 3994,
+      "sha256": "112bd2a4570b7592497a9fd6c026e959303199a73d813a83ae9a0655f75bb7fa"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_1_opponent_0/events.jsonl",
+      "bytes": 51113,
+      "sha256": "f5f3f1c01260dbb796986f1240afc114c1507f83a1ab8416525a0ddf5aad58d1"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_1_opponent_0/reproduction.json",
+      "bytes": 6839,
+      "sha256": "5b27585a801842a707754d2c7e2a16d921632f8c0a0fbe94c5cf231ffec8bdb5"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_1_opponent_0/result.json",
+      "bytes": 4003,
+      "sha256": "6a2d83f6a70190c9036755efbd732d1bf624e74a52206f8da51f0f1fe7de9d2f"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_1_opponent_1/events.jsonl",
+      "bytes": 30720,
+      "sha256": "14ab520d47db1c9cd20950f08ca27a6caeb1b4136cbeb0f96fb71902b66681dc"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_1_opponent_1/reproduction.json",
+      "bytes": 6834,
+      "sha256": "a53bc3495cbe6d0ccc7dc02b6e22d449934d8451868b443cc12660a1f2f15ae7"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_2_faction_1_opponent_1/result.json",
+      "bytes": 3994,
+      "sha256": "ef057eff47a3b9bb1ed47d6307c3d32586e6ada300d67e486309e27cea0a2849"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_0_opponent_0/events.jsonl",
+      "bytes": 43617,
+      "sha256": "89990508ad8b1c400d9c85116eae8aa0e6c846ca160f576d26b82f31c939c54e"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_0_opponent_0/reproduction.json",
+      "bytes": 6836,
+      "sha256": "bded17ffef2ac9c229af2eaae1db82f751f3d9621d597c0869979869fc9917ba"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_0_opponent_0/result.json",
+      "bytes": 4203,
+      "sha256": "bd480803016bc4c3d260f871d217831540b2916688aed1369da72c92967ee2de"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_0_opponent_1/events.jsonl",
+      "bytes": 28381,
+      "sha256": "35e0b1127971e83a6783390a8d0a8f7ee1ebc9d21174a71a351041fdf0ec213d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_0_opponent_1/reproduction.json",
+      "bytes": 6835,
+      "sha256": "19e5a2c52c74f328cfd7e6f06c46797511510abc2c4ddf550386225dbd2f138d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_0_opponent_1/result.json",
+      "bytes": 3856,
+      "sha256": "5d611d90f317a2d4c77012ab485c0fbf928f75d74cc120ac7d4b2b1f8604e1ab"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_1_opponent_0/events.jsonl",
+      "bytes": 20697,
+      "sha256": "cafa2c43fa45e0b6695edd2899665b0c4902216770b74bb46d6b9ff0e89258a3"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_1_opponent_0/reproduction.json",
+      "bytes": 6836,
+      "sha256": "96acbfce7f9f593cdee034499a387650f3cebba4ed459a06f19c51c0cf7dff96"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_1_opponent_0/result.json",
+      "bytes": 3686,
+      "sha256": "2699452d7e472c5462e9fbc845f8b00feaf8ad376ce459f556c40303ade2a69d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_1_opponent_1/events.jsonl",
+      "bytes": 21601,
+      "sha256": "7ca2c28b676dba28efd63fa57a0e1a2f970ff04a0dc0b42798800e4eaa707b5e"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_1_opponent_1/reproduction.json",
+      "bytes": 6833,
+      "sha256": "027a291eb7e32984beee046f274ea6f02bcb3731d7c57834d080cff6083fd0cc"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_3_faction_1_opponent_1/result.json",
+      "bytes": 3681,
+      "sha256": "94222b12a1da896e09822380380d5e595d0b738af6e7a83318844a816ba1aa6d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_0_opponent_0/events.jsonl",
+      "bytes": 30609,
+      "sha256": "11cfd8530750fc0dc1a3fb52720e1b08fc9e16dc5509499f2065e0367a874567"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_0_opponent_0/reproduction.json",
+      "bytes": 6837,
+      "sha256": "21fce80f96a711c7240c531bd579d7a5ae0b423c8d44affe49e3343f64aeb05e"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_0_opponent_0/result.json",
+      "bytes": 3825,
+      "sha256": "e91591356cd406fd435677eaac8514dbcbdc70fdcedd13e60465257aedd4139c"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_0_opponent_1/events.jsonl",
+      "bytes": 25827,
+      "sha256": "ef7011fe5666e1b84a6ad922d14e7f2947bf8c351baccab89daee1cf14f49a62"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_0_opponent_1/reproduction.json",
+      "bytes": 6834,
+      "sha256": "80fa209d6c586ff9cef58104ddc929478961089981f1d3b8dd90f5f22e2ddda5"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_0_opponent_1/result.json",
+      "bytes": 3821,
+      "sha256": "cffae822f0858a3aab08bc528278b6585af87552784f04f0636e92dd5cc2904b"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_1_opponent_0/events.jsonl",
+      "bytes": 26531,
+      "sha256": "33fb0d604dd2d202f8fca4dadc67e4533d844076156060e8e8c8d356952c3aeb"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_1_opponent_0/reproduction.json",
+      "bytes": 6836,
+      "sha256": "fd12c00cce349d180625eedda5cd0a318e6d807136ff953647aa4fbd07cc8821"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_1_opponent_0/result.json",
+      "bytes": 3822,
+      "sha256": "7428fbfe321751cdcfab07bcd35e14764c54651d7c6a3dbceb966f0fd1b4e8f5"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_1_opponent_1/events.jsonl",
+      "bytes": 23239,
+      "sha256": "0eaeb62dc7c441cfc5754b3028be47bfa46596be19784a6510efbb80852cbda3"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_1_opponent_1/reproduction.json",
+      "bytes": 6835,
+      "sha256": "a3b1a3aa6e5b927073435751af66fb8b41ec439e24ff1bc89adf14f3c16776a3"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/arena_4_faction_1_opponent_1/result.json",
+      "bytes": 3818,
+      "sha256": "2f701c782a4fd12541f860397a56326a6e018cc9880448011172fe7e677e97e2"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/arena_matrix_release/matrix.json",
+      "bytes": 44434,
+      "sha256": "b53f885ef73ea74a20a40403527ddc42e516e448ceebc24857c93913bedec9ea"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/capture_showdown4_stall/result.json",
+      "bytes": 2985,
+      "sha256": "6b21ea806e5fbf32d71a804332255f20bfde2252d67b7c01ae1b573ee963e9ab"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/capture_showdown5_economy/result.json",
+      "bytes": 3327,
+      "sha256": "ac815a98442da0b0a6e414817f50235fa1ed1f5f4aba2c702002125821aec736"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/economy_finish5_native-planner-all/result.json",
+      "bytes": 3713,
+      "sha256": "cb290c46bba144d59ffb203d48309800058c82271eec816535f1c1c136f62d55"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/economy_finish5_tactical-search/result.json",
+      "bytes": 3356,
+      "sha256": "7ff2d9c25c8aaae92f026a8fa1de35c54d5e33269232684ad3f44af408b5e5e4"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown4_capture_right/result.json",
+      "bytes": 2918,
+      "sha256": "5c11e6f9b0afcb6dda39cfa623981fc9f83d97dc4f0893fe356edd7d3c4306c6"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown4_cohesive_left/result.json",
+      "bytes": 2929,
+      "sha256": "5dbeffea7406c444846f3e295fd701d3acb9b22f457e3cb29c02c0a9b7f989c1"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown4_cohesive_right/result.json",
+      "bytes": 2930,
+      "sha256": "741146051882c073c0b69c9db11341bdb5b1996275224e4dd9d7c749f68f0d01"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown4_combat/result.json",
+      "bytes": 2718,
+      "sha256": "326ba33e0287a1003062df2cab66a180523581a72e70f46fa0e501b09b5a11b2"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown4_defensive/result.json",
+      "bytes": 2932,
+      "sha256": "c9e586b52c511010efddc87474164ea82e5b2886109a9117df1001f68f84d9d9"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown4_ranged/result.json",
+      "bytes": 2915,
+      "sha256": "03dac5963638241391b8adecb7e52d052e2f64e68525fb3dc6f9aa29f5ad1d0f"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown4_ranged_economy/result.json",
+      "bytes": 2919,
+      "sha256": "cf606e6f23a408b3a7c16760d319d85dc7cf47ba8360423bb5f9562ad7e82a5f"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown5_aggressive/result.json",
+      "bytes": 3524,
+      "sha256": "6b62e5d8226bb65a7a6d0abf0a85a39304717a74c62d839a0e9099dcb97bc8b1"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown5_baseline/result.json",
+      "bytes": 3516,
+      "sha256": "1a375a5c072727544e9d1bb8838bd8efe0b7b7c1b336e1359a2bdea2866365fb"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/resume_showdown5_combat/result.json",
+      "bytes": 3696,
+      "sha256": "0b55783fb431054632be25a61725bfc6b728f56dd8d3e06dc17df9a3d30ab567"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/retry_showdown4_cohesive_left_18241/result.json",
+      "bytes": 2928,
+      "sha256": "7f3f01456a6bddf0399939f94e47952635cd597303225c4ce5d9893259204fa2"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/retry_showdown4_cohesive_left_18242/result.json",
+      "bytes": 2727,
+      "sha256": "8c5dea818889feef792237f92f52e0e4f60f40cd4e87f4fc7a9ea26e020df978"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/retry_showdown4_cohesive_left_18243/result.json",
+      "bytes": 2933,
+      "sha256": "18c316ce4fd6c2297079a7375afa851eef86ca3dd579df7b443d3c868e51184c"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/retry_showdown4_combat_18241/result.json",
+      "bytes": 2721,
+      "sha256": "30a74dfa9a15adcb408a4e1d3aec22a6c58abb5117e41869027c461d421114eb"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/retry_showdown4_combat_18242/result.json",
+      "bytes": 2721,
+      "sha256": "5272f2a33b28d3460bfdaf53b42cb06a958ba3d3860cd17fd00c9029727e7672"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/retry_showdown4_combat_18243/result.json",
+      "bytes": 2719,
+      "sha256": "cae0b75b460636f13a0c58f6dd059433ab58afca51da078372d67b89b2cc02ae"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/showdown_native-planner-tactical/result.json",
+      "bytes": 2687,
+      "sha256": "b9d7781e896f45fea18ad3c47106e1d1c96cd1b20d3814eeb516203e88a55fe1"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/showdown_tactical-search/result.json",
+      "bytes": 3583,
+      "sha256": "078eae2e166a3cfc3f7ec2fe63991bf269565ff211fd41a7b6fe4a2164c54ad9"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/showdown_v2_aggressive/result.json",
+      "bytes": 3624,
+      "sha256": "1f6c839889009b4cb23b6f8e7f3fb7f9f7a703fce65a38bd3ff80c25b1ce6366"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/showdown_v4_hybrid/result.json",
+      "bytes": 2393,
+      "sha256": "cadc6e6fb60138df5f3ed60dc1e21fd2a42b96407d429f690740a432f0614702"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/showdown_v5_hybrid/result.json",
+      "bytes": 3583,
+      "sha256": "4b1eb39f9d241a0dc7aefada8f83edb071c0c54a5658c33bec5dfd5f378f12aa"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/stall_finish_direct/result.json",
+      "bytes": 2981,
+      "sha256": "2816fb6193a06e414c3a2fd20bbef37dcd71882d802f24861961f39a3cb9e741"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/stall_finish_native-planner-all/result.json",
+      "bytes": 3518,
+      "sha256": "9b1dea175c1f83c1d19e6636736564428cb52d8fda1a90568b2677b3a64988ee"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/v8_capture_showdown5_ready/result.json",
+      "bytes": 3362,
+      "sha256": "2833ac499dcac66ac54d882207c96b0c074160022f685adcd10ac2e36cd3431f"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/v8_finish7_aggressive/result.json",
+      "bytes": 3016,
+      "sha256": "b4c9003a92b33f08e35ebfddc50b470038fb93c4b8c7fa080fcda52372b83cd8"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/v8_finish7_baseline/result.json",
+      "bytes": 3015,
+      "sha256": "ce1ffcfb5fe981b4fb3486d170489419e097a044dc62004930e802f719a5bea1"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/v8_finish7_combat/result.json",
+      "bytes": 3010,
+      "sha256": "8aaa1c869b9c4f390c3edb04ed23fbb1ac08307e40677fa9e312b7cb24991bed"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/v8_ready5_direct/result.json",
+      "bytes": 3322,
+      "sha256": "0e9cb460571315a66aa669e87ec804e8d05677785aabec71799b4e344c4bdb4e"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/v8_ready5_native-planner-all/result.json",
+      "bytes": 3333,
+      "sha256": "6844a51b1445661ba0767e46d177f9abd1ca1b361fb3f846c6b9c394e0fbea37"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/development/v8_stall_finish4/result.json",
+      "bytes": 3184,
+      "sha256": "3c54dd27abff32f838928e59090e7bc03f0808133ce095129f95d01430307dc7"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/full_showdown_v9/events.jsonl",
+      "bytes": 635156,
+      "sha256": "67aa663d5976cb5e3d2e1a0f6d1447ab99b27ebd3b889fca06ca3af69c8a7f44"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/full_showdown_v9/reproduction.json",
+      "bytes": 9096,
+      "sha256": "b59432bb6ae0f56e5eb3226a86f166ca20e024819e9fa7a24eb858f6078a596d"
+    },
+    {
+      "path": "native/research/playthrough_validation/mode_completion/full_showdown_v9/result.json",
+      "bytes": 4187,
+      "sha256": "1f42f470d3785331d1cc910c921013faa1f29cd861959f91f374194d0235cbeb"
     },
     {
       "path": "native/research/playthrough_validation/story_completion/CHECKPOINT_BUILD.json",
@@ -2461,6 +3047,66 @@
       "path": "native/research/sprite_validation/original_render_setup.json",
       "bytes": 11820,
       "sha256": "082428b9f9e232141b4eaa8753015f7a3897e2d6bd650e945528bf5abce25074"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/MANIFEST.json",
+      "bytes": 3428,
+      "sha256": "d8eedcf699b6cd7cbbba2957d3308070f93b11500e1b0c66e446b1394b036504"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/README.md",
+      "bytes": 14258,
+      "sha256": "66f7ea1a304a4606fd374ca6d3af5d1dbe1e7b0c7826cb23fc1b437eeead1216"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/fixtures/g1/SupportPresentation.hpp",
+      "bytes": 2914,
+      "sha256": "b160796eb7a87f8d0c7bdf6f1d3f3aa9d201cd13ed4a6c3e0da0f89724bd55df"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/fixtures/support_presentation_fixture.hpp",
+      "bytes": 39881,
+      "sha256": "93a72468d2daffe8a5c23a63180a0f6ab13584183083d0c78b08c581ab79338c"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/fixtures/support_presentation_test.cpp",
+      "bytes": 2825,
+      "sha256": "14babc1219ee73d11bf772b18d6280f3302d61959faaf0d752d7f6ed9132a4e6"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/oracles/support_animation_oracle.py",
+      "bytes": 10492,
+      "sha256": "e563061041b29cb5f6268830a638fc8737566c6d425d4c488bfa0462f6696f7b"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/oracles/support_palette_oracle.py",
+      "bytes": 8993,
+      "sha256": "6f75ebdd8c8a66859d928148823f43a6069776a0f9c572d43162504eafb10df4"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/oracles/support_presentation_oracle.py",
+      "bytes": 8567,
+      "sha256": "fb43f1d089b2d8b8bf2d7455ca9aba2954e06d3d91ead1799e0d5a674c6f93f7"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/results/native_phase_test.json",
+      "bytes": 112,
+      "sha256": "2b4c40c126452ab029836e6c49e897a5989060e209ddf41ff0560dce63908825"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/results/original_support_animation.json",
+      "bytes": 125257,
+      "sha256": "30b8166aa8bfbd9f203a9db7ad67c0ebb4d8b01ed63990068934ad2e6cd6cf28"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/results/original_support_palette.json",
+      "bytes": 7792,
+      "sha256": "6a308d235575f9f568787f0e4bea3d5c1e356ea959877362438af624969ed231"
+    },
+    {
+      "path": "native/research/support_presentation_recovery/results/original_support_presentation.json",
+      "bytes": 449361,
+      "sha256": "44053b2e80f8e876188df02554a8aecb1662526e61141525ec4b2181e3f7dbbb"
     },
     {
       "path": "native/research/terrain_validation/TERRAIN_CHECKPOINT.json",
@@ -3583,6 +4229,11 @@
       "sha256": "650c57679b3e2570aa796e4330262d1dcd9dc8f5c99adceaae7cfe6810c29c10"
     },
     {
+      "path": "native/tools/session_mode_playthrough_probe.cpp",
+      "bytes": 105997,
+      "sha256": "db9c5f3dec1e09ff28e49315c3f22033c0878c764815399b62b6766e78c9a751"
+    },
+    {
       "path": "native/tools/session_playthrough_probe.cpp",
       "bytes": 98496,
       "sha256": "35fb08a25fff7b0ccf91230418b3b95b1adfbc618a170cdd56a4690c9b369455"
@@ -3626,6 +4277,11 @@
       "path": "validation/APPLE_NATIVE_CORE_BUILD.json",
       "bytes": 2984,
       "sha256": "3e845d2a639bf8da660486cfb10887d0f710db4e1a0e7c55ce27e0bc38ea880c"
+    },
+    {
+      "path": "validation/APPLE_NATIVE_GAME_005.json",
+      "bytes": 6459,
+      "sha256": "17f8bb33743689cb68abfdc3f42fff99a967bccacc5d218c51b57fe99809aad0"
     },
     {
       "path": "validation/APPLE_NATIVE_GAME_005_FIRST_ATTEMPT.json",
@@ -3688,6 +4344,21 @@
       "sha256": "9751fa3f1b88685b5b6239987f1fa3a41f49cefd0f06dfa1164e920fc02f7063"
     },
     {
+      "path": "validation/NATIVE_GAME_005_INDEPENDENT_MODES.json",
+      "bytes": 21959,
+      "sha256": "2c56513a293dfb11d4ca64d4b797134dd7c0bed793907934454ef6e8eb0b7d7d"
+    },
+    {
+      "path": "validation/NATIVE_GAME_005_RESEARCH_REVIEW.json",
+      "bytes": 1003,
+      "sha256": "f491b29c52b6370186df4981acbca4bb542d03a6dd4518f6923a944cc6766c13"
+    },
+    {
+      "path": "validation/NATIVE_GAME_IPA_005.json",
+      "bytes": 6420,
+      "sha256": "a5855a18aee22d70019eadb9640504e2322edb3b3024b9b425ecba1c38cb4f50"
+    },
+    {
       "path": "validation/NATIVE_INTERACTION_HOST_CHECK.json",
       "bytes": 618,
       "sha256": "1ae8365a80a9eca2abe78eebc997e6dad0bc7e6eb276405a14749be7b6925004"
@@ -3748,6 +4419,61 @@
       "sha256": "79a237e3b3b1cf557fdadd44fabc2122abd39f220f805f63120641bd0dbb094b"
     },
     {
+      "path": "validation/build_005_apple/apple-job.log",
+      "bytes": 76364,
+      "sha256": "fe9befb4d74a2012e451c2354b9abf447eb7a0f2345e647f245bde2e0b317ed7"
+    },
+    {
+      "path": "validation/build_005_apple/artifact-metadata.json",
+      "bytes": 756,
+      "sha256": "86b8892654035ccd11cf7c3761dd4d3c37d9eefad9f7575fc1ed17901d066e07"
+    },
+    {
+      "path": "validation/build_005_apple/linux-job.log",
+      "bytes": 50801,
+      "sha256": "6a6bba8697302081cdad29fd317b7d485c793e831feee4b09663d91f0dd928e3"
+    },
+    {
+      "path": "validation/build_005_apple/m3g-metal-report.json",
+      "bytes": 190,
+      "sha256": "a9a8936df4dc91d0c7451f474d1a7e99a6a9b952a3d20a56355c893961cbdc17"
+    },
+    {
+      "path": "validation/build_005_apple/metal-report.json",
+      "bytes": 189,
+      "sha256": "27309d587cd1fbd3c0ca864ee0ad2d2dec5b121bfbb5b4cc3432227fb2081504"
+    },
+    {
+      "path": "validation/build_005_apple/native-app-validation.json",
+      "bytes": 1440,
+      "sha256": "a54ac3c709a7125d69852a79d4515ff7e1166d064a91304b97da839dd012ed38"
+    },
+    {
+      "path": "validation/build_005_apple/native-core-objects.json",
+      "bytes": 14909,
+      "sha256": "991f461af2faa5113bcdb7f91a474df7718d61733490ce28d190eea9493fc3ed"
+    },
+    {
+      "path": "validation/build_005_apple/native-metal-objects.json",
+      "bytes": 740,
+      "sha256": "e6a89bc9e570f03bec635c0a71d59d017ff8fd842e8656d54d5dc4495265cca6"
+    },
+    {
+      "path": "validation/build_005_apple/native-png-objects.json",
+      "bytes": 477,
+      "sha256": "f9da6c89e139699837786cbed4e6b5e5768d066144850308767e49d6df5b553e"
+    },
+    {
+      "path": "validation/build_005_apple/native-vorbis-objects.json",
+      "bytes": 481,
+      "sha256": "97b3785cb347e1ba739ef6a710a0c18096d78fbdc6b64ef059efa832178392fb"
+    },
+    {
+      "path": "validation/build_005_apple/workflow-jobs.json",
+      "bytes": 8663,
+      "sha256": "e37b20ff2f7e2dbb6a8bbdd9acd17bfaf6d47dc4ca818634e90c623e377a1fab"
+    },
+    {
       "path": "validation/build_005_followup/build.log",
       "bytes": 3461,
       "sha256": "18b2ce1823cd7fdc810ac7fcaaf43bc1a5c74cd26dc6a6ce374595e2987f7c03"
@@ -3776,6 +4502,336 @@
       "path": "validation/build_005_followup/story-result.json",
       "bytes": 5166,
       "sha256": "e52174ea93d49e6ee9c2d7756de9e701a323965569825bc8993e7c583f6c356a"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena-matrix.json",
+      "bytes": 41834,
+      "sha256": "a83279e507be83a13a47af1839796da6529f51c6d526c6e4615ecee02f093662"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_0_opponent_0/events.jsonl",
+      "bytes": 39518,
+      "sha256": "a3adee66f373b29d80d96b8bdc3e174ba9f20b5aaef903b54cca32350f8afc11"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_0_opponent_0/reproduction.json",
+      "bytes": 6507,
+      "sha256": "8e22204d73ec319d4ab65c79767b019c0362a264ec4b074570878c3f8964c78e"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_0_opponent_0/result.json",
+      "bytes": 3808,
+      "sha256": "6da318a142b1b3bf3091e3f39bb869c5f2b35c80ac4477d734607d5c03f536c7"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_0_opponent_1/events.jsonl",
+      "bytes": 26600,
+      "sha256": "f5e74125695982805f4b59ed091ba820880dc97e05ea4460e620b5133ea7fe48"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_0_opponent_1/reproduction.json",
+      "bytes": 6503,
+      "sha256": "399fe108da5eb7663e2d21d0c0cbbda871a784e585df4d9b9bce0b3cff513b6b"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_0_opponent_1/result.json",
+      "bytes": 3802,
+      "sha256": "f6393a989c405017084da582dc13d6f72f3067ef88f906fbb1191034a4809662"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_1_opponent_0/events.jsonl",
+      "bytes": 37235,
+      "sha256": "0a9f9dd20849c648dfe3d5d7564add64336f01b911a59efb14afdb2082d85f78"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_1_opponent_0/reproduction.json",
+      "bytes": 6507,
+      "sha256": "30eadfaff00996a5fc039607ec382810bef02bdda1accbede37129aed914cb10"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_1_opponent_0/result.json",
+      "bytes": 3808,
+      "sha256": "7acbbc7d515d6a9241d78fb5b50e67ec6f45de6e3c6008899e6fc3d5058931d5"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_1_opponent_1/events.jsonl",
+      "bytes": 23793,
+      "sha256": "377b23ddd0025eaa478792352d48868eaa95ba328dc140242db007ed2a7997bb"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_1_opponent_1/reproduction.json",
+      "bytes": 6504,
+      "sha256": "b77f4b793973fea64ecb05644f93685700e8bf002076b6c93e364beab19048cd"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_0_faction_1_opponent_1/result.json",
+      "bytes": 3803,
+      "sha256": "5eb20613597a8fe8df79ecdae5e8eb35f62468e3d4f5d756c49aed6e0d7469d9"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_0_opponent_0/events.jsonl",
+      "bytes": 16133,
+      "sha256": "87e4452bb053c5c62e55c59c978247b2244f5023fabfbb74d15d74ed8bd3fc1b"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_0_opponent_0/reproduction.json",
+      "bytes": 6504,
+      "sha256": "dd9edc5b4aa7a574b326428595a4658ec9c8b69378abd4ac389499aa5ef8cdc6"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_0_opponent_0/result.json",
+      "bytes": 3674,
+      "sha256": "b749a96b6c46d2478d9bcdbfa7d92f61e0ec568ad888a393d1922f024ab6c792"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_0_opponent_1/events.jsonl",
+      "bytes": 14811,
+      "sha256": "13a1fb9134dc8faceef26ba6283601c4b7edf528438fee5f487fbc06b25d440a"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_0_opponent_1/reproduction.json",
+      "bytes": 6502,
+      "sha256": "204222d3613228b6038f607db1fb10e8e7869e6f5462ced182b618b875dcdb2f"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_0_opponent_1/result.json",
+      "bytes": 3671,
+      "sha256": "6f1cca571d3eac75aa403ea1194792f653190b319e032e5fc84a9193a4474960"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_1_opponent_0/events.jsonl",
+      "bytes": 21923,
+      "sha256": "60788c63cfd4f7c68354c8df79a1eb6c030ec80185baba974eac3d60632d4817"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_1_opponent_0/reproduction.json",
+      "bytes": 6505,
+      "sha256": "012e39beec6d7315ff417b1280e58571bcd142e818f6e05b2eb338e10cfe3534"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_1_opponent_0/result.json",
+      "bytes": 3678,
+      "sha256": "1b940b730182626ea11dbb7094bebfe5c3b0127e45456b44277b19f9e3405d91"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_1_opponent_1/events.jsonl",
+      "bytes": 25589,
+      "sha256": "e765d2f13df64fff541eba460e3bfd67db371971717f061451538906a34fa504"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_1_opponent_1/reproduction.json",
+      "bytes": 6504,
+      "sha256": "b5e932cd3c674f7ec541a60cdd3805e47b3ccb8479c1fc82b896b28d941e72c0"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_1_faction_1_opponent_1/result.json",
+      "bytes": 3676,
+      "sha256": "73dfcf86126b2aef9668a224ebe9e6f50a07e33ebe755ddfdd38bae2f27d8a68"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_0_opponent_0/events.jsonl",
+      "bytes": 36998,
+      "sha256": "47ca47ec01650367b94effc547b9991f6982aae192dfa6aaf4406624a2b2e6ba"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_0_opponent_0/reproduction.json",
+      "bytes": 6506,
+      "sha256": "54733934eb70de4c9dfa5c3e18e8557d6db8bd0bf88cfb6edefe574f0ee9ea37"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_0_opponent_0/result.json",
+      "bytes": 3947,
+      "sha256": "d2f14b8c5e19a31ea5de8fbe33c0e454f60377c655356f82bb492d66ff5a50e5"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_0_opponent_1/events.jsonl",
+      "bytes": 26771,
+      "sha256": "0abe22cc605d76ca8dfed6008a6d451b2834afef055b8dba51c791fcf8a8d389"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_0_opponent_1/reproduction.json",
+      "bytes": 6503,
+      "sha256": "63a21d69560085836f3fee1fced70a766727d209969740cf18f5ab096797caf6"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_0_opponent_1/result.json",
+      "bytes": 3942,
+      "sha256": "1e646cb946f3c867b82e70c2b356ce9cec0bcd914fcdaa16c94915177b2073d8"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_1_opponent_0/events.jsonl",
+      "bytes": 51061,
+      "sha256": "05c22d99c47e13200016cf7024bee143bdeec871e761192c8a2f733bc0eb1184"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_1_opponent_0/reproduction.json",
+      "bytes": 6508,
+      "sha256": "565f9efc7034c222121d3866dfae60130f88e526e0a5c480eafe4151d4cf3beb"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_1_opponent_0/result.json",
+      "bytes": 3951,
+      "sha256": "43e34427429a6dd8a3a9a5399bd56384e14426eb16365f3ae9339932b0609b4d"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_1_opponent_1/events.jsonl",
+      "bytes": 30668,
+      "sha256": "fa625299d316fb3a4bc7fe23f581cf8af611914c84bdbb4ce1a939415635dc84"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_1_opponent_1/reproduction.json",
+      "bytes": 6503,
+      "sha256": "699b9f163983bf839cc0eb3ade9852e23ffe71333a44964bdcb5e84ff894d209"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_2_faction_1_opponent_1/result.json",
+      "bytes": 3942,
+      "sha256": "33e0502a4fd7c353acc495b18be68da89cd90ed4d869b8dc7ee2e6326ab56ba8"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_0_opponent_0/events.jsonl",
+      "bytes": 43565,
+      "sha256": "7060ec8b7109363b5e0eb6ac37f91250f8416bb6ca05cab6fa6135ee932bc30f"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_0_opponent_0/reproduction.json",
+      "bytes": 6505,
+      "sha256": "8ac097fcfabb98a959c95ac6d41fc46ccfa83341de6541654e4f8634d0a33c90"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_0_opponent_0/result.json",
+      "bytes": 4151,
+      "sha256": "8ac57c8d17d50fa569f81f6be7da1571e1e9bfdebda4f2ebcedf3fcae8554783"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_0_opponent_1/events.jsonl",
+      "bytes": 28329,
+      "sha256": "2a06ef1a518566fe54e86f8f42e09854200adca63a62439a71cc8c136b0a5ccc"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_0_opponent_1/reproduction.json",
+      "bytes": 6504,
+      "sha256": "10e7de303efcc1280a9b319f93c6a06c3fae36dded3c161cbae8ec677d9543fd"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_0_opponent_1/result.json",
+      "bytes": 3805,
+      "sha256": "1cbf5e25036fed93ab2be095a4ed1089819a5291b6e8d174da61302d3cc1f096"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_1_opponent_0/events.jsonl",
+      "bytes": 20645,
+      "sha256": "1731645ed0cfd25af00e574c4b8b4c6aedcfab7b00a3dff1ba6014f609d617b0"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_1_opponent_0/reproduction.json",
+      "bytes": 6505,
+      "sha256": "c1162183f5832dcd2952795e01e7214020386de485a048eb4cac5f1ae5f38234"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_1_opponent_0/result.json",
+      "bytes": 3634,
+      "sha256": "2cf27d42b66e04a1120d8dd3476097c0d4650ffb5ffc2d718f3062ec34372062"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_1_opponent_1/events.jsonl",
+      "bytes": 21549,
+      "sha256": "1cd5d4676a53a1053b2b13aea894c846b8138f7869a17076ec3b09e35d853b5b"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_1_opponent_1/reproduction.json",
+      "bytes": 6502,
+      "sha256": "0a65daa5e42229489595f9e1f92a1e87911efb96d57dc4b8f9c112d8085c6285"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_3_faction_1_opponent_1/result.json",
+      "bytes": 3628,
+      "sha256": "e9385a2e0efddf21ee7cacd971c711aec2ea22822dd1f62aae4c762e1110e9f8"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_0_opponent_0/events.jsonl",
+      "bytes": 30557,
+      "sha256": "7cee40b3a67e419bcb917035ccda5056803e56370dc18474b77bd2540b6d783c"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_0_opponent_0/reproduction.json",
+      "bytes": 6506,
+      "sha256": "fa3bef85c94d546d0f4b97258bddecb24f39ab75250ba2531989df38a175078a"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_0_opponent_0/result.json",
+      "bytes": 3775,
+      "sha256": "029c3e5d66ec520bc136d388dc0ff91bc6aec5d6de46051cc20d764f6eb4fe7b"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_0_opponent_1/events.jsonl",
+      "bytes": 25775,
+      "sha256": "7349d3afc409c20624ad0b046f74404c4f454959351bf70a17deb91d13fb6af4"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_0_opponent_1/reproduction.json",
+      "bytes": 6503,
+      "sha256": "47c3999696eb44105446803faf3654e9d0d47eb94fb2250ff05ae9f1c3b16a42"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_0_opponent_1/result.json",
+      "bytes": 3768,
+      "sha256": "f19f14b239425fdd7002226e141cf96db5e44ea6a254a77169ac4fc9ed49b7db"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_1_opponent_0/events.jsonl",
+      "bytes": 26479,
+      "sha256": "c572c7bb2ce2cc14a4b9660f9835ee7d486202dcd3292c776ee08f69e52ab463"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_1_opponent_0/reproduction.json",
+      "bytes": 6505,
+      "sha256": "e7235d0af79c1ecf540969ad5045fb5eb4ddef22f5a217f56029f0453ca4a8b3"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_1_opponent_0/result.json",
+      "bytes": 3770,
+      "sha256": "4cbf5b5c7fced32b4ddba570f36eed050b4c9c9e1291066a0e7b27c977825381"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_1_opponent_1/events.jsonl",
+      "bytes": 23187,
+      "sha256": "3a9bbe998fd0f846ded57bae04b25433c007b3c2169c9160479ad2947d2dc51e"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_1_opponent_1/reproduction.json",
+      "bytes": 6504,
+      "sha256": "faed42b87372a5ba78585b11d99d75248f9506bfd61ad631d7acf57828e1abf3"
+    },
+    {
+      "path": "validation/build_005_independent_modes/arena_4_faction_1_opponent_1/result.json",
+      "bytes": 3766,
+      "sha256": "b25aac18d5db58e2bf7f020c0ee0fd46da1fcc47c8346fae5e53f4f11bfc6b6a"
+    },
+    {
+      "path": "validation/build_005_independent_modes/build.log",
+      "bytes": 5163,
+      "sha256": "15d0826926e96c67562a673aad227cd917d98a88159b357c2e36bd54759a6592"
+    },
+    {
+      "path": "validation/build_005_independent_modes/configure.log",
+      "bytes": 451,
+      "sha256": "6534f88d8cd975e09e89c885be75b55270ac1e1789bcd032b0e1d554d32d3f7c"
+    },
+    {
+      "path": "validation/build_005_independent_modes/showdown/events.jsonl",
+      "bytes": 635089,
+      "sha256": "da843d18348b44bd57d8e130a63ca0579b1c294088f998f5bc9748b5ebda27e7"
+    },
+    {
+      "path": "validation/build_005_independent_modes/showdown/reproduction.json",
+      "bytes": 8794,
+      "sha256": "9de7709c6fab029c8df768ae73b8568afb27df500899cb67a65ed40a1226d652"
+    },
+    {
+      "path": "validation/build_005_independent_modes/showdown/result.json",
+      "bytes": 4120,
+      "sha256": "e9e109e093c36c029a3e3ff8590e525e38bca1cea151a8e2071d8bcbe7df09f7"
     },
     {
       "path": "validation/native_workflow_local_validation.json",

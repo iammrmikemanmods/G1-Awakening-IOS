@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_utc": "2026-10-26T17:21:14.932766+00:00",
+  "updated_utc": "2026-10-26T17:32:14.969388+00:00",
   "goal": {
     "game": "Transformers G1 Awakening 1.1.3",
     "device": "iPhone XR",
@@ -24,20 +24,20 @@
   "source_ipa_sha256": "b24fbe5cc4d5cb603189a476c4f81dd2a6ecc18b025eae913262055a7fc443fd",
   "native_implementation": {
     "archive_reader": "Implemented; all 559 payload hashes match.",
-    "m3g_container": "All 36 container inventories match. Ordinary battle assets now connect native rigid/Sprite3D geometry, animation, materials, cameras, effects and ordered Metal submissions; Apple/device output pending.",
+    "m3g_container": "All 36 container inventories match. Ordinary battle models, rigid/Sprite3D geometry, animation, materials, cameras, effects and ordered Metal submissions are connected. The app and exact runtime shader compile for iPhoneOS; synthetic M3G Metal pixels pass on the hosted Apple GPU. Actual game-scene GPU/device output remains unverified.",
     "mission_stream": "All 30 streams / 803 commands decoded; general typed world commands, objectives and campaign handoff execute in the live native session.",
     "movement_rules": "Movement/arrival/capture/transform and transform-aware Undo with exact friendly-selection locks, human production and carrier/tape actions connected.",
     "tactical_renderer": "All 21 map/style pairs and 23 unit descriptors load. All three terrain styles now own their decorative simulation/RNG in GameSession; host reads geometry only. Physical and original-artwork/camera fidelity pending.",
     "combat": "Native combat rules feed actual resolved exchanges into the original M3G ordinary battle controller and asset graph. Natural completion waits for matching successful Metal presentation and HUD draw. Earlier tactical support-fire sequence remains.",
-    "ai": "Continuous native AI production/movement/attack/capture/heal and turn loop connected; complete headless Story path verified. Device and broader mode coverage remain.",
+    "ai": "Continuous native AI production/movement/attack/capture/heal and turn loop connected. Complete headless Story/Showdown paths and all20 Arena configurations verified;10 Arena configurations use human commands for both players. Device and wider choice coverage remain.",
     "native_saves": "Format3 persists complete gameplay, shared RNG, style1 pools and style0/2 sprite playback/attachments. 74 actual-file/session checks and 45 actual mission-entry cold round trips pass; XR lifecycle testing pending.",
     "audio": "Original dispatcher, all 24 decoded Vorbis resources, native AVAudioEngine, battle event cues and exact active map/battle/menu music maintenance connected. Remaining sound-event coverage and actual device output require verification.",
-    "campaign_execution": "Fresh legal-command native host pilot completes all 17 Story missions in order and reaches the campaign ending, with 17 checked profile-file writes and 797 in-memory replay checkpoint matches. Game rules are unchanged; presentation acknowledgements are synthetic. Showdown/Arena completion and rendered/device playthrough remain separate.",
+    "campaign_execution": "Fresh legal-command headless runs complete all17 Story and all8 Showdown missions, reach both native campaign endings and unlock Arena through genuine profile writes. All20 Arena map/faction/opponent configurations finish normally;11 player0 and9 player1 wins. Game rules are unchanged and all presentation acknowledgements are synthetic. Rendered/device completion remains separate.",
     "sprite_descriptors": "Original geometry, normalized UV, type factory, initial placement/model transform and millisecond animation implemented",
     "world_bootstrap": "All 30 mission scripts and 45 mode/faction/opponent entries reach first objectives. Both terrain initialization stages execute before following unit spawns; all styles retain the shared RNG.",
     "png_decoder": "Native LodePNG;140sourceimages/12222652RGBAbytes match Pillow",
     "sprite_animation": "1616original-function cases/124432scalar comparisons pass; full gameplay timing unverified",
-    "mission_continuation": "Typed world mutations, objective/results flow, checked profile/handoff and ordinary 3D battle presentation connected. Full continuous campaign/mode and device coverage remains.",
+    "mission_continuation": "Typed world mutations, objective/results flow, checked profile/handoff and ordinary3D battle presentation connected. Headless Story/Showdown endings and all20 Arena menu handoffs verified. Original output fidelity and physical-device completion remain.",
     "localization": "All511 original UTF8 strings decoded; all486 script indices in both variants checked against original mapper"
   },
   "release_gates": {
@@ -52,11 +52,12 @@
     "native_scene_app_apple_compile": true,
     "native_scene_ipa_packaged": true,
     "native_gpu_probe_passed": true,
-    "current_checkpoint_apple_compile": false,
-    "current_m3g_gpu_pixels_verified": false
+    "current_checkpoint_apple_compile": true,
+    "current_m3g_gpu_pixels_verified": true,
+    "native_game_test_ipa_packaged": true
   },
-  "ci_scope": "Native ARM64 app and exact runtime shader compilation, 55 portable suites on Linux/Apple ARM64, actual filesystem/campaign checks and tactical/M3G GPU probes. Follow-up Apple run required after first camera-fixture failure; physical XR acceptance remains.",
-  "completion_eta": "Not established. Updated hosted Apple validation and package creation are in progress; remaining presentation/sound and physical-device acceptance still apply.",
+  "ci_scope": "Commit083057b passes all55 portable suites on both Linux and Apple ARM64, iPhoneOS ARM64 app compilation, exact runtime shader compilation,6 tactical and12 M3G offscreen Metal pixel checks. Physical XR execution is not covered.",
+  "completion_eta": "Build005 IPA is available for Sideloadly testing. A full-game completion date remains unestablished while original presentation/sound gaps and physical-device acceptance remain.",
   "retired_approach": {
     "archive_branch": "archive/compatibility-experiment",
     "workflow_run_id": 40268562956,
@@ -122,7 +123,17 @@
     "music_maintenance_original_cases": 1280,
     "music_maintenance_scalar_comparisons": 2752,
     "menu_music_original_cases": 10608,
-    "menu_music_scalar_comparisons": 17392
+    "menu_music_scalar_comparisons": 17392,
+    "consecutive_showdown_successes": 8,
+    "continuous_showdown_profile_file_writes": 8,
+    "continuous_showdown_checkpoint_file_checks": 8,
+    "continuous_showdown_in_memory_checkpoint_comparisons": 643,
+    "full_headless_showdown_completed": true,
+    "arena_configurations_finished": 20,
+    "arena_player_zero_wins": 11,
+    "arena_player_one_wins": 9,
+    "mode_completion_report": "native/research/COMPLETE_MODES_HEADLESS.json",
+    "independent_mode_replay": "validation/NATIVE_GAME_005_INDEPENDENT_MODES.json"
   },
   "prior_native_cloud_validation": {
     "source_commit": "7a041985e331696ac174d094bd2a67b1e32e6ab6",
@@ -145,7 +156,7 @@
     "metal_device": "Apple Paravirtual device",
     "iphone_execution_verified": false,
     "ipa_produced_locally": false,
-    "scope": "Successful prior interaction checkpoint at 5795315 only; current continuous gameplay/resume/M3G battle additions await publication and new Apple validation."
+    "scope": "Historical successful interaction checkpoint5795315; superseded for the current native game by current_campaign_cloud_validation."
   },
   "source_pc_reference": {
     "uploaded_exe_sha256": "50dd5702e6cf6c0e79ec26757f84934c210be4576ff85a1d4d7303749b2e9cd7",
@@ -154,7 +165,7 @@
     "recovered_native_gameplay_source": false,
     "report": "analysis_tools/pc_reference/UPLOADED_PC_AUDIT.json"
   },
-  "next_work": "Run the reviewed follow-up Apple gates, fix concrete failures and package matching ARM64 code with the local original assets. Complete remaining support-fire/presentation/sound coverage, Showdown/Arena paths and actual XR full-playthrough/save-resume/60-Hz checks.",
+  "next_work": "Test build005 on the physical XR: installation, real rendering/input/audio, save/relaunch Continue, battle return and sustained frame pacing. Complete remaining tactical support percentage presentation, original UI/artwork/camera and sound-event coverage; record rendered campaign and Arena playthrough evidence.",
   "native_scene_test_ipa": {
     "file_name": "G1_Awakening_Native_Scene_Test_002.ipa",
     "bytes": 7106909,
@@ -202,6 +213,63 @@
     "scope": "Earlier component checkpoint; new touch/battle/audio app compilation is not covered."
   },
   "current_campaign_cloud_validation": {
+    "status": "success",
+    "published_source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+    "run_id": 40368043701,
+    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701",
+    "iphoneos_arm64_app_compiled": true,
+    "iphoneos_runtime_shader_compiled": true,
+    "linux_host_test_passes": 55,
+    "linux_host_test_total": 55,
+    "apple_host_test_passes": 55,
+    "apple_host_test_total": 55,
+    "tactical_metal_pixel_checks": 6,
+    "m3g_metal_pixel_checks": 12,
+    "gpu_device": "Apple Paravirtual device",
+    "gpu_checks_skipped": false,
+    "device_tested": false,
+    "validation": "validation/APPLE_NATIVE_GAME_005.json"
+  },
+  "validation_layers": {
+    "native_core_changed_state_save_reload": true,
+    "native_core_terrain_combat_resume_continuation": true,
+    "actual_device_changed_state_save_reload": false,
+    "full_campaign": false,
+    "native_core_terrain_all_styles_resume": true,
+    "native_battle_controller_original_vectors": true,
+    "native_battle_actual_session_cpu_integration": true,
+    "native_battle_metal_execution": true,
+    "native_story_continuous_successes": 17,
+    "native_story_full_completion": true,
+    "native_story_full_completion_scope": "Headless legal-input run with synthetic presentation; no physical device claim.",
+    "mission_battle_music_original_policy": true,
+    "menu_music_original_policy": true,
+    "native_battle_metal_execution_scope": "12 synthetic M3G mesh/Sprite3D pixel cases; original assets and the whole game have not been rendered on a physical device.",
+    "native_showdown_full_completion": true,
+    "native_arena_configuration_finishes": 20,
+    "native_other_modes_completion_scope": "Headless public-input native runs with synthetic world/battle/dialogue/results presentation; no physical device claim."
+  },
+  "publication_history": [
+    {
+      "action": "Earlier GitHub create_commit",
+      "outcome": "user rejected MCP tool call",
+      "branch_updated": false
+    },
+    {
+      "action": "Publication after user Resume",
+      "outcome": "success",
+      "commit": "c75306907ecea8f2fb1926a5ba3228e3094a0fdf"
+    },
+    {
+      "action": "Corrected native build publication",
+      "outcome": "success",
+      "commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+      "apple_run": 40368043701,
+      "ipa_packaged": true
+    }
+  ],
+  "release_gate_scope": "Physical-device release gates remain false until observed on iPhone XR; separate packaged/build and headless checks do not satisfy those gates.",
+  "previous_campaign_cloud_validation": {
     "status": "followup_prepared_after_first_apple_test_failure",
     "published_source_commit": "c75306907ecea8f2fb1926a5ba3228e3094a0fdf",
     "run_id": 40365634564,
@@ -215,31 +283,26 @@
     "new_run_submitted": true,
     "device_tested": false
   },
-  "validation_layers": {
-    "native_core_changed_state_save_reload": true,
-    "native_core_terrain_combat_resume_continuation": true,
-    "actual_device_changed_state_save_reload": false,
-    "full_campaign": false,
-    "native_core_terrain_all_styles_resume": true,
-    "native_battle_controller_original_vectors": true,
-    "native_battle_actual_session_cpu_integration": true,
-    "native_battle_metal_execution": false,
-    "native_story_continuous_successes": 17,
-    "native_story_full_completion": true,
-    "native_story_full_completion_scope": "Headless legal-input run with synthetic presentation; no physical device claim.",
-    "mission_battle_music_original_policy": true,
-    "menu_music_original_policy": true
+  "native_game_test_ipa": {
+    "file_name": "G1_Awakening_Native_Game_Test_005.ipa",
+    "bytes": 7572942,
+    "sha256": "92988b5eedb10149f1863fe3cb4a5ac2799c0fe7a0e946901bfa0fca4b028563",
+    "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+    "version": "0.5.0",
+    "build": 5,
+    "signed": false,
+    "requires_sideloadly_signing": true,
+    "contains_compatibility_runtime": false,
+    "contains_original_executable": false,
+    "device_installation_verified": false,
+    "full_gameplay_implemented": false,
+    "full_playthrough_verified": false,
+    "validation": "validation/NATIVE_GAME_IPA_005.json"
   },
-  "publication_history": [
-    {
-      "action": "Earlier GitHub create_commit",
-      "outcome": "user rejected MCP tool call",
-      "branch_updated": false
-    },
-    {
-      "action": "Publication after user Resume",
-      "outcome": "success",
-      "commit": "c75306907ecea8f2fb1926a5ba3228e3094a0fdf"
-    }
-  ]
+  "research_not_in_shipped_ipa": {
+    "support_phase_and_clock": "native/research/support_presentation_recovery/README.md",
+    "v1_overlay_and_resource_mapping": "native/research/overlay_validation/README.md",
+    "publication_path_review": "validation/NATIVE_GAME_005_RESEARCH_REVIEW.json",
+    "production_integration": false
+  }
 }

@@ -1,0 +1,17 @@
+{
+  "archive": "build/iphoneos/libg1_vorbis.a",
+  "sha256": "2d4a1ab64496165f988403292a75daabdd8f12b7e33cc66727ed42d18870fce5",
+  "object_count": 1,
+  "objects": [
+    {
+      "member": "stb_vorbis.c.o",
+      "sha256": "08fcd8c19c03f085d6cbb2aa46dbb4d359b90806e96c8fd0bca526cef808639c",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    }
+  ],
+  "playable_app": false,
+  "device_execution_verified": false
+}

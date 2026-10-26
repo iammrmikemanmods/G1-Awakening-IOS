@@ -1,0 +1,30 @@
+{
+  "architecture": "arm64",
+  "executable_sha256": "6616f178dfd6ea52d79a90e59f5ca4475ceeb0168c6667e6a38de2bad2772316",
+  "executable_bytes": 1528144,
+  "system_dependencies": [
+    "/System/Library/Frameworks/UIKit.framework/UIKit",
+    "/System/Library/Frameworks/MetalKit.framework/MetalKit",
+    "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+    "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+    "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+    "/usr/lib/libz.1.dylib",
+    "/System/Library/Frameworks/Foundation.framework/Foundation",
+    "/System/Library/Frameworks/Metal.framework/Metal",
+    "/usr/lib/libc++.1.dylib",
+    "/usr/lib/libSystem.B.dylib",
+    "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+    "/usr/lib/libobjc.A.dylib"
+  ],
+  "platform": "iPhoneOS",
+  "minimum_os": "17.5",
+  "sdk_encoded": 1705216,
+  "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+  "bundle_identifier": "org.g1awakening.native.test",
+  "version": "0.5.0",
+  "artifact_kind": "Native campaign integration test",
+  "feature_scope": "Native tactical gameplay, continuous turns, campaign and checkpoint restore, original animated M3G battle integration; full playthrough, original output fidelity and physical iPhone XR validation remain outstanding",
+  "original_assets_bundled": false,
+  "device_execution_verified": false,
+  "full_playthrough_verified": false
+}

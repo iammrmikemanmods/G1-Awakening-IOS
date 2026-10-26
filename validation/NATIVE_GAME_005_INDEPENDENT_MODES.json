@@ -1,0 +1,545 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-26T17:36:43.059589+00:00",
+  "compiled_ipa_source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+  "host_target": "g1_session_mode_playthrough_probe",
+  "host_tool_source_sha256": "db9c5f3dec1e09ff28e49315c3f22033c0878c764815399b62b6766e78c9a751",
+  "host_executable_sha256": "d845a480b543c6ff47632a04774e67f0ed50f5ff2898b3a4235b949cc077056a",
+  "runtime_sources_equal_compiled_ipa_snapshot": true,
+  "build_command": "cmake -S native -B /tmp/g1_native_005_mode_verify -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON; cmake --build /tmp/g1_native_005_mode_verify --target g1_session_mode_playthrough_probe --parallel 2",
+  "source_story_profile_sha256": "bc7f1b4d472ed8f41937d563663ebd273f91d597d8b7e0f605395c529efd6a56",
+  "completed_profile_sha256": "eaeffce146ffc4a2bd508fa6a33f9f337f1ca7ece340bda31ef87ab135dd9a85",
+  "fresh_showdown_successes": 8,
+  "arena_finishes": 20,
+  "arena_winners": {
+    "1": 9,
+    "0": 11
+  },
+  "configurations": [
+    {
+      "configuration": "showdown",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 5915,
+      "profile_file_writes": 8,
+      "entry_checkpoint_file_checks": 8,
+      "synthetic_battle_acknowledgements": 228
+    },
+    {
+      "configuration": "arena_0_faction_0_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 1095,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 24
+    },
+    {
+      "configuration": "arena_0_faction_0_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 902,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 18
+    },
+    {
+      "configuration": "arena_0_faction_1_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 1054,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 23
+    },
+    {
+      "configuration": "arena_0_faction_1_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 721,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 19
+    },
+    {
+      "configuration": "arena_1_faction_0_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 274,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 15
+    },
+    {
+      "configuration": "arena_1_faction_0_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 249,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 16
+    },
+    {
+      "configuration": "arena_1_faction_1_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 399,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 15
+    },
+    {
+      "configuration": "arena_1_faction_1_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 472,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 25
+    },
+    {
+      "configuration": "arena_2_faction_0_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 881,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 17
+    },
+    {
+      "configuration": "arena_2_faction_0_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 958,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 14
+    },
+    {
+      "configuration": "arena_2_faction_1_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 1132,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 37
+    },
+    {
+      "configuration": "arena_2_faction_1_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 997,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 22
+    },
+    {
+      "configuration": "arena_3_faction_0_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 379,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 42
+    },
+    {
+      "configuration": "arena_3_faction_0_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 543,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 22
+    },
+    {
+      "configuration": "arena_3_faction_1_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 324,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 14
+    },
+    {
+      "configuration": "arena_3_faction_1_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 392,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 17
+    },
+    {
+      "configuration": "arena_4_faction_0_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 879,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 13
+    },
+    {
+      "configuration": "arena_4_faction_0_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 936,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 14
+    },
+    {
+      "configuration": "arena_4_faction_1_opponent_0",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 772,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 13
+    },
+    {
+      "configuration": "arena_4_faction_1_opponent_1",
+      "all_semantic_result_fields_match": true,
+      "excluded_path_or_elapsed_fields": [
+        "initial_profile",
+        "wall_seconds"
+      ],
+      "ticks": 856,
+      "profile_file_writes": 1,
+      "entry_checkpoint_file_checks": 1,
+      "synthetic_battle_acknowledgements": 13
+    }
+  ],
+  "evidence": {
+    "validation/build_005_independent_modes/showdown/result.json": {
+      "bytes": 4120,
+      "sha256": "e9e109e093c36c029a3e3ff8590e525e38bca1cea151a8e2071d8bcbe7df09f7"
+    },
+    "validation/build_005_independent_modes/showdown/reproduction.json": {
+      "bytes": 8794,
+      "sha256": "9de7709c6fab029c8df768ae73b8568afb27df500899cb67a65ed40a1226d652"
+    },
+    "validation/build_005_independent_modes/showdown/events.jsonl": {
+      "bytes": 635089,
+      "sha256": "da843d18348b44bd57d8e130a63ca0579b1c294088f998f5bc9748b5ebda27e7"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_0_opponent_0/result.json": {
+      "bytes": 3808,
+      "sha256": "6da318a142b1b3bf3091e3f39bb869c5f2b35c80ac4477d734607d5c03f536c7"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_0_opponent_0/reproduction.json": {
+      "bytes": 6507,
+      "sha256": "8e22204d73ec319d4ab65c79767b019c0362a264ec4b074570878c3f8964c78e"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_0_opponent_0/events.jsonl": {
+      "bytes": 39518,
+      "sha256": "a3adee66f373b29d80d96b8bdc3e174ba9f20b5aaef903b54cca32350f8afc11"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_0_opponent_1/result.json": {
+      "bytes": 3802,
+      "sha256": "f6393a989c405017084da582dc13d6f72f3067ef88f906fbb1191034a4809662"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_0_opponent_1/reproduction.json": {
+      "bytes": 6503,
+      "sha256": "399fe108da5eb7663e2d21d0c0cbbda871a784e585df4d9b9bce0b3cff513b6b"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_0_opponent_1/events.jsonl": {
+      "bytes": 26600,
+      "sha256": "f5e74125695982805f4b59ed091ba820880dc97e05ea4460e620b5133ea7fe48"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_1_opponent_0/result.json": {
+      "bytes": 3808,
+      "sha256": "7acbbc7d515d6a9241d78fb5b50e67ec6f45de6e3c6008899e6fc3d5058931d5"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_1_opponent_0/reproduction.json": {
+      "bytes": 6507,
+      "sha256": "30eadfaff00996a5fc039607ec382810bef02bdda1accbede37129aed914cb10"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_1_opponent_0/events.jsonl": {
+      "bytes": 37235,
+      "sha256": "0a9f9dd20849c648dfe3d5d7564add64336f01b911a59efb14afdb2082d85f78"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_1_opponent_1/result.json": {
+      "bytes": 3803,
+      "sha256": "5eb20613597a8fe8df79ecdae5e8eb35f62468e3d4f5d756c49aed6e0d7469d9"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_1_opponent_1/reproduction.json": {
+      "bytes": 6504,
+      "sha256": "b77f4b793973fea64ecb05644f93685700e8bf002076b6c93e364beab19048cd"
+    },
+    "validation/build_005_independent_modes/arena_0_faction_1_opponent_1/events.jsonl": {
+      "bytes": 23793,
+      "sha256": "377b23ddd0025eaa478792352d48868eaa95ba328dc140242db007ed2a7997bb"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_0_opponent_0/result.json": {
+      "bytes": 3674,
+      "sha256": "b749a96b6c46d2478d9bcdbfa7d92f61e0ec568ad888a393d1922f024ab6c792"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_0_opponent_0/reproduction.json": {
+      "bytes": 6504,
+      "sha256": "dd9edc5b4aa7a574b326428595a4658ec9c8b69378abd4ac389499aa5ef8cdc6"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_0_opponent_0/events.jsonl": {
+      "bytes": 16133,
+      "sha256": "87e4452bb053c5c62e55c59c978247b2244f5023fabfbb74d15d74ed8bd3fc1b"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_0_opponent_1/result.json": {
+      "bytes": 3671,
+      "sha256": "6f1cca571d3eac75aa403ea1194792f653190b319e032e5fc84a9193a4474960"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_0_opponent_1/reproduction.json": {
+      "bytes": 6502,
+      "sha256": "204222d3613228b6038f607db1fb10e8e7869e6f5462ced182b618b875dcdb2f"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_0_opponent_1/events.jsonl": {
+      "bytes": 14811,
+      "sha256": "13a1fb9134dc8faceef26ba6283601c4b7edf528438fee5f487fbc06b25d440a"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_1_opponent_0/result.json": {
+      "bytes": 3678,
+      "sha256": "1b940b730182626ea11dbb7094bebfe5c3b0127e45456b44277b19f9e3405d91"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_1_opponent_0/reproduction.json": {
+      "bytes": 6505,
+      "sha256": "012e39beec6d7315ff417b1280e58571bcd142e818f6e05b2eb338e10cfe3534"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_1_opponent_0/events.jsonl": {
+      "bytes": 21923,
+      "sha256": "60788c63cfd4f7c68354c8df79a1eb6c030ec80185baba974eac3d60632d4817"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_1_opponent_1/result.json": {
+      "bytes": 3676,
+      "sha256": "73dfcf86126b2aef9668a224ebe9e6f50a07e33ebe755ddfdd38bae2f27d8a68"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_1_opponent_1/reproduction.json": {
+      "bytes": 6504,
+      "sha256": "b5e932cd3c674f7ec541a60cdd3805e47b3ccb8479c1fc82b896b28d941e72c0"
+    },
+    "validation/build_005_independent_modes/arena_1_faction_1_opponent_1/events.jsonl": {
+      "bytes": 25589,
+      "sha256": "e765d2f13df64fff541eba460e3bfd67db371971717f061451538906a34fa504"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_0_opponent_0/result.json": {
+      "bytes": 3947,
+      "sha256": "d2f14b8c5e19a31ea5de8fbe33c0e454f60377c655356f82bb492d66ff5a50e5"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_0_opponent_0/reproduction.json": {
+      "bytes": 6506,
+      "sha256": "54733934eb70de4c9dfa5c3e18e8557d6db8bd0bf88cfb6edefe574f0ee9ea37"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_0_opponent_0/events.jsonl": {
+      "bytes": 36998,
+      "sha256": "47ca47ec01650367b94effc547b9991f6982aae192dfa6aaf4406624a2b2e6ba"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_0_opponent_1/result.json": {
+      "bytes": 3942,
+      "sha256": "1e646cb946f3c867b82e70c2b356ce9cec0bcd914fcdaa16c94915177b2073d8"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_0_opponent_1/reproduction.json": {
+      "bytes": 6503,
+      "sha256": "63a21d69560085836f3fee1fced70a766727d209969740cf18f5ab096797caf6"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_0_opponent_1/events.jsonl": {
+      "bytes": 26771,
+      "sha256": "0abe22cc605d76ca8dfed6008a6d451b2834afef055b8dba51c791fcf8a8d389"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_1_opponent_0/result.json": {
+      "bytes": 3951,
+      "sha256": "43e34427429a6dd8a3a9a5399bd56384e14426eb16365f3ae9339932b0609b4d"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_1_opponent_0/reproduction.json": {
+      "bytes": 6508,
+      "sha256": "565f9efc7034c222121d3866dfae60130f88e526e0a5c480eafe4151d4cf3beb"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_1_opponent_0/events.jsonl": {
+      "bytes": 51061,
+      "sha256": "05c22d99c47e13200016cf7024bee143bdeec871e761192c8a2f733bc0eb1184"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_1_opponent_1/result.json": {
+      "bytes": 3942,
+      "sha256": "33e0502a4fd7c353acc495b18be68da89cd90ed4d869b8dc7ee2e6326ab56ba8"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_1_opponent_1/reproduction.json": {
+      "bytes": 6503,
+      "sha256": "699b9f163983bf839cc0eb3ade9852e23ffe71333a44964bdcb5e84ff894d209"
+    },
+    "validation/build_005_independent_modes/arena_2_faction_1_opponent_1/events.jsonl": {
+      "bytes": 30668,
+      "sha256": "fa625299d316fb3a4bc7fe23f581cf8af611914c84bdbb4ce1a939415635dc84"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_0_opponent_0/result.json": {
+      "bytes": 4151,
+      "sha256": "8ac57c8d17d50fa569f81f6be7da1571e1e9bfdebda4f2ebcedf3fcae8554783"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_0_opponent_0/reproduction.json": {
+      "bytes": 6505,
+      "sha256": "8ac097fcfabb98a959c95ac6d41fc46ccfa83341de6541654e4f8634d0a33c90"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_0_opponent_0/events.jsonl": {
+      "bytes": 43565,
+      "sha256": "7060ec8b7109363b5e0eb6ac37f91250f8416bb6ca05cab6fa6135ee932bc30f"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_0_opponent_1/result.json": {
+      "bytes": 3805,
+      "sha256": "1cbf5e25036fed93ab2be095a4ed1089819a5291b6e8d174da61302d3cc1f096"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_0_opponent_1/reproduction.json": {
+      "bytes": 6504,
+      "sha256": "10e7de303efcc1280a9b319f93c6a06c3fae36dded3c161cbae8ec677d9543fd"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_0_opponent_1/events.jsonl": {
+      "bytes": 28329,
+      "sha256": "2a06ef1a518566fe54e86f8f42e09854200adca63a62439a71cc8c136b0a5ccc"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_1_opponent_0/result.json": {
+      "bytes": 3634,
+      "sha256": "2cf27d42b66e04a1120d8dd3476097c0d4650ffb5ffc2d718f3062ec34372062"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_1_opponent_0/reproduction.json": {
+      "bytes": 6505,
+      "sha256": "c1162183f5832dcd2952795e01e7214020386de485a048eb4cac5f1ae5f38234"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_1_opponent_0/events.jsonl": {
+      "bytes": 20645,
+      "sha256": "1731645ed0cfd25af00e574c4b8b4c6aedcfab7b00a3dff1ba6014f609d617b0"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_1_opponent_1/result.json": {
+      "bytes": 3628,
+      "sha256": "e9385a2e0efddf21ee7cacd971c711aec2ea22822dd1f62aae4c762e1110e9f8"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_1_opponent_1/reproduction.json": {
+      "bytes": 6502,
+      "sha256": "0a65daa5e42229489595f9e1f92a1e87911efb96d57dc4b8f9c112d8085c6285"
+    },
+    "validation/build_005_independent_modes/arena_3_faction_1_opponent_1/events.jsonl": {
+      "bytes": 21549,
+      "sha256": "1cd5d4676a53a1053b2b13aea894c846b8138f7869a17076ec3b09e35d853b5b"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_0_opponent_0/result.json": {
+      "bytes": 3775,
+      "sha256": "029c3e5d66ec520bc136d388dc0ff91bc6aec5d6de46051cc20d764f6eb4fe7b"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_0_opponent_0/reproduction.json": {
+      "bytes": 6506,
+      "sha256": "fa3bef85c94d546d0f4b97258bddecb24f39ab75250ba2531989df38a175078a"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_0_opponent_0/events.jsonl": {
+      "bytes": 30557,
+      "sha256": "7cee40b3a67e419bcb917035ccda5056803e56370dc18474b77bd2540b6d783c"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_0_opponent_1/result.json": {
+      "bytes": 3768,
+      "sha256": "f19f14b239425fdd7002226e141cf96db5e44ea6a254a77169ac4fc9ed49b7db"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_0_opponent_1/reproduction.json": {
+      "bytes": 6503,
+      "sha256": "47c3999696eb44105446803faf3654e9d0d47eb94fb2250ff05ae9f1c3b16a42"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_0_opponent_1/events.jsonl": {
+      "bytes": 25775,
+      "sha256": "7349d3afc409c20624ad0b046f74404c4f454959351bf70a17deb91d13fb6af4"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_1_opponent_0/result.json": {
+      "bytes": 3770,
+      "sha256": "4cbf5b5c7fced32b4ddba570f36eed050b4c9c9e1291066a0e7b27c977825381"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_1_opponent_0/reproduction.json": {
+      "bytes": 6505,
+      "sha256": "e7235d0af79c1ecf540969ad5045fb5eb4ddef22f5a217f56029f0453ca4a8b3"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_1_opponent_0/events.jsonl": {
+      "bytes": 26479,
+      "sha256": "c572c7bb2ce2cc14a4b9660f9835ee7d486202dcd3292c776ee08f69e52ab463"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_1_opponent_1/result.json": {
+      "bytes": 3766,
+      "sha256": "b25aac18d5db58e2bf7f020c0ee0fd46da1fcc47c8346fae5e53f4f11bfc6b6a"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_1_opponent_1/reproduction.json": {
+      "bytes": 6504,
+      "sha256": "faed42b87372a5ba78585b11d99d75248f9506bfd61ad631d7acf57828e1abf3"
+    },
+    "validation/build_005_independent_modes/arena_4_faction_1_opponent_1/events.jsonl": {
+      "bytes": 23187,
+      "sha256": "3a9bbe998fd0f846ded57bae04b25433c007b3c2169c9160479ad2947d2dc51e"
+    },
+    "validation/build_005_independent_modes/arena-matrix.json": {
+      "bytes": 41834,
+      "sha256": "a83279e507be83a13a47af1839796da6529f51c6d526c6e4615ecee02f093662"
+    },
+    "validation/build_005_independent_modes/configure.log": {
+      "bytes": 451,
+      "sha256": "6534f88d8cd975e09e89c885be75b55270ac1e1789bcd032b0e1d554d32d3f7c"
+    },
+    "validation/build_005_independent_modes/build.log": {
+      "bytes": 5163,
+      "sha256": "15d0826926e96c67562a673aad227cd917d98a88159b357c2e36bd54759a6592"
+    }
+  },
+  "boundaries": {
+    "game_rules_changed": false,
+    "gameplay_state_transplanted": false,
+    "profile_unlocks_forced": false,
+    "presentation_feedback": "synthetic",
+    "physical_device_playthrough_verified": false
+  }
+}

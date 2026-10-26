@@ -1,0 +1,473 @@
+{
+  "archive": "build/iphoneos/libg1_resources.a",
+  "sha256": "bbf03c5442981dfa5d4c2c28147ff905dd15dc9a9609633c7dde1fd0580c8bdb",
+  "object_count": 58,
+  "objects": [
+    {
+      "member": "Archive.cpp.o",
+      "sha256": "2dd0924f6b66003a860d369a5207f37b6daf2b6da53ca26321ecb1494caf3d5c",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3G.cpp.o",
+      "sha256": "3537027f4662deec5b57cdb104c3d6b52b6d1eff83da7d3907ee8a846dcee252",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GScene.cpp.o",
+      "sha256": "07567b4220a6783f57f9b88e2ead8615be222b50ad412639ce8d4a4652807697",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Mission.cpp.o",
+      "sha256": "6c6b550bd96a4ca8702f83699020c2b8c4600ca2d770cffa38d319e34e9de81a",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Movement.cpp.o",
+      "sha256": "7e7b0c12c5e160817079fceb5fdaf9d54e871556d0e6e8fa9a1909c344085c2c",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Atlas.cpp.o",
+      "sha256": "1619ba653fd807747d7593d565e1b92072d94df3271ef20bbaae1e6c5b6e68ed",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Image.cpp.o",
+      "sha256": "5dd8e1e2843996cacb9174f9b71b69d1273993971fed0c0584718407cfdd1dd2",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "SpriteGeometry.cpp.o",
+      "sha256": "8c5ed4601277f490e618a2171c90f65a82884eb3065f88401d5478b8221bc271",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "SpriteAnimation.cpp.o",
+      "sha256": "fb19cb1b8ae78ad0186e12cd17128d0a3132acb60da4916cafae5b8e388cebad",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "SpritePlacement.cpp.o",
+      "sha256": "4a4f9c64c94db6f079f2600d428d14f840fd6be0eae89ad05332b6d77380ecf7",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Terrain.cpp.o",
+      "sha256": "16c18c947be0300fa9392cac410a17f3ddb500223827d4e327f64a2fc482b0be",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "World.cpp.o",
+      "sha256": "79f5fc567411c26d0f9ee328f9982e7d3a8595942ea98bc40baea59ae74a65bf",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Scene.cpp.o",
+      "sha256": "791dec0f2bf8b13db28dcd9306a426361214c952d8b726841aad6f9662d3a7fc",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "InitialPresentation.cpp.o",
+      "sha256": "0651bd6b27a2679606c73257ecbdba41ff7238df714115f615ca2f75f899382f",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Audio.cpp.o",
+      "sha256": "b834dee18d0c4cf299dd519b52cc10a51b1a96eb4738194160a498d04ee6a777",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "MovementAction.cpp.o",
+      "sha256": "3ba96c47045f5be4fec7dbce0ba0a9b3b8f4f8488c9ab89be817b619023c575a",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "MovementArrival.cpp.o",
+      "sha256": "d51b1ad42415be6a8d69ed7608a6c288650cabcd90ed32dc74ad40dc911db5a7",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Text.cpp.o",
+      "sha256": "79cdd25786be1d1b03c5809bc08dfc7ae374c316b0de825ed9f63fcf9d66de65",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "MissionExecution.cpp.o",
+      "sha256": "56faad1b2a11590bbf416fb1303283a266b696c0bab9c4862f3f0c3ee953d3c8",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "CaptureAction.cpp.o",
+      "sha256": "8e7574a26febf23ae91e2308ad53654cdcb8b4bae13def0fc6dcb079428e0b9d",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "Combat.cpp.o",
+      "sha256": "5143ff8b2eee065b36ba6e5a03504b2394da2e143158c6db363705119a1fa399",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "TransformAction.cpp.o",
+      "sha256": "77842623637ddeccd490d8d4e1d5588a1dd20b6f064796062b0b6ec21ff284e3",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "GameSession.cpp.o",
+      "sha256": "c77f9690273010f12af912708768d38e5f366894d66cee2d970097c6296e05cd",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "GameSessionAI.cpp.o",
+      "sha256": "a5d0245f2303c3aa34cc9f989d20e98d7084af880dfa285ffe237c864ea523d5",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "GameSessionWorld.cpp.o",
+      "sha256": "47de771a4b570fff241f0ad66957caa682ea82281858908b9c4da3adb66ec8d6",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "GameSessionActions.cpp.o",
+      "sha256": "6c04527d8f86ca7c095cd50adb5ba1896986db22879284646b01ac707a77394e",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "MissionProgression.cpp.o",
+      "sha256": "d6a7eb2a13cda086d46c62e68293b770bcb253082bd665bdc3c1f76722787fc0",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "MissionObjectives.cpp.o",
+      "sha256": "a29a702119610b9c811e446c3c9bc5e7094fa1537ed99089d47a72a78339051a",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "TurnProgression.cpp.o",
+      "sha256": "1b8e44029f8b927d0ff725c695399e03d058e7d4d9a5e5c66a598da562e92060",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "AIIncome.cpp.o",
+      "sha256": "44230f0cbaef184056b6c1a01b95e3cff8d92f96fbd4f16c0fcb33dd71e5125d",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "AI.cpp.o",
+      "sha256": "bb981fab79fd2bb5e3cfec8d09d2d9b1ffc3dde9f6b0788dc7f9477b49ac737a",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "AISite.cpp.o",
+      "sha256": "a19d3603d2042e3350b9cd573054bfe26ae8f21137c1431786f971a770bda427",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "AudioEvents.cpp.o",
+      "sha256": "ad0e9b2ff87bd83652b148e6847100b3425addc6f28959f8e5db428192422f59",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "SaveStore.cpp.o",
+      "sha256": "4b1f00aaaff9708c6c3e84aeda16612c87b3c4778d3ba1fafcb7f535a70ba15a",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "UnitSpawn.cpp.o",
+      "sha256": "d3d0fdf385a586b059b288bff18eb1cbde058caefdb5b934bed52111bd86ac3a",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "UpgradeAction.cpp.o",
+      "sha256": "d7147adfe8ee460bd51337c1979fd5a328a1dd81e9e36f40aaa1bf402e3845c3",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "HealAction.cpp.o",
+      "sha256": "994ac96b0ad9c83bd2155fce34315d570048f694841dc8915a70b361f9a6e74d",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "AIExecution.cpp.o",
+      "sha256": "d8e95ae6346ddbef6cb5962700334df4bbf69d496cbd42b34f540f61baa2a8ad",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "WorldCommands.cpp.o",
+      "sha256": "df1b9702b0a8332be58d9c31b75153f906355bd0323a8977f25082211011608b",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "CampaignController.cpp.o",
+      "sha256": "12cb484d36fdfd8425f860afb279fc6268a34833d700365971abd79268b18500",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "SessionSave.cpp.o",
+      "sha256": "71e819fc8823f277b9233b7c773ba43f381779404c56d31afeb87084e6bcc66e",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "UnitInteractions.cpp.o",
+      "sha256": "7f0a80fafa76fd9968f80fd218887ebf483160b76e0f1a084342edcdee455fb2",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "TerrainDecorations.cpp.o",
+      "sha256": "296a567b5c826e25819b96907922f0a3848cce1e5b74544609ca81347e9e6f64",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "TerrainRuntime.cpp.o",
+      "sha256": "39c820f5de634f8ea3295f320726126e45af3a35cdbe9a87c3d4c367f8f2b355",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "TerrainSpriteDecorations.cpp.o",
+      "sha256": "1b20d00bd1826b2668be00f7be3c18aebb73f78c5caf58e009bb870116664774",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "UndoAction.cpp.o",
+      "sha256": "63a86706e6d379f30a0d1c4ee3095c8e568aaaa4c1f53c5e9ecb5db383c0e5b9",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "UnitCommands.cpp.o",
+      "sha256": "418ef684c39180057beca43bbe81e6fa44bbf99fc5a2f38e593d3e9c6af7bca6",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GAnimation.cpp.o",
+      "sha256": "2aeb1a6c0991fa9b090eb3b1043f05492a59fbbc1e629a1b5121d8034e0ebb72",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GScenePose.cpp.o",
+      "sha256": "0bddfa1bbba67f4c0daf1a56935a7ac2752cf109f777b467715b2fd8c9cc2fbb",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GCamera.cpp.o",
+      "sha256": "3bd5765a3390581447fa80b7cd3db79d09873383362ec23cca577bc47e5d4b02",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GBattleTimeline.cpp.o",
+      "sha256": "684071d3f15ff401ae49cba251f201c39076e950a799aa626052223408b78ab8",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GSprite3D.cpp.o",
+      "sha256": "26490156abb4b3feecb4741c462efefb141c88e3da73a096bf7b1ad6585761a4",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GRenderFrame.cpp.o",
+      "sha256": "ec9f81d4a483430d32c176c460fef07bad0334b1d114ebd6a4b97066c6ea920b",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GBindings.cpp.o",
+      "sha256": "f878ed2eed4b32b5a0072741c5d60bbcb1e5eb0a03e25547a7f209daeffcd653",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GBattleCamera.cpp.o",
+      "sha256": "f974806d6a91579471b8aaaa656918fbb7f3cb6ec0c07cc16cdd52cab11a30af",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GMaterialOverrides.cpp.o",
+      "sha256": "f3d4bf9258d407311c1ee333fdd527ed2d0212e4774073f80aa43fe5131c3e27",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GBattleController.cpp.o",
+      "sha256": "19f8885af704eb88c194528aae0e225404292c814c8c765a1052e4da9be5a076",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "M3GBattlePresentation.cpp.o",
+      "sha256": "f2fcca7c2ad0b0be66a8e09ce6f36478c15bf86b83ebb58c8bbb8b6d6b1c1f5a",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    }
+  ],
+  "playable_app": false,
+  "device_execution_verified": false
+}

@@ -1,0 +1,25 @@
+{
+  "archive": "build/iphoneos/libg1_metal.a",
+  "sha256": "35f178641027e69041b3b3420eb98e5136f488ca915c158b8b6a8906f357b97d",
+  "object_count": 2,
+  "objects": [
+    {
+      "member": "MetalRenderer.mm.o",
+      "sha256": "b1eac5a913d1d3eed4c6d2bbc6eb21b7cc1ae07534ba7a9105c7ba167b3669da",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    },
+    {
+      "member": "MetalM3GRenderer.mm.o",
+      "sha256": "e56c18a62de71bd0d2db8c5a797ed97bd46a656d54346e0b11db4531f76adead",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    }
+  ],
+  "playable_app": false,
+  "device_execution_verified": false
+}

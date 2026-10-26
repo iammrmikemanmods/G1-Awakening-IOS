@@ -1,0 +1,253 @@
+{
+  "total_count": 2,
+  "jobs": [
+    {
+      "id": 121730976489,
+      "run_id": 40368043701,
+      "workflow_name": "Build native game test",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOVXddyc8AAAAcV7tK6Q",
+      "head_sha": "083057b20b3b10269ca48e0d9816a62b3214869b",
+      "url": "https://api.github.com/repos/iammrmikemanmods/G1-Awakening-IOS/actions/jobs/121730976489",
+      "html_url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701/job/121730976489",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-26T17:22:45Z",
+      "started_at": "2026-10-26T17:22:47Z",
+      "completed_at": "2026-10-26T17:23:59Z",
+      "name": "host-tests",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-26T17:22:47Z",
+          "completed_at": "2026-10-26T17:22:48Z"
+        },
+        {
+          "name": "Check out native source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-26T17:22:48Z",
+          "completed_at": "2026-10-26T17:22:51Z"
+        },
+        {
+          "name": "Install native build dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-26T17:22:51Z",
+          "completed_at": "2026-10-26T17:22:51Z"
+        },
+        {
+          "name": "Configure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-26T17:22:51Z",
+          "completed_at": "2026-10-26T17:22:52Z"
+        },
+        {
+          "name": "Compile native core and tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-26T17:22:52Z",
+          "completed_at": "2026-10-26T17:23:56Z"
+        },
+        {
+          "name": "Test recovered native behavior",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-26T17:23:56Z",
+          "completed_at": "2026-10-26T17:23:57Z"
+        },
+        {
+          "name": "Post Check out native source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-26T17:23:57Z",
+          "completed_at": "2026-10-26T17:23:57Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-26T17:23:57Z",
+          "completed_at": "2026-10-26T17:23:57Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/iammrmikemanmods/G1-Awakening-IOS/check-runs/121730976489",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000000018,
+      "runner_name": "GitHub Actions 1000000018",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 121730976929,
+      "run_id": 40368043701,
+      "workflow_name": "Build native game test",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOVXddyc8AAAAcV7tMoQ",
+      "head_sha": "083057b20b3b10269ca48e0d9816a62b3214869b",
+      "url": "https://api.github.com/repos/iammrmikemanmods/G1-Awakening-IOS/actions/jobs/121730976929",
+      "html_url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701/job/121730976929",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-26T17:22:45Z",
+      "started_at": "2026-10-26T17:22:47Z",
+      "completed_at": "2026-10-26T17:26:06Z",
+      "name": "iphoneos-arm64",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-26T17:22:48Z",
+          "completed_at": "2026-10-26T17:22:49Z"
+        },
+        {
+          "name": "Check out native source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-26T17:22:49Z",
+          "completed_at": "2026-10-26T17:22:54Z"
+        },
+        {
+          "name": "Record Apple toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-26T17:22:54Z",
+          "completed_at": "2026-10-26T17:22:57Z"
+        },
+        {
+          "name": "Configure native iPhoneOS ARM64 library",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-26T17:22:57Z",
+          "completed_at": "2026-10-26T17:23:03Z"
+        },
+        {
+          "name": "Compile native ARM64 sources",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-26T17:23:03Z",
+          "completed_at": "2026-10-26T17:23:49Z"
+        },
+        {
+          "name": "Compile exact runtime M3G shader for iPhoneOS",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-26T17:23:49Z",
+          "completed_at": "2026-10-26T17:24:03Z"
+        },
+        {
+          "name": "Verify native archives and app target",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-26T17:24:03Z",
+          "completed_at": "2026-10-26T17:24:04Z"
+        },
+        {
+          "name": "Compile macOS native tests and offscreen Metal probes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-26T17:24:04Z",
+          "completed_at": "2026-10-26T17:25:57Z"
+        },
+        {
+          "name": "Check all portable native behavior on Apple ARM64",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-26T17:25:57Z",
+          "completed_at": "2026-10-26T17:25:58Z"
+        },
+        {
+          "name": "Check actual offscreen Metal pixels when a device is available",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-26T17:25:58Z",
+          "completed_at": "2026-10-26T17:26:00Z"
+        },
+        {
+          "name": "Check native M3G mesh and Sprite3D Metal pixels",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-26T17:26:00Z",
+          "completed_at": "2026-10-26T17:26:00Z"
+        },
+        {
+          "name": "Prepare unsigned native code artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-26T17:26:00Z",
+          "completed_at": "2026-10-26T17:26:00Z"
+        },
+        {
+          "name": "Preserve native game code and evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-26T17:26:00Z",
+          "completed_at": "2026-10-26T17:26:02Z"
+        },
+        {
+          "name": "Record validation boundary",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-26T17:26:02Z",
+          "completed_at": "2026-10-26T17:26:03Z"
+        },
+        {
+          "name": "Post Check out native source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-10-26T17:26:03Z",
+          "completed_at": "2026-10-26T17:26:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-10-26T17:26:03Z",
+          "completed_at": "2026-10-26T17:26:05Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/iammrmikemanmods/G1-Awakening-IOS/check-runs/121730976929",
+      "labels": [
+        "macos-26"
+      ],
+      "runner_id": 1000000019,
+      "runner_name": "GitHub Actions 1000000019",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

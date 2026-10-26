@@ -1,0 +1,17 @@
+{
+  "archive": "build/iphoneos/libg1_png.a",
+  "sha256": "d96d0b3fc8116ad4e9ca7d80b4dba87824070738b7b90bea4fbba26846343beb",
+  "object_count": 1,
+  "objects": [
+    {
+      "member": "lodepng.cpp.o",
+      "sha256": "ed89a4d6552fe21c64331304f193969561cffebdec5a2681a21bfe4ec3b8f819",
+      "architecture": "arm64",
+      "platform": "iPhoneOS",
+      "minimum_os": "17.5",
+      "sdk_encoded": 1705216
+    }
+  ],
+  "playable_app": false,
+  "device_execution_verified": false
+}

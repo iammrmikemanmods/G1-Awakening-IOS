@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-26T17:40:42.401945+00:00",
+  "scope": "Independent publication-path compilation and bounded fixture checks for research not linked into build005",
+  "runtime_source_changed": false,
+  "support_phase": {
+    "compiled_from_publication_paths": true,
+    "original_update_cases": 1280,
+    "state_comparisons": 5120,
+    "complete_sequences": 7,
+    "passed": true
+  },
+  "overlay_descriptor": {
+    "compiled_from_publication_paths": true,
+    "actual_asset_metadata_equal_captured_original": true,
+    "metadata_groups": [
+      "rectangles",
+      "variants",
+      "frames",
+      "animations"
+    ],
+    "rectangle_count": 13,
+    "variant_count": 13,
+    "frame_count": 27,
+    "animation_count": 4,
+    "private_metadata_sha256": "2e3b4b06eda396abc9d94a712f5c00dc6ae5fc1559d6dce222b42acaa9b185fe"
+  },
+  "boundary": "No production BMP decoder, overlay renderer, UIKit integration, original GPU texture conversion or device visual result is introduced."
+}

@@ -1,0 +1,785 @@
+﻿2026-10-26T17:22:48.7643730Z Current runner version: '2.338.0'
+2026-10-26T17:22:48.7661930Z ##[group]Runner Image Provisioner
+2026-10-26T17:22:48.7662600Z Hosted Compute Agent
+2026-10-26T17:22:48.7663020Z Version: 20261021.618
+2026-10-26T17:22:48.7663510Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-26T17:22:48.7664050Z Build Date: 2026-10-21T00:45:21Z
+2026-10-26T17:22:48.7664600Z Worker ID: {1623bb98-9dfe-4599-95c7-8ee5b703e9b7}
+2026-10-26T17:22:48.7665170Z Region: westus
+2026-10-26T17:22:48.7665600Z Cloud: MacCloud
+2026-10-26T17:22:48.7666050Z ##[endgroup]
+2026-10-26T17:22:48.7667080Z ##[group]Operating System
+2026-10-26T17:22:48.7667590Z macOS
+2026-10-26T17:22:48.7667940Z 26.6.2
+2026-10-26T17:22:48.7668390Z 25G83
+2026-10-26T17:22:48.7668800Z ##[endgroup]
+2026-10-26T17:22:48.7669190Z ##[group]Runner Image
+2026-10-26T17:22:48.7669640Z Image: macos-26-arm64
+2026-10-26T17:22:48.7670060Z Version: 20261021.0445.8
+2026-10-26T17:22:48.7671110Z Included Software: https://github.com/actions/runner-images/blob/macos-26-arm64/20261021.0445/images/macos/macos-26-arm64-Readme.md
+2026-10-26T17:22:48.7672400Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-26-arm64%2F20261021.0445
+2026-10-26T17:22:48.7673220Z ##[endgroup]
+2026-10-26T17:22:48.7674100Z ##[group]GITHUB_TOKEN Permissions
+2026-10-26T17:22:48.7675670Z Contents: read
+2026-10-26T17:22:48.7676130Z Metadata: read
+2026-10-26T17:22:48.7676590Z ##[endgroup]
+2026-10-26T17:22:48.7678550Z Secret source: Actions
+2026-10-26T17:22:48.7679220Z Cache mode: write
+2026-10-26T17:22:48.7679740Z Prepare workflow directory
+2026-10-26T17:22:48.8005410Z Prepare all required actions
+2026-10-26T17:22:48.8050320Z Getting action download info
+2026-10-26T17:22:49.1282720Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-26T17:22:49.3932140Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-10-26T17:22:49.5691830Z Complete job name: iphoneos-arm64
+2026-10-26T17:22:49.6378840Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-10-26T17:22:49.6379850Z with:
+2026-10-26T17:22:49.6380190Z   persist-credentials: false
+2026-10-26T17:22:49.6380600Z   repository: iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:49.6383770Z   token: ***
+2026-10-26T17:22:49.6384070Z   ssh-strict: true
+2026-10-26T17:22:49.6384390Z   ssh-user: git
+2026-10-26T17:22:49.6384730Z   clean: true
+2026-10-26T17:22:49.6385120Z   sparse-checkout-cone-mode: true
+2026-10-26T17:22:49.6385570Z   fetch-depth: 1
+2026-10-26T17:22:49.6385960Z   fetch-tags: false
+2026-10-26T17:22:49.6386320Z   show-progress: true
+2026-10-26T17:22:49.6386710Z   lfs: false
+2026-10-26T17:22:49.6387080Z   submodules: false
+2026-10-26T17:22:49.6387480Z   set-safe-directory: true
+2026-10-26T17:22:49.6387940Z   allow-unsafe-pr-checkout: false
+2026-10-26T17:22:49.6388430Z env:
+2026-10-26T17:22:49.6388880Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:22:49.6389600Z ##[endgroup]
+2026-10-26T17:22:50.3031010Z Syncing repository: iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:50.3032800Z ##[group]Getting Git version info
+2026-10-26T17:22:50.3033470Z Working directory is '/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS'
+2026-10-26T17:22:50.3034550Z [command]/opt/homebrew/bin/git version
+2026-10-26T17:22:50.3430760Z git version 2.56.0
+2026-10-26T17:22:50.3443660Z ##[endgroup]
+2026-10-26T17:22:50.3450480Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/08088b4f-c26b-4654-ac49-a1d3c2b32b33/.gitconfig'
+2026-10-26T17:22:50.3461800Z Temporarily overriding HOME='/Users/runner/work/_temp/08088b4f-c26b-4654-ac49-a1d3c2b32b33' before making global git config changes
+2026-10-26T17:22:50.3464480Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-26T17:22:50.3465960Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS
+2026-10-26T17:22:50.3629520Z Deleting the contents of '/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS'
+2026-10-26T17:22:50.3632280Z ##[group]Determining repository object format
+2026-10-26T17:22:50.3633560Z ##[endgroup]
+2026-10-26T17:22:50.3634510Z ##[group]Initializing the repository
+2026-10-26T17:22:50.3636920Z [command]/opt/homebrew/bin/git init /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS
+2026-10-26T17:22:50.3982520Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-26T17:22:50.3983930Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-26T17:22:50.3984800Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-26T17:22:50.3985390Z hint: call:
+2026-10-26T17:22:50.3986090Z hint:
+2026-10-26T17:22:50.3986590Z hint: 	git config --global init.defaultBranch <name>
+2026-10-26T17:22:50.3987080Z hint:
+2026-10-26T17:22:50.3987520Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-26T17:22:50.3988450Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-26T17:22:50.3989030Z hint:
+2026-10-26T17:22:50.3989360Z hint: 	git branch -m <name>
+2026-10-26T17:22:50.3989840Z hint:
+2026-10-26T17:22:50.3990330Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-26T17:22:50.4022450Z Initialized empty Git repository in /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/
+2026-10-26T17:22:50.4039600Z [command]/opt/homebrew/bin/git remote add origin https://github.com/iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:50.4171070Z ##[endgroup]
+2026-10-26T17:22:50.4172330Z ##[group]Disabling automatic garbage collection
+2026-10-26T17:22:50.4173070Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-10-26T17:22:50.4257680Z ##[endgroup]
+2026-10-26T17:22:50.4262910Z ##[group]Setting up auth
+2026-10-26T17:22:50.4264310Z Removing SSH command configuration
+2026-10-26T17:22:50.4267830Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T17:22:50.4347660Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T17:22:50.5877310Z Removing HTTP extra header
+2026-10-26T17:22:50.5882550Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T17:22:50.5957290Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T17:22:50.7542870Z Removing includeIf entries pointing to credentials config files
+2026-10-26T17:22:50.7645900Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T17:22:50.7960210Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T17:22:51.0373640Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-26T17:22:51.0671320Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path /Users/runner/work/_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:51.1101870Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:51.1125620Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:51.1167260Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:51.1213210Z ##[endgroup]
+2026-10-26T17:22:51.1216670Z ##[group]Fetching the repository
+2026-10-26T17:22:51.1221840Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +083057b20b3b10269ca48e0d9816a62b3214869b:refs/remotes/origin/main
+2026-10-26T17:22:53.4456020Z From https://github.com/iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:53.4457630Z  * [new ref]         083057b20b3b10269ca48e0d9816a62b3214869b -> origin/main
+2026-10-26T17:22:53.4587960Z [command]/opt/homebrew/bin/git branch --list --remote origin/main
+2026-10-26T17:22:53.4748130Z   origin/main
+2026-10-26T17:22:53.4757770Z [command]/opt/homebrew/bin/git rev-parse refs/remotes/origin/main
+2026-10-26T17:22:53.4845440Z 083057b20b3b10269ca48e0d9816a62b3214869b
+2026-10-26T17:22:53.4849960Z ##[endgroup]
+2026-10-26T17:22:53.4850540Z ##[group]Determining the checkout info
+2026-10-26T17:22:53.4853440Z ##[endgroup]
+2026-10-26T17:22:53.4865490Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-10-26T17:22:53.5025750Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-26T17:22:53.5103070Z ##[group]Checking out the ref
+2026-10-26T17:22:53.5106350Z [command]/opt/homebrew/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-26T17:22:53.7147980Z Switched to a new branch 'main'
+2026-10-26T17:22:53.7156690Z branch 'main' set up to track 'origin/main'.
+2026-10-26T17:22:53.7170660Z ##[endgroup]
+2026-10-26T17:22:53.7317380Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-10-26T17:22:53.7407920Z 083057b20b3b10269ca48e0d9816a62b3214869b
+2026-10-26T17:22:53.7419360Z ##[group]Removing auth
+2026-10-26T17:22:53.7419850Z Removing SSH command configuration
+2026-10-26T17:22:53.7424170Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T17:22:53.7512120Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T17:22:53.9069440Z Removing HTTP extra header
+2026-10-26T17:22:53.9075920Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T17:22:53.9165000Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T17:22:54.0196160Z Removing includeIf entries pointing to credentials config files
+2026-10-26T17:22:54.0199800Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T17:22:54.0268380Z includeif.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path
+2026-10-26T17:22:54.0269660Z includeif.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path
+2026-10-26T17:22:54.0274460Z includeif.gitdir:/github/workspace/.git.path
+2026-10-26T17:22:54.0276610Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-26T17:22:54.0283330Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path
+2026-10-26T17:22:54.0366850Z /Users/runner/work/_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:54.0385550Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path \/Users\/runner\/work\/_temp\/git\-credentials\-a3b1d392\-206e\-42b6\-a03f\-59bb8c6d9e07\.config
+2026-10-26T17:22:54.0469840Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path
+2026-10-26T17:22:54.0550820Z /Users/runner/work/_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:54.0572610Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path \/Users\/runner\/work\/_temp\/git\-credentials\-a3b1d392\-206e\-42b6\-a03f\-59bb8c6d9e07\.config
+2026-10-26T17:22:54.0679050Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-26T17:22:54.0760660Z /github/runner_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:54.0769920Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-a3b1d392\-206e\-42b6\-a03f\-59bb8c6d9e07\.config
+2026-10-26T17:22:54.0907320Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-26T17:22:54.0985380Z /github/runner_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config
+2026-10-26T17:22:54.0994390Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-a3b1d392\-206e\-42b6\-a03f\-59bb8c6d9e07\.config
+2026-10-26T17:22:54.1078220Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T17:22:54.2069050Z Removing credentials config '/Users/runner/work/_temp/git-credentials-a3b1d392-206e-42b6-a03f-59bb8c6d9e07.config'
+2026-10-26T17:22:54.2153340Z ##[endgroup]
+2026-10-26T17:22:54.2484250Z ##[group]Run xcodebuild -version
+2026-10-26T17:22:54.2484680Z [36;1mxcodebuild -version[0m
+2026-10-26T17:22:54.2484950Z [36;1mxcrun --sdk iphoneos --show-sdk-version[0m
+2026-10-26T17:22:54.2485240Z [36;1mcmake --version[0m
+2026-10-26T17:22:54.2540820Z shell: /bin/bash -e {0}
+2026-10-26T17:22:54.2541460Z env:
+2026-10-26T17:22:54.2541790Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:22:54.2542090Z ##[endgroup]
+2026-10-26T17:22:54.4582480Z Xcode 26.6
+2026-10-26T17:22:54.4683980Z Build version 17F113
+2026-10-26T17:22:57.2191240Z 26.5
+2026-10-26T17:22:57.2867090Z cmake version 4.4.4
+2026-10-26T17:22:57.2867440Z 
+2026-10-26T17:22:57.2868620Z CMake suite maintained and supported by Kitware (kitware.com/cmake).
+2026-10-26T17:22:57.2970240Z ##[group]Run cmake -S native -B build/iphoneos -G Ninja -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=17.5 -DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DG1_BUILD_APP=ON -DG1_SOURCE_COMMIT=083057b20b3b10269ca48e0d9816a62b3214869b
+2026-10-26T17:22:57.2972910Z [36;1mcmake -S native -B build/iphoneos -G Ninja -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=17.5 -DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DG1_BUILD_APP=ON -DG1_SOURCE_COMMIT=083057b20b3b10269ca48e0d9816a62b3214869b[0m
+2026-10-26T17:22:57.3038890Z shell: /bin/bash -e {0}
+2026-10-26T17:22:57.3039710Z env:
+2026-10-26T17:22:57.3040650Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:22:57.3041490Z ##[endgroup]
+2026-10-26T17:22:59.4275070Z -- The CXX compiler identification is AppleClang 21.0.0.21000101
+2026-10-26T17:23:00.8405890Z -- Detecting CXX compiler ABI info
+2026-10-26T17:23:02.9007240Z -- Detecting CXX compiler ABI info - done
+2026-10-26T17:23:02.9181920Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-10-26T17:23:02.9194980Z -- Detecting CXX compile features
+2026-10-26T17:23:02.9206280Z -- Detecting CXX compile features - done
+2026-10-26T17:23:03.3867540Z -- Found ZLIB: /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk/usr/lib/libz.tbd (found version "1.2.12")
+2026-10-26T17:23:03.5516450Z -- The OBJCXX compiler identification is AppleClang 21.0.0.21000101
+2026-10-26T17:23:03.5695410Z -- Detecting OBJCXX compiler ABI info
+2026-10-26T17:23:03.7307180Z -- Detecting OBJCXX compiler ABI info - done
+2026-10-26T17:23:03.7435380Z -- Check for working OBJCXX compiler: /usr/bin/c++ - skipped
+2026-10-26T17:23:03.7617260Z -- Configuring done (6.4s)
+2026-10-26T17:23:03.7835580Z CMake Warning (unused-cli):
+2026-10-26T17:23:03.7836660Z   Manually-specified variables were not used by the project:
+2026-10-26T17:23:03.7837310Z 
+2026-10-26T17:23:03.7837810Z     BUILD_TESTING
+2026-10-26T17:23:03.7838140Z 
+2026-10-26T17:23:03.7838150Z 
+2026-10-26T17:23:03.7838320Z -- Generating done (0.0s)
+2026-10-26T17:23:03.7843290Z -- Build files have been written to: /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/iphoneos
+2026-10-26T17:23:03.8057540Z ##[group]Run cmake --build build/iphoneos --parallel 2
+2026-10-26T17:23:03.8058530Z [36;1mcmake --build build/iphoneos --parallel 2[0m
+2026-10-26T17:23:03.8110470Z shell: /bin/bash -e {0}
+2026-10-26T17:23:03.8110740Z env:
+2026-10-26T17:23:03.8111020Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:23:03.8111310Z ##[endgroup]
+2026-10-26T17:23:05.6872620Z [1/69] Building CXX object CMakeFiles/g1_vorbis.dir/third_party/stb/stb_vorbis.c.o
+2026-10-26T17:23:05.6880510Z clang++: warning: treating 'c' input as 'c++' when in C++ mode, this behavior is deprecated [-Wdeprecated]
+2026-10-26T17:23:05.6901140Z /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/native/third_party/stb/stb_vorbis.c:1404:75: warning: pointer comparison always evaluates to false [-Wtautological-compare]
+2026-10-26T17:23:05.6922200Z  1404 |       if (f->stream_start + loc >= f->stream_end || f->stream_start + loc < f->stream_start) {
+2026-10-26T17:23:05.6935090Z       |                                                                           ^
+2026-10-26T17:23:05.6951190Z 1 warning generated.
+2026-10-26T17:23:05.7847150Z [2/69] Linking CXX static library libg1_vorbis.a
+2026-10-26T17:23:07.4318370Z [3/69] Building CXX object CMakeFiles/g1_resources.dir/src/Archive.cpp.o
+2026-10-26T17:23:08.2405800Z [4/69] Building CXX object CMakeFiles/g1_png.dir/third_party/lodepng/lodepng.cpp.o
+2026-10-26T17:23:08.3627180Z [5/69] Linking CXX static library libg1_png.a
+2026-10-26T17:23:08.4127910Z [6/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3G.cpp.o
+2026-10-26T17:23:09.3220110Z [7/69] Building CXX object CMakeFiles/g1_resources.dir/src/Mission.cpp.o
+2026-10-26T17:23:10.1562610Z [8/69] Building CXX object CMakeFiles/g1_resources.dir/src/Movement.cpp.o
+2026-10-26T17:23:11.3431200Z [9/69] Building CXX object CMakeFiles/g1_resources.dir/src/Atlas.cpp.o
+2026-10-26T17:23:11.5437720Z [10/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GScene.cpp.o
+2026-10-26T17:23:12.1630620Z [11/69] Building CXX object CMakeFiles/g1_resources.dir/src/Image.cpp.o
+2026-10-26T17:23:12.3439990Z [12/69] Building CXX object CMakeFiles/g1_resources.dir/src/SpriteGeometry.cpp.o
+2026-10-26T17:23:12.7890930Z [13/69] Building CXX object CMakeFiles/g1_resources.dir/src/SpritePlacement.cpp.o
+2026-10-26T17:23:12.9283940Z [14/69] Building CXX object CMakeFiles/g1_resources.dir/src/SpriteAnimation.cpp.o
+2026-10-26T17:23:14.0915120Z [15/69] Building CXX object CMakeFiles/g1_resources.dir/src/Terrain.cpp.o
+2026-10-26T17:23:14.8173800Z [16/69] Building CXX object CMakeFiles/g1_resources.dir/src/World.cpp.o
+2026-10-26T17:23:15.6341590Z [17/69] Building CXX object CMakeFiles/g1_resources.dir/src/Scene.cpp.o
+2026-10-26T17:23:15.8764190Z [18/69] Building CXX object CMakeFiles/g1_resources.dir/src/InitialPresentation.cpp.o
+2026-10-26T17:23:16.3300320Z [19/69] Building CXX object CMakeFiles/g1_resources.dir/src/Audio.cpp.o
+2026-10-26T17:23:16.7421920Z [20/69] Building CXX object CMakeFiles/g1_resources.dir/src/MovementAction.cpp.o
+2026-10-26T17:23:17.0106850Z [21/69] Building CXX object CMakeFiles/g1_resources.dir/src/MovementArrival.cpp.o
+2026-10-26T17:23:17.8069310Z [22/69] Building CXX object CMakeFiles/g1_resources.dir/src/Text.cpp.o
+2026-10-26T17:23:18.3171850Z [23/69] Building CXX object CMakeFiles/g1_resources.dir/src/MissionExecution.cpp.o
+2026-10-26T17:23:18.9904290Z [24/69] Building CXX object CMakeFiles/g1_resources.dir/src/CaptureAction.cpp.o
+2026-10-26T17:23:19.3174740Z [25/69] Building CXX object CMakeFiles/g1_resources.dir/src/Combat.cpp.o
+2026-10-26T17:23:19.7422870Z [26/69] Building CXX object CMakeFiles/g1_resources.dir/src/TransformAction.cpp.o
+2026-10-26T17:23:21.0877700Z [27/69] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionAI.cpp.o
+2026-10-26T17:23:21.4307390Z [28/69] Building CXX object CMakeFiles/g1_resources.dir/src/GameSession.cpp.o
+2026-10-26T17:23:22.3464650Z [29/69] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionActions.cpp.o
+2026-10-26T17:23:22.8250120Z [30/69] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionWorld.cpp.o
+2026-10-26T17:23:23.0855900Z [31/69] Building CXX object CMakeFiles/g1_resources.dir/src/MissionProgression.cpp.o
+2026-10-26T17:23:23.6682700Z [32/69] Building CXX object CMakeFiles/g1_resources.dir/src/MissionObjectives.cpp.o
+2026-10-26T17:23:24.0940960Z [33/69] Building CXX object CMakeFiles/g1_resources.dir/src/TurnProgression.cpp.o
+2026-10-26T17:23:24.6099460Z [34/69] Building CXX object CMakeFiles/g1_resources.dir/src/AIIncome.cpp.o
+2026-10-26T17:23:25.5314960Z [35/69] Building CXX object CMakeFiles/g1_resources.dir/src/AISite.cpp.o
+2026-10-26T17:23:25.6080640Z [36/69] Building CXX object CMakeFiles/g1_resources.dir/src/AI.cpp.o
+2026-10-26T17:23:26.2048660Z [37/69] Building CXX object CMakeFiles/g1_resources.dir/src/AudioEvents.cpp.o
+2026-10-26T17:23:26.3468590Z [38/69] Building CXX object CMakeFiles/g1_resources.dir/src/SaveStore.cpp.o
+2026-10-26T17:23:26.7504670Z [39/69] Building CXX object CMakeFiles/g1_resources.dir/src/UnitSpawn.cpp.o
+2026-10-26T17:23:27.0176850Z [40/69] Building CXX object CMakeFiles/g1_resources.dir/src/UpgradeAction.cpp.o
+2026-10-26T17:23:27.4503150Z [41/69] Building CXX object CMakeFiles/g1_resources.dir/src/HealAction.cpp.o
+2026-10-26T17:23:27.7658250Z [42/69] Building CXX object CMakeFiles/g1_resources.dir/src/AIExecution.cpp.o
+2026-10-26T17:23:29.2739090Z [43/69] Building CXX object CMakeFiles/g1_resources.dir/src/WorldCommands.cpp.o
+2026-10-26T17:23:29.5348320Z [44/69] Building CXX object CMakeFiles/g1_resources.dir/src/CampaignController.cpp.o
+2026-10-26T17:23:30.3479550Z [45/69] Building CXX object CMakeFiles/g1_resources.dir/src/UnitInteractions.cpp.o
+2026-10-26T17:23:31.1213630Z [46/69] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainDecorations.cpp.o
+2026-10-26T17:23:31.9994580Z [47/69] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainRuntime.cpp.o
+2026-10-26T17:23:32.2692610Z [48/69] Building CXX object CMakeFiles/g1_resources.dir/src/SessionSave.cpp.o
+2026-10-26T17:23:32.9726110Z [49/69] Building CXX object CMakeFiles/g1_resources.dir/src/UndoAction.cpp.o
+2026-10-26T17:23:33.4520760Z [50/69] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainSpriteDecorations.cpp.o
+2026-10-26T17:23:33.5397430Z [51/69] Building CXX object CMakeFiles/g1_resources.dir/src/UnitCommands.cpp.o
+2026-10-26T17:23:34.5850690Z [52/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GScenePose.cpp.o
+2026-10-26T17:23:35.1563930Z [53/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GAnimation.cpp.o
+2026-10-26T17:23:35.4291590Z [54/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GCamera.cpp.o
+2026-10-26T17:23:35.7286770Z [55/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleTimeline.cpp.o
+2026-10-26T17:23:36.3123850Z [56/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GSprite3D.cpp.o
+2026-10-26T17:23:36.7213320Z [57/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GRenderFrame.cpp.o
+2026-10-26T17:23:37.2506100Z [58/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBindings.cpp.o
+2026-10-26T17:23:37.5472420Z [59/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleCamera.cpp.o
+2026-10-26T17:23:38.2070550Z [60/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleController.cpp.o
+2026-10-26T17:23:38.5722030Z [61/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GMaterialOverrides.cpp.o
+2026-10-26T17:23:40.2593700Z [62/69] Building OBJCXX object CMakeFiles/g1_metal.dir/platform/apple/MetalRenderer.mm.o
+2026-10-26T17:23:40.4518190Z [63/69] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattlePresentation.cpp.o
+2026-10-26T17:23:40.5988710Z [64/69] Linking CXX static library libg1_resources.a
+2026-10-26T17:23:42.5032720Z [65/69] Building OBJCXX object CMakeFiles/g1_metal.dir/platform/apple/MetalM3GRenderer.mm.o
+2026-10-26T17:23:42.5779240Z [66/69] Linking CXX static library libg1_metal.a
+2026-10-26T17:23:44.4765890Z [67/69] Building OBJCXX object CMakeFiles/G1AwakeningNative.dir/platform/apple/AppleAudio.mm.o
+2026-10-26T17:23:49.5442530Z [68/69] Building OBJCXX object CMakeFiles/G1AwakeningNative.dir/platform/apple/NativeApp.mm.o
+2026-10-26T17:23:49.8773510Z [69/69] Linking CXX executable G1AwakeningNative.app/G1AwakeningNative
+2026-10-26T17:23:49.9112000Z ##[group]Run mkdir -p artifacts
+2026-10-26T17:23:49.9112970Z [36;1mmkdir -p artifacts[0m
+2026-10-26T17:23:49.9113860Z [36;1mif ! xcrun --sdk iphoneos metal --version; then[0m
+2026-10-26T17:23:49.9114840Z [36;1m  xcodebuild -downloadComponent metalToolchain[0m
+2026-10-26T17:23:49.9115870Z [36;1m  xcrun --sdk iphoneos metal --version[0m
+2026-10-26T17:23:49.9116580Z [36;1mfi[0m
+2026-10-26T17:23:49.9118110Z [36;1mpython3 analysis_tools/m3g/extract_metal_shader.py --header native/platform/apple/MetalM3GShader.hpp --output artifacts/native-m3g-shader.metal[0m
+2026-10-26T17:23:49.9120440Z [36;1mxcrun --sdk iphoneos metal -std=ios-metal2.4 -c artifacts/native-m3g-shader.metal -o artifacts/native-m3g-shader.air[0m
+2026-10-26T17:23:49.9235170Z shell: /bin/bash -e {0}
+2026-10-26T17:23:49.9235530Z env:
+2026-10-26T17:23:49.9235830Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:23:49.9236260Z ##[endgroup]
+2026-10-26T17:23:54.0074560Z Apple metal version 32023.883 (metalfe-32023.883)
+2026-10-26T17:23:54.0177130Z Target: air64-apple-darwin25.6.0
+2026-10-26T17:23:54.0279520Z Thread model: posix
+2026-10-26T17:23:54.0383360Z InstalledDir: /private/var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-v17.6.109.0.J0kMky/Metal.xctoolchain/usr/metal/current/bin
+2026-10-26T17:24:03.8295530Z ##[group]Run mkdir -p artifacts
+2026-10-26T17:24:03.8296230Z [36;1mmkdir -p artifacts[0m
+2026-10-26T17:24:03.8296860Z [36;1mpython3 scripts/verify-native-archive.py build/iphoneos/libg1_resources.a > artifacts/native-core-objects.json[0m
+2026-10-26T17:24:03.8297780Z [36;1mpython3 scripts/verify-native-archive.py build/iphoneos/libg1_png.a > artifacts/native-png-objects.json[0m
+2026-10-26T17:24:03.8298630Z [36;1mpython3 scripts/verify-native-archive.py build/iphoneos/libg1_vorbis.a > artifacts/native-vorbis-objects.json[0m
+2026-10-26T17:24:03.8299620Z [36;1mpython3 scripts/verify-native-archive.py build/iphoneos/libg1_metal.a > artifacts/native-metal-objects.json[0m
+2026-10-26T17:24:03.8300780Z [36;1mpython3 scripts/verify-native-app.py build/iphoneos/G1AwakeningNative.app --out artifacts/native-app-validation.json[0m
+2026-10-26T17:24:03.9877200Z shell: /bin/bash -e {0}
+2026-10-26T17:24:03.9878060Z env:
+2026-10-26T17:24:03.9879170Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:24:03.9880180Z ##[endgroup]
+2026-10-26T17:24:04.8969540Z {
+2026-10-26T17:24:04.8970880Z   "architecture": "arm64",
+2026-10-26T17:24:04.8972500Z   "executable_sha256": "6616f178dfd6ea52d79a90e59f5ca4475ceeb0168c6667e6a38de2bad2772316",
+2026-10-26T17:24:04.8973910Z   "executable_bytes": 1528144,
+2026-10-26T17:24:04.8974850Z   "system_dependencies": [
+2026-10-26T17:24:04.8975800Z     "/System/Library/Frameworks/UIKit.framework/UIKit",
+2026-10-26T17:24:04.8977050Z     "/System/Library/Frameworks/MetalKit.framework/MetalKit",
+2026-10-26T17:24:04.8978240Z     "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+2026-10-26T17:24:04.8986640Z     "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+2026-10-26T17:24:04.8987670Z     "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+2026-10-26T17:24:04.8988620Z     "/usr/lib/libz.1.dylib",
+2026-10-26T17:24:04.8989870Z     "/System/Library/Frameworks/Foundation.framework/Foundation",
+2026-10-26T17:24:04.8991300Z     "/System/Library/Frameworks/Metal.framework/Metal",
+2026-10-26T17:24:04.8992200Z     "/usr/lib/libc++.1.dylib",
+2026-10-26T17:24:04.8992780Z     "/usr/lib/libSystem.B.dylib",
+2026-10-26T17:24:04.8993820Z     "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+2026-10-26T17:24:04.8994730Z     "/usr/lib/libobjc.A.dylib"
+2026-10-26T17:24:04.8995450Z   ],
+2026-10-26T17:24:04.8995920Z   "platform": "iPhoneOS",
+2026-10-26T17:24:04.8996600Z   "minimum_os": "17.5",
+2026-10-26T17:24:04.8997370Z   "sdk_encoded": 1705216,
+2026-10-26T17:24:04.8998040Z   "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+2026-10-26T17:24:04.8999180Z   "bundle_identifier": "org.g1awakening.native.test",
+2026-10-26T17:24:04.8999900Z   "version": "0.5.0",
+2026-10-26T17:24:04.9000680Z   "artifact_kind": "Native campaign integration test",
+2026-10-26T17:24:04.9002880Z   "feature_scope": "Native tactical gameplay, continuous turns, campaign and checkpoint restore, original animated M3G battle integration; full playthrough, original output fidelity and physical iPhone XR validation remain outstanding",
+2026-10-26T17:24:04.9005270Z   "original_assets_bundled": false,
+2026-10-26T17:24:04.9005930Z   "device_execution_verified": false,
+2026-10-26T17:24:04.9006750Z   "full_playthrough_verified": false
+2026-10-26T17:24:04.9007580Z }
+2026-10-26T17:24:04.9078060Z ##[group]Run cmake -S native -B build/macos -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+2026-10-26T17:24:04.9079070Z [36;1mcmake -S native -B build/macos -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON[0m
+2026-10-26T17:24:04.9079630Z [36;1mcmake --build build/macos --parallel 2[0m
+2026-10-26T17:24:04.9155750Z shell: /bin/bash -e {0}
+2026-10-26T17:24:04.9156070Z env:
+2026-10-26T17:24:04.9156500Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:24:04.9156920Z ##[endgroup]
+2026-10-26T17:24:07.7929870Z -- The CXX compiler identification is AppleClang 21.0.0.21000101
+2026-10-26T17:24:09.0041940Z -- Detecting CXX compiler ABI info
+2026-10-26T17:24:09.2873430Z -- Detecting CXX compiler ABI info - done
+2026-10-26T17:24:09.3241590Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-10-26T17:24:09.3247300Z -- Detecting CXX compile features
+2026-10-26T17:24:09.3257120Z -- Detecting CXX compile features - done
+2026-10-26T17:24:10.3545230Z -- Found ZLIB: /Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib/libz.tbd (found version "1.2.12")
+2026-10-26T17:24:10.5977650Z -- The OBJCXX compiler identification is AppleClang 21.0.0.21000101
+2026-10-26T17:24:10.6636220Z -- Detecting OBJCXX compiler ABI info
+2026-10-26T17:24:11.0074060Z -- Detecting OBJCXX compiler ABI info - done
+2026-10-26T17:24:11.0594200Z -- Check for working OBJCXX compiler: /usr/bin/c++ - skipped
+2026-10-26T17:24:11.0664410Z -- Configuring done (6.0s)
+2026-10-26T17:24:11.1378690Z -- Generating done (0.1s)
+2026-10-26T17:24:11.1396940Z -- Build files have been written to: /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/macos
+2026-10-26T17:24:12.4992070Z [1/212] Building CXX object CMakeFiles/g1_vorbis.dir/third_party/stb/stb_vorbis.c.o
+2026-10-26T17:24:12.4994170Z clang++: warning: treating 'c' input as 'c++' when in C++ mode, this behavior is deprecated [-Wdeprecated]
+2026-10-26T17:24:12.4995570Z /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/native/third_party/stb/stb_vorbis.c:1404:75: warning: pointer comparison always evaluates to false [-Wtautological-compare]
+2026-10-26T17:24:12.5018330Z  1404 |       if (f->stream_start + loc >= f->stream_end || f->stream_start + loc < f->stream_start) {
+2026-10-26T17:24:12.5020750Z       |                                                                           ^
+2026-10-26T17:24:12.5047490Z 1 warning generated.
+2026-10-26T17:24:14.0986340Z [2/212] Building CXX object CMakeFiles/g1_png.dir/third_party/lodepng/lodepng.cpp.o
+2026-10-26T17:24:14.3569290Z [3/212] Linking CXX static library libg1_vorbis.a
+2026-10-26T17:24:14.9410680Z [4/212] Linking CXX static library libg1_png.a
+2026-10-26T17:24:15.3668340Z [5/212] Building CXX object CMakeFiles/g1_resources.dir/src/Archive.cpp.o
+2026-10-26T17:24:15.5880840Z [6/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3G.cpp.o
+2026-10-26T17:24:16.2247910Z [7/212] Building CXX object CMakeFiles/g1_resources.dir/src/Mission.cpp.o
+2026-10-26T17:24:16.8050010Z [8/212] Building CXX object CMakeFiles/g1_resources.dir/src/Movement.cpp.o
+2026-10-26T17:24:17.4199170Z [9/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GScene.cpp.o
+2026-10-26T17:24:17.8334570Z [10/212] Building CXX object CMakeFiles/g1_resources.dir/src/Atlas.cpp.o
+2026-10-26T17:24:18.1375360Z [11/212] Building CXX object CMakeFiles/g1_resources.dir/src/Image.cpp.o
+2026-10-26T17:24:18.3385330Z [12/212] Building CXX object CMakeFiles/g1_resources.dir/src/SpriteGeometry.cpp.o
+2026-10-26T17:24:18.5783660Z [13/212] Building CXX object CMakeFiles/g1_resources.dir/src/SpriteAnimation.cpp.o
+2026-10-26T17:24:18.6289730Z [14/212] Building CXX object CMakeFiles/g1_resources.dir/src/SpritePlacement.cpp.o
+2026-10-26T17:24:19.3632440Z [15/212] Building CXX object CMakeFiles/g1_resources.dir/src/Terrain.cpp.o
+2026-10-26T17:24:19.7679950Z [16/212] Building CXX object CMakeFiles/g1_resources.dir/src/World.cpp.o
+2026-10-26T17:24:20.2078890Z [17/212] Building CXX object CMakeFiles/g1_resources.dir/src/Scene.cpp.o
+2026-10-26T17:24:20.4306290Z [18/212] Building CXX object CMakeFiles/g1_resources.dir/src/InitialPresentation.cpp.o
+2026-10-26T17:24:20.7914650Z [19/212] Building CXX object CMakeFiles/g1_resources.dir/src/Audio.cpp.o
+2026-10-26T17:24:21.0473530Z [20/212] Building CXX object CMakeFiles/g1_resources.dir/src/MovementAction.cpp.o
+2026-10-26T17:24:21.2601290Z [21/212] Building CXX object CMakeFiles/g1_resources.dir/src/MovementArrival.cpp.o
+2026-10-26T17:24:21.5725420Z [22/212] Building CXX object CMakeFiles/g1_resources.dir/src/Text.cpp.o
+2026-10-26T17:24:21.8790060Z [23/212] Building CXX object CMakeFiles/g1_resources.dir/src/MissionExecution.cpp.o
+2026-10-26T17:24:22.2223230Z [24/212] Building CXX object CMakeFiles/g1_resources.dir/src/CaptureAction.cpp.o
+2026-10-26T17:24:22.5180720Z [25/212] Building CXX object CMakeFiles/g1_resources.dir/src/Combat.cpp.o
+2026-10-26T17:24:22.7265080Z [26/212] Building CXX object CMakeFiles/g1_resources.dir/src/TransformAction.cpp.o
+2026-10-26T17:24:23.5556980Z [27/212] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionAI.cpp.o
+2026-10-26T17:24:23.7223940Z [28/212] Building CXX object CMakeFiles/g1_resources.dir/src/GameSession.cpp.o
+2026-10-26T17:24:24.3896240Z [29/212] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionActions.cpp.o
+2026-10-26T17:24:24.8706850Z [30/212] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionWorld.cpp.o
+2026-10-26T17:24:24.9480390Z [31/212] Building CXX object CMakeFiles/g1_resources.dir/src/MissionProgression.cpp.o
+2026-10-26T17:24:25.7100060Z [32/212] Building CXX object CMakeFiles/g1_resources.dir/src/MissionObjectives.cpp.o
+2026-10-26T17:24:25.8583820Z [33/212] Building CXX object CMakeFiles/g1_resources.dir/src/TurnProgression.cpp.o
+2026-10-26T17:24:26.3107620Z [34/212] Building CXX object CMakeFiles/g1_resources.dir/src/AIIncome.cpp.o
+2026-10-26T17:24:27.0925050Z [35/212] Building CXX object CMakeFiles/g1_resources.dir/src/AI.cpp.o
+2026-10-26T17:24:27.1629460Z [36/212] Building CXX object CMakeFiles/g1_resources.dir/src/AISite.cpp.o
+2026-10-26T17:24:27.7616250Z [37/212] Building CXX object CMakeFiles/g1_resources.dir/src/AudioEvents.cpp.o
+2026-10-26T17:24:27.9536290Z [38/212] Building CXX object CMakeFiles/g1_resources.dir/src/SaveStore.cpp.o
+2026-10-26T17:24:28.4860550Z [39/212] Building CXX object CMakeFiles/g1_resources.dir/src/UnitSpawn.cpp.o
+2026-10-26T17:24:28.6461080Z [40/212] Building CXX object CMakeFiles/g1_resources.dir/src/UpgradeAction.cpp.o
+2026-10-26T17:24:29.7813600Z [41/212] Building CXX object CMakeFiles/g1_resources.dir/src/HealAction.cpp.o
+2026-10-26T17:24:29.8485560Z [42/212] Building CXX object CMakeFiles/g1_resources.dir/src/AIExecution.cpp.o
+2026-10-26T17:24:34.8780230Z [43/212] Building CXX object CMakeFiles/g1_resources.dir/src/WorldCommands.cpp.o
+2026-10-26T17:24:34.9105680Z [44/212] Building CXX object CMakeFiles/g1_resources.dir/src/CampaignController.cpp.o
+2026-10-26T17:24:35.7684060Z [45/212] Building CXX object CMakeFiles/g1_resources.dir/src/UnitInteractions.cpp.o
+2026-10-26T17:24:36.8770530Z [46/212] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainDecorations.cpp.o
+2026-10-26T17:24:38.0536270Z [47/212] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainRuntime.cpp.o
+2026-10-26T17:24:38.4799450Z [48/212] Building CXX object CMakeFiles/g1_resources.dir/src/SessionSave.cpp.o
+2026-10-26T17:24:39.2249170Z [49/212] Building CXX object CMakeFiles/g1_resources.dir/src/UndoAction.cpp.o
+2026-10-26T17:24:39.8489810Z [50/212] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainSpriteDecorations.cpp.o
+2026-10-26T17:24:39.9616180Z [51/212] Building CXX object CMakeFiles/g1_resources.dir/src/UnitCommands.cpp.o
+2026-10-26T17:24:41.4576570Z [52/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GScenePose.cpp.o
+2026-10-26T17:24:42.9643390Z [53/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GAnimation.cpp.o
+2026-10-26T17:24:43.1304930Z [54/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GCamera.cpp.o
+2026-10-26T17:24:43.7980910Z [55/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleTimeline.cpp.o
+2026-10-26T17:24:44.3744690Z [56/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GSprite3D.cpp.o
+2026-10-26T17:24:45.4939140Z [57/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GRenderFrame.cpp.o
+2026-10-26T17:24:46.2740720Z [58/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBindings.cpp.o
+2026-10-26T17:24:47.0539490Z [59/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleCamera.cpp.o
+2026-10-26T17:24:48.2250550Z [60/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleController.cpp.o
+2026-10-26T17:24:48.3099980Z [61/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GMaterialOverrides.cpp.o
+2026-10-26T17:24:53.4789150Z [62/212] Building OBJCXX object CMakeFiles/g1_metal.dir/platform/apple/MetalRenderer.mm.o
+2026-10-26T17:24:53.5731780Z [63/212] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattlePresentation.cpp.o
+2026-10-26T17:24:54.1856550Z [64/212] Linking CXX static library libg1_resources.a
+2026-10-26T17:24:55.7005010Z [65/212] Building CXX object CMakeFiles/g1_asset_probe.dir/tools/g1_asset_probe.cpp.o
+2026-10-26T17:24:57.1216950Z [66/212] Building CXX object CMakeFiles/m3g_probe.dir/tools/m3g_probe.cpp.o
+2026-10-26T17:24:57.8045640Z [67/212] Building OBJCXX object CMakeFiles/g1_metal.dir/platform/apple/MetalM3GRenderer.mm.o
+2026-10-26T17:24:57.8051610Z /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/native/platform/apple/MetalM3GRenderer.mm:211:83: warning: 'fastMathEnabled' is deprecated: first deprecated in macOS 15.0 - Use mathMode instead [-Wdeprecated-declarations]
+2026-10-26T17:24:57.8057040Z   211 |     NSError* error=nil;MTLCompileOptions* options=[MTLCompileOptions new];options.fastMathEnabled=NO;
+2026-10-26T17:24:57.8060600Z       |                                                                                   ^
+2026-10-26T17:24:57.8093080Z /Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Metal.framework/Headers/MTLLibrary.h:308:39: note: 'fastMathEnabled' has been explicitly marked deprecated here
+2026-10-26T17:24:57.8109780Z   308 | @property (readwrite, nonatomic) BOOL fastMathEnabled API_DEPRECATED("Use mathMode instead", macos(10.11, 15.0), ios(8.0, 18.0));
+2026-10-26T17:24:57.8112940Z       |                                       ^
+2026-10-26T17:24:57.8113390Z 1 warning generated.
+2026-10-26T17:24:58.9255850Z [68/212] Building CXX object CMakeFiles/m3g_scene_probe.dir/tools/m3g_scene_probe.cpp.o
+2026-10-26T17:24:59.1987240Z [69/212] Building CXX object CMakeFiles/m3g_material_probe.dir/tools/m3g_material_probe.cpp.o
+2026-10-26T17:25:00.9981500Z [70/212] Building CXX object CMakeFiles/m3g_battle_presentation_probe.dir/tools/m3g_battle_presentation_probe.cpp.o
+2026-10-26T17:25:01.9379230Z [71/212] Building CXX object CMakeFiles/m3g_battle_session_probe.dir/tools/m3g_battle_session_probe.cpp.o
+2026-10-26T17:25:02.3372960Z [72/212] Building CXX object CMakeFiles/mission_probe.dir/tools/mission_probe.cpp.o
+2026-10-26T17:25:03.6465160Z [73/212] Building CXX object CMakeFiles/atlas_probe.dir/tools/atlas_probe.cpp.o
+2026-10-26T17:25:03.7817390Z [74/212] Building CXX object CMakeFiles/image_probe.dir/tools/image_probe.cpp.o
+2026-10-26T17:25:05.5759980Z [75/212] Building CXX object CMakeFiles/world_probe.dir/tools/world_probe.cpp.o
+2026-10-26T17:25:05.5963780Z [76/212] Building CXX object CMakeFiles/terrain_probe.dir/tools/terrain_probe.cpp.o
+2026-10-26T17:25:06.9741400Z [77/212] Building CXX object CMakeFiles/scene_probe.dir/tools/scene_probe.cpp.o
+2026-10-26T17:25:07.9065930Z [78/212] Building CXX object CMakeFiles/scene_catalog_probe.dir/tools/scene_catalog_probe.cpp.o
+2026-10-26T17:25:08.6253160Z [79/212] Building CXX object CMakeFiles/world_commands_probe.dir/tools/world_commands_probe.cpp.o
+2026-10-26T17:25:09.7307690Z [80/212] Building CXX object CMakeFiles/session_campaign_probe.dir/tools/session_campaign_probe.cpp.o
+2026-10-26T17:25:10.7231850Z [81/212] Building CXX object CMakeFiles/audio_probe.dir/tools/audio_probe.cpp.o
+2026-10-26T17:25:11.9979060Z [82/212] Building CXX object CMakeFiles/mission_execution_probe.dir/tools/mission_execution_probe.cpp.o
+2026-10-26T17:25:13.6505520Z [83/212] Building CXX object CMakeFiles/g1_m3g_scene_tests.dir/tests/m3g_scene_test.cpp.o
+2026-10-26T17:25:16.5809470Z [84/212] Building CXX object CMakeFiles/g1_m3g_animation_tests.dir/tests/m3g_animation_test.cpp.o
+2026-10-26T17:25:17.2590190Z [85/212] Building CXX object CMakeFiles/g1_session_playthrough_probe.dir/tools/session_playthrough_probe.cpp.o
+2026-10-26T17:25:19.7779510Z [86/212] Building CXX object CMakeFiles/g1_m3g_scene_pose_tests.dir/tests/m3g_scene_pose_test.cpp.o
+2026-10-26T17:25:21.1691830Z [87/212] Building CXX object CMakeFiles/g1_m3g_camera_tests.dir/tests/m3g_camera_test.cpp.o
+2026-10-26T17:25:21.8641410Z [88/212] Building CXX object CMakeFiles/g1_m3g_spline_tests.dir/tests/m3g_spline_test.cpp.o
+2026-10-26T17:25:21.9385440Z [89/212] Building CXX object CMakeFiles/g1_m3g_battle_timeline_tests.dir/tests/m3g_battle_timeline_test.cpp.o
+2026-10-26T17:25:22.8413110Z [90/212] Building CXX object CMakeFiles/g1_m3g_render_asset_tests.dir/tests/m3g_render_asset_test.cpp.o
+2026-10-26T17:25:23.3686970Z [91/212] Building CXX object CMakeFiles/g1_m3g_render_frame_tests.dir/tests/m3g_render_frame_test.cpp.o
+2026-10-26T17:25:24.1875400Z [92/212] Building CXX object CMakeFiles/g1_m3g_bindings_tests.dir/tests/m3g_bindings_test.cpp.o
+2026-10-26T17:25:25.4757420Z [93/212] Building CXX object CMakeFiles/g1_m3g_runtime_state_tests.dir/tests/m3g_runtime_state_test.cpp.o
+2026-10-26T17:25:25.7760110Z [94/212] Building CXX object CMakeFiles/g1_m3g_battle_camera_tests.dir/tests/m3g_battle_camera_test.cpp.o
+2026-10-26T17:25:26.7799680Z [95/212] Building CXX object CMakeFiles/g1_m3g_sprite3d_tests.dir/tests/m3g_sprite3d_test.cpp.o
+2026-10-26T17:25:27.4228550Z [96/212] Building CXX object CMakeFiles/g1_m3g_material_overrides_tests.dir/tests/m3g_material_overrides_test.cpp.o
+2026-10-26T17:25:27.7479480Z [97/212] Building CXX object CMakeFiles/g1_m3g_battle_controller_tests.dir/tests/m3g_battle_controller_test.cpp.o
+2026-10-26T17:25:28.1367480Z [98/212] Building CXX object CMakeFiles/g1_mission_tests.dir/tests/mission_test.cpp.o
+2026-10-26T17:25:28.6774090Z [99/212] Building CXX object CMakeFiles/g1_movement_tests.dir/tests/movement_test.cpp.o
+2026-10-26T17:25:28.9618040Z [100/212] Building CXX object CMakeFiles/g1_movement_action_tests.dir/tests/movement_action_test.cpp.o
+2026-10-26T17:25:29.3810580Z [101/212] Building CXX object CMakeFiles/g1_movement_arrival_tests.dir/tests/movement_arrival_test.cpp.o
+2026-10-26T17:25:29.9942280Z [102/212] Building CXX object CMakeFiles/g1_text_tests.dir/tests/text_test.cpp.o
+2026-10-26T17:25:31.2932620Z [103/212] Building CXX object CMakeFiles/g1_capture_action_tests.dir/tests/capture_action_test.cpp.o
+2026-10-26T17:25:31.3062150Z [104/212] Building CXX object CMakeFiles/g1_mission_execution_tests.dir/tests/mission_execution_test.cpp.o
+2026-10-26T17:25:32.0324970Z [105/212] Building CXX object CMakeFiles/g1_transform_action_tests.dir/tests/transform_action_test.cpp.o
+2026-10-26T17:25:32.7663940Z [106/212] Building CXX object CMakeFiles/g1_combat_tests.dir/tests/combat_test.cpp.o
+2026-10-26T17:25:33.7209130Z [107/212] Building CXX object CMakeFiles/g1_mission_progression_tests.dir/tests/mission_progression_test.cpp.o
+2026-10-26T17:25:34.0037690Z [108/212] Building CXX object CMakeFiles/g1_game_session_tests.dir/tests/game_session_test.cpp.o
+2026-10-26T17:25:34.9194290Z [109/212] Building CXX object CMakeFiles/g1_turn_tests.dir/tests/turn_test.cpp.o
+2026-10-26T17:25:35.0562850Z [110/212] Building CXX object CMakeFiles/g1_mission_objectives_tests.dir/tests/mission_objectives_test.cpp.o
+2026-10-26T17:25:36.8124730Z [111/212] Building CXX object CMakeFiles/g1_ai_attack_tests.dir/tests/ai_attack_test.cpp.o
+2026-10-26T17:25:36.8959940Z [112/212] Building CXX object CMakeFiles/g1_ai_site_tests.dir/tests/ai_site_test.cpp.o
+2026-10-26T17:25:37.8386930Z [113/212] Building CXX object CMakeFiles/g1_image_tests.dir/tests/image_test.cpp.o
+2026-10-26T17:25:37.9907260Z [114/212] Building CXX object CMakeFiles/g1_atlas_tests.dir/tests/atlas_test.cpp.o
+2026-10-26T17:25:38.6251280Z [115/212] Building CXX object CMakeFiles/g1_sprite_geometry_tests.dir/tests/sprite_geometry_test.cpp.o
+2026-10-26T17:25:39.0647290Z [116/212] Building CXX object CMakeFiles/g1_terrain_tests.dir/tests/terrain_test.cpp.o
+2026-10-26T17:25:39.8705110Z [117/212] Building CXX object CMakeFiles/g1_sprite_animation_tests.dir/tests/sprite_animation_test.cpp.o
+2026-10-26T17:25:40.6609890Z [118/212] Building CXX object CMakeFiles/g1_sprite_placement_tests.dir/tests/sprite_placement_test.cpp.o
+2026-10-26T17:25:40.7281780Z [119/212] Building CXX object CMakeFiles/g1_world_tests.dir/tests/world_test.cpp.o
+2026-10-26T17:25:41.3508270Z [120/212] Building CXX object CMakeFiles/g1_audio_tests.dir/tests/audio_test.cpp.o
+2026-10-26T17:25:41.4267640Z [121/212] Building CXX object CMakeFiles/g1_initial_presentation_tests.dir/tests/initial_presentation_test.cpp.o
+2026-10-26T17:25:42.2658560Z [122/212] Building CXX object CMakeFiles/g1_audio_events_tests.dir/tests/audio_events_test.cpp.o
+2026-10-26T17:25:42.3647210Z [123/212] Building CXX object CMakeFiles/g1_audio_maintenance_tests.dir/tests/audio_maintenance_test.cpp.o
+2026-10-26T17:25:43.1471310Z [124/212] Building CXX object CMakeFiles/g1_menu_music_tests.dir/tests/menu_music_test.cpp.o
+2026-10-26T17:25:43.2240070Z [125/212] Building CXX object CMakeFiles/g1_save_store_tests.dir/tests/save_store_test.cpp.o
+2026-10-26T17:25:44.1466060Z [126/212] Building CXX object CMakeFiles/g1_unit_spawn_tests.dir/tests/unit_spawn_test.cpp.o
+2026-10-26T17:25:44.4445400Z [127/212] Building CXX object CMakeFiles/g1_unit_actions_tests.dir/tests/unit_actions_test.cpp.o
+2026-10-26T17:25:45.4168050Z [128/212] Building CXX object CMakeFiles/g1_ai_execution_tests.dir/tests/ai_execution_test.cpp.o
+2026-10-26T17:25:47.0303190Z [129/212] Building CXX object CMakeFiles/g1_world_commands_tests.dir/tests/world_commands_test.cpp.o
+2026-10-26T17:25:48.3726150Z [130/212] Building CXX object CMakeFiles/g1_campaign_controller_tests.dir/tests/campaign_controller_test.cpp.o
+2026-10-26T17:25:49.9871340Z [131/212] Building CXX object CMakeFiles/g1_unit_interactions_tests.dir/tests/unit_interactions_test.cpp.o
+2026-10-26T17:25:50.1343640Z [132/212] Building CXX object CMakeFiles/g1_session_save_tests.dir/tests/session_save_test.cpp.o
+2026-10-26T17:25:51.0907480Z [133/212] Building CXX object CMakeFiles/g1_unit_commands_tests.dir/tests/unit_commands_test.cpp.o
+2026-10-26T17:25:51.1257550Z [134/212] Building CXX object CMakeFiles/g1_terrain_decorations_tests.dir/tests/terrain_decorations_test.cpp.o
+2026-10-26T17:25:52.1363380Z [135/212] Building CXX object CMakeFiles/g1_terrain_animated_tests.dir/tests/terrain_animated_test.cpp.o
+2026-10-26T17:25:52.2344760Z [136/212] Linking CXX static library libg1_metal.a
+2026-10-26T17:25:52.7980880Z [137/212] Building CXX object CMakeFiles/g1_terrain_sprite_decorations_tests.dir/tests/terrain_sprite_decorations_test.cpp.o
+2026-10-26T17:25:54.1924780Z [138/212] Building OBJCXX object CMakeFiles/g1_metal_probe.dir/platform/apple/MetalProbe.mm.o
+2026-10-26T17:25:54.3599690Z [139/212] Linking CXX executable g1_asset_probe
+2026-10-26T17:25:54.4429690Z [140/212] Linking CXX executable m3g_probe
+2026-10-26T17:25:54.5209760Z [141/212] Linking CXX executable m3g_scene_probe
+2026-10-26T17:25:54.5981500Z [142/212] Linking CXX executable m3g_material_probe
+2026-10-26T17:25:54.6684200Z [143/212] Linking CXX executable m3g_battle_presentation_probe
+2026-10-26T17:25:54.7846890Z [144/212] Building OBJCXX object CMakeFiles/g1_m3g_metal_probe.dir/platform/apple/MetalM3GProbe.mm.o
+2026-10-26T17:25:54.7993820Z [145/212] Linking CXX executable m3g_battle_session_probe
+2026-10-26T17:25:54.8809290Z [146/212] Linking CXX executable mission_probe
+2026-10-26T17:25:54.8816850Z [147/212] Linking CXX executable atlas_probe
+2026-10-26T17:25:54.9524960Z [148/212] Linking CXX executable image_probe
+2026-10-26T17:25:54.9696460Z [149/212] Linking CXX executable terrain_probe
+2026-10-26T17:25:55.0599930Z [150/212] Linking CXX executable world_probe
+2026-10-26T17:25:55.0693450Z [151/212] Linking CXX executable scene_probe
+2026-10-26T17:25:55.1617890Z [152/212] Linking CXX executable scene_catalog_probe
+2026-10-26T17:25:55.1690160Z [153/212] Linking CXX executable world_commands_probe
+2026-10-26T17:25:55.2493630Z [154/212] Linking CXX executable g1_session_playthrough_probe
+2026-10-26T17:25:55.2514590Z [155/212] Linking CXX executable session_campaign_probe
+2026-10-26T17:25:55.3232130Z [156/212] Linking CXX executable audio_probe
+2026-10-26T17:25:55.3263400Z [157/212] Linking CXX executable mission_execution_probe
+2026-10-26T17:25:55.3930880Z [158/212] Linking CXX executable g1_m3g_animation_tests
+2026-10-26T17:25:55.3943310Z [159/212] Linking CXX executable g1_m3g_scene_tests
+2026-10-26T17:25:55.4544110Z [160/212] Linking CXX executable g1_m3g_scene_pose_tests
+2026-10-26T17:25:55.4548010Z [161/212] Linking CXX executable g1_m3g_spline_tests
+2026-10-26T17:25:55.5302990Z [162/212] Linking CXX executable g1_m3g_battle_timeline_tests
+2026-10-26T17:25:55.5306750Z [163/212] Linking CXX executable g1_m3g_camera_tests
+2026-10-26T17:25:55.5952140Z [164/212] Linking CXX executable g1_m3g_render_asset_tests
+2026-10-26T17:25:55.5955330Z [165/212] Linking CXX executable g1_m3g_render_frame_tests
+2026-10-26T17:25:55.6566570Z [166/212] Linking CXX executable g1_m3g_battle_camera_tests
+2026-10-26T17:25:55.6594230Z [167/212] Linking CXX executable g1_m3g_bindings_tests
+2026-10-26T17:25:55.7232930Z [168/212] Linking CXX executable g1_m3g_sprite3d_tests
+2026-10-26T17:25:55.7239720Z [169/212] Linking CXX executable g1_m3g_runtime_state_tests
+2026-10-26T17:25:55.7858310Z [170/212] Linking CXX executable g1_m3g_material_overrides_tests
+2026-10-26T17:25:55.7861070Z [171/212] Linking CXX executable g1_m3g_battle_controller_tests
+2026-10-26T17:25:55.8507030Z [172/212] Linking CXX executable g1_movement_tests
+2026-10-26T17:25:55.8529470Z [173/212] Linking CXX executable g1_mission_tests
+2026-10-26T17:25:55.9108800Z [174/212] Linking CXX executable g1_movement_action_tests
+2026-10-26T17:25:55.9120840Z [175/212] Linking CXX executable g1_movement_arrival_tests
+2026-10-26T17:25:55.9854890Z [176/212] Linking CXX executable g1_mission_execution_tests
+2026-10-26T17:25:55.9863120Z [177/212] Linking CXX executable g1_text_tests
+2026-10-26T17:25:56.0730570Z [178/212] Linking CXX executable g1_capture_action_tests
+2026-10-26T17:25:56.0791570Z [179/212] Linking CXX executable g1_transform_action_tests
+2026-10-26T17:25:56.1450730Z [180/212] Linking CXX executable g1_combat_tests
+2026-10-26T17:25:56.1499030Z [181/212] Linking CXX executable g1_game_session_tests
+2026-10-26T17:25:56.2239300Z [182/212] Linking CXX executable g1_turn_tests
+2026-10-26T17:25:56.2377150Z [183/212] Linking CXX executable g1_mission_progression_tests
+2026-10-26T17:25:56.2980630Z [184/212] Linking CXX executable g1_mission_objectives_tests
+2026-10-26T17:25:56.2984360Z [185/212] Linking CXX executable g1_ai_attack_tests
+2026-10-26T17:25:56.3810330Z [186/212] Linking CXX executable g1_atlas_tests
+2026-10-26T17:25:56.3911500Z [187/212] Linking CXX executable g1_ai_site_tests
+2026-10-26T17:25:56.4641850Z [188/212] Linking CXX executable g1_sprite_geometry_tests
+2026-10-26T17:25:56.4696990Z [189/212] Linking CXX executable g1_image_tests
+2026-10-26T17:25:56.5611580Z [190/212] Linking CXX executable g1_terrain_tests
+2026-10-26T17:25:56.5662830Z [191/212] Linking CXX executable g1_world_tests
+2026-10-26T17:25:56.6414780Z [192/212] Linking CXX executable g1_sprite_animation_tests
+2026-10-26T17:25:56.6448740Z [193/212] Linking CXX executable g1_sprite_placement_tests
+2026-10-26T17:25:56.7372310Z [194/212] Linking CXX executable g1_initial_presentation_tests
+2026-10-26T17:25:56.7401480Z [195/212] Linking CXX executable g1_audio_tests
+2026-10-26T17:25:56.8129880Z [196/212] Linking CXX executable g1_audio_maintenance_tests
+2026-10-26T17:25:56.8319070Z [197/212] Linking CXX executable g1_audio_events_tests
+2026-10-26T17:25:56.9026880Z [198/212] Linking CXX executable g1_save_store_tests
+2026-10-26T17:25:56.9131850Z [199/212] Linking CXX executable g1_menu_music_tests
+2026-10-26T17:25:56.9759800Z [200/212] Linking CXX executable g1_unit_spawn_tests
+2026-10-26T17:25:56.9775680Z [201/212] Linking CXX executable g1_unit_actions_tests
+2026-10-26T17:25:57.0552290Z [202/212] Linking CXX executable g1_ai_execution_tests
+2026-10-26T17:25:57.0653990Z [203/212] Linking CXX executable g1_world_commands_tests
+2026-10-26T17:25:57.1377500Z [204/212] Linking CXX executable g1_session_save_tests
+2026-10-26T17:25:57.1477920Z [205/212] Linking CXX executable g1_campaign_controller_tests
+2026-10-26T17:25:57.2128660Z [206/212] Linking CXX executable g1_unit_interactions_tests
+2026-10-26T17:25:57.2229520Z [207/212] Linking CXX executable g1_unit_commands_tests
+2026-10-26T17:25:57.2865580Z [208/212] Linking CXX executable g1_terrain_animated_tests
+2026-10-26T17:25:57.2966240Z [209/212] Linking CXX executable g1_terrain_decorations_tests
+2026-10-26T17:25:57.3711340Z [210/212] Linking CXX executable g1_terrain_sprite_decorations_tests
+2026-10-26T17:25:57.4371180Z [211/212] Linking CXX executable g1_metal_probe
+2026-10-26T17:25:57.4984390Z [212/212] Linking CXX executable g1_m3g_metal_probe
+2026-10-26T17:25:57.5328770Z ##[group]Run ctest --test-dir build/macos -E '^(metal_offscreen_pixels|m3g_metal_offscreen_pixels)$' --output-on-failure --no-tests=error
+2026-10-26T17:25:57.5329700Z [36;1mctest --test-dir build/macos -E '^(metal_offscreen_pixels|m3g_metal_offscreen_pixels)$' --output-on-failure --no-tests=error[0m
+2026-10-26T17:25:57.7600750Z shell: /bin/bash -e {0}
+2026-10-26T17:25:57.7601680Z env:
+2026-10-26T17:25:57.7602380Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:25:57.7603650Z ##[endgroup]
+2026-10-26T17:25:57.9713580Z Test project /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/macos
+2026-10-26T17:25:57.9781370Z       Start  1: m3g_scene_contract
+2026-10-26T17:25:57.9855250Z  1/55 Test  #1: m3g_scene_contract .....................................   Passed    0.01 sec
+2026-10-26T17:25:57.9856880Z       Start  2: m3g_animation_contract
+2026-10-26T17:25:58.0340960Z  2/55 Test  #2: m3g_animation_contract .................................   Passed    0.05 sec
+2026-10-26T17:25:58.0343650Z       Start  3: m3g_spline_contract
+2026-10-26T17:25:58.0379670Z  3/55 Test  #3: m3g_spline_contract ....................................   Passed    0.00 sec
+2026-10-26T17:25:58.0380320Z       Start  4: m3g_scene_pose_contract
+2026-10-26T17:25:58.1276530Z  4/55 Test  #4: m3g_scene_pose_contract ................................   Passed    0.09 sec
+2026-10-26T17:25:58.1277280Z       Start  5: m3g_camera_contract
+2026-10-26T17:25:58.1305790Z  5/55 Test  #5: m3g_camera_contract ....................................   Passed    0.00 sec
+2026-10-26T17:25:58.1313850Z       Start  6: m3g_battle_timeline_contract
+2026-10-26T17:25:58.1355440Z  6/55 Test  #6: m3g_battle_timeline_contract ...........................   Passed    0.00 sec
+2026-10-26T17:25:58.1358640Z       Start  7: m3g_render_asset_contract
+2026-10-26T17:25:58.1679920Z  7/55 Test  #7: m3g_render_asset_contract ..............................   Passed    0.03 sec
+2026-10-26T17:25:58.1681340Z       Start  8: m3g_render_frame_contract
+2026-10-26T17:25:58.1734170Z  8/55 Test  #8: m3g_render_frame_contract ..............................   Passed    0.00 sec
+2026-10-26T17:25:58.1735650Z       Start  9: m3g_bindings_contract
+2026-10-26T17:25:58.1912100Z  9/55 Test  #9: m3g_bindings_contract ..................................   Passed    0.02 sec
+2026-10-26T17:25:58.1913030Z       Start 10: m3g_battle_camera_contract
+2026-10-26T17:25:58.1946420Z 10/55 Test #10: m3g_battle_camera_contract .............................   Passed    0.00 sec
+2026-10-26T17:25:58.1947290Z       Start 11: m3g_runtime_state_contract
+2026-10-26T17:25:58.1981590Z 11/55 Test #11: m3g_runtime_state_contract .............................   Passed    0.00 sec
+2026-10-26T17:25:58.1983020Z       Start 12: m3g_sprite3d_original_function_vectors
+2026-10-26T17:25:58.2095030Z 12/55 Test #12: m3g_sprite3d_original_function_vectors .................   Passed    0.01 sec
+2026-10-26T17:25:58.2095870Z       Start 13: m3g_material_overrides_original_vectors
+2026-10-26T17:25:58.2284920Z 13/55 Test #13: m3g_material_overrides_original_vectors ................   Passed    0.02 sec
+2026-10-26T17:25:58.2311730Z       Start 14: m3g_battle_controller_original_vectors
+2026-10-26T17:25:58.2680130Z 14/55 Test #14: m3g_battle_controller_original_vectors .................   Passed    0.04 sec
+2026-10-26T17:25:58.2681280Z       Start 15: mission_format_contract
+2026-10-26T17:25:58.2776210Z 15/55 Test #15: mission_format_contract ................................   Passed    0.01 sec
+2026-10-26T17:25:58.2777390Z       Start 16: movement_original_function_vectors
+2026-10-26T17:25:58.2853240Z 16/55 Test #16: movement_original_function_vectors .....................   Passed    0.01 sec
+2026-10-26T17:25:58.2854080Z       Start 17: movement_action_contract
+2026-10-26T17:25:58.2908570Z 17/55 Test #17: movement_action_contract ...............................   Passed    0.00 sec
+2026-10-26T17:25:58.2909950Z       Start 18: movement_arrival_contract
+2026-10-26T17:25:58.2948200Z 18/55 Test #18: movement_arrival_contract ..............................   Passed    0.00 sec
+2026-10-26T17:25:58.2949980Z       Start 19: text_original_function_vectors
+2026-10-26T17:25:58.3004950Z 19/55 Test #19: text_original_function_vectors .........................   Passed    0.01 sec
+2026-10-26T17:25:58.3006740Z       Start 20: mission_execution_original_function_vectors
+2026-10-26T17:25:58.3106610Z 20/55 Test #20: mission_execution_original_function_vectors ............   Passed    0.01 sec
+2026-10-26T17:25:58.3108340Z       Start 21: capture_action_contract
+2026-10-26T17:25:58.3162100Z 21/55 Test #21: capture_action_contract ................................   Passed    0.01 sec
+2026-10-26T17:25:58.3164820Z       Start 22: transform_action_contract
+2026-10-26T17:25:58.3212780Z 22/55 Test #22: transform_action_contract ..............................   Passed    0.00 sec
+2026-10-26T17:25:58.3215700Z       Start 23: combat_original_function_vectors
+2026-10-26T17:25:58.3446540Z 23/55 Test #23: combat_original_function_vectors .......................   Passed    0.02 sec
+2026-10-26T17:25:58.3449920Z       Start 24: native_session_integration
+2026-10-26T17:25:58.3499470Z 24/55 Test #24: native_session_integration .............................   Passed    0.00 sec
+2026-10-26T17:25:58.3500290Z       Start 25: mission_progression_original_function_vectors
+2026-10-26T17:25:58.3569450Z 25/55 Test #25: mission_progression_original_function_vectors ..........   Passed    0.01 sec
+2026-10-26T17:25:58.3570520Z       Start 26: turn_original_function_vectors
+2026-10-26T17:25:58.3764490Z 26/55 Test #26: turn_original_function_vectors .........................   Passed    0.02 sec
+2026-10-26T17:25:58.3765650Z       Start 27: mission_objectives_original_function_vectors
+2026-10-26T17:25:58.3954230Z 27/55 Test #27: mission_objectives_original_function_vectors ...........   Passed    0.02 sec
+2026-10-26T17:25:58.3957110Z       Start 28: ai_attack_original_function_vectors
+2026-10-26T17:25:58.4156600Z 28/55 Test #28: ai_attack_original_function_vectors ....................   Passed    0.02 sec
+2026-10-26T17:25:58.4160000Z       Start 29: ai_planner_original_function_vectors
+2026-10-26T17:25:58.4282700Z 29/55 Test #29: ai_planner_original_function_vectors ...................   Passed    0.01 sec
+2026-10-26T17:25:58.4285020Z       Start 30: ai_turn_admission_original_function_vectors
+2026-10-26T17:25:58.5012580Z 30/55 Test #30: ai_turn_admission_original_function_vectors ............   Passed    0.07 sec
+2026-10-26T17:25:58.5097360Z       Start 31: ai_site_original_function_vectors
+2026-10-26T17:25:58.5668330Z 31/55 Test #31: ai_site_original_function_vectors ......................   Passed    0.07 sec
+2026-10-26T17:25:58.5770100Z       Start 32: atlas_format_geometry_contract
+2026-10-26T17:25:58.5987430Z 32/55 Test #32: atlas_format_geometry_contract .........................   Passed    0.03 sec
+2026-10-26T17:25:58.6084220Z       Start 33: png_rgba_contract
+2026-10-26T17:25:58.6084830Z 33/55 Test #33: png_rgba_contract ......................................   Passed    0.01 sec
+2026-10-26T17:25:58.6088600Z       Start 34: sprite_geometry_contract
+2026-10-26T17:25:58.6128040Z 34/55 Test #34: sprite_geometry_contract ...............................   Passed    0.00 sec
+2026-10-26T17:25:58.6129530Z       Start 35: terrain_original_function_vectors
+2026-10-26T17:25:58.6257020Z 35/55 Test #35: terrain_original_function_vectors ......................   Passed    0.01 sec
+2026-10-26T17:25:58.6289040Z       Start 36: world_bootstrap_contract
+2026-10-26T17:25:58.6326590Z 36/55 Test #36: world_bootstrap_contract ...............................   Passed    0.01 sec
+2026-10-26T17:25:58.6329700Z       Start 37: sprite_animation_contract
+2026-10-26T17:25:58.6370990Z 37/55 Test #37: sprite_animation_contract ..............................   Passed    0.00 sec
+2026-10-26T17:25:58.6374580Z       Start 38: sprite_placement_contract
+2026-10-26T17:25:58.6412790Z 38/55 Test #38: sprite_placement_contract ..............................   Passed    0.00 sec
+2026-10-26T17:25:58.6414250Z       Start 39: initial_animation_table_contract
+2026-10-26T17:25:58.6458940Z 39/55 Test #39: initial_animation_table_contract .......................   Passed    0.00 sec
+2026-10-26T17:25:58.6461630Z       Start 40: vorbis_format_contract
+2026-10-26T17:25:58.6525710Z 40/55 Test #40: vorbis_format_contract .................................   Passed    0.01 sec
+2026-10-26T17:25:58.6527320Z       Start 41: audio_dispatch_original_function_vectors
+2026-10-26T17:25:58.6608800Z 41/55 Test #41: audio_dispatch_original_function_vectors ...............   Passed    0.01 sec
+2026-10-26T17:25:58.6610130Z       Start 42: audio_maintenance_original_function_vectors
+2026-10-26T17:25:58.6672950Z 42/55 Test #42: audio_maintenance_original_function_vectors ............   Passed    0.01 sec
+2026-10-26T17:25:58.6674320Z       Start 43: menu_music_original_function_vectors
+2026-10-26T17:25:58.7060510Z 43/55 Test #43: menu_music_original_function_vectors ...................   Passed    0.04 sec
+2026-10-26T17:25:58.7061390Z       Start 44: native_profile_atomic_file
+2026-10-26T17:25:58.7170230Z 44/55 Test #44: native_profile_atomic_file .............................   Passed    0.01 sec
+2026-10-26T17:25:58.7171570Z       Start 45: unit_spawn_original_function_vectors
+2026-10-26T17:25:58.7224490Z 45/55 Test #45: unit_spawn_original_function_vectors ...................   Passed    0.00 sec
+2026-10-26T17:25:58.7225740Z       Start 46: unit_actions_original_function_vectors
+2026-10-26T17:25:58.7489250Z 46/55 Test #46: unit_actions_original_function_vectors .................   Passed    0.03 sec
+2026-10-26T17:25:58.7493240Z       Start 47: ai_execution_original_function_vectors
+2026-10-26T17:25:58.7566700Z 47/55 Test #47: ai_execution_original_function_vectors .................   Passed    0.01 sec
+2026-10-26T17:25:58.7569580Z       Start 48: world_commands_original_function_vectors
+2026-10-26T17:25:58.7644980Z 48/55 Test #48: world_commands_original_function_vectors ...............   Passed    0.01 sec
+2026-10-26T17:25:58.7647150Z       Start 49: campaign_actual_save_and_handoff
+2026-10-26T17:25:58.7790160Z 49/55 Test #49: campaign_actual_save_and_handoff .......................   Passed    0.01 sec
+2026-10-26T17:25:58.7792940Z       Start 50: native_session_checkpoint_and_resume
+2026-10-26T17:25:58.7971590Z 50/55 Test #50: native_session_checkpoint_and_resume ...................   Passed    0.02 sec
+2026-10-26T17:25:58.7974270Z       Start 51: unit_interactions_original_functions
+2026-10-26T17:25:58.8543260Z 51/55 Test #51: unit_interactions_original_functions ...................   Passed    0.06 sec
+2026-10-26T17:25:58.8543860Z       Start 52: unit_commands_original_functions
+2026-10-26T17:25:58.8796240Z 52/55 Test #52: unit_commands_original_functions .......................   Passed    0.02 sec
+2026-10-26T17:25:58.8799700Z       Start 53: terrain_decorations_original_function_vectors
+2026-10-26T17:25:58.9130260Z 53/55 Test #53: terrain_decorations_original_function_vectors ..........   Passed    0.03 sec
+2026-10-26T17:25:58.9130900Z       Start 54: terrain_animated_original_function_vectors
+2026-10-26T17:25:58.9265100Z 54/55 Test #54: terrain_animated_original_function_vectors .............   Passed    0.01 sec
+2026-10-26T17:25:58.9265860Z       Start 55: terrain_sprite_decorations_original_function_vectors
+2026-10-26T17:25:58.9516970Z 55/55 Test #55: terrain_sprite_decorations_original_function_vectors ...   Passed    0.02 sec
+2026-10-26T17:25:58.9526540Z 
+2026-10-26T17:25:58.9526920Z 100% tests passed out of 55
+2026-10-26T17:25:58.9528560Z 
+2026-10-26T17:25:58.9529560Z Total Test time (real) =   0.98 sec
+2026-10-26T17:25:58.9595880Z ##[group]Run set +e
+2026-10-26T17:25:58.9596170Z [36;1mset +e[0m
+2026-10-26T17:25:58.9596540Z [36;1mbuild/macos/g1_metal_probe artifacts/metal-corners.png > artifacts/metal-report.json[0m
+2026-10-26T17:25:58.9597230Z [36;1mg1_probe_status=$?[0m
+2026-10-26T17:25:58.9597500Z [36;1mset -e[0m
+2026-10-26T17:25:58.9597700Z [36;1mcat artifacts/metal-report.json[0m
+2026-10-26T17:25:58.9598050Z [36;1mif [ "$g1_probe_status" -eq 77 ]; then[0m
+2026-10-26T17:25:58.9598700Z [36;1m  echo 'No Metal device on runner; GPU pixel test was skipped.' >> "$GITHUB_STEP_SUMMARY"[0m
+2026-10-26T17:25:58.9599130Z [36;1melif [ "$g1_probe_status" -ne 0 ]; then[0m
+2026-10-26T17:25:58.9599400Z [36;1m  exit "$g1_probe_status"[0m
+2026-10-26T17:25:58.9599640Z [36;1mfi[0m
+2026-10-26T17:25:58.9714690Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T17:25:58.9715020Z env:
+2026-10-26T17:25:58.9715300Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:25:58.9715710Z ##[endgroup]
+2026-10-26T17:26:00.0783670Z {"metal_device_available":true,"device":"Apple Paravirtual device","pixel_checks":6,"pixel_channels_compared":24,"result":"passed","original_game_data_used":false,"iphone_execution":false}
+2026-10-26T17:26:00.0877800Z ##[group]Run set +e
+2026-10-26T17:26:00.0878470Z [36;1mset +e[0m
+2026-10-26T17:26:00.0879510Z [36;1mbuild/macos/g1_m3g_metal_probe artifacts/m3g-metal-corners.png > artifacts/m3g-metal-report.json[0m
+2026-10-26T17:26:00.0881850Z [36;1mg1_m3g_probe_status=$?[0m
+2026-10-26T17:26:00.0882520Z [36;1mset -e[0m
+2026-10-26T17:26:00.0883040Z [36;1mcat artifacts/m3g-metal-report.json[0m
+2026-10-26T17:26:00.0883760Z [36;1mif [ "$g1_m3g_probe_status" -eq 77 ]; then[0m
+2026-10-26T17:26:00.0884870Z [36;1m  echo 'No Metal device on runner; M3G GPU pixel test was skipped.' >> "$GITHUB_STEP_SUMMARY"[0m
+2026-10-26T17:26:00.0886010Z [36;1melif [ "$g1_m3g_probe_status" -ne 0 ]; then[0m
+2026-10-26T17:26:00.0886780Z [36;1m  exit "$g1_m3g_probe_status"[0m
+2026-10-26T17:26:00.0887390Z [36;1mfi[0m
+2026-10-26T17:26:00.0969030Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-26T17:26:00.0969640Z env:
+2026-10-26T17:26:00.0970110Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:26:00.0970480Z ##[endgroup]
+2026-10-26T17:26:00.7349760Z {"metal_device_available":true,"device":"Apple Paravirtual device","pixel_checks":12,"pixel_channels_compared":48,"result":"passed","original_game_data_used":false,"iphone_execution":false}
+2026-10-26T17:26:00.7540050Z ##[group]Run cp -R build/iphoneos/G1AwakeningNative.app artifacts/
+2026-10-26T17:26:00.7540680Z [36;1mcp -R build/iphoneos/G1AwakeningNative.app artifacts/[0m
+2026-10-26T17:26:00.7541120Z [36;1mmkdir -p artifacts/G1AwakeningNative.app/Licenses[0m
+2026-10-26T17:26:00.7541710Z [36;1mcp LICENSE artifacts/G1AwakeningNative.app/Licenses/Native-Port-MPL-2.0.txt[0m
+2026-10-26T17:26:00.7542470Z [36;1mcp native/third_party/lodepng/LICENSE artifacts/G1AwakeningNative.app/Licenses/LodePNG-Zlib.txt[0m
+2026-10-26T17:26:00.7544260Z [36;1mcp native/third_party/stb/LICENSE artifacts/G1AwakeningNative.app/Licenses/STB-MIT-Public-Domain.txt[0m
+2026-10-26T17:26:00.7546130Z [36;1mcp docs/README_MEMORY_ZIP_POLICY.md artifacts/README_MEMORY_ZIP_POLICY.md[0m
+2026-10-26T17:26:00.7621210Z shell: /bin/bash -e {0}
+2026-10-26T17:26:00.7621640Z env:
+2026-10-26T17:26:00.7621940Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:26:00.7622440Z ##[endgroup]
+2026-10-26T17:26:00.8886560Z ##[group]Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+2026-10-26T17:26:00.8886900Z with:
+2026-10-26T17:26:00.8887070Z   name: G1-native-game-unsigned-code
+2026-10-26T17:26:00.8887280Z   path: artifacts/
+2026-10-26T17:26:00.8887500Z   retention-days: 14
+2026-10-26T17:26:00.8887720Z   if-no-files-found: error
+2026-10-26T17:26:00.8888000Z   compression-level: 6
+2026-10-26T17:26:00.8888230Z   overwrite: false
+2026-10-26T17:26:00.8888450Z   include-hidden-files: false
+2026-10-26T17:26:00.8888730Z   archive: true
+2026-10-26T17:26:00.8888940Z env:
+2026-10-26T17:26:00.8889230Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:26:00.8889490Z ##[endgroup]
+2026-10-26T17:26:01.4899900Z With the provided path, there will be 17 files uploaded
+2026-10-26T17:26:01.4900640Z Artifact name is valid!
+2026-10-26T17:26:01.4900980Z Root directory input is valid!
+2026-10-26T17:26:01.8106200Z Uploading artifact: G1-native-game-unsigned-code.zip
+2026-10-26T17:26:01.8144170Z Beginning upload of artifact content to blob storage
+2026-10-26T17:26:02.3855600Z Uploaded bytes 662391
+2026-10-26T17:26:02.4232660Z Finished uploading artifact content to blob storage!
+2026-10-26T17:26:02.4248610Z SHA256 digest of uploaded artifact is 8439bef9b6cda83844adb5b8bd19bf20828bb172b9626bcca866c4fb978f534b
+2026-10-26T17:26:02.4280400Z Finalizing artifact upload
+2026-10-26T17:26:02.9305880Z Artifact G1-native-game-unsigned-code successfully finalized. Artifact ID 12671377059
+2026-10-26T17:26:02.9307720Z Artifact G1-native-game-unsigned-code has been successfully uploaded! Final size is 662391 bytes. Artifact ID is 12671377059
+2026-10-26T17:26:02.9313860Z Artifact download URL: https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701/artifacts/12671377059
+2026-10-26T17:26:02.9475020Z ##[group]Run echo '## Native campaign integration test' >> "$GITHUB_STEP_SUMMARY"
+2026-10-26T17:26:02.9475610Z [36;1mecho '## Native campaign integration test' >> "$GITHUB_STEP_SUMMARY"[0m
+2026-10-26T17:26:02.9478140Z [36;1mecho 'Builds new ARM64 app code for iPhone XR on iOS 17.5. Original assets are packaged locally. A successful build does not verify iPhone XR execution, full gameplay, saves, sustained 60 FPS, or campaign completion.' >> "$GITHUB_STEP_SUMMARY"[0m
+2026-10-26T17:26:02.9523490Z shell: /bin/bash -e {0}
+2026-10-26T17:26:02.9523740Z env:
+2026-10-26T17:26:02.9523990Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2026-10-26T17:26:02.9524320Z ##[endgroup]
+2026-10-26T17:26:03.0187000Z Post job cleanup.
+2026-10-26T17:26:03.1620180Z [command]/opt/homebrew/bin/git version
+2026-10-26T17:26:03.2172980Z git version 2.56.0
+2026-10-26T17:26:03.2224830Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/9aa95fb9-398d-460d-b5fc-83fa4155b01e/.gitconfig'
+2026-10-26T17:26:03.2235120Z Temporarily overriding HOME='/Users/runner/work/_temp/9aa95fb9-398d-460d-b5fc-83fa4155b01e' before making global git config changes
+2026-10-26T17:26:03.2237380Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-26T17:26:03.2241200Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/G1-Awakening-IOS/G1-Awakening-IOS
+2026-10-26T17:26:03.2456160Z Removing SSH command configuration
+2026-10-26T17:26:03.2461650Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T17:26:03.2605690Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T17:26:03.4037360Z Removing HTTP extra header
+2026-10-26T17:26:03.4041420Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T17:26:03.4115340Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T17:26:03.5249020Z Removing includeIf entries pointing to credentials config files
+2026-10-26T17:26:03.5258130Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T17:26:03.5330400Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T17:26:03.6522430Z Cleaning up orphan processes

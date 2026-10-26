@@ -1,0 +1,518 @@
+﻿2026-10-26T17:22:47.7130306Z Current runner version: '2.338.0'
+2026-10-26T17:22:47.7147005Z ##[group]Runner Image Provisioner
+2026-10-26T17:22:47.7147508Z Hosted Compute Agent
+2026-10-26T17:22:47.7147923Z Version: 20261021.618
+2026-10-26T17:22:47.7148286Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-26T17:22:47.7148725Z Build Date: 2026-10-21T00:45:21Z
+2026-10-26T17:22:47.7149165Z Worker ID: {abbf2bc9-f975-4de0-82ad-a7f5731b7b90}
+2026-10-26T17:22:47.7149569Z Region: centralus
+2026-10-26T17:22:47.7149948Z Cloud: Azure
+2026-10-26T17:22:47.7150264Z ##[endgroup]
+2026-10-26T17:22:47.7151006Z ##[group]Operating System
+2026-10-26T17:22:47.7151397Z Ubuntu
+2026-10-26T17:22:47.7151732Z 24.04.5
+2026-10-26T17:22:47.7152063Z LTS
+2026-10-26T17:22:47.7152365Z ##[endgroup]
+2026-10-26T17:22:47.7152674Z ##[group]Runner Image
+2026-10-26T17:22:47.7153089Z Image: ubuntu-24.04
+2026-10-26T17:22:47.7153417Z Version: 20261012.334.1
+2026-10-26T17:22:47.7154456Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-26T17:22:47.7155288Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-26T17:22:47.7155894Z ##[endgroup]
+2026-10-26T17:22:47.7156527Z ##[group]GITHUB_TOKEN Permissions
+2026-10-26T17:22:47.7157739Z Contents: read
+2026-10-26T17:22:47.7158073Z Metadata: read
+2026-10-26T17:22:47.7158721Z ##[endgroup]
+2026-10-26T17:22:47.7159941Z Secret source: Actions
+2026-10-26T17:22:47.7160487Z Cache mode: write
+2026-10-26T17:22:47.7160911Z Prepare workflow directory
+2026-10-26T17:22:47.7359816Z Prepare all required actions
+2026-10-26T17:22:47.7393862Z Getting action download info
+2026-10-26T17:22:48.0761258Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-26T17:22:48.5581294Z Complete job name: host-tests
+2026-10-26T17:22:48.6358359Z ##[group]Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+2026-10-26T17:22:48.6359181Z with:
+2026-10-26T17:22:48.6359618Z   persist-credentials: false
+2026-10-26T17:22:48.6359972Z   repository: iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:48.6362139Z   token: ***
+2026-10-26T17:22:48.6362393Z   ssh-strict: true
+2026-10-26T17:22:48.6362652Z   ssh-user: git
+2026-10-26T17:22:48.6362900Z   clean: true
+2026-10-26T17:22:48.6363165Z   sparse-checkout-cone-mode: true
+2026-10-26T17:22:48.6363471Z   fetch-depth: 1
+2026-10-26T17:22:48.6363840Z   fetch-tags: false
+2026-10-26T17:22:48.6364103Z   show-progress: true
+2026-10-26T17:22:48.6364367Z   lfs: false
+2026-10-26T17:22:48.6364623Z   submodules: false
+2026-10-26T17:22:48.6364906Z   set-safe-directory: true
+2026-10-26T17:22:48.6365209Z   allow-unsafe-pr-checkout: false
+2026-10-26T17:22:48.6365646Z ##[endgroup]
+2026-10-26T17:22:48.7164367Z Syncing repository: iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:48.7165988Z ##[group]Getting Git version info
+2026-10-26T17:22:48.7166707Z Working directory is '/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS'
+2026-10-26T17:22:48.7167672Z [command]/usr/bin/git version
+2026-10-26T17:22:48.7984897Z git version 2.55.0
+2026-10-26T17:22:48.8065713Z ##[endgroup]
+2026-10-26T17:22:48.8068748Z Temporarily overriding HOME='/home/runner/work/_temp/e3f2d217-478d-4365-80ff-6739c053739b' before making global git config changes
+2026-10-26T17:22:48.8069511Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-26T17:22:48.8070520Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS
+2026-10-26T17:22:48.8072020Z Deleting the contents of '/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS'
+2026-10-26T17:22:48.8072817Z ##[group]Determining repository object format
+2026-10-26T17:22:48.8073463Z ##[endgroup]
+2026-10-26T17:22:48.8074154Z ##[group]Initializing the repository
+2026-10-26T17:22:48.8074711Z [command]/usr/bin/git init /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS
+2026-10-26T17:22:48.8982088Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-26T17:22:48.8983103Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-26T17:22:48.8983992Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-26T17:22:48.8984529Z hint: call:
+2026-10-26T17:22:48.8985026Z hint:
+2026-10-26T17:22:48.8985640Z hint: 	git config --global init.defaultBranch <name>
+2026-10-26T17:22:48.8986583Z hint:
+2026-10-26T17:22:48.8987202Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-26T17:22:48.8988162Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-26T17:22:48.8988938Z hint:
+2026-10-26T17:22:48.8989399Z hint: 	git branch -m <name>
+2026-10-26T17:22:48.8989940Z hint:
+2026-10-26T17:22:48.8991545Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-26T17:22:48.8993888Z Initialized empty Git repository in /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/
+2026-10-26T17:22:48.8999607Z [command]/usr/bin/git remote add origin https://github.com/iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:48.9296852Z ##[endgroup]
+2026-10-26T17:22:48.9297708Z ##[group]Disabling automatic garbage collection
+2026-10-26T17:22:48.9300056Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-26T17:22:49.0399503Z ##[endgroup]
+2026-10-26T17:22:49.0400284Z ##[group]Setting up auth
+2026-10-26T17:22:49.0400888Z Removing SSH command configuration
+2026-10-26T17:22:49.0401686Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T17:22:49.0439203Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T17:22:49.1461397Z Removing HTTP extra header
+2026-10-26T17:22:49.1466178Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T17:22:49.1495376Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T17:22:49.1666025Z Removing includeIf entries pointing to credentials config files
+2026-10-26T17:22:49.1666997Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T17:22:49.1694683Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T17:22:49.1870903Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-26T17:22:49.2778230Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path /home/runner/work/_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:49.3512740Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:49.3564181Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:49.3591867Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:49.3654957Z ##[endgroup]
+2026-10-26T17:22:49.3656310Z ##[group]Fetching the repository
+2026-10-26T17:22:49.3659002Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +083057b20b3b10269ca48e0d9816a62b3214869b:refs/remotes/origin/main
+2026-10-26T17:22:51.3552279Z From https://github.com/iammrmikemanmods/G1-Awakening-IOS
+2026-10-26T17:22:51.3563605Z  * [new ref]         083057b20b3b10269ca48e0d9816a62b3214869b -> origin/main
+2026-10-26T17:22:51.3566050Z [command]/usr/bin/git branch --list --remote origin/main
+2026-10-26T17:22:51.3590453Z   origin/main
+2026-10-26T17:22:51.3595230Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-10-26T17:22:51.3617281Z 083057b20b3b10269ca48e0d9816a62b3214869b
+2026-10-26T17:22:51.3621502Z ##[endgroup]
+2026-10-26T17:22:51.3622115Z ##[group]Determining the checkout info
+2026-10-26T17:22:51.3622753Z ##[endgroup]
+2026-10-26T17:22:51.3625230Z [command]/usr/bin/git sparse-checkout disable
+2026-10-26T17:22:51.3670286Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-26T17:22:51.3698467Z ##[group]Checking out the ref
+2026-10-26T17:22:51.3701056Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-26T17:22:51.4353315Z Switched to a new branch 'main'
+2026-10-26T17:22:51.4356224Z branch 'main' set up to track 'origin/main'.
+2026-10-26T17:22:51.4372844Z ##[endgroup]
+2026-10-26T17:22:51.4410551Z [command]/usr/bin/git log -1 --format=%H
+2026-10-26T17:22:51.4434580Z 083057b20b3b10269ca48e0d9816a62b3214869b
+2026-10-26T17:22:51.4443342Z ##[group]Removing auth
+2026-10-26T17:22:51.4444329Z Removing SSH command configuration
+2026-10-26T17:22:51.4449198Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T17:22:51.4478117Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T17:22:51.4651988Z Removing HTTP extra header
+2026-10-26T17:22:51.4654225Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T17:22:51.4683256Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T17:22:51.4865131Z Removing includeIf entries pointing to credentials config files
+2026-10-26T17:22:51.4865768Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T17:22:51.4893308Z includeif.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path
+2026-10-26T17:22:51.4894351Z includeif.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path
+2026-10-26T17:22:51.4895165Z includeif.gitdir:/github/workspace/.git.path
+2026-10-26T17:22:51.4895782Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-26T17:22:51.4903903Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path
+2026-10-26T17:22:51.4924735Z /home/runner/work/_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:51.4940230Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-6c9fa939\-90e9\-45f8\-a319\-ebe5cae7fe46\.config
+2026-10-26T17:22:51.4965541Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path
+2026-10-26T17:22:51.4992100Z /home/runner/work/_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:51.4998949Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-6c9fa939\-90e9\-45f8\-a319\-ebe5cae7fe46\.config
+2026-10-26T17:22:51.5035793Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-26T17:22:51.5058056Z /github/runner_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:51.5067627Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-6c9fa939\-90e9\-45f8\-a319\-ebe5cae7fe46\.config
+2026-10-26T17:22:51.5097865Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-26T17:22:51.5120813Z /github/runner_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config
+2026-10-26T17:22:51.5126886Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-6c9fa939\-90e9\-45f8\-a319\-ebe5cae7fe46\.config
+2026-10-26T17:22:51.5157036Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T17:22:51.5329619Z Removing credentials config '/home/runner/work/_temp/git-credentials-6c9fa939-90e9-45f8-a319-ebe5cae7fe46.config'
+2026-10-26T17:22:51.5338400Z ##[endgroup]
+2026-10-26T17:22:51.5501821Z ##[group]Run if command -v cmake && command -v ninja && command -v g++ && test -f /usr/include/zlib.h; then
+2026-10-26T17:22:51.5502301Z [36;1mif command -v cmake && command -v ninja && command -v g++ && test -f /usr/include/zlib.h; then[0m
+2026-10-26T17:22:51.5502647Z [36;1m  echo 'Native build tools and zlib headers are already installed.'[0m
+2026-10-26T17:22:51.5502883Z [36;1melse[0m
+2026-10-26T17:22:51.5503036Z [36;1m  sudo apt-get update[0m
+2026-10-26T17:22:51.5503251Z [36;1m  sudo apt-get install -y cmake ninja-build g++ zlib1g-dev[0m
+2026-10-26T17:22:51.5503466Z [36;1mfi[0m
+2026-10-26T17:22:51.5719046Z shell: /usr/bin/bash -e {0}
+2026-10-26T17:22:51.5719256Z ##[endgroup]
+2026-10-26T17:22:51.5811369Z /usr/local/bin/cmake
+2026-10-26T17:22:51.5811856Z /usr/local/bin/ninja
+2026-10-26T17:22:51.5812560Z /usr/bin/g++
+2026-10-26T17:22:51.5815665Z Native build tools and zlib headers are already installed.
+2026-10-26T17:22:51.5844761Z ##[group]Run cmake -S native -B build/native -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+2026-10-26T17:22:51.5845180Z [36;1mcmake -S native -B build/native -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON[0m
+2026-10-26T17:22:51.5897007Z shell: /usr/bin/bash -e {0}
+2026-10-26T17:22:51.5897181Z ##[endgroup]
+2026-10-26T17:22:52.2557764Z -- The CXX compiler identification is GNU 13.3.0
+2026-10-26T17:22:52.3446183Z -- Detecting CXX compiler ABI info
+2026-10-26T17:22:52.5029870Z -- Detecting CXX compiler ABI info - done
+2026-10-26T17:22:52.5182833Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2026-10-26T17:22:52.5222670Z -- Detecting CXX compile features
+2026-10-26T17:22:52.5261195Z -- Detecting CXX compile features - done
+2026-10-26T17:22:52.5766536Z -- Found ZLIB: /usr/lib/x86_64-linux-gnu/libz.so (found version "1.3")
+2026-10-26T17:22:52.5963128Z -- Configuring done (0.7s)
+2026-10-26T17:22:52.6439657Z -- Generating done (0.0s)
+2026-10-26T17:22:52.6441987Z -- Build files have been written to: /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/native
+2026-10-26T17:22:52.6622351Z ##[group]Run cmake --build build/native --parallel 2
+2026-10-26T17:22:52.6622720Z [36;1mcmake --build build/native --parallel 2[0m
+2026-10-26T17:22:52.6675738Z shell: /usr/bin/bash -e {0}
+2026-10-26T17:22:52.6675886Z ##[endgroup]
+2026-10-26T17:22:54.7210940Z [1/205] Building CXX object CMakeFiles/g1_vorbis.dir/third_party/stb/stb_vorbis.c.o
+2026-10-26T17:22:55.6560998Z [2/205] Building CXX object CMakeFiles/g1_png.dir/third_party/lodepng/lodepng.cpp.o
+2026-10-26T17:22:55.8696274Z [3/205] Linking CXX static library libg1_png.a
+2026-10-26T17:22:55.9112186Z [4/205] Linking CXX static library libg1_vorbis.a
+2026-10-26T17:22:56.4554746Z [5/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3G.cpp.o
+2026-10-26T17:22:56.5747389Z [6/205] Building CXX object CMakeFiles/g1_resources.dir/src/Archive.cpp.o
+2026-10-26T17:22:57.5555077Z [7/205] Building CXX object CMakeFiles/g1_resources.dir/src/Mission.cpp.o
+2026-10-26T17:22:58.0434377Z [8/205] Building CXX object CMakeFiles/g1_resources.dir/src/Movement.cpp.o
+2026-10-26T17:22:58.8532053Z [9/205] Building CXX object CMakeFiles/g1_resources.dir/src/Atlas.cpp.o
+2026-10-26T17:22:59.2615524Z [10/205] Building CXX object CMakeFiles/g1_resources.dir/src/Image.cpp.o
+2026-10-26T17:22:59.2638124Z [11/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GScene.cpp.o
+2026-10-26T17:22:59.4954862Z [12/205] Building CXX object CMakeFiles/g1_resources.dir/src/SpriteGeometry.cpp.o
+2026-10-26T17:22:59.4974467Z [13/205] Building CXX object CMakeFiles/g1_resources.dir/src/SpriteAnimation.cpp.o
+2026-10-26T17:22:59.6440551Z [14/205] Building CXX object CMakeFiles/g1_resources.dir/src/SpritePlacement.cpp.o
+2026-10-26T17:23:00.1454752Z [15/205] Building CXX object CMakeFiles/g1_resources.dir/src/Terrain.cpp.o
+2026-10-26T17:23:00.7707835Z [16/205] Building CXX object CMakeFiles/g1_resources.dir/src/Scene.cpp.o
+2026-10-26T17:23:00.7725375Z [17/205] Building CXX object CMakeFiles/g1_resources.dir/src/World.cpp.o
+2026-10-26T17:23:01.0998044Z [18/205] Building CXX object CMakeFiles/g1_resources.dir/src/InitialPresentation.cpp.o
+2026-10-26T17:23:01.1117106Z [19/205] Building CXX object CMakeFiles/g1_resources.dir/src/Audio.cpp.o
+2026-10-26T17:23:01.3304737Z [20/205] Building CXX object CMakeFiles/g1_resources.dir/src/MovementArrival.cpp.o
+2026-10-26T17:23:01.4484768Z [21/205] Building CXX object CMakeFiles/g1_resources.dir/src/MovementAction.cpp.o
+2026-10-26T17:23:01.7334809Z [22/205] Building CXX object CMakeFiles/g1_resources.dir/src/Text.cpp.o
+2026-10-26T17:23:02.0305672Z [23/205] Building CXX object CMakeFiles/g1_resources.dir/src/MissionExecution.cpp.o
+2026-10-26T17:23:02.2883240Z [24/205] Building CXX object CMakeFiles/g1_resources.dir/src/CaptureAction.cpp.o
+2026-10-26T17:23:02.4954666Z [25/205] Building CXX object CMakeFiles/g1_resources.dir/src/TransformAction.cpp.o
+2026-10-26T17:23:02.5764874Z [26/205] Building CXX object CMakeFiles/g1_resources.dir/src/Combat.cpp.o
+2026-10-26T17:23:03.3854870Z [27/205] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionAI.cpp.o
+2026-10-26T17:23:03.8444993Z [28/205] Building CXX object CMakeFiles/g1_resources.dir/src/GameSession.cpp.o
+2026-10-26T17:23:04.3494805Z [29/205] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionActions.cpp.o
+2026-10-26T17:23:04.6784143Z [30/205] Building CXX object CMakeFiles/g1_resources.dir/src/GameSessionWorld.cpp.o
+2026-10-26T17:23:04.7115756Z [31/205] Building CXX object CMakeFiles/g1_resources.dir/src/MissionProgression.cpp.o
+2026-10-26T17:23:05.0860867Z [32/205] Building CXX object CMakeFiles/g1_resources.dir/src/MissionObjectives.cpp.o
+2026-10-26T17:23:05.1634875Z [33/205] Building CXX object CMakeFiles/g1_resources.dir/src/TurnProgression.cpp.o
+2026-10-26T17:23:05.4514822Z [34/205] Building CXX object CMakeFiles/g1_resources.dir/src/AIIncome.cpp.o
+2026-10-26T17:23:05.8790729Z [35/205] Building CXX object CMakeFiles/g1_resources.dir/src/AISite.cpp.o
+2026-10-26T17:23:06.1391472Z [36/205] Building CXX object CMakeFiles/g1_resources.dir/src/AudioEvents.cpp.o
+2026-10-26T17:23:06.1720879Z [37/205] Building CXX object CMakeFiles/g1_resources.dir/src/AI.cpp.o
+2026-10-26T17:23:06.3959056Z [38/205] Building CXX object CMakeFiles/g1_resources.dir/src/UnitSpawn.cpp.o
+2026-10-26T17:23:06.6334427Z [39/205] Building CXX object CMakeFiles/g1_resources.dir/src/SaveStore.cpp.o
+2026-10-26T17:23:06.6978432Z [40/205] Building CXX object CMakeFiles/g1_resources.dir/src/UpgradeAction.cpp.o
+2026-10-26T17:23:06.9622226Z [41/205] Building CXX object CMakeFiles/g1_resources.dir/src/AIExecution.cpp.o
+2026-10-26T17:23:06.9734530Z [42/205] Building CXX object CMakeFiles/g1_resources.dir/src/HealAction.cpp.o
+2026-10-26T17:23:08.5338174Z [43/205] Building CXX object CMakeFiles/g1_resources.dir/src/CampaignController.cpp.o
+2026-10-26T17:23:08.5690003Z [44/205] Building CXX object CMakeFiles/g1_resources.dir/src/WorldCommands.cpp.o
+2026-10-26T17:23:09.0344734Z [45/205] Building CXX object CMakeFiles/g1_resources.dir/src/UnitInteractions.cpp.o
+2026-10-26T17:23:09.5414852Z [46/205] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainDecorations.cpp.o
+2026-10-26T17:23:10.0779123Z [47/205] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainRuntime.cpp.o
+2026-10-26T17:23:11.1564937Z [48/205] Building CXX object CMakeFiles/g1_resources.dir/src/TerrainSpriteDecorations.cpp.o
+2026-10-26T17:23:11.3714909Z [49/205] Building CXX object CMakeFiles/g1_resources.dir/src/UndoAction.cpp.o
+2026-10-26T17:23:11.5362340Z [50/205] Building CXX object CMakeFiles/g1_resources.dir/src/UnitCommands.cpp.o
+2026-10-26T17:23:11.9447153Z [51/205] Building CXX object CMakeFiles/g1_resources.dir/src/SessionSave.cpp.o
+2026-10-26T17:23:12.7704779Z [52/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GScenePose.cpp.o
+2026-10-26T17:23:13.3144787Z [53/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GCamera.cpp.o
+2026-10-26T17:23:13.4874576Z [54/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleTimeline.cpp.o
+2026-10-26T17:23:13.6104981Z [55/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GAnimation.cpp.o
+2026-10-26T17:23:14.0324820Z [56/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GSprite3D.cpp.o
+2026-10-26T17:23:14.3582288Z [57/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GRenderFrame.cpp.o
+2026-10-26T17:23:14.6526101Z [58/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBindings.cpp.o
+2026-10-26T17:23:14.8480365Z [59/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleCamera.cpp.o
+2026-10-26T17:23:15.4053622Z [60/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattleController.cpp.o
+2026-10-26T17:23:15.7481179Z [61/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GMaterialOverrides.cpp.o
+2026-10-26T17:23:16.2475752Z [62/205] Building CXX object CMakeFiles/g1_asset_probe.dir/tools/g1_asset_probe.cpp.o
+2026-10-26T17:23:16.4904143Z [63/205] Building CXX object CMakeFiles/m3g_probe.dir/tools/m3g_probe.cpp.o
+2026-10-26T17:23:17.2134776Z [64/205] Building CXX object CMakeFiles/m3g_scene_probe.dir/tools/m3g_scene_probe.cpp.o
+2026-10-26T17:23:17.5734872Z [65/205] Building CXX object CMakeFiles/m3g_material_probe.dir/tools/m3g_material_probe.cpp.o
+2026-10-26T17:23:17.8988192Z [66/205] Building CXX object CMakeFiles/g1_resources.dir/src/M3GBattlePresentation.cpp.o
+2026-10-26T17:23:18.0274536Z [67/205] Linking CXX static library libg1_resources.a
+2026-10-26T17:23:18.1704860Z [68/205] Building CXX object CMakeFiles/m3g_battle_presentation_probe.dir/tools/m3g_battle_presentation_probe.cpp.o
+2026-10-26T17:23:18.4907745Z [69/205] Building CXX object CMakeFiles/mission_probe.dir/tools/mission_probe.cpp.o
+2026-10-26T17:23:19.1736951Z [70/205] Building CXX object CMakeFiles/m3g_battle_session_probe.dir/tools/m3g_battle_session_probe.cpp.o
+2026-10-26T17:23:19.1757764Z [71/205] Building CXX object CMakeFiles/atlas_probe.dir/tools/atlas_probe.cpp.o
+2026-10-26T17:23:19.4154832Z [72/205] Building CXX object CMakeFiles/image_probe.dir/tools/image_probe.cpp.o
+2026-10-26T17:23:19.6540435Z [73/205] Building CXX object CMakeFiles/terrain_probe.dir/tools/terrain_probe.cpp.o
+2026-10-26T17:23:19.9114888Z [74/205] Building CXX object CMakeFiles/world_probe.dir/tools/world_probe.cpp.o
+2026-10-26T17:23:20.1183540Z [75/205] Building CXX object CMakeFiles/scene_probe.dir/tools/scene_probe.cpp.o
+2026-10-26T17:23:20.6970794Z [76/205] Building CXX object CMakeFiles/world_commands_probe.dir/tools/world_commands_probe.cpp.o
+2026-10-26T17:23:21.4224346Z [77/205] Building CXX object CMakeFiles/scene_catalog_probe.dir/tools/scene_catalog_probe.cpp.o
+2026-10-26T17:23:21.9004947Z [78/205] Building CXX object CMakeFiles/session_campaign_probe.dir/tools/session_campaign_probe.cpp.o
+2026-10-26T17:23:22.1542553Z [79/205] Building CXX object CMakeFiles/audio_probe.dir/tools/audio_probe.cpp.o
+2026-10-26T17:23:22.6243308Z [80/205] Building CXX object CMakeFiles/mission_execution_probe.dir/tools/mission_execution_probe.cpp.o
+2026-10-26T17:23:24.1824368Z [81/205] Building CXX object CMakeFiles/g1_m3g_scene_tests.dir/tests/m3g_scene_test.cpp.o
+2026-10-26T17:23:26.2375622Z [82/205] Building CXX object CMakeFiles/g1_m3g_animation_tests.dir/tests/m3g_animation_test.cpp.o
+2026-10-26T17:23:28.7744008Z [83/205] Building CXX object CMakeFiles/g1_session_playthrough_probe.dir/tools/session_playthrough_probe.cpp.o
+2026-10-26T17:23:30.7072714Z [84/205] Building CXX object CMakeFiles/g1_m3g_spline_tests.dir/tests/m3g_spline_test.cpp.o
+2026-10-26T17:23:30.7795125Z [85/205] Building CXX object CMakeFiles/g1_m3g_scene_pose_tests.dir/tests/m3g_scene_pose_test.cpp.o
+2026-10-26T17:23:31.2735046Z [86/205] Building CXX object CMakeFiles/g1_m3g_battle_timeline_tests.dir/tests/m3g_battle_timeline_test.cpp.o
+2026-10-26T17:23:31.7470005Z [87/205] Building CXX object CMakeFiles/g1_m3g_camera_tests.dir/tests/m3g_camera_test.cpp.o
+2026-10-26T17:23:32.3858978Z [88/205] Building CXX object CMakeFiles/g1_m3g_render_asset_tests.dir/tests/m3g_render_asset_test.cpp.o
+2026-10-26T17:23:33.0914922Z [89/205] Building CXX object CMakeFiles/g1_m3g_render_frame_tests.dir/tests/m3g_render_frame_test.cpp.o
+2026-10-26T17:23:33.5724929Z [90/205] Building CXX object CMakeFiles/g1_m3g_bindings_tests.dir/tests/m3g_bindings_test.cpp.o
+2026-10-26T17:23:34.9904859Z [91/205] Building CXX object CMakeFiles/g1_m3g_runtime_state_tests.dir/tests/m3g_runtime_state_test.cpp.o
+2026-10-26T17:23:35.2394748Z [92/205] Building CXX object CMakeFiles/g1_m3g_battle_camera_tests.dir/tests/m3g_battle_camera_test.cpp.o
+2026-10-26T17:23:35.9754887Z [93/205] Building CXX object CMakeFiles/g1_m3g_sprite3d_tests.dir/tests/m3g_sprite3d_test.cpp.o
+2026-10-26T17:23:36.4205028Z [94/205] Building CXX object CMakeFiles/g1_m3g_material_overrides_tests.dir/tests/m3g_material_overrides_test.cpp.o
+2026-10-26T17:23:36.6474832Z [95/205] Building CXX object CMakeFiles/g1_m3g_battle_controller_tests.dir/tests/m3g_battle_controller_test.cpp.o
+2026-10-26T17:23:36.7625021Z [96/205] Building CXX object CMakeFiles/g1_mission_tests.dir/tests/mission_test.cpp.o
+2026-10-26T17:23:37.2084920Z [97/205] Building CXX object CMakeFiles/g1_movement_action_tests.dir/tests/movement_action_test.cpp.o
+2026-10-26T17:23:37.2654912Z [98/205] Building CXX object CMakeFiles/g1_movement_tests.dir/tests/movement_test.cpp.o
+2026-10-26T17:23:37.5295408Z [99/205] Building CXX object CMakeFiles/g1_movement_arrival_tests.dir/tests/movement_arrival_test.cpp.o
+2026-10-26T17:23:38.0255498Z [100/205] Building CXX object CMakeFiles/g1_text_tests.dir/tests/text_test.cpp.o
+2026-10-26T17:23:38.8235038Z [101/205] Building CXX object CMakeFiles/g1_capture_action_tests.dir/tests/capture_action_test.cpp.o
+2026-10-26T17:23:39.1114733Z [102/205] Building CXX object CMakeFiles/g1_mission_execution_tests.dir/tests/mission_execution_test.cpp.o
+2026-10-26T17:23:39.1881284Z [103/205] Building CXX object CMakeFiles/g1_transform_action_tests.dir/tests/transform_action_test.cpp.o
+2026-10-26T17:23:40.4002172Z [104/205] Building CXX object CMakeFiles/g1_combat_tests.dir/tests/combat_test.cpp.o
+2026-10-26T17:23:40.9575608Z [105/205] Building CXX object CMakeFiles/g1_game_session_tests.dir/tests/game_session_test.cpp.o
+2026-10-26T17:23:41.0022913Z [106/205] Building CXX object CMakeFiles/g1_mission_progression_tests.dir/tests/mission_progression_test.cpp.o
+2026-10-26T17:23:41.7284755Z [107/205] Building CXX object CMakeFiles/g1_mission_objectives_tests.dir/tests/mission_objectives_test.cpp.o
+2026-10-26T17:23:41.9278841Z [108/205] Building CXX object CMakeFiles/g1_turn_tests.dir/tests/turn_test.cpp.o
+2026-10-26T17:23:43.2120340Z [109/205] Building CXX object CMakeFiles/g1_ai_attack_tests.dir/tests/ai_attack_test.cpp.o
+2026-10-26T17:23:43.2837253Z [110/205] Building CXX object CMakeFiles/g1_ai_site_tests.dir/tests/ai_site_test.cpp.o
+2026-10-26T17:23:43.5404991Z [111/205] Building CXX object CMakeFiles/g1_image_tests.dir/tests/image_test.cpp.o
+2026-10-26T17:23:43.7117753Z [112/205] Building CXX object CMakeFiles/g1_atlas_tests.dir/tests/atlas_test.cpp.o
+2026-10-26T17:23:44.2106562Z [113/205] Building CXX object CMakeFiles/g1_sprite_geometry_tests.dir/tests/sprite_geometry_test.cpp.o
+2026-10-26T17:23:44.2109484Z [114/205] Building CXX object CMakeFiles/g1_terrain_tests.dir/tests/terrain_test.cpp.o
+2026-10-26T17:23:44.5738430Z [115/205] Building CXX object CMakeFiles/g1_sprite_animation_tests.dir/tests/sprite_animation_test.cpp.o
+2026-10-26T17:23:44.8148509Z [116/205] Building CXX object CMakeFiles/g1_sprite_placement_tests.dir/tests/sprite_placement_test.cpp.o
+2026-10-26T17:23:45.1195435Z [117/205] Building CXX object CMakeFiles/g1_initial_presentation_tests.dir/tests/initial_presentation_test.cpp.o
+2026-10-26T17:23:45.3492095Z [118/205] Building CXX object CMakeFiles/g1_audio_tests.dir/tests/audio_test.cpp.o
+2026-10-26T17:23:45.7611664Z [119/205] Building CXX object CMakeFiles/g1_audio_events_tests.dir/tests/audio_events_test.cpp.o
+2026-10-26T17:23:46.0765480Z [120/205] Building CXX object CMakeFiles/g1_world_tests.dir/tests/world_test.cpp.o
+2026-10-26T17:23:46.1575508Z [121/205] Building CXX object CMakeFiles/g1_audio_maintenance_tests.dir/tests/audio_maintenance_test.cpp.o
+2026-10-26T17:23:46.5205310Z [122/205] Building CXX object CMakeFiles/g1_menu_music_tests.dir/tests/menu_music_test.cpp.o
+2026-10-26T17:23:46.8346908Z [123/205] Building CXX object CMakeFiles/g1_save_store_tests.dir/tests/save_store_test.cpp.o
+2026-10-26T17:23:47.0325356Z [124/205] Building CXX object CMakeFiles/g1_unit_spawn_tests.dir/tests/unit_spawn_test.cpp.o
+2026-10-26T17:23:47.6808599Z [125/205] Building CXX object CMakeFiles/g1_unit_actions_tests.dir/tests/unit_actions_test.cpp.o
+2026-10-26T17:23:47.9087855Z [126/205] Building CXX object CMakeFiles/g1_ai_execution_tests.dir/tests/ai_execution_test.cpp.o
+2026-10-26T17:23:49.6214715Z [127/205] Building CXX object CMakeFiles/g1_world_commands_tests.dir/tests/world_commands_test.cpp.o
+2026-10-26T17:23:50.7278483Z [128/205] Building CXX object CMakeFiles/g1_campaign_controller_tests.dir/tests/campaign_controller_test.cpp.o
+2026-10-26T17:23:52.2364911Z [129/205] Building CXX object CMakeFiles/g1_unit_interactions_tests.dir/tests/unit_interactions_test.cpp.o
+2026-10-26T17:23:53.1105945Z [130/205] Building CXX object CMakeFiles/g1_unit_commands_tests.dir/tests/unit_commands_test.cpp.o
+2026-10-26T17:23:53.2884976Z [131/205] Building CXX object CMakeFiles/g1_session_save_tests.dir/tests/session_save_test.cpp.o
+2026-10-26T17:23:54.2320241Z [132/205] Building CXX object CMakeFiles/g1_terrain_decorations_tests.dir/tests/terrain_decorations_test.cpp.o
+2026-10-26T17:23:54.2339427Z [133/205] Building CXX object CMakeFiles/g1_terrain_animated_tests.dir/tests/terrain_animated_test.cpp.o
+2026-10-26T17:23:54.2832642Z [134/205] Linking CXX executable g1_asset_probe
+2026-10-26T17:23:54.3343271Z [135/205] Linking CXX executable m3g_probe
+2026-10-26T17:23:54.3895359Z [136/205] Linking CXX executable m3g_scene_probe
+2026-10-26T17:23:54.4424689Z [137/205] Linking CXX executable m3g_material_probe
+2026-10-26T17:23:54.5024803Z [138/205] Linking CXX executable m3g_battle_presentation_probe
+2026-10-26T17:23:54.5744722Z [139/205] Linking CXX executable m3g_battle_session_probe
+2026-10-26T17:23:54.6245345Z [140/205] Linking CXX executable mission_probe
+2026-10-26T17:23:54.6704777Z [141/205] Linking CXX executable atlas_probe
+2026-10-26T17:23:54.7244905Z [142/205] Linking CXX executable image_probe
+2026-10-26T17:23:54.7744824Z [143/205] Linking CXX executable terrain_probe
+2026-10-26T17:23:54.8264772Z [144/205] Linking CXX executable world_probe
+2026-10-26T17:23:54.8764753Z [145/205] Linking CXX executable scene_probe
+2026-10-26T17:23:54.9304808Z [146/205] Linking CXX executable scene_catalog_probe
+2026-10-26T17:23:54.9864801Z [147/205] Linking CXX executable world_commands_probe
+2026-10-26T17:23:55.0444772Z [148/205] Linking CXX executable session_campaign_probe
+2026-10-26T17:23:55.1114702Z [149/205] Linking CXX executable g1_session_playthrough_probe
+2026-10-26T17:23:55.1634736Z [150/205] Linking CXX executable audio_probe
+2026-10-26T17:23:55.2174733Z [151/205] Linking CXX executable mission_execution_probe
+2026-10-26T17:23:55.2694661Z [152/205] Linking CXX executable g1_m3g_scene_tests
+2026-10-26T17:23:55.3234785Z [153/205] Linking CXX executable g1_m3g_animation_tests
+2026-10-26T17:23:55.3774692Z [154/205] Linking CXX executable g1_m3g_spline_tests
+2026-10-26T17:23:55.4334764Z [155/205] Linking CXX executable g1_m3g_scene_pose_tests
+2026-10-26T17:23:55.4894785Z [156/205] Linking CXX executable g1_m3g_camera_tests
+2026-10-26T17:23:55.5474659Z [157/205] Linking CXX executable g1_m3g_battle_timeline_tests
+2026-10-26T17:23:55.5838578Z [158/205] Building CXX object CMakeFiles/g1_terrain_sprite_decorations_tests.dir/tests/terrain_sprite_decorations_test.cpp.o
+2026-10-26T17:23:55.5976932Z [159/205] Linking CXX executable g1_m3g_render_asset_tests
+2026-10-26T17:23:55.6402557Z [160/205] Linking CXX executable g1_m3g_render_frame_tests
+2026-10-26T17:23:55.6488140Z [161/205] Linking CXX executable g1_m3g_bindings_tests
+2026-10-26T17:23:55.6914979Z [162/205] Linking CXX executable g1_m3g_battle_camera_tests
+2026-10-26T17:23:55.7114930Z [163/205] Linking CXX executable g1_m3g_runtime_state_tests
+2026-10-26T17:23:55.7416032Z [164/205] Linking CXX executable g1_m3g_sprite3d_tests
+2026-10-26T17:23:55.7706784Z [165/205] Linking CXX executable g1_m3g_material_overrides_tests
+2026-10-26T17:23:55.7935465Z [166/205] Linking CXX executable g1_m3g_battle_controller_tests
+2026-10-26T17:23:55.8216029Z [167/205] Linking CXX executable g1_mission_tests
+2026-10-26T17:23:55.8454967Z [168/205] Linking CXX executable g1_movement_tests
+2026-10-26T17:23:55.8744902Z [169/205] Linking CXX executable g1_movement_action_tests
+2026-10-26T17:23:55.8916597Z [170/205] Linking CXX executable g1_movement_arrival_tests
+2026-10-26T17:23:55.9231967Z [171/205] Linking CXX executable g1_text_tests
+2026-10-26T17:23:55.9485661Z [172/205] Linking CXX executable g1_mission_execution_tests
+2026-10-26T17:23:55.9714847Z [173/205] Linking CXX executable g1_capture_action_tests
+2026-10-26T17:23:56.0004788Z [174/205] Linking CXX executable g1_transform_action_tests
+2026-10-26T17:23:56.0178109Z [175/205] Linking CXX executable g1_combat_tests
+2026-10-26T17:23:56.0516675Z [176/205] Linking CXX executable g1_game_session_tests
+2026-10-26T17:23:56.0604501Z [177/205] Linking CXX executable g1_mission_progression_tests
+2026-10-26T17:23:56.0951593Z [178/205] Linking CXX executable g1_turn_tests
+2026-10-26T17:23:56.1064924Z [179/205] Linking CXX executable g1_mission_objectives_tests
+2026-10-26T17:23:56.1428171Z [180/205] Linking CXX executable g1_ai_attack_tests
+2026-10-26T17:23:56.1498269Z [181/205] Linking CXX executable g1_ai_site_tests
+2026-10-26T17:23:56.1974360Z [182/205] Linking CXX executable g1_atlas_tests
+2026-10-26T17:23:56.2044693Z [183/205] Linking CXX executable g1_image_tests
+2026-10-26T17:23:56.2456452Z [184/205] Linking CXX executable g1_sprite_geometry_tests
+2026-10-26T17:23:56.2479564Z [185/205] Linking CXX executable g1_terrain_tests
+2026-10-26T17:23:56.2959688Z [186/205] Linking CXX executable g1_sprite_animation_tests
+2026-10-26T17:23:56.2981533Z [187/205] Linking CXX executable g1_world_tests
+2026-10-26T17:23:56.3454405Z [188/205] Linking CXX executable g1_initial_presentation_tests
+2026-10-26T17:23:56.3472614Z [189/205] Linking CXX executable g1_sprite_placement_tests
+2026-10-26T17:23:56.4007224Z [190/205] Linking CXX executable g1_audio_events_tests
+2026-10-26T17:23:56.4011868Z [191/205] Linking CXX executable g1_audio_tests
+2026-10-26T17:23:56.4464913Z [192/205] Linking CXX executable g1_audio_maintenance_tests
+2026-10-26T17:23:56.4501888Z [193/205] Linking CXX executable g1_menu_music_tests
+2026-10-26T17:23:56.4916879Z [194/205] Linking CXX executable g1_save_store_tests
+2026-10-26T17:23:56.4974357Z [195/205] Linking CXX executable g1_unit_spawn_tests
+2026-10-26T17:23:56.5388203Z [196/205] Linking CXX executable g1_ai_execution_tests
+2026-10-26T17:23:56.5401394Z [197/205] Linking CXX executable g1_unit_actions_tests
+2026-10-26T17:23:56.5965038Z [198/205] Linking CXX executable g1_world_commands_tests
+2026-10-26T17:23:56.6020071Z [199/205] Linking CXX executable g1_campaign_controller_tests
+2026-10-26T17:23:56.6527967Z [200/205] Linking CXX executable g1_unit_interactions_tests
+2026-10-26T17:23:56.6635094Z [201/205] Linking CXX executable g1_session_save_tests
+2026-10-26T17:23:56.7098691Z [202/205] Linking CXX executable g1_unit_commands_tests
+2026-10-26T17:23:56.7104402Z [203/205] Linking CXX executable g1_terrain_decorations_tests
+2026-10-26T17:23:56.7667167Z [204/205] Linking CXX executable g1_terrain_animated_tests
+2026-10-26T17:23:56.7678731Z [205/205] Linking CXX executable g1_terrain_sprite_decorations_tests
+2026-10-26T17:23:56.7717631Z ##[group]Run ctest --test-dir build/native --output-on-failure --no-tests=error
+2026-10-26T17:23:56.7717939Z [36;1mctest --test-dir build/native --output-on-failure --no-tests=error[0m
+2026-10-26T17:23:56.7768074Z shell: /usr/bin/bash -e {0}
+2026-10-26T17:23:56.7768217Z ##[endgroup]
+2026-10-26T17:23:57.0598708Z Internal ctest changing into directory: /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/native
+2026-10-26T17:23:57.1147248Z Test project /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS/build/native
+2026-10-26T17:23:57.1984717Z       Start  1: m3g_scene_contract
+2026-10-26T17:23:57.2100576Z  1/55 Test  #1: m3g_scene_contract .....................................   Passed    0.00 sec
+2026-10-26T17:23:57.2145466Z       Start  2: m3g_animation_contract
+2026-10-26T17:23:57.2395087Z  2/55 Test  #2: m3g_animation_contract .................................   Passed    0.02 sec
+2026-10-26T17:23:57.2396047Z       Start  3: m3g_spline_contract
+2026-10-26T17:23:57.2417351Z  3/55 Test  #3: m3g_spline_contract ....................................   Passed    0.00 sec
+2026-10-26T17:23:57.2421521Z       Start  4: m3g_scene_pose_contract
+2026-10-26T17:23:57.3152042Z  4/55 Test  #4: m3g_scene_pose_contract ................................   Passed    0.07 sec
+2026-10-26T17:23:57.3153163Z       Start  5: m3g_camera_contract
+2026-10-26T17:23:57.3173783Z  5/55 Test  #5: m3g_camera_contract ....................................   Passed    0.00 sec
+2026-10-26T17:23:57.3213349Z       Start  6: m3g_battle_timeline_contract
+2026-10-26T17:23:57.3227518Z  6/55 Test  #6: m3g_battle_timeline_contract ...........................   Passed    0.00 sec
+2026-10-26T17:23:57.3228621Z       Start  7: m3g_render_asset_contract
+2026-10-26T17:23:57.3391760Z  7/55 Test  #7: m3g_render_asset_contract ..............................   Passed    0.02 sec
+2026-10-26T17:23:57.3392670Z       Start  8: m3g_render_frame_contract
+2026-10-26T17:23:57.3416923Z  8/55 Test  #8: m3g_render_frame_contract ..............................   Passed    0.00 sec
+2026-10-26T17:23:57.3417505Z       Start  9: m3g_bindings_contract
+2026-10-26T17:23:57.3514541Z  9/55 Test  #9: m3g_bindings_contract ..................................   Passed    0.01 sec
+2026-10-26T17:23:57.3515189Z       Start 10: m3g_battle_camera_contract
+2026-10-26T17:23:57.3529644Z 10/55 Test #10: m3g_battle_camera_contract .............................   Passed    0.00 sec
+2026-10-26T17:23:57.3530441Z       Start 11: m3g_runtime_state_contract
+2026-10-26T17:23:57.3547693Z 11/55 Test #11: m3g_runtime_state_contract .............................   Passed    0.00 sec
+2026-10-26T17:23:57.3548310Z       Start 12: m3g_sprite3d_original_function_vectors
+2026-10-26T17:23:57.3564582Z 12/55 Test #12: m3g_sprite3d_original_function_vectors .................   Passed    0.00 sec
+2026-10-26T17:23:57.3565845Z       Start 13: m3g_material_overrides_original_vectors
+2026-10-26T17:23:57.3703211Z 13/55 Test #13: m3g_material_overrides_original_vectors ................   Passed    0.01 sec
+2026-10-26T17:23:57.3704299Z       Start 14: m3g_battle_controller_original_vectors
+2026-10-26T17:23:57.3794931Z 14/55 Test #14: m3g_battle_controller_original_vectors .................   Passed    0.01 sec
+2026-10-26T17:23:57.3798765Z       Start 15: mission_format_contract
+2026-10-26T17:23:57.3830603Z 15/55 Test #15: mission_format_contract ................................   Passed    0.00 sec
+2026-10-26T17:23:57.3831659Z       Start 16: movement_original_function_vectors
+2026-10-26T17:23:57.3861084Z 16/55 Test #16: movement_original_function_vectors .....................   Passed    0.00 sec
+2026-10-26T17:23:57.3861906Z       Start 17: movement_action_contract
+2026-10-26T17:23:57.3878178Z 17/55 Test #17: movement_action_contract ...............................   Passed    0.00 sec
+2026-10-26T17:23:57.3878712Z       Start 18: movement_arrival_contract
+2026-10-26T17:23:57.3891451Z 18/55 Test #18: movement_arrival_contract ..............................   Passed    0.00 sec
+2026-10-26T17:23:57.3894042Z       Start 19: text_original_function_vectors
+2026-10-26T17:23:57.3909919Z 19/55 Test #19: text_original_function_vectors .........................   Passed    0.00 sec
+2026-10-26T17:23:57.3910804Z       Start 20: mission_execution_original_function_vectors
+2026-10-26T17:23:57.3948254Z 20/55 Test #20: mission_execution_original_function_vectors ............   Passed    0.00 sec
+2026-10-26T17:23:57.3948681Z       Start 21: capture_action_contract
+2026-10-26T17:23:57.3972500Z 21/55 Test #21: capture_action_contract ................................   Passed    0.00 sec
+2026-10-26T17:23:57.3972867Z       Start 22: transform_action_contract
+2026-10-26T17:23:57.3978258Z 22/55 Test #22: transform_action_contract ..............................   Passed    0.00 sec
+2026-10-26T17:23:57.3978818Z       Start 23: combat_original_function_vectors
+2026-10-26T17:23:57.4018850Z 23/55 Test #23: combat_original_function_vectors .......................   Passed    0.00 sec
+2026-10-26T17:23:57.4021428Z       Start 24: native_session_integration
+2026-10-26T17:23:57.4037564Z 24/55 Test #24: native_session_integration .............................   Passed    0.00 sec
+2026-10-26T17:23:57.4038176Z       Start 25: mission_progression_original_function_vectors
+2026-10-26T17:23:57.4056401Z 25/55 Test #25: mission_progression_original_function_vectors ..........   Passed    0.00 sec
+2026-10-26T17:23:57.4057301Z       Start 26: turn_original_function_vectors
+2026-10-26T17:23:57.4094297Z 26/55 Test #26: turn_original_function_vectors .........................   Passed    0.00 sec
+2026-10-26T17:23:57.4094968Z       Start 27: mission_objectives_original_function_vectors
+2026-10-26T17:23:57.4128256Z 27/55 Test #27: mission_objectives_original_function_vectors ...........   Passed    0.00 sec
+2026-10-26T17:23:57.4128886Z       Start 28: ai_attack_original_function_vectors
+2026-10-26T17:23:57.4169041Z 28/55 Test #28: ai_attack_original_function_vectors ....................   Passed    0.00 sec
+2026-10-26T17:23:57.4170208Z       Start 29: ai_planner_original_function_vectors
+2026-10-26T17:23:57.4212261Z 29/55 Test #29: ai_planner_original_function_vectors ...................   Passed    0.00 sec
+2026-10-26T17:23:57.4212884Z       Start 30: ai_turn_admission_original_function_vectors
+2026-10-26T17:23:57.4299740Z 30/55 Test #30: ai_turn_admission_original_function_vectors ............   Passed    0.01 sec
+2026-10-26T17:23:57.4300279Z       Start 31: ai_site_original_function_vectors
+2026-10-26T17:23:57.4353478Z 31/55 Test #31: ai_site_original_function_vectors ......................   Passed    0.01 sec
+2026-10-26T17:23:57.4354222Z       Start 32: atlas_format_geometry_contract
+2026-10-26T17:23:57.4385448Z 32/55 Test #32: atlas_format_geometry_contract .........................   Passed    0.00 sec
+2026-10-26T17:23:57.4388722Z       Start 33: png_rgba_contract
+2026-10-26T17:23:57.4406248Z 33/55 Test #33: png_rgba_contract ......................................   Passed    0.00 sec
+2026-10-26T17:23:57.4409070Z       Start 34: sprite_geometry_contract
+2026-10-26T17:23:57.4422480Z 34/55 Test #34: sprite_geometry_contract ...............................   Passed    0.00 sec
+2026-10-26T17:23:57.4423452Z       Start 35: terrain_original_function_vectors
+2026-10-26T17:23:57.4444267Z 35/55 Test #35: terrain_original_function_vectors ......................   Passed    0.00 sec
+2026-10-26T17:23:57.4444820Z       Start 36: world_bootstrap_contract
+2026-10-26T17:23:57.4460567Z 36/55 Test #36: world_bootstrap_contract ...............................   Passed    0.00 sec
+2026-10-26T17:23:57.4461639Z       Start 37: sprite_animation_contract
+2026-10-26T17:23:57.4475673Z 37/55 Test #37: sprite_animation_contract ..............................   Passed    0.00 sec
+2026-10-26T17:23:57.4477967Z       Start 38: sprite_placement_contract
+2026-10-26T17:23:57.4488996Z 38/55 Test #38: sprite_placement_contract ..............................   Passed    0.00 sec
+2026-10-26T17:23:57.4491570Z       Start 39: initial_animation_table_contract
+2026-10-26T17:23:57.4503458Z 39/55 Test #39: initial_animation_table_contract .......................   Passed    0.00 sec
+2026-10-26T17:23:57.4514202Z       Start 40: vorbis_format_contract
+2026-10-26T17:23:57.4520395Z 40/55 Test #40: vorbis_format_contract .................................   Passed    0.00 sec
+2026-10-26T17:23:57.4520963Z       Start 41: audio_dispatch_original_function_vectors
+2026-10-26T17:23:57.4536991Z 41/55 Test #41: audio_dispatch_original_function_vectors ...............   Passed    0.00 sec
+2026-10-26T17:23:57.4539613Z       Start 42: audio_maintenance_original_function_vectors
+2026-10-26T17:23:57.4558694Z 42/55 Test #42: audio_maintenance_original_function_vectors ............   Passed    0.00 sec
+2026-10-26T17:23:57.4559285Z       Start 43: menu_music_original_function_vectors
+2026-10-26T17:23:57.4635206Z 43/55 Test #43: menu_music_original_function_vectors ...................   Passed    0.01 sec
+2026-10-26T17:23:57.4637597Z       Start 44: native_profile_atomic_file
+2026-10-26T17:23:57.4690036Z 44/55 Test #44: native_profile_atomic_file .............................   Passed    0.01 sec
+2026-10-26T17:23:57.4691149Z       Start 45: unit_spawn_original_function_vectors
+2026-10-26T17:23:57.4707406Z 45/55 Test #45: unit_spawn_original_function_vectors ...................   Passed    0.00 sec
+2026-10-26T17:23:57.4708661Z       Start 46: unit_actions_original_function_vectors
+2026-10-26T17:23:57.4770544Z 46/55 Test #46: unit_actions_original_function_vectors .................   Passed    0.01 sec
+2026-10-26T17:23:57.4772572Z       Start 47: ai_execution_original_function_vectors
+2026-10-26T17:23:57.4787202Z 47/55 Test #47: ai_execution_original_function_vectors .................   Passed    0.00 sec
+2026-10-26T17:23:57.4788474Z       Start 48: world_commands_original_function_vectors
+2026-10-26T17:23:57.4807851Z 48/55 Test #48: world_commands_original_function_vectors ...............   Passed    0.00 sec
+2026-10-26T17:23:57.4809932Z       Start 49: campaign_actual_save_and_handoff
+2026-10-26T17:23:57.5027023Z 49/55 Test #49: campaign_actual_save_and_handoff .......................   Passed    0.02 sec
+2026-10-26T17:23:57.5028105Z       Start 50: native_session_checkpoint_and_resume
+2026-10-26T17:23:57.5108372Z 50/55 Test #50: native_session_checkpoint_and_resume ...................   Passed    0.01 sec
+2026-10-26T17:23:57.5109349Z       Start 51: unit_interactions_original_functions
+2026-10-26T17:23:57.5252051Z 51/55 Test #51: unit_interactions_original_functions ...................   Passed    0.01 sec
+2026-10-26T17:23:57.5253276Z       Start 52: unit_commands_original_functions
+2026-10-26T17:23:57.5286386Z 52/55 Test #52: unit_commands_original_functions .......................   Passed    0.00 sec
+2026-10-26T17:23:57.5289260Z       Start 53: terrain_decorations_original_function_vectors
+2026-10-26T17:23:57.5320335Z 53/55 Test #53: terrain_decorations_original_function_vectors ..........   Passed    0.00 sec
+2026-10-26T17:23:57.5321622Z       Start 54: terrain_animated_original_function_vectors
+2026-10-26T17:23:57.5336844Z 54/55 Test #54: terrain_animated_original_function_vectors .............   Passed    0.00 sec
+2026-10-26T17:23:57.5339387Z       Start 55: terrain_sprite_decorations_original_function_vectors
+2026-10-26T17:23:57.5395772Z 55/55 Test #55: terrain_sprite_decorations_original_function_vectors ...   Passed    0.01 sec
+2026-10-26T17:23:57.5399493Z 
+2026-10-26T17:23:57.5399701Z 100% tests passed, 0 tests failed out of 55
+2026-10-26T17:23:57.5399869Z 
+2026-10-26T17:23:57.5400268Z Total Test time (real) =   0.43 sec
+2026-10-26T17:23:57.5750676Z Post job cleanup.
+2026-10-26T17:23:57.6396474Z [command]/usr/bin/git version
+2026-10-26T17:23:57.6445348Z git version 2.55.0
+2026-10-26T17:23:57.6483321Z Temporarily overriding HOME='/home/runner/work/_temp/e6954af1-12da-439f-b173-e750a03ab3ce' before making global git config changes
+2026-10-26T17:23:57.6484477Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-26T17:23:57.6485125Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/G1-Awakening-IOS/G1-Awakening-IOS
+2026-10-26T17:23:57.6542050Z Removing SSH command configuration
+2026-10-26T17:23:57.6542643Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-26T17:23:57.6581617Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-26T17:23:57.6904424Z Removing HTTP extra header
+2026-10-26T17:23:57.6905120Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-26T17:23:57.6972470Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-26T17:23:57.7178189Z Removing includeIf entries pointing to credentials config files
+2026-10-26T17:23:57.7186989Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-26T17:23:57.7218735Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-26T17:23:57.7578443Z Cleaning up orphan processes

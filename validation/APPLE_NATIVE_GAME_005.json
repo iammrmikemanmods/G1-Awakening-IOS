@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-26T17:32:14.969388+00:00",
+  "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+  "source_tree": "25beb430ed6d576216f4dddac77cf843710ec270",
+  "run_id": 40368043701,
+  "run_url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40368043701",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 121730976489,
+      "name": "host-tests",
+      "conclusion": "success",
+      "head_sha": "083057b20b3b10269ca48e0d9816a62b3214869b",
+      "started_at": "2026-10-26T17:22:47Z",
+      "completed_at": "2026-10-26T17:23:59Z"
+    },
+    {
+      "id": 121730976929,
+      "name": "iphoneos-arm64",
+      "conclusion": "success",
+      "head_sha": "083057b20b3b10269ca48e0d9816a62b3214869b",
+      "started_at": "2026-10-26T17:22:47Z",
+      "completed_at": "2026-10-26T17:26:06Z"
+    }
+  ],
+  "toolchain": {
+    "xcode": "26.6",
+    "xcode_build": "17F113",
+    "iphoneos_sdk": "26.5",
+    "deployment_target": "17.5"
+  },
+  "portable_ctest": {
+    "linux_passed": 55,
+    "linux_total": 55,
+    "apple_arm64_passed": 55,
+    "apple_arm64_total": 55
+  },
+  "iphoneos_app": {
+    "architecture": "arm64",
+    "executable_sha256": "6616f178dfd6ea52d79a90e59f5ca4475ceeb0168c6667e6a38de2bad2772316",
+    "executable_bytes": 1528144,
+    "system_dependencies": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/MetalKit.framework/MetalKit",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+      "/usr/lib/libz.1.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "platform": "iPhoneOS",
+    "minimum_os": "17.5",
+    "sdk_encoded": 1705216,
+    "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+    "bundle_identifier": "org.g1awakening.native.test",
+    "version": "0.5.0",
+    "artifact_kind": "Native campaign integration test",
+    "feature_scope": "Native tactical gameplay, continuous turns, campaign and checkpoint restore, original animated M3G battle integration; full playthrough, original output fidelity and physical iPhone XR validation remain outstanding",
+    "original_assets_bundled": false,
+    "device_execution_verified": false,
+    "full_playthrough_verified": false
+  },
+  "exact_runtime_m3g_shader_iphoneos_compile": true,
+  "tactical_gpu_probe": {
+    "metal_device_available": true,
+    "device": "Apple Paravirtual device",
+    "pixel_checks": 6,
+    "pixel_channels_compared": 24,
+    "result": "passed",
+    "original_game_data_used": false,
+    "iphone_execution": false
+  },
+  "m3g_gpu_probe": {
+    "metal_device_available": true,
+    "device": "Apple Paravirtual device",
+    "pixel_checks": 12,
+    "pixel_channels_compared": 48,
+    "result": "passed",
+    "original_game_data_used": false,
+    "iphone_execution": false
+  },
+  "gpu_probe_image_hashes": {
+    "metal-corners.png": {
+      "sha256": "63ffe05a3df3b4aa25ea2d3f7cbcb72fcbaf858eac69685d45230b9e2908b9c1",
+      "bytes": 1417
+    },
+    "m3g-metal-corners.png": {
+      "sha256": "5cb1afc9bb676cf93c50c35379d7a78a71d24b2083dea8b5e0aebad0b38bdec1",
+      "bytes": 132
+    }
+  },
+  "artifact": {
+    "id": 12671377059,
+    "name": "G1-native-game-unsigned-code",
+    "bytes": 662391,
+    "sha256": "8439bef9b6cda83844adb5b8bd19bf20828bb172b9626bcca866c4fb978f534b"
+  },
+  "packaged_ipa": {
+    "file_name": "G1_Awakening_Native_Game_Test_005.ipa",
+    "bytes": 7572942,
+    "sha256": "92988b5eedb10149f1863fe3cb4a5ac2799c0fe7a0e946901bfa0fca4b028563",
+    "validation": "validation/NATIVE_GAME_IPA_005.json",
+    "signed": false
+  },
+  "evidence": {
+    "validation/build_005_apple/m3g-metal-report.json": {
+      "bytes": 190,
+      "sha256": "a9a8936df4dc91d0c7451f474d1a7e99a6a9b952a3d20a56355c893961cbdc17"
+    },
+    "validation/build_005_apple/metal-report.json": {
+      "bytes": 189,
+      "sha256": "27309d587cd1fbd3c0ca864ee0ad2d2dec5b121bfbb5b4cc3432227fb2081504"
+    },
+    "validation/build_005_apple/native-app-validation.json": {
+      "bytes": 1440,
+      "sha256": "a54ac3c709a7125d69852a79d4515ff7e1166d064a91304b97da839dd012ed38"
+    },
+    "validation/build_005_apple/native-core-objects.json": {
+      "bytes": 14909,
+      "sha256": "991f461af2faa5113bcdb7f91a474df7718d61733490ce28d190eea9493fc3ed"
+    },
+    "validation/build_005_apple/native-metal-objects.json": {
+      "bytes": 740,
+      "sha256": "e6a89bc9e570f03bec635c0a71d59d017ff8fd842e8656d54d5dc4495265cca6"
+    },
+    "validation/build_005_apple/native-png-objects.json": {
+      "bytes": 477,
+      "sha256": "f9da6c89e139699837786cbed4e6b5e5768d066144850308767e49d6df5b553e"
+    },
+    "validation/build_005_apple/native-vorbis-objects.json": {
+      "bytes": 481,
+      "sha256": "97b3785cb347e1ba739ef6a710a0c18096d78fbdc6b64ef059efa832178392fb"
+    },
+    "validation/build_005_apple/apple-job.log": {
+      "bytes": 76364,
+      "sha256": "fe9befb4d74a2012e451c2354b9abf447eb7a0f2345e647f245bde2e0b317ed7"
+    },
+    "validation/build_005_apple/linux-job.log": {
+      "bytes": 50801,
+      "sha256": "6a6bba8697302081cdad29fd317b7d485c793e831feee4b09663d91f0dd928e3"
+    },
+    "validation/build_005_apple/workflow-jobs.json": {
+      "bytes": 8663,
+      "sha256": "e37b20ff2f7e2dbb6a8bbdd9acd17bfaf6d47dc4ca818634e90c623e377a1fab"
+    },
+    "validation/build_005_apple/artifact-metadata.json": {
+      "bytes": 756,
+      "sha256": "86b8892654035ccd11cf7c3761dd4d3c37d9eefad9f7575fc1ed17901d066e07"
+    }
+  },
+  "boundaries": {
+    "gpu_probe_scope": "Synthetic tactical and M3G mesh/Sprite3D pixel cases on the Apple Paravirtual device; no original assets or physical iPhone.",
+    "physical_iphone_installation_verified": false,
+    "physical_iphone_execution_verified": false,
+    "physical_xr_1792_by_828_verified": false,
+    "sustained_60fps_verified": false,
+    "full_rendered_playthrough_verified": false,
+    "remaining_implementation": [
+      "Tactical support percentage presentation",
+      "Original UI/site-marker/font/tactical camera fidelity",
+      "Remaining original sound-event coverage"
+    ]
+  }
+}

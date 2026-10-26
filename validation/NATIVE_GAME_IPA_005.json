@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "artifact_kind": "Native campaign integration test",
+  "source_commit": "083057b20b3b10269ca48e0d9816a62b3214869b",
+  "ipa_sha256": "92988b5eedb10149f1863fe3cb4a5ac2799c0fe7a0e946901bfa0fca4b028563",
+  "ipa_bytes": 7572942,
+  "code_artifact_sha256": "8439bef9b6cda83844adb5b8bd19bf20828bb172b9626bcca866c4fb978f534b",
+  "native_executable": {
+    "architecture": "arm64",
+    "executable_sha256": "6616f178dfd6ea52d79a90e59f5ca4475ceeb0168c6667e6a38de2bad2772316",
+    "executable_bytes": 1528144,
+    "system_dependencies": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/MetalKit.framework/MetalKit",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+      "/usr/lib/libz.1.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "platform": "iPhoneOS",
+    "minimum_os": "17.5",
+    "sdk_encoded": 1705216
+  },
+  "data": {
+    "schema": 1,
+    "original_ipa_sha256": "b24fbe5cc4d5cb603189a476c4f81dd2a6ecc18b025eae913262055a7fc443fd",
+    "archive_sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4",
+    "terrain_tables_sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8",
+    "terrain_extraction": {
+      "schema_version": 1,
+      "data_format": "G1 native terrain visual tables, raw style-major v1",
+      "size": 480,
+      "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8",
+      "original_executable_sha256": "0d510516fe3676ee4a0f4dff60ba64e1c5bf79a0c9800f420b1bbdb1c12febfd",
+      "record_fields": [
+        "top_atlas_cell_u8",
+        "front_atlas_cell_u8",
+        "left_atlas_cell_u8",
+        "right_atlas_cell_u8",
+        "signed_height_steps_i8"
+      ],
+      "world_units_per_height_step": 32,
+      "tables": [
+        {
+          "style": 0,
+          "original_virtual_address": 888964,
+          "original_virtual_address_hex": "0xd9084",
+          "segment": "__DATA",
+          "original_file_offset": 884868,
+          "output_offset": 0,
+          "record_count": 32,
+          "record_size": 5,
+          "sha256": "664368b98e22900675e0c10a936d022433d018bcc4e25141cd59343d065bf5ca",
+          "atlas_resource_id": 693,
+          "atlas_width": 512,
+          "atlas_height": 256,
+          "atlas_cell_width": 64,
+          "atlas_cell_height": 64
+        },
+        {
+          "style": 1,
+          "original_virtual_address": 888632,
+          "original_virtual_address_hex": "0xd8f38",
+          "segment": "__DATA",
+          "original_file_offset": 884536,
+          "output_offset": 160,
+          "record_count": 32,
+          "record_size": 5,
+          "sha256": "5af1a12467d6e61d1d2b02a7c338dd5fe11f2460828571c5572b12cb18e116a8",
+          "atlas_resource_id": 777,
+          "atlas_width": 512,
+          "atlas_height": 256,
+          "atlas_cell_width": 64,
+          "atlas_cell_height": 64
+        },
+        {
+          "style": 2,
+          "original_virtual_address": 888802,
+          "original_virtual_address_hex": "0xd8fe2",
+          "segment": "__DATA",
+          "original_file_offset": 884706,
+          "output_offset": 320,
+          "record_count": 32,
+          "record_size": 5,
+          "sha256": "e8a36407980fb13b82dd177a3ce7fa90a7c82528e11afdc89040eeb728ff389a",
+          "atlas_resource_id": 761,
+          "atlas_width": 512,
+          "atlas_height": 256,
+          "atlas_cell_width": 64,
+          "atlas_cell_height": 64
+        }
+      ],
+      "contains_original_machine_code": false,
+      "scope": "Original data tables only; no campaign linkage, camera or executable payload",
+      "original_ipa_sha256": "b24fbe5cc4d5cb603189a476c4f81dd2a6ecc18b025eae913262055a7fc443fd",
+      "original_member": "Payload/G1awakening.app/G1awakening",
+      "extractor_sha256": "bca928d01ef4dc25f335b75d761266fbb6750bb721efd2a8fa93d60511c2e9b0"
+    },
+    "contains_original_executable": false
+  },
+  "files": [
+    {
+      "path": "Payload/G1AwakeningNative.app/G1AwakeningNative",
+      "bytes": 1528144,
+      "sha256": "6616f178dfd6ea52d79a90e59f5ca4475ceeb0168c6667e6a38de2bad2772316"
+    },
+    {
+      "path": "Payload/G1AwakeningNative.app/GameData/iphone.big",
+      "bytes": 6994213,
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+    },
+    {
+      "path": "Payload/G1AwakeningNative.app/GameData/provenance.json",
+      "bytes": 2863,
+      "sha256": "d3b3790064654f37abbf0ca0d0c80eefc3e1129d822e32045327deb7f2f09517"
+    },
+    {
+      "path": "Payload/G1AwakeningNative.app/GameData/terrain-tables.bin",
+      "bytes": 480,
+      "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8"
+    },
+    {
+      "path": "Payload/G1AwakeningNative.app/Info.plist",
+      "bytes": 1902,
+      "sha256": "7d8a26a1124381c83900080be20f2371163031077b1d52374a6edd9cb60a94e8"
+    },
+    {
+      "path": "Payload/G1AwakeningNative.app/Licenses/LodePNG-Zlib.txt",
+      "bytes": 886,
+      "sha256": "bdafa318b8e637d600ca1b60545e894881977a16a16b74809c95e805701621e3"
+    },
+    {
+      "path": "Payload/G1AwakeningNative.app/Licenses/Native-Port-MPL-2.0.txt",
+      "bytes": 16727,
+      "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
+    },
+    {
+      "path": "Payload/G1AwakeningNative.app/Licenses/STB-MIT-Public-Domain.txt",
+      "bytes": 2510,
+      "sha256": "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63"
+    }
+  ],
+  "signed": false,
+  "requires_sideloadly_signing": true,
+  "contains_original_executable": false,
+  "contains_compatibility_runtime": false,
+  "device_installation_verified": false,
+  "device_execution_verified": false,
+  "full_gameplay_implemented": false,
+  "full_playthrough_verified": false,
+  "sustained_60fps_verified": false,
+  "scope": "Native tactical gameplay, continuous turns, campaign and checkpoint restore, original animated M3G battle integration; full playthrough, original output fidelity and physical iPhone XR validation remain outstanding"
+}

@@ -1,0 +1,379 @@
+{
+  "schema": 1,
+  "command": [
+    "/tmp/g1_native_005_mode_verify/g1_session_mode_playthrough_probe",
+    "--archive",
+    "/workspace/scratch/cba553aafa20/g1_port/research/assets/iphone.big",
+    "--terrain-tables",
+    "/workspace/scratch/cba553aafa20/g1_port/research/native_terrain/terrain_visual_tables.bin",
+    "--initial-profile",
+    "/tmp/g1-native-005-independent-showdown/campaign.g1native",
+    "--output",
+    "/tmp/g1-native-005-independent-arena/arena_1_faction_1_opponent_1",
+    "--strategy",
+    "native-planner-all",
+    "--followup-policy",
+    "baseline",
+    "--group",
+    "2",
+    "--start-mission",
+    "1",
+    "--arena-faction",
+    "1",
+    "--arena-opponent",
+    "1",
+    "--seed",
+    "0x4741",
+    "--max-missions",
+    "1",
+    "--max-ticks",
+    "200000",
+    "--max-human-turns",
+    "220",
+    "--max-seconds",
+    "45.0"
+  ],
+  "inputs": {
+    "pilot": {
+      "path": "/tmp/g1_native_005_mode_verify/g1_session_mode_playthrough_probe",
+      "bytes": 998264,
+      "sha256": "d845a480b543c6ff47632a04774e67f0ed50f5ff2898b3a4235b949cc077056a"
+    },
+    "archive": {
+      "path": "/workspace/scratch/cba553aafa20/g1_port/research/assets/iphone.big",
+      "bytes": 6994213,
+      "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+    },
+    "terrain_tables": {
+      "path": "/workspace/scratch/cba553aafa20/g1_port/research/native_terrain/terrain_visual_tables.bin",
+      "bytes": 480,
+      "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8"
+    },
+    "profile": {
+      "path": "/tmp/g1-native-005-independent-showdown/campaign.g1native",
+      "bytes": 330,
+      "sha256": "eaeffce146ffc4a2bd508fa6a33f9f337f1ca7ece340bda31ef87ab135dd9a85"
+    }
+  },
+  "returncode": 0,
+  "stdout": "Outcome native_arena_finished; native handoffs 1; ticks 472; human moves 10; attacks 12; captures 6\n",
+  "stderr": "",
+  "presentation_feedback": "synthetic; not GPU/audio/device validation",
+  "native_gameplay_core_used": true,
+  "original_executable_executed": false,
+  "gameplay_state_forced": false,
+  "unlock_flags_forced": false,
+  "result": {
+    "path": "/tmp/g1-native-005-independent-arena/arena_1_faction_1_opponent_1/result.json",
+    "bytes": 3676,
+    "sha256": "73dfcf86126b2aef9668a224ebe9e6f50a07e33ebe755ddfdd38bae2f27d8a68"
+  },
+  "events": {
+    "path": "/tmp/g1-native-005-independent-arena/arena_1_faction_1_opponent_1/events.jsonl",
+    "bytes": 25589,
+    "sha256": "e765d2f13df64fff541eba460e3bfd67db371971717f061451538906a34fa504"
+  },
+  "observed": {
+    "outcome": "native_arena_finished",
+    "error": "",
+    "handoffs": [
+      {
+        "group": 2,
+        "index": 1,
+        "resource": 311,
+        "handoff": "campaign_menu",
+        "first_tick": 0,
+        "last_tick": 472,
+        "active_counts": [
+          1,
+          0
+        ],
+        "record": [
+          9,
+          4,
+          3
+        ],
+        "profile_written": true
+      }
+    ],
+    "initial_profile": {
+      "completed": [
+        true,
+        true
+      ],
+      "highest_unlocked": [
+        17,
+        8
+      ],
+      "records": [
+        [
+          3,
+          1,
+          0
+        ],
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          9,
+          5,
+          1
+        ],
+        [
+          8,
+          4,
+          3
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          15,
+          2,
+          4
+        ],
+        [
+          11,
+          0,
+          1
+        ],
+        [
+          11,
+          3,
+          0
+        ],
+        [
+          22,
+          7,
+          1
+        ],
+        [
+          8,
+          5,
+          0
+        ],
+        [
+          6,
+          5,
+          0
+        ],
+        [
+          57,
+          10,
+          0
+        ],
+        [
+          13,
+          6,
+          0
+        ],
+        [
+          32,
+          9,
+          3
+        ],
+        [
+          45,
+          6,
+          1
+        ],
+        [
+          14,
+          6,
+          1
+        ],
+        [
+          6,
+          1,
+          1
+        ],
+        [
+          17,
+          2,
+          0
+        ],
+        [
+          26,
+          3,
+          1
+        ],
+        [
+          128,
+          3,
+          0
+        ],
+        [
+          3,
+          1,
+          0
+        ],
+        [
+          7,
+          3,
+          0
+        ],
+        [
+          133,
+          4,
+          1
+        ],
+        [
+          4,
+          6,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ]
+    },
+    "final_profile": {
+      "completed": [
+        true,
+        true
+      ],
+      "highest_unlocked": [
+        17,
+        8
+      ],
+      "records": [
+        [
+          3,
+          1,
+          0
+        ],
+        [
+          4,
+          1,
+          0
+        ],
+        [
+          9,
+          5,
+          1
+        ],
+        [
+          8,
+          4,
+          3
+        ],
+        [
+          5,
+          0,
+          0
+        ],
+        [
+          15,
+          2,
+          4
+        ],
+        [
+          11,
+          0,
+          1
+        ],
+        [
+          11,
+          3,
+          0
+        ],
+        [
+          22,
+          7,
+          1
+        ],
+        [
+          8,
+          5,
+          0
+        ],
+        [
+          6,
+          5,
+          0
+        ],
+        [
+          57,
+          10,
+          0
+        ],
+        [
+          13,
+          6,
+          0
+        ],
+        [
+          32,
+          9,
+          3
+        ],
+        [
+          45,
+          6,
+          1
+        ],
+        [
+          14,
+          6,
+          1
+        ],
+        [
+          6,
+          1,
+          1
+        ],
+        [
+          17,
+          2,
+          0
+        ],
+        [
+          26,
+          3,
+          1
+        ],
+        [
+          128,
+          3,
+          0
+        ],
+        [
+          3,
+          1,
+          0
+        ],
+        [
+          7,
+          3,
+          0
+        ],
+        [
+          133,
+          4,
+          1
+        ],
+        [
+          4,
+          6,
+          0
+        ],
+        [
+          6,
+          2,
+          0
+        ]
+      ]
+    },
+    "story_records_preserved": true,
+    "profile_bytes_preserved": true,
+    "complete_showdown_headless": false,
+    "arena_headless_finished": true,
+    "device_playthrough_verified": false
+  }
+}
