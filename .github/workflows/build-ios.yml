@@ -29,8 +29,6 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 180
     env:
-      G1_BUILD_OUTPUT: ${{ github.workspace }}/artifacts
-      G1_BUILD_WORK: ${{ runner.temp }}/g1-ios-${{ github.run_id }}-${{ github.run_attempt }}
       HOMEBREW_NO_AUTO_UPDATE: "1"
     steps:
       - name: Check out build kit
