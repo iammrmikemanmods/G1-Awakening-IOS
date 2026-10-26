@@ -1,0 +1,240 @@
+{
+  "scope": "Native source publication inventory; no original game payload or runtime emulator",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 84,
+      "sha256": "ff6a34edd4c5c4704138b75c42bb48cf3cc34f67f06e2475b9053c8d44c3f5ca"
+    },
+    {
+      "path": ".github/workflows/native-core.yml",
+      "bytes": 2604,
+      "sha256": "30005cfad350c676ca1982bf5c4161d14ebc7b9649392b79d4f4b3aaf7030334"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 122,
+      "sha256": "242234391f1792d304676e7349eae6f44cd013bfcda67d04e6e147926856c109"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 16727,
+      "sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
+    },
+    {
+      "path": "PORT_STATUS.json",
+      "bytes": 3081,
+      "sha256": "439b22612363f5d976d5ffd28ba13af9f4244c94a6bdffa7c5dfba9fed6bd428"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4038,
+      "sha256": "f6165898c647a2d795b3104fbc1d753b6eb1f51960dc58fda805488bf1a0901b"
+    },
+    {
+      "path": "docs/TIMING_REQUIREMENT.md",
+      "bytes": 2576,
+      "sha256": "a185b8fff785e747136053f1713a5a8b82a12d90c8863b4a4f9dbb870ebf5ff9"
+    },
+    {
+      "path": "native/CMakeLists.txt",
+      "bytes": 1651,
+      "sha256": "ddffece70f56e509cfdc5a5b879cdba288b2abbe67b075780053740ed492c60f"
+    },
+    {
+      "path": "native/include/g1/Archive.hpp",
+      "bytes": 1617,
+      "sha256": "a53b2b30f456bad82d644996c92c5f3d630df1b6e8778b4be446765be41657f5"
+    },
+    {
+      "path": "native/include/g1/Atlas.hpp",
+      "bytes": 3325,
+      "sha256": "7306580534598d1d1de640ae66e96dd05810fe1eef87d8a06b78864bd2f1381f"
+    },
+    {
+      "path": "native/include/g1/M3G.hpp",
+      "bytes": 1006,
+      "sha256": "03069196d3475c6f5dd910fa9202504d4dd4a8ee7f84f4c144cbb21cedb5ff7d"
+    },
+    {
+      "path": "native/include/g1/Mission.hpp",
+      "bytes": 1448,
+      "sha256": "3580e5d74e2c2250302b996c13b92f61f592c7763fb4c233ac08c80d16b85efa"
+    },
+    {
+      "path": "native/include/g1/Movement.hpp",
+      "bytes": 2996,
+      "sha256": "3d6ae42658f6be7a10685e5153ec168b3f32d71b76db2468499fa832ce45f438"
+    },
+    {
+      "path": "native/research/ATLAS_DECODER.md",
+      "bytes": 10294,
+      "sha256": "8b77c30d48169c2f5a3c0811b93e40f96e7d7f8ed53c1d76e4c65064679897c8"
+    },
+    {
+      "path": "native/research/MISSION_DECODER.md",
+      "bytes": 8359,
+      "sha256": "d0781fe436358844256ab4f5f1f99960c46b89c90f3aadd8b6d980aab32555b8"
+    },
+    {
+      "path": "native/research/MOVEMENT_RECOVERY.json",
+      "bytes": 3313,
+      "sha256": "dc8af2ce1a8ff94b75ba83ca2c64ad9daa27b98b0c7b556415a30971195b8c38"
+    },
+    {
+      "path": "native/research/MOVEMENT_RECOVERY.md",
+      "bytes": 8974,
+      "sha256": "b3d5fa8883af45d2860dd193c9623d9d39a60b2ac052ccf4a5c238a48fa80c87"
+    },
+    {
+      "path": "native/research/atlas_validation/native_atlas_validation.json",
+      "bytes": 40297,
+      "sha256": "47688d06d6621bbc5eb29df7ca3668d75b18edde90b966b3d5cf166515ac50d1"
+    },
+    {
+      "path": "native/research/atlas_validation/original_quad_oracle.json",
+      "bytes": 8720,
+      "sha256": "2822faa4884e297ad8655c9b05a75e031dfd8c67ad5d308bfc5183035ecf11f1"
+    },
+    {
+      "path": "native/research/mission_validation/MISSION_CHECKPOINT.json",
+      "bytes": 2956,
+      "sha256": "a438ef30a23890e6293caf5aca6509ae2510866dc4e897c9a96c19f8ac03d398"
+    },
+    {
+      "path": "native/research/mission_validation/cmake_validation.json",
+      "bytes": 6999,
+      "sha256": "b92d9e26a0d9dd879c98ffccf8209b67215947492de61f5f67357d2055030bcd"
+    },
+    {
+      "path": "native/research/mission_validation/native_mission_validation.json",
+      "bytes": 144390,
+      "sha256": "55b70ec3e3bf800421f048ba64e28010e27b1788358e05ea466d84b563713a01"
+    },
+    {
+      "path": "native/research/resource_validation/native_resource_inventory.tsv",
+      "bytes": 24879,
+      "sha256": "c82184845563e87a25699577bb8c287b91ba5eea6d7fcbf023c980c7156cf274"
+    },
+    {
+      "path": "native/research/resource_validation/native_validation.json",
+      "bytes": 3464,
+      "sha256": "013bb2278366070de243752ed27dfef4c15910e73ae2be87cce4d5e915c1ad71"
+    },
+    {
+      "path": "native/src/Archive.cpp",
+      "bytes": 7849,
+      "sha256": "a19a7576c9b9e793a5e2171d0096b7aba68e3951d28f4bb794494466905f8d87"
+    },
+    {
+      "path": "native/src/Atlas.cpp",
+      "bytes": 7960,
+      "sha256": "5224165172d03bd54c7d8033c1d2e6ee44ce7ca1fa03526d74b61d1b1e156749"
+    },
+    {
+      "path": "native/src/M3G.cpp",
+      "bytes": 4130,
+      "sha256": "5a80cf51465903ec076bd18173235b801b90fe61217cb67d410060d6f17ba9ff"
+    },
+    {
+      "path": "native/src/Mission.cpp",
+      "bytes": 4947,
+      "sha256": "36c003e35084c66d406323fadb372fbb87431f27dd4af7c633e74a745ab97e35"
+    },
+    {
+      "path": "native/src/Movement.cpp",
+      "bytes": 8163,
+      "sha256": "20de5fe30ac8b69803b149bdc0a1a019a480c70d412f1bd0e474e6b1f70dbf04"
+    },
+    {
+      "path": "native/tests/atlas_reference.json",
+      "bytes": 25805,
+      "sha256": "56fc4b6637852f51a0377b2a6583e1ad62503501af2b636ad34e381ea73d9adf"
+    },
+    {
+      "path": "native/tests/atlas_test.cpp",
+      "bytes": 7090,
+      "sha256": "b66a127f098faada423a51149e43d2438f2e2a388164138948e4a2efc6e50f6f"
+    },
+    {
+      "path": "native/tests/generate_atlas_reference.py",
+      "bytes": 9377,
+      "sha256": "1cda792238f2967a973206af136283bb9568e9d7d6dff38ec2cecb8a10a44dbb"
+    },
+    {
+      "path": "native/tests/generate_mission_reference.py",
+      "bytes": 6180,
+      "sha256": "7f7a4d8a6bd05008f05cca2e6a11d3c1a714e7ef2bba52d7609b6f226dee2709"
+    },
+    {
+      "path": "native/tests/mission_reference.json",
+      "bytes": 28641,
+      "sha256": "1ef8f33c6b929ca330136d9c80d960b2a5e04a72b0a6cde114291301da3d77c9"
+    },
+    {
+      "path": "native/tests/mission_test.cpp",
+      "bytes": 4368,
+      "sha256": "720cf1d432c423bd4cadae262900db23e2ffc193e3631c98ddbc29e529963841"
+    },
+    {
+      "path": "native/tests/movement_cases.txt",
+      "bytes": 65806,
+      "sha256": "ba6b138459a4016101f8ad22e35564faafa6635defc75437695d26408e0425d3"
+    },
+    {
+      "path": "native/tests/movement_test.cpp",
+      "bytes": 5614,
+      "sha256": "4dbe03624ab5e378c5e19f63b93ba337afd5357a6c493afae87c9a656ce22dc6"
+    },
+    {
+      "path": "native/tests/resource_reference.json",
+      "bytes": 182450,
+      "sha256": "ba6ee933649e511ac917b7018a1313d32f39f2fbd7700ee7d84b22045ac479c7"
+    },
+    {
+      "path": "native/tests/verify_atlas.py",
+      "bytes": 6322,
+      "sha256": "5ab4a5b8774082254f801e80aa98587c5d03d5d5fe5110975b4294be27871f08"
+    },
+    {
+      "path": "native/tests/verify_missions.py",
+      "bytes": 12247,
+      "sha256": "de8f32da9479ed2a70b2ee49d1529c6d1218e110404867e5f8d3bbe320c16469"
+    },
+    {
+      "path": "native/tests/verify_resources.py",
+      "bytes": 8261,
+      "sha256": "025799d510e7ccba2882ef875f0249755fa03b2f4c3cb063da863793ddccf1a9"
+    },
+    {
+      "path": "native/tools/atlas_probe.cpp",
+      "bytes": 4042,
+      "sha256": "a79260305f11fd65764a7b5b2d37e7d4067c82e015772422ffbac1334cd05e15"
+    },
+    {
+      "path": "native/tools/g1_asset_probe.cpp",
+      "bytes": 1899,
+      "sha256": "873af09ec06d65a14bec3ab30c0022df2f401c75262f266aca487ba4760ba5ac"
+    },
+    {
+      "path": "native/tools/m3g_probe.cpp",
+      "bytes": 569,
+      "sha256": "42b628462dbdba1f589e8e0c517aea97d881386d2f37e375979da662e42960f7"
+    },
+    {
+      "path": "native/tools/mission_probe.cpp",
+      "bytes": 2533,
+      "sha256": "689ff449ce11f633a7d66c7fb8237501780d127af02c05e891efe6eb90042e46"
+    },
+    {
+      "path": "scripts/verify-native-archive.py",
+      "bytes": 4215,
+      "sha256": "a830660e024f3ffbd0320bde22a0f3e51a43b5ac13f89a31f03501b2d9ebf6bb"
+    },
+    {
+      "path": "validation/native_workflow_local_validation.json",
+      "bytes": 557,
+      "sha256": "65f29d76d2798064dc69c006ed46927855035fa5aef7deda08275b0c9a80d5dc"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
-*.patch -text
-*.sh text eol=lf
-*.py text eol=lf
-*.yml text eol=lf
-*.json text eol=lf
-*.md text eol=lf
-
+* text=auto eol=lf
+*.cpp text
+*.hpp text
+*.py text
+*.sh text
+*.yml text
+*.json text

@@ -1,0 +1,75 @@
+name: Validate native C++ core
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - native/**
+      - scripts/**
+      - .github/workflows/native-core.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - native/**
+      - scripts/**
+      - .github/workflows/native-core.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-native-core-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out native source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install native build dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build g++ zlib1g-dev
+      - name: Configure
+        run: cmake -S native -B build/native -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+      - name: Compile native core and tests
+        run: cmake --build build/native --parallel 2
+      - name: Test recovered native behavior
+        run: ctest --test-dir build/native --output-on-failure --no-tests=error
+
+  iphoneos-arm64:
+    runs-on: macos-26
+    timeout-minutes: 15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - name: Check out native source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Record Apple toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          cmake --version
+      - name: Configure native iPhoneOS ARM64 library
+        run: >-
+          cmake -S native -B build/iphoneos -G Ninja
+          -DCMAKE_SYSTEM_NAME=iOS
+          -DCMAKE_OSX_SYSROOT=iphoneos
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=17.5
+          -DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY
+          -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_TESTING=OFF
+      - name: Compile native ARM64 sources
+        run: cmake --build build/iphoneos --parallel 2
+      - name: Verify native archive object targets
+        run: python3 scripts/verify-native-archive.py build/iphoneos/libg1_resources.a
+      - name: Record validation boundary
+        run: |
+          echo '## Native core compilation only' >> "$GITHUB_STEP_SUMMARY"
+          echo 'This job builds native ARM64 object code. It does not build a playable app or verify rendering, campaign completion, device performance, or 60 FPS.' >> "$GITHUB_STEP_SUMMARY"

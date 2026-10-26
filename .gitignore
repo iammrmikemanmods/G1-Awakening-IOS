@@ -1,6 +1,14 @@
+/build/
 /artifacts/
-/work/
+/user_assets/
+/project_sources/
 __pycache__/
 *.pyc
+*.ipa
+*.big
+*.m3g
+*.save
+*.o
+*.a
+*.dylib
 .DS_Store
-

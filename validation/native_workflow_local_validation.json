@@ -1,0 +1,17 @@
+{
+  "scope": "Synthetic parser fixtures only; not Apple SDK compilation or device execution",
+  "script_sha256": "a830660e024f3ffbd0320bde22a0f3e51a43b5ac13f89a31f03501b2d9ebf6bb",
+  "accepted_target_fixture": "ARM64 iPhoneOS17.5 MachO header inside regular ar",
+  "rejections": [
+    "truncated_archive",
+    "wrong_archive_magic",
+    "wrong_cpu",
+    "wrong_platform",
+    "wrong_minos",
+    "truncated_load_command"
+  ],
+  "actionlint_version": "1.7.12",
+  "actionlint_exit_code": 0,
+  "shellcheck_integration": false,
+  "pyflakes_integration": false
+}
