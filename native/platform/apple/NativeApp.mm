@@ -26,6 +26,8 @@
 #include "g1/TerrainDecorations.hpp"
 #include "g1/TerrainSpriteDecorations.hpp"
 #include "g1/SpritePlacement.hpp"
+#include "NativeSourceArt.hpp"
+#include "NativeTacticalHUD.hpp"
 #include "NativeDialogue.hpp"
 #include "NativeBattle.hpp"
 #include "NativeCampaign.hpp"
@@ -172,9 +174,10 @@ UIButton* original_action_button(NSString* label, id target, SEL selector, CGFlo
 }
 
 void update_original_action_state(UIButton* button, BOOL active) {
-    button.alpha=button.enabled ? 1.0 : 0.38;
-    button.layer.borderWidth=active && button.enabled ? 2.0 : 0.0;
-    button.layer.borderColor=[UIColor colorWithRed:0.95 green:0.25 blue:0.29 alpha:1].CGColor;
+    // Source inactive state has its OWN PNG. No translucent fake outline.
+    button.alpha=1.0;
+    button.layer.borderWidth=0.0;
+    (void)active;
 }
 
 g1::Matrix4 unit_model(const g1::WorldBootstrap& world, const g1::MovementUnitState& unit) {
@@ -293,10 +296,20 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     UIButton* _backButton;
     UIButton* _nextButton;
     UIButton* _skipButton;
-    UIStackView* _commands;
+    UIView* _commands;
     UIView* _dialoguePanel;
     G1WorldTitleLabel* _dialogueHeading;
-    UIImageView* _gameHudFrame;
+    G1TacticalHUDCanvas* _gameHudFrame;
+    UIImageView* _dialoguePortrait;
+    UIImageView* _dialogueBackdrop;
+    NSMutableDictionary<NSNumber*,UIImage*>* _dialoguePortraits;
+    UIImage* _skipDialogueIcon;
+    UIImage* _pauseGameIcon;
+    UIImage* _robotTransformIcon;
+    UIImage* _robotTransformDisabledIcon;
+    UIImage* _vehicleTransformIcon;
+    UIImage* _vehicleTransformDisabledIcon;
+    BOOL _menuIsSkip;
     G1DialogueCanvas* _dialogueCanvas;
     UIView* _battlePanel;
     G1BattleCanvas* _battleCanvas;
@@ -462,9 +475,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _worldLegend.font=[UIFont systemFontOfSize:10 weight:UIFontWeightMedium];
     _worldLegend.textColor=[UIColor colorWithWhite:0.75 alpha:1];
     _worldLegend.text=@"□ Site · ◇ Capture point · Gold/cyan: mission markers";
-    _gameHudFrame=[UIImageView new];
-    _gameHudFrame.contentMode=UIViewContentModeScaleToFill;
-    _gameHudFrame.translatesAutoresizingMaskIntoConstraints=NO;
+    _gameHudFrame=[G1TacticalHUDCanvas new];
+    _gameHudFrame.translatesAutoresizingMaskIntoConstraints=YES;
     [self.view addSubview:_gameHudFrame];
     UIStackView* headings = [[UIStackView alloc] initWithArrangedSubviews:@[_title,_hint,_worldLegend]];
     headings.axis = UILayoutConstraintAxisVertical;
@@ -486,23 +498,24 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [_reportButton setTitle:@"Test report" forState:UIControlStateNormal];
     [_reportButton addTarget:self action:@selector(shareReport) forControlEvents:UIControlEventTouchUpInside];
     _menuButton=original_action_button(@"Pause menu",self,@selector(openMenu),60);
-    UIStackView* buttons = [[UIStackView alloc] initWithArrangedSubviews:@[_resetButton,_menuButton,_reportButton]];
-    buttons.spacing = 8;
-    buttons.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:buttons];
+    _gameHudFrame.hidden=YES;
+    _menuButton.hidden=YES;
+    _menuButton.translatesAutoresizingMaskIntoConstraints=YES;
+    for(NSLayoutConstraint* limit in [_menuButton.constraints copy])
+        if(limit.firstAttribute==NSLayoutAttributeWidth || limit.firstAttribute==NSLayoutAttributeHeight)
+            limit.active=NO;
+    [self.view addSubview:_menuButton];
+    _resetButton.translatesAutoresizingMaskIntoConstraints=YES;
+    _reportButton.translatesAutoresizingMaskIntoConstraints=YES;
+    [self.view addSubview:_resetButton];
+    [self.view addSubview:_reportButton];
     UILayoutGuide* safe = self.view.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
-        [_gameHudFrame.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:8],
-        [_gameHudFrame.topAnchor constraintEqualToAnchor:safe.topAnchor constant:1],
-        [_gameHudFrame.widthAnchor constraintEqualToConstant:370],
-        [_gameHudFrame.heightAnchor constraintEqualToConstant:73],
         [headings.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:16],
         [headings.topAnchor constraintEqualToAnchor:safe.topAnchor constant:10],
         [headings.trailingAnchor constraintLessThanOrEqualToAnchor:safe.trailingAnchor constant:-16],
         [_fps.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:16],
-        [_fps.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-10],
-        [buttons.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
-        [buttons.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-4]]];
+        [_fps.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-10]]];
 
     _moveButton = original_action_button(@"Move",self,@selector(beginMove));
     _captureButton = original_action_button(@"Capture",self,@selector(capture));
@@ -511,59 +524,55 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _healButton = original_action_button(@"Repair",self,@selector(beginHeal));
     _upgradeButton = original_action_button(@"Upgrade",self,@selector(upgradeUnit));
     _endTurnButton = original_action_button(@"End turn",self,@selector(endTurn),60);
-    _buildButton = original_action_button(@"Activate unit",self,@selector(beginProduction));
+    _buildButton = original_action_button(@"Activate unit",self,@selector(beginProductionOrDeploy));
     _deployButton = original_action_button(@"Activate tape",self,@selector(beginDeploy));
     _undoButton = original_action_button(@"Undo",self,@selector(undoAction));
     _endTurnButton.hidden=NO;
-    UIStackView* primaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
-        @[_moveButton,_captureButton,_transformButton,_attackButton,_healButton]];
-    primaryCommands.spacing=3;
-    UIStackView* secondaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
-        @[_buildButton,_deployButton,_upgradeButton,_undoButton,_endTurnButton]];
-    secondaryCommands.spacing=3;
-    _commands = [[UIStackView alloc] initWithArrangedSubviews:@[primaryCommands,secondaryCommands]];
-    _commands.axis=UILayoutConstraintAxisVertical;_commands.alignment=UIStackViewAlignmentTrailing;
-    _commands.spacing = 3;
-    _commands.translatesAutoresizingMaskIntoConstraints = NO;
+    // Original landscape HUD uses vertical action banks at the sides,
+    // plus a centre-top turn button. Source-space frames are assigned in
+    // viewDidLayoutSubviews; no ten-button strip obscures the terrain.
+    _commands=[UIView new];
+    _commands.backgroundColor=UIColor.clearColor;
+    _commands.translatesAutoresizingMaskIntoConstraints=YES;
     [self.view addSubview:_commands];
-    _dialoguePanel = [UIView new];
-    _dialoguePanel.backgroundColor = [UIColor colorWithRed:0.02 green:0.04 blue:0.07 alpha:0.96];
-    _dialoguePanel.layer.cornerRadius = 0; // The source frame supplies the corners.
-    _dialoguePanel.layer.borderWidth = 0;
-    _dialoguePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.5].CGColor;
-    _dialoguePanel.translatesAutoresizingMaskIntoConstraints = NO;
+    for(UIButton* action in @[_moveButton,_captureButton,_transformButton,_attackButton,
+                            _healButton,_upgradeButton,_endTurnButton,_buildButton,
+                            _deployButton,_undoButton]) {
+        action.translatesAutoresizingMaskIntoConstraints=YES;
+        for(NSLayoutConstraint* limit in [action.constraints copy])
+            if(limit.firstAttribute==NSLayoutAttributeWidth || limit.firstAttribute==NSLayoutAttributeHeight)
+                limit.active=NO;
+        [_commands addSubview:action];
+    }
+    _dialoguePanel=[UIView new];
+    _dialoguePanel.backgroundColor=UIColor.clearColor;
+    _dialoguePanel.clipsToBounds=YES;
+    _dialoguePanel.translatesAutoresizingMaskIntoConstraints=YES;
     [self.view addSubview:_dialoguePanel];
-    _dialogueHeading = [G1WorldTitleLabel new];
-    _dialogueHeading.font = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
-    _dialogueHeading.textColor = [UIColor colorWithRed:1 green:0.84 blue:0.25 alpha:1];
-    _dialogueHeading.translatesAutoresizingMaskIntoConstraints = NO;
+    _dialogueBackdrop=[UIImageView new];
+    _dialogueBackdrop.contentMode=UIViewContentModeScaleToFill;
+    _dialogueBackdrop.autoresizingMask=UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    [_dialoguePanel addSubview:_dialogueBackdrop];
+    _dialoguePortrait=[UIImageView new];
+    _dialoguePortrait.contentMode=UIViewContentModeScaleAspectFit;
+    _dialoguePortrait.translatesAutoresizingMaskIntoConstraints=YES;
+    [_dialoguePanel addSubview:_dialoguePortrait];
+    _dialogueHeading=[G1WorldTitleLabel new];
+    _dialogueHeading.font=[UIFont systemFontOfSize:10 weight:UIFontWeightBold];
+    _dialogueHeading.textColor=UIColor.whiteColor;
+    _dialogueHeading.translatesAutoresizingMaskIntoConstraints=YES;
     [_dialoguePanel addSubview:_dialogueHeading];
-    _dialogueCanvas = [G1DialogueCanvas new];
-    _dialogueCanvas.translatesAutoresizingMaskIntoConstraints = NO;
+    _dialogueCanvas=[G1DialogueCanvas new];
+    _dialogueCanvas.translatesAutoresizingMaskIntoConstraints=YES;
     [_dialoguePanel addSubview:_dialogueCanvas];
-    _backButton = action_button(@"Back",self,@selector(dialogueBack));
-    _nextButton = action_button(@"Continue",self,@selector(dialogueNext));
-    _skipButton = action_button(@"Skip dialogue",self,@selector(dialogueSkip));
-    UIStackView* dialogueButtons = [[UIStackView alloc] initWithArrangedSubviews:@[_backButton,_nextButton,_skipButton]];
-    dialogueButtons.spacing = 10;
-    dialogueButtons.translatesAutoresizingMaskIntoConstraints = NO;
-    [_dialoguePanel addSubview:dialogueButtons];
-    [NSLayoutConstraint activateConstraints:@[
-        [_commands.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
-        [_commands.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-56],
-        [_dialoguePanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:16],
-        [_dialoguePanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
-        [_dialoguePanel.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-40],
-        [_dialoguePanel.heightAnchor constraintEqualToConstant:174],
-        [_dialogueHeading.leadingAnchor constraintEqualToAnchor:_dialoguePanel.leadingAnchor constant:14],
-        [_dialogueHeading.trailingAnchor constraintEqualToAnchor:_dialoguePanel.trailingAnchor constant:-14],
-        [_dialogueHeading.topAnchor constraintEqualToAnchor:_dialoguePanel.topAnchor constant:10],
-        [_dialogueCanvas.leadingAnchor constraintEqualToAnchor:_dialoguePanel.leadingAnchor constant:14],
-        [_dialogueCanvas.trailingAnchor constraintEqualToAnchor:_dialoguePanel.trailingAnchor constant:-14],
-        [_dialogueCanvas.topAnchor constraintEqualToAnchor:_dialogueHeading.bottomAnchor constant:6],
-        [_dialogueCanvas.bottomAnchor constraintEqualToAnchor:dialogueButtons.topAnchor constant:-8],
-        [dialogueButtons.trailingAnchor constraintEqualToAnchor:_dialoguePanel.trailingAnchor constant:-12],
-        [dialogueButtons.bottomAnchor constraintEqualToAnchor:_dialoguePanel.bottomAnchor constant:-10]]];
+    UITapGestureRecognizer* advance=[[UITapGestureRecognizer alloc]
+         initWithTarget:self action:@selector(dialogueTap:)];
+    [_dialoguePanel addGestureRecognizer:advance];
+    _dialoguePanel.isAccessibilityElement=YES;
+    _dialoguePanel.accessibilityLabel=@"Dialogue. Double-tap to continue.";
+    // Original dialogue uses tap-to-advance plus the top-left fast-forward
+    // icon. The previous Back/Continue/Skip UILabel buttons were never part
+    // of the source frame; they are deliberately absent from this screen.
     _dialoguePanel.hidden = YES;
     _commands.hidden = YES;
 
@@ -572,20 +581,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _battlePanel.layer.cornerRadius = 0;
     _battlePanel.layer.borderWidth = 0;
     _battlePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.6].CGColor;
-    _battlePanel.translatesAutoresizingMaskIntoConstraints = NO;
+    _battlePanel.translatesAutoresizingMaskIntoConstraints = YES;
     [self.view addSubview:_battlePanel];
     _battleCanvas = [G1BattleCanvas new];
-    _battleCanvas.translatesAutoresizingMaskIntoConstraints = NO;
+    _battleCanvas.translatesAutoresizingMaskIntoConstraints = YES;
     [_battlePanel addSubview:_battleCanvas];
-    [NSLayoutConstraint activateConstraints:@[
-        [_battlePanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:22],
-        [_battlePanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-22],
-        [_battlePanel.topAnchor constraintEqualToAnchor:safe.topAnchor constant:10],
-        [_battlePanel.heightAnchor constraintEqualToConstant:78],
-        [_battleCanvas.leadingAnchor constraintEqualToAnchor:_battlePanel.leadingAnchor constant:12],
-        [_battleCanvas.trailingAnchor constraintEqualToAnchor:_battlePanel.trailingAnchor constant:-12],
-        [_battleCanvas.topAnchor constraintEqualToAnchor:_battlePanel.topAnchor constant:8],
-        [_battleCanvas.bottomAnchor constraintEqualToAnchor:_battlePanel.bottomAnchor constant:-8]]];
     _battlePanel.hidden = YES;
 
     _campaignPanel=[UIView new];
@@ -772,54 +772,47 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [self maintainMenuMusic];
 }
 - (void)loadOriginalHUD:(const g1::Archive&)archive {
-    UIImage* silver=original_g1_ui_png(archive,1004,298,62);
-    _gameHudFrame.image=[silver resizableImageWithCapInsets:UIEdgeInsetsMake(14,46,14,46)
-        resizingMode:UIImageResizingModeStretch];
-    UIImage* red=original_g1_ui_png(archive,1034,480,93);
-    UIImageView* dialogueArt=[[UIImageView alloc] initWithImage:
-        [red resizableImageWithCapInsets:UIEdgeInsetsMake(17,45,17,45)
-                             resizingMode:UIImageResizingModeStretch]];
-    dialogueArt.translatesAutoresizingMaskIntoConstraints=NO;
-    dialogueArt.contentMode=UIViewContentModeScaleToFill;
-    [_dialoguePanel insertSubview:dialogueArt atIndex:0];
-    [NSLayoutConstraint activateConstraints:@[
-        [dialogueArt.leadingAnchor constraintEqualToAnchor:_dialoguePanel.leadingAnchor],
-        [dialogueArt.trailingAnchor constraintEqualToAnchor:_dialoguePanel.trailingAnchor],
-        [dialogueArt.topAnchor constraintEqualToAnchor:_dialoguePanel.topAnchor],
-        [dialogueArt.bottomAnchor constraintEqualToAnchor:_dialoguePanel.bottomAnchor]]];
-    _dialoguePanel.backgroundColor=UIColor.clearColor;
-    UIImageView* battleArt=[[UIImageView alloc] initWithImage:_gameHudFrame.image];
-    battleArt.translatesAutoresizingMaskIntoConstraints=NO;
-    [_battlePanel insertSubview:battleArt atIndex:0];
-    [NSLayoutConstraint activateConstraints:@[
-        [battleArt.leadingAnchor constraintEqualToAnchor:_battlePanel.leadingAnchor],
-        [battleArt.trailingAnchor constraintEqualToAnchor:_battlePanel.trailingAnchor],
-        [battleArt.topAnchor constraintEqualToAnchor:_battlePanel.topAnchor],
-        [battleArt.bottomAnchor constraintEqualToAnchor:_battlePanel.bottomAnchor]]];
+    [_gameHudFrame loadOriginalArt:archive];
+    _dialogueBackdrop.image=original_g1_ui_png(archive,1034,480,93,1.0);
+    _dialoguePortraits=[NSMutableDictionary new];
+    for(const auto portrait : {g1::source_art::Portrait{1295,77,66},
+                               g1::source_art::Portrait{396,70,66},
+                               g1::source_art::Portrait{878,73,70},
+                               g1::source_art::Portrait{1156,76,68}})
+        _dialoguePortraits[@(portrait.id)]=g1::source_art::indexed_bmp(archive,
+            portrait.id,portrait.width,portrait.height);
     _battlePanel.backgroundColor=UIColor.clearColor;
-    // All icons are sourced from the original PNG atlas. Semantic assignment
-    // is native touch affordance; exact original HUD hit-region parity still
-    // requires the recovered 32-bit UI table, not invented geometry.
-    const std::array<std::pair<UIButton*,std::uint32_t>,10> mapped{{
-        {_moveButton,721},{_captureButton,639},{_transformButton,793},
-        {_attackButton,660},{_healButton,726},{_upgradeButton,1118},
-        {_endTurnButton,719},{_buildButton,454},{_deployButton,919},
-        {_undoButton,1076}}};
-    for(const auto& [button,identifier]:mapped) {
-        UIImage* icon=original_g1_ui_png(archive,identifier,identifier==719?60:52,49,1.0);
-        [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+    // Native source uses distinct enabled/disabled art, not alpha-faded
+    // replicas. Every pair is read directly from the original FGIB PNG bank.
+    struct SourceButtonArt { UIButton* button; std::uint32_t enabled;std::uint32_t disabled; };
+    const std::array<SourceButtonArt,10> mapped{{
+        {_moveButton,1118,721}, {_captureButton,919,633},
+        {_transformButton,904,433}, {_attackButton,660,850},
+        {_healButton,669,726}, {_upgradeButton,1118,721},
+        {_endTurnButton,454,454}, {_buildButton,442,548},
+        {_deployButton,919,633}, {_undoButton,793,1076}}};
+    for(const auto& mapping:mapped) {
+        UIImage* on=original_g1_ui_png(archive,mapping.enabled,52,49,1.0);
+        UIImage* off=original_g1_ui_png(archive,mapping.disabled,52,49,1.0);
+        [mapping.button setImage:[on imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                 forState:UIControlStateNormal];
-        button.imageView.contentMode=UIViewContentModeScaleAspectFit;
-        button.contentHorizontalAlignment=UIControlContentHorizontalAlignmentCenter;
-        button.contentVerticalAlignment=UIControlContentVerticalAlignmentCenter;
-        // Buttons have no visible UIKit title, so the source icon is never
-        // clipped by an adjacent system-font word.
-        button.accessibilityIdentifier=[NSString stringWithFormat:@"g1-action-%u",identifier];
+        [mapping.button setImage:[off imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                forState:UIControlStateDisabled];
+        mapping.button.imageView.contentMode=UIViewContentModeScaleAspectFit;
+        mapping.button.contentHorizontalAlignment=UIControlContentHorizontalAlignmentCenter;
+        mapping.button.contentVerticalAlignment=UIControlContentVerticalAlignmentCenter;
+        mapping.button.accessibilityIdentifier=[NSString stringWithFormat:@"g1-action-%u",mapping.enabled];
     }
-    UIImage* menuImage=[original_g1_ui_png(archive,905,60,49,1.0)
+    _robotTransformIcon=original_g1_ui_png(archive,591,52,49,1.0);
+    _robotTransformDisabledIcon=original_g1_ui_png(archive,1191,52,49,1.0);
+    _vehicleTransformIcon=original_g1_ui_png(archive,904,52,49,1.0);
+    _vehicleTransformDisabledIcon=original_g1_ui_png(archive,433,52,49,1.0);
+    _pauseGameIcon=[original_g1_ui_png(archive,905,60,49,1.0)
         imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    [_menuButton setImage:menuImage forState:UIControlStateNormal];
-    [_menuButton setImage:menuImage forState:UIControlStateDisabled];
+    _skipDialogueIcon=[original_g1_ui_png(archive,719,60,49,1.0)
+        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    [_menuButton setImage:_pauseGameIcon forState:UIControlStateNormal];
+    [_menuButton setImage:_pauseGameIcon forState:UIControlStateDisabled];
     _menuButton.accessibilityIdentifier=@"g1-original-pause-menu";
 }
 - (NSString*)originalText:(std::uint16_t)identifier {
@@ -927,6 +920,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     if(_session)_previousUnits=_session->units();
     _campaignPanel.hidden=NO;
     _menuButton.hidden=YES;_gameHudFrame.hidden=YES;
+    _title.hidden=YES;_hint.hidden=YES;_worldLegend.hidden=YES;_fps.hidden=YES;
     _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;
     [_campaignCanvas showTitle:title body:body token:token];
     if(changed)[_campaignScroll setContentOffset:CGPointZero animated:NO];
@@ -970,6 +964,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
     _menuButton.hidden=NO;_gameHudFrame.hidden=NO;
+    _fps.hidden=!_showDiagnostics;
+    _title.hidden=!_showDiagnostics;_hint.hidden=!_showDiagnostics;
+    _worldLegend.hidden=!_showDiagnostics;
     _menuInfoText.hidden=YES;
     [_campaignCanvas resetPresentation];
     _inputEdges=0;_simulationClock.reset();_clockStarted=false;
@@ -1235,10 +1232,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _checkpointRetryRequired=false;_checkpointRequested=true;[self saveCheckpoint];[self showPauseMenu];
 }
 - (void)updateDiagnosticsVisibility {
-    _fps.hidden=!_showDiagnostics;
-    _worldLegend.hidden=!_showDiagnostics;
-    _reportButton.hidden=!_showDiagnostics;
-    _resetButton.hidden=!_showDiagnostics;
+    const BOOL display=_showDiagnostics && _panelPurpose==NativePanel::none;
+    _fps.hidden=!display;
+    _worldLegend.hidden=!display;
+    _title.hidden=!display;
+    _hint.hidden=!display;
+    _reportButton.hidden=!display;
+    _resetButton.hidden=!display;
 }
 
 - (void)openSettings {
@@ -1253,16 +1253,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 
 - (void)showSettingsMenu {
     NSString* body=[NSString stringWithFormat:
-        @"Classic preserves the original source textures. Modern applies the PC port's lossless Scale4x rule to eligible 2D robot/decorative sprites at native resolution. Original 3D materials, map atlas and font sheets remain untouched.\n\n%@  /  %@",
-        _graphicsModern?@"MODERN":@"CLASSIC",_showDiagnostics?@"DIAGNOSTICS ON":@"DIAGNOSTICS OFF"];
+        @"Classic uses the original G1 artwork. Modern upgrades eligible sprites while retaining the source layout.\n\n%@",
+        _graphicsModern?@"MODERN":@"CLASSIC"];
     [self showPanel:NativePanel::settings title:[self originalText:468] body:body token:++_localPanelToken];
     [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
     [self addCampaignButton:[self originalText:[_audio musicEnabled]?495:1222] action:@selector(toggleMusic)];
     [self addCampaignButton:[self originalText:[_audio soundEnabled]?855:923] action:@selector(toggleSound)];
     [self addCampaignButton:[NSString stringWithFormat:@"Camera: %.2fx",_touchCameraSpeed]
         action:@selector(cycleTouchCameraSpeed)];
-    [self addCampaignButton:_showDiagnostics?@"Diagnostics: On":@"Diagnostics: Off" action:@selector(toggleDiagnostics)];
-    if(_showDiagnostics)[self addCampaignButton:@"Export report" action:@selector(shareReport)];
     [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
 }
 
@@ -1407,6 +1405,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _productionRange.reset();_typeListOpen=false;_controlQuads.clear();
     [_dialogueCanvas resetPresentation]; [_battleCanvas resetPresentation];
     _dialoguePanel.hidden = YES; _battlePanel.hidden = YES;
+    [_gameHudFrame clearStatus];_dialoguePortrait.image=nil;
     _clockStarted = false; _simulationClock.reset(); _frameStats.times.clear();
     [self rebuildScene:YES];
     if (_session->world().camera) {
@@ -1796,10 +1795,78 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     ++_contentGeneration;
 }
 
+- (CGRect)originalGameplayViewport {
+    const UIEdgeInsets safe=self.view.safeAreaInsets;
+    const CGSize available=CGSizeMake(MAX(CGFloat(0),self.view.bounds.size.width-safe.left-safe.right),
+        MAX(CGFloat(0),self.view.bounds.size.height-safe.top-safe.bottom));
+    const auto fitted=g1::original_ui::fit(available.width,available.height);
+    return CGRectMake(safe.left+fitted.artwork.x,safe.top+fitted.artwork.y,
+        fitted.artwork.width,fitted.artwork.height);
+}
+
+- (void)layoutOriginalGameplayUI {
+    const CGRect viewport=[self originalGameplayViewport];
+    if(viewport.size.width<=0 || viewport.size.height<=0)return;
+    const CGFloat scale=viewport.size.width/480.0;
+    const auto projected=[&](g1::original_ui::Rect r)->CGRect {
+        return CGRectMake(viewport.origin.x+scale*r.x,viewport.origin.y+scale*r.y,
+                          scale*r.width,scale*r.height);
+    };
+    _gameHudFrame.frame=projected(g1::original_presentation::tactical_hud);
+    _battlePanel.frame=projected({0,256,480,64});
+    _battleCanvas.frame=_battlePanel.bounds;
+    _dialoguePanel.frame=projected(g1::original_presentation::dialogue);
+    _dialogueBackdrop.frame=_dialoguePanel.bounds;
+    const auto inside=[&](g1::original_ui::Rect r)->CGRect {
+        return CGRectMake(scale*r.x,scale*r.y,scale*r.width,scale*r.height);
+    };
+    _dialoguePortrait.frame=CGRectMake(scale*81,scale*17,scale*78,scale*69);
+    _dialogueHeading.frame=CGRectMake(scale*174,scale*17,scale*157,scale*14);
+    _dialogueHeading.font=[UIFont boldSystemFontOfSize:scale*10];
+    _dialogueCanvas.frame=CGRectMake(scale*174,scale*31,scale*151,scale*54);
+    _menuButton.frame=projected(g1::original_presentation::top_left_action);
+    _commands.frame=viewport;
+    const auto place=[&](UIButton* button,g1::original_ui::Rect rect){button.frame=inside(rect);};
+    // Recovered original screen has left/right action banks, never a bottom
+    // 10-icon text strip. Selection/availability stays in GameSession.
+    place(_healButton,g1::original_presentation::source_left_actions[0]);
+    place(_attackButton,g1::original_presentation::source_left_actions[1]);
+    place(_undoButton,g1::original_presentation::source_left_actions[2]);
+    place(_buildButton,g1::original_presentation::source_left_actions[3]);
+    place(_moveButton,g1::original_presentation::source_right_actions[0]);
+    place(_captureButton,g1::original_presentation::source_right_actions[1]);
+    place(_transformButton,g1::original_presentation::source_right_actions[2]);
+    place(_upgradeButton,g1::original_presentation::source_right_actions[3]);
+    place(_endTurnButton,g1::original_presentation::end_turn);
+    // Deploy replaces Activate Unit in the same source slot only when valid.
+    // Its visibility is selected from genuine native eligibility, not an
+    // invented action or a duplicate icon outside the source art.
+    place(_deployButton,g1::original_presentation::source_left_actions[3]);
+    _resetButton.frame=CGRectMake(viewport.origin.x+64*scale,viewport.origin.y+3*scale,85*scale,27*scale);
+    _reportButton.frame=CGRectMake(viewport.origin.x+340*scale,viewport.origin.y+3*scale,85*scale,27*scale);
+}
+
+- (void)setSourceTopLeftDialogueMode:(BOOL)dialogue {
+    if(_menuIsSkip==dialogue)return;
+    _menuIsSkip=dialogue;
+    [_menuButton removeTarget:self action:@selector(openMenu) forControlEvents:UIControlEventTouchUpInside];
+    [_menuButton removeTarget:self action:@selector(dialogueSkip) forControlEvents:UIControlEventTouchUpInside];
+    [_menuButton addTarget:self action:dialogue ? @selector(dialogueSkip) : @selector(openMenu)
+        forControlEvents:UIControlEventTouchUpInside];
+    UIImage* icon=dialogue?_skipDialogueIcon:_pauseGameIcon;
+    if(icon)[_menuButton setImage:icon forState:UIControlStateNormal];
+    _menuButton.accessibilityLabel=dialogue?@"Skip dialogue":@"Pause menu";
+}
+
+- (void)dialogueTap:(UITapGestureRecognizer*)gesture {
+    if(gesture.state==UIGestureRecognizerStateEnded)[self dialogueNext];
+}
+
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     if(_openingLayer)_openingLayer.frame=_openingView.bounds;
     [self updateCampaignLayout];
+    [self layoutOriginalGameplayUI];
     UIScreen* screen = self.view.window.screen ?: UIScreen.mainScreen;
     // Allocate the render target at the attached display's native pixel scale,
     // not the old game's 480x320 framebuffer size. UIKit controls stay in points.
@@ -2258,7 +2325,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     const auto& mission = _session->mission();
     const bool battle = _session->battle().has_value();
     _battlePanel.hidden = !battle;
-    _title.hidden=battle; _hint.hidden=battle; _worldLegend.hidden=battle;
+    const BOOL debugVisible=_showDiagnostics && !battle;
+    _title.hidden=!debugVisible; _hint.hidden=!debugVisible; _worldLegend.hidden=!debugVisible;
     if (battle) {
         [self prepareBattle];
         _commands.hidden=YES;_dialoguePanel.hidden=YES;
@@ -2266,7 +2334,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         // or a retryable profile-save error. Preserve that modal's ownership.
         if(_panelPurpose!=NativePanel::none){_battlePanel.hidden=YES;return;}
         if(_supportPresentation && !_supportPresentation->status().complete) {
-            _battlePanel.hidden=YES;_title.hidden=NO;
+            _battlePanel.hidden=YES;_title.hidden=!_showDiagnostics;
             _hint.hidden=YES;_worldLegend.hidden=YES;
             return;
         }
@@ -2275,11 +2343,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
             const auto& definition = _session->world().unit_definitions.at(status.types[side]);
             return native_text(_text->at(g1::script_text_id(g1::unit_text_index(definition.raw_text_indices.at(status.forms[side])))));
         };
-        [_battleCanvas showStatus:status left:name(0) right:name(1)];
+        [_battleCanvas showStatus:status left:name(0) right:name(1)
+            leftFaction:_session->world().unit_definitions.at(status.types[0]).faction()
+            rightFaction:_session->world().unit_definitions.at(status.types[1]).faction()];
         return;
     }
     const bool dialogue = mission.gate == g1::MissionGate::dialogue && mission.dialogue.has_value();
     _dialoguePanel.hidden = !dialogue || battle;
+    _gameHudFrame.hidden=dialogue || battle;
+    [self setSourceTopLeftDialogueMode:dialogue];
     _commands.hidden = battle || dialogue || mission.interaction_mode != 0 ||
         _session->moving() || _session->focus_request().has_value() || _session->world_presentation().has_value() ||
         _session->turn().controllers[_session->current_player()]==1;
@@ -2289,11 +2361,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         if (_dialogueCommand != mission.command_index) {
             _dialogueCommand = mission.command_index;
             _dialogueHeading.text = native_text(_text->at(mission.dialogue->heading_text_id));
+            const auto portrait=g1::source_art::dialogue_portrait(_dialogueHeading.text);
+            _dialoguePortrait.image=portrait.id ? _dialoguePortraits[@(portrait.id)] : nil;
             [_dialogueCanvas setOriginalText:native_text(_text->at(mission.dialogue->text_id))];
             _inputEdges = 0;
         }
         [_dialogueCanvas showProgress:mission.dialogue->progress];
-        _backButton.enabled = mission.dialogue->progress.first_line > 0;
+        _dialoguePanel.accessibilityLabel=[NSString stringWithFormat:@"%@. %@. Tap to continue.",
+            _dialogueHeading.text ?: @"",_dialogueCanvas.accessibilityLabel ?: @""];
         _hint.text = @"";
     } else if (mission.stop != g1::MissionStop::none) {
         _hint.text = @"The next part of this campaign is not available in this build. Details are in the test report.";
@@ -2343,6 +2418,35 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     for(UIButton* button in @[_captureButton,_transformButton,_upgradeButton,_endTurnButton,
                              _buildButton,_deployButton,_undoButton])
         update_original_action_state(button,NO);
+    // Original bottom status bar follows selected unit and faction money.
+    // Reading gameplay state here does NOT submit commands or change saves.
+    const auto funds=_session->turn().funds[_session->current_player()];
+    if(_session->selected()) {
+        const auto index=*_session->selected();
+        const auto& unit=_session->world().units.at(index);
+        const auto& definition=_session->world().unit_definitions.at(unit.type);
+        const auto& combat=_session->combat_units().at(index);
+        NSString* name=native_text(_text->at(g1::script_text_id(g1::unit_text_index(
+            definition.raw_text_indices.at(unit.form)))));
+        // Vehicle and robot icons switch with the real selected form.
+        [_transformButton setImage:unit.form ? _robotTransformIcon : _vehicleTransformIcon
+            forState:UIControlStateNormal];
+        [_transformButton setImage:unit.form ? _robotTransformDisabledIcon : _vehicleTransformDisabledIcon
+            forState:UIControlStateDisabled];
+        [_gameHudFrame displayUnit:name health:combat.health attackLow:combat.stats.attack_low
+             attackHigh:combat.stats.attack_high armor:combat.stats.defense
+             speed:_session->world().movement_profile(index).base_budget funds:funds];
+    } else {
+        NSString* title=_session->world().title_text_index ?
+            native_text(_text->at(g1::script_text_id(*_session->world().title_text_index))) : @"G1 AWAKENING";
+        NSString* objective=mission.objective ? native_text(_text->at(mission.objective->text_id)) : @"";
+        [_gameHudFrame displayMission:title objective:objective funds:funds];
+    }
+    // Both commands can be valid in some states but physically share a
+    // source slot. Prefer deploy only when it is the sole eligible action.
+    const BOOL deploying=_deployButton.enabled && !_buildButton.enabled;
+    _deployButton.hidden=!deploying;
+    _buildButton.hidden=deploying;
     if (_session->world().title_text_index)
         _title.text = native_text(_text->at(g1::script_text_id(*_session->world().title_text_index)));
 }
@@ -2396,6 +2500,31 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     return NO;
 }
 
+// Some original units can simultaneously expose production and tape deploy.
+// Preserve BOTH executable actions when one source icon must occupy a bank
+// slot. The temporary native action sheet is intentionally restricted to
+// that ambiguous state; it never alters a unit's production eligibility.
+- (void)beginProductionOrDeploy {
+    if(_buildButton.enabled && _deployButton.enabled) {
+        UIAlertController* choice=[UIAlertController alertControllerWithTitle:@"Activate"
+             message:@"Select available unit activation" preferredStyle:UIAlertControllerStyleActionSheet];
+        __weak G1ViewController* owner=self;
+        [choice addAction:[UIAlertAction actionWithTitle:@"Activate unit"
+            style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+                (void)action; [owner beginProduction];
+            }]];
+        [choice addAction:[UIAlertAction actionWithTitle:@"Activate tape"
+            style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+                (void)action; [owner beginDeploy];
+            }]];
+        [choice addAction:[UIAlertAction actionWithTitle:@"Cancel"
+            style:UIAlertActionStyleCancel handler:nil]];
+        choice.popoverPresentationController.sourceView=_buildButton;
+        choice.popoverPresentationController.sourceRect=_buildButton.bounds;
+        [self presentViewController:choice animated:YES completion:nil];
+    }else if(_buildButton.enabled)[self beginProduction];
+    else if(_deployButton.enabled)[self beginDeploy];
+}
 - (void)beginProduction { [self showProductionTypes:g1::ProductionMode::ordinary]; }
 - (void)beginDeploy { [self showProductionTypes:g1::ProductionMode::deploy]; }
 - (void)cancelProduction {

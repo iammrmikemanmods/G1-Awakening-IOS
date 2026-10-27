@@ -8,8 +8,8 @@
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>G1AwakeningNative</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.12.0</string>
-    <key>CFBundleVersion</key><string>12</string>
+    <key>CFBundleShortVersionString</key><string>0.13.0</string>
+    <key>CFBundleVersion</key><string>13</string>
     <!-- Names refer to original, user-supplied iTunesArtwork resized only
          at packaging time. Do not add copyrighted artwork to Git history.
          The application has NO asset catalog and therefore no false
