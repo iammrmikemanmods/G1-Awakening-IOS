@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+from io import BytesIO
 from pathlib import Path, PurePosixPath
 import plistlib
 import stat
@@ -62,6 +63,66 @@ def read_code_artifact(path):
     return files, validation, policy
 
 
+ORIGINAL_ICON_SHA256 = "21503f76f7c3aefdf5d23c5be7229bd43134b2cbf2b08af155982e2543a837f8"
+# Pillow is an explicit local packaging dependency (not linked into the app).
+# iPhone XR uses the 120x120 retina variant. Include the 180x180 Retina HD
+# variant too for current iPhones and the 40pt Spotlight icons.
+ORIGINAL_ICON_SIZES = {
+    "Icon-60": 60, "Icon-60@2x": 120, "Icon-60@3x": 180,
+    "Icon-Small-40": 40, "Icon-Small-40@2x": 80, "Icon-Small-40@3x": 120,
+}
+
+
+def original_icon_files(source_zip, info):
+    primary = info.get("CFBundleIcons", {}).get("CFBundlePrimaryIcon", {})
+    listed = primary.get("CFBundleIconFiles")
+    if listed is None:
+        return {}, None
+    if not isinstance(listed, list) or set(listed) != set(ORIGINAL_ICON_SIZES) or \\
+            len(listed) != len(ORIGINAL_ICON_SIZES):
+        raise ValueError("compiled Info.plist does not list exactly the original icon sizes")
+    if primary.get("CFBundleIconName"):
+        raise ValueError("a non-existent asset-catalog icon may not override bundled PNG icons")
+    if primary.get("UIPrerenderedIcon") is not True:
+        raise ValueError("original G1 icon must not receive legacy gloss")
+    try:
+        from PIL import Image
+    except ImportError as error:
+        raise RuntimeError("Original iOS icon conversion needs Pillow: pip install Pillow") from error
+
+    originals = [entry for entry in source_zip.infolist() if entry.filename == "iTunesArtwork"]
+    if len(originals) != 1 or originals[0].file_size > 2*1024*1024:
+        raise ValueError("pinned original IPA must contain exactly one bounded iTunesArtwork")
+    artwork = source_zip.read(originals[0])
+    if sha(artwork) != ORIGINAL_ICON_SHA256:
+        raise ValueError("source game's original iTunes icon artwork checksum differs")
+    with Image.open(BytesIO(artwork)) as decoded:
+        decoded.load()
+        if decoded.size != (512, 512) or decoded.format != "JPEG":
+            raise ValueError("source game's original icon must decode as its 512x512 JPEG")
+        rgb = decoded.convert("RGB")
+    produced = {}
+    for name, size in ORIGINAL_ICON_SIZES.items():
+        # Preserve the 1980s original image, no AI redraw or new text.
+        icon = rgb.resize((size, size), Image.Resampling.LANCZOS)
+        output = BytesIO()
+        icon.save(output, format="PNG", optimize=True)
+        payload = output.getvalue()
+        with Image.open(BytesIO(payload)) as verification:
+            verification.load()
+            if verification.size != (size, size) or verification.mode != "RGB":
+                raise ValueError("resized original icon failed exact dimensions")
+        produced[f"{name}.png"] = payload
+    record = {
+        "source_resource": "iTunesArtwork", "source_sha256": sha(artwork),
+        "source_dimensions": [512, 512], "original_art_preserved": True,
+        "method": "Pillow LANCZOS lossless PNG output; no AI artwork",
+        "icons": {name: {"pixels": ORIGINAL_ICON_SIZES[name], "sha256": sha(produced[name+".png"])}
+                  for name in sorted(ORIGINAL_ICON_SIZES)}
+    }
+    return produced, record
+
+
 def zip_write(archive, name, data, executable=False):
     entry = zipfile.ZipInfo(name, (2026, 1, 1, 0, 0, 0))
     entry.create_system = 3
@@ -103,11 +164,17 @@ def main():
         raise ValueError('terrain tables differ from the reviewed data')
     with zipfile.ZipFile(args.source_ipa) as source:
         archive = source.read('Payload/G1awakening.app/iphone.big')
+        icon_files, icon_record = original_icon_files(source, info)
     if sha(archive) != '663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4':
         raise ValueError('game archive differs from the reviewed data')
     data_record = {'schema': 1, 'original_ipa_sha256': extractor.EXPECTED_IPA_SHA256,
                    'archive_sha256': sha(archive), 'terrain_tables_sha256': sha(tables),
                    'terrain_extraction': table_record, 'contains_original_executable': False}
+    if icon_record:
+        if any(name in files for name in icon_files):
+            raise ValueError("icon name collision with compiled app artifact")
+        files.update(icon_files)
+        data_record["original_application_icon"] = icon_record
     files['GameData/iphone.big'] = archive
     files['GameData/terrain-tables.bin'] = tables
     files['GameData/provenance.json'] = (json.dumps(data_record, indent=2) + '\n').encode()
@@ -133,12 +200,13 @@ def main():
                   'source_commit': info['G1SourceCommit'], 'ipa_sha256': sha(staged.read_bytes()),
                   'ipa_bytes': staged.stat().st_size, 'code_artifact_sha256': sha(args.code_artifact.read_bytes()),
                   'native_executable': native, 'data': data_record,
+                  'original_icon': icon_record,
                   'files': [{'path': output_prefix + name, 'bytes': len(data), 'sha256': sha(data)}
                             for name, data in sorted(files.items())],
                   'signed': False, 'requires_sideloadly_signing': True,
                   'contains_original_executable': False, 'contains_compatibility_runtime': False,
                   'device_installation_verified': False, 'device_execution_verified': False,
-                  'full_gameplay_implemented': False, 'full_playthrough_verified': False,
+                  'full_gameplay_implemented': True, 'full_playthrough_verified': False,
                   'sustained_60fps_verified': False,
                   'scope': info.get('G1FeatureScope', 'Recovered first terrain, initial sprites, native animation and range preview only')}
         staged.replace(args.out)
