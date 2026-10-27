@@ -64,6 +64,10 @@ def read_code_artifact(path):
 
 
 ORIGINAL_ICON_SHA256 = "21503f76f7c3aefdf5d23c5be7229bd43134b2cbf2b08af155982e2543a837f8"
+# Exactly the 23.0s 1792x828/60fps stereo user-supplied replacement movie.
+OPENING_XR_SHA256 = "86a1a9a559843e2ab13e8f513617c8c63e29ef6cd56fe0f6a0446fab7e3911d6"
+OPENING_FILENAME = "G1OpeningXR.mp4"
+
 # Pillow is an explicit local packaging dependency (not linked into the app).
 # iPhone XR uses the 120x120 retina variant. Include the 180x180 Retina HD
 # variant too for current iPhones and the 40pt Spotlight icons.
@@ -138,11 +142,15 @@ def main():
     parser.add_argument('--out', required=True, type=Path)
     parser.add_argument('--report', required=True, type=Path)
     parser.add_argument('--expected-commit')
+    parser.add_argument('--startup-video', type=Path,
+                        help='Original user-supplied 1792x828, 60Hz G1 replacement opening MP4')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     extractor = load_module('g1_tables', root / 'native/tools/extract_terrain_tables.py')
     verifier = load_module('g1_app_verifier', Path(__file__).with_name('verify-native-app.py'))
     paths = [p.resolve() for p in (args.code_artifact, args.source_ipa, args.out, args.report)]
+    if args.startup_video:
+        paths.append(args.startup_video.resolve())
     if len(set(paths)) != len(paths):
         raise ValueError('all input/output paths must be distinct')
     if args.out.exists() or args.report.exists():
@@ -178,6 +186,22 @@ def main():
             raise ValueError("icon name collision with compiled app artifact")
         files.update(icon_files)
         data_record["original_application_icon"] = icon_record
+    video_record = None
+    if int(info.get('CFBundleVersion', '0')) >= 11 and not args.startup_video:
+        raise ValueError('native Build011+ requires the new source user opening MP4')
+    if args.startup_video:
+        if args.startup_video.stat().st_size > 64*1024*1024:
+            raise ValueError('replacement startup MP4 exceeds 64MiB input bound')
+        movie = args.startup_video.read_bytes()
+        if sha(movie) != OPENING_XR_SHA256 or len(movie) < 1024 or movie[4:8] != b'ftyp':
+            raise ValueError('replacement opening is not the exact reviewed XR 60Hz MP4')
+        if OPENING_FILENAME in files:
+            raise ValueError('replacement opening collides with compiled app file')
+        files[OPENING_FILENAME] = movie
+        video_record = {'member':OPENING_FILENAME,'sha256':sha(movie),
+                        'bytes':len(movie),'width':1792,'height':828,
+                        'fps':60,'duration_seconds':23,
+                        'audio':'AAC stereo 48kHz','verified_by':'pinned source hash and MP4 signature'}
     files['GameData/iphone.big'] = archive
     files['GameData/terrain-tables.bin'] = tables
     files['GameData/provenance.json'] = (json.dumps(data_record, indent=2) + '\n').encode()
@@ -203,7 +227,7 @@ def main():
                   'source_commit': info['G1SourceCommit'], 'ipa_sha256': sha(staged.read_bytes()),
                   'ipa_bytes': staged.stat().st_size, 'code_artifact_sha256': sha(args.code_artifact.read_bytes()),
                   'native_executable': native, 'data': data_record,
-                  'original_icon': icon_record,
+                  'original_icon': icon_record, 'native_replacement_opening': video_record,
                   'files': [{'path': output_prefix + name, 'bytes': len(data), 'sha256': sha(data)}
                             for name, data in sorted(files.items())],
                   'signed': False, 'requires_sideloadly_signing': True,
