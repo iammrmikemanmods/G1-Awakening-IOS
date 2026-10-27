@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <MetalKit/MetalKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <AVFoundation/AVFoundation.h>
 #import <CommonCrypto/CommonDigest.h>
 #include <sys/utsname.h>
 
@@ -262,6 +263,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     G1CampaignCanvas* _campaignCanvas;
     UIStackView* _campaignButtons;
     NSLayoutConstraint* _campaignCanvasHeight;
+    NSLayoutConstraint* _campaignActionsMenuCenter;
+    NSLayoutConstraint* _campaignActionsNormalBottom;
+    NSLayoutConstraint* _campaignActionsWidth;
+    AVPlayer* _openingPlayer;
+    AVPlayerLayer* _openingLayer;
+    UIView* _openingView;
+    BOOL _openingVisible;
     G1AppleAudio* _audio;
     NSTimer* _menuMusicTimer;
     std::shared_ptr<const g1::Archive> _archive;
@@ -529,7 +537,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 
     _campaignPanel=[UIView new];
     _campaignPanel.backgroundColor=[UIColor colorWithRed:0.025 green:0.045 blue:0.075 alpha:0.99];
-    _campaignPanel.layer.cornerRadius=12;
+    _campaignPanel.layer.cornerRadius=0; // Source G1 artwork supplies its own frame.
     _campaignPanel.clipsToBounds=YES;
     _campaignPanel.translatesAutoresizingMaskIntoConstraints=NO;
     [self.view addSubview:_campaignPanel];
@@ -541,11 +549,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     [_campaignScroll addSubview:_campaignCanvas];
     _campaignButtons=[UIStackView new];
     _campaignButtons.axis=UILayoutConstraintAxisVertical;
-    _campaignButtons.alignment=UIStackViewAlignmentTrailing;
-    _campaignButtons.spacing=8;
+    _campaignButtons.alignment=UIStackViewAlignmentFill;
+    _campaignButtons.spacing=4;
     _campaignButtons.translatesAutoresizingMaskIntoConstraints=NO;
     [_campaignPanel addSubview:_campaignButtons];
     _campaignCanvasHeight=[_campaignCanvas.heightAnchor constraintEqualToConstant:180];
+    _campaignActionsMenuCenter=[_campaignButtons.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:8];
+    _campaignActionsNormalBottom=[_campaignButtons.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor constant:-12];
+    _campaignActionsWidth=[_campaignButtons.widthAnchor constraintEqualToConstant:390];
     [NSLayoutConstraint activateConstraints:@[
         [_campaignPanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:18],
         [_campaignPanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-18],
@@ -554,16 +565,18 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
         [_campaignScroll.leadingAnchor constraintEqualToAnchor:_campaignPanel.leadingAnchor],
         [_campaignScroll.trailingAnchor constraintEqualToAnchor:_campaignPanel.trailingAnchor],
         [_campaignScroll.topAnchor constraintEqualToAnchor:_campaignPanel.topAnchor],
-        [_campaignScroll.bottomAnchor constraintEqualToAnchor:_campaignButtons.topAnchor constant:-10],
+        [_campaignScroll.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor],
         [_campaignCanvas.leadingAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.leadingAnchor],
         [_campaignCanvas.trailingAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.trailingAnchor],
         [_campaignCanvas.topAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.topAnchor],
         [_campaignCanvas.bottomAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.bottomAnchor],
         [_campaignCanvas.widthAnchor constraintEqualToAnchor:_campaignScroll.frameLayoutGuide.widthAnchor],
         _campaignCanvasHeight,
-        [_campaignButtons.trailingAnchor constraintEqualToAnchor:_campaignPanel.trailingAnchor constant:-14],
-        [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:14],
-        [_campaignButtons.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor constant:-12]]];
+        [_campaignButtons.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
+        [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:8],
+        [_campaignButtons.trailingAnchor constraintLessThanOrEqualToAnchor:_campaignPanel.trailingAnchor constant:-8],
+        _campaignActionsWidth]];
+    _campaignActionsNormalBottom.active=YES;
     _campaignPanel.hidden=YES;
 
     [_metalView addGestureRecognizer:[[UITapGestureRecognizer alloc]
@@ -642,18 +655,49 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 - (UIButton*)addCampaignButton:(NSString*)title action:(SEL)action {
     UIStackView* row=(UIStackView*)_campaignButtons.arrangedSubviews.lastObject;
     if(!row || row.arrangedSubviews.count>=4) {
-        row=[UIStackView new];row.spacing=8;row.distribution=UIStackViewDistributionFillEqually;
+        row=[UIStackView new];row.spacing=3;row.distribution=UIStackViewDistributionFillEqually;
         [_campaignButtons addArrangedSubview:row];
     }
-    UIButton* button=action_button(title,self,action);[row addArrangedSubview:button];return button;
+    const BOOL originalMenu=[_campaignCanvas originalFaceForMenuText:@"MAIN MENU"] &&
+        (_panelPurpose==NativePanel::startup || _panelPurpose==NativePanel::menu ||
+         _panelPurpose==NativePanel::mission_select || _panelPurpose==NativePanel::settings ||
+         _panelPurpose==NativePanel::help || _panelPurpose==NativePanel::credits ||
+         _panelPurpose==NativePanel::pause || _panelPurpose==NativePanel::arena ||
+         _panelPurpose==NativePanel::arena_opponent);
+    UIButton* button=nil;
+    if(originalMenu) {
+        G1OriginalMenuButton* original=[G1OriginalMenuButton new];
+        [original setTitle:title forState:UIControlStateNormal];
+        [original setTitleColor:[UIColor colorWithRed:0.94 green:0.22 blue:0.26 alpha:1]
+                        forState:UIControlStateNormal];
+        [original setTitleColor:[UIColor colorWithWhite:0.48 alpha:1]
+                        forState:UIControlStateDisabled];
+        original.titleLabel.font=[UIFont fontWithName:@"Menlo-Bold" size:11] ?: [UIFont boldSystemFontOfSize:11];
+        original.backgroundColor=UIColor.clearColor;
+        [original useOriginalFace:[_campaignCanvas originalFaceForMenuText:title]];
+        [original.heightAnchor constraintEqualToConstant:29].active=YES;
+        button=original;
+        [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+    } else button=action_button(title,self,action);
+    [row addArrangedSubview:button];
+    return button;
 }
 
 - (void)updateCampaignLayout {
     if(_campaignPanel.hidden)return;
     const CGFloat width=_campaignScroll.bounds.size.width;
-    if(width>32) {
-        const auto height=std::max(_campaignScroll.bounds.size.height,[_campaignCanvas heightForWidth:width]);
-        if(std::abs(_campaignCanvasHeight.constant-height)>0.5)_campaignCanvasHeight.constant=height;
+    const CGFloat height=_campaignScroll.bounds.size.height;
+    if(width>32 && height>0) {
+        const BOOL originalMenu=_campaignActionsMenuCenter.active;
+        const CGFloat target=originalMenu ? height :
+            std::max(height,[_campaignCanvas heightForWidth:width]);
+        if(std::abs(_campaignCanvasHeight.constant-target)>0.5)_campaignCanvasHeight.constant=target;
+        // Every touch choice fits inside the untouched red source panel.
+        // Preserve original 480:320 art aspect, including on XR.
+        const CGFloat scale=std::min(width/480.0,height/320.0);
+        const CGFloat actionsWidth=originalMenu ? std::min(width-16,430.0*scale) : width-30;
+        if(std::abs(_campaignActionsWidth.constant-actionsWidth)>0.5)
+            _campaignActionsWidth.constant=actionsWidth;
     }
 }
 
@@ -661,12 +705,18 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     const bool changed=_panelPurpose!=purpose || _panelToken!=token;
     if(changed){_supportDisplay.invalidate();_presentationEpoch.invalidate();}
     _panelPurpose=purpose;_panelToken=token;
-    [_campaignCanvas setOriginalMenuArtworkVisible:
+    const BOOL sourceMenu=
         purpose==NativePanel::startup || purpose==NativePanel::menu ||
         purpose==NativePanel::settings || purpose==NativePanel::help ||
         purpose==NativePanel::credits || purpose==NativePanel::pause ||
         purpose==NativePanel::mission_select || purpose==NativePanel::arena ||
-        purpose==NativePanel::arena_opponent];
+        purpose==NativePanel::arena_opponent;
+    _campaignActionsNormalBottom.active=NO;
+    _campaignActionsMenuCenter.active=NO;
+    if(sourceMenu)_campaignActionsMenuCenter.active=YES;
+    else _campaignActionsNormalBottom.active=YES;
+    _campaignScroll.scrollEnabled=!sourceMenu;
+    [_campaignCanvas setOriginalMenuArtworkVisible:sourceMenu];
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
@@ -681,7 +731,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 }
 
 - (void)maintainMenuMusic {
-    if(_failed || !_audio || UIApplication.sharedApplication.applicationState!=UIApplicationStateActive)return;
+    if(_failed || _openingVisible || !_audio ||
+       UIApplication.sharedApplication.applicationState!=UIApplicationStateActive)return;
     // The original main menu is a root even when entered from Pause. Arena
     // follows map list -> faction -> opponent; only opponent is excluded.
     static const g1::MenuMusicNode mainMenu{}, missionList{&mainMenu}, faction{&missionList};
@@ -758,9 +809,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
     [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
     [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
-    [self addCampaignButton:@"Settings" action:@selector(openSettings)];
-    [self addCampaignButton:@"Help" action:@selector(showHelpMenu)];
-    [self addCampaignButton:@"Credits" action:@selector(showCreditsMenu)];
+    [self addCampaignButton:[self originalText:468] action:@selector(openSettings)];
+    [self addCampaignButton:[self originalText:754] action:@selector(showHelpMenu)];
+    [self addCampaignButton:@"CREDITS" action:@selector(showCreditsMenu)];
     if(_session && _campaign->state().gate==g1::CampaignControllerGate::idle)
         [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
 }
