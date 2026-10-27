@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "updated_utc": "2026-10-26T23:29:57.994372+00:00",
+  "source_commit": "5671a5323f2cc1044a9afd618219578696191b1e",
+  "source_tree": "65e3afab3e56c62506653b53d2d5c4a48aec1269",
+  "branch_source_commit": "62e29e63b3d881eb57345f0276ad00484abee5b4",
+  "compiled_commit_kind": "GitHub pull-request merge commit; tree verified identical to branch source",
+  "compiled_commit_parents": [
+    "f41c436a26414df55daa92d257f942da19d80280",
+    "62e29e63b3d881eb57345f0276ad00484abee5b4"
+  ],
+  "pull_request": 2,
+  "run_id": 40419564778,
+  "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40419564778",
+  "conclusion": "success",
+  "jobs": {
+    "linux": 121910312709,
+    "apple": 121910313048
+  },
+  "toolchain": {
+    "xcode": "26.6",
+    "build": "17F113",
+    "iphoneos_sdk": "26.5",
+    "minimum_os": "17.5"
+  },
+  "portable_tests": {
+    "linux_passed": 62,
+    "linux_total": 62,
+    "apple_passed": 62,
+    "apple_total": 62
+  },
+  "iphoneos_app_compiled": true,
+  "exact_iphoneos_m3g_runtime_shader_compiled": true,
+  "native_app": {
+    "architecture": "arm64",
+    "executable_sha256": "04f6f605e019b6716d78ec3b97fb4b24e4fa30f17972c61fb28a93b6f6725717",
+    "executable_bytes": 1629040,
+    "system_dependencies": [
+      "/System/Library/Frameworks/UIKit.framework/UIKit",
+      "/System/Library/Frameworks/MetalKit.framework/MetalKit",
+      "/System/Library/Frameworks/QuartzCore.framework/QuartzCore",
+      "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+      "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+      "/usr/lib/libz.1.dylib",
+      "/System/Library/Frameworks/Foundation.framework/Foundation",
+      "/System/Library/Frameworks/Metal.framework/Metal",
+      "/usr/lib/libc++.1.dylib",
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+      "/usr/lib/libobjc.A.dylib"
+    ],
+    "platform": "iPhoneOS",
+    "minimum_os": "17.5",
+    "sdk_encoded": 1705216,
+    "source_commit": "5671a5323f2cc1044a9afd618219578696191b1e",
+    "bundle_identifier": "org.g1awakening.native.test",
+    "version": "0.7.0",
+    "artifact_kind": "Native campaign integration test",
+    "feature_scope": "Native tactical gameplay, campaign and checkpoint restore, original support presentation and first-use tutorial, original bitmap headings, profile migration and pause-safe presentation; full rendered playthrough, remaining original output fidelity and physical iPhone XR validation remain outstanding",
+    "original_assets_bundled": false,
+    "device_execution_verified": false,
+    "full_playthrough_verified": false
+  },
+  "tactical_metal": {
+    "metal_device_available": true,
+    "device": "Apple Paravirtual device",
+    "pixel_checks": 14,
+    "pixel_channels_compared": 56,
+    "support_overlay_pixel_checks": 8,
+    "support_overlay_geometry": "synthetic",
+    "result": "passed",
+    "original_game_data_used": false,
+    "iphone_execution": false
+  },
+  "m3g_metal": {
+    "metal_device_available": true,
+    "device": "Apple Paravirtual device",
+    "pixel_checks": 12,
+    "pixel_channels_compared": 48,
+    "result": "passed",
+    "original_game_data_used": false,
+    "iphone_execution": false
+  },
+  "gpu_probes_skipped": false,
+  "artifact": {
+    "id": 12696942094,
+    "name": "G1-native-game-unsigned-code",
+    "bytes": 704822,
+    "sha256": "d8e38c9403f367a600347d37829f88ceff07f4dd0c71a7b2ffc0f42698c30534"
+  },
+  "physical_iphone_xr_tested": false,
+  "full_device_playthrough_verified": false,
+  "font_uikit_pixels_verified": false,
+  "tutorial_uikit_execution_verified": false,
+  "scope": "Successful iPhoneOS ARM64 native app and runtime shader build,62 portable suites on Linux and AppleARM64,14 tactical/support and12 M3G pixel checks on synthetic geometry. New font adapter and tutorial UI compile but have not been rendered/exercised on an iPhone. No sustained60FPS or original-scene parity claim.",
+  "evidence": {
+    "validation/native_game_007_host/ci-linux-ctest.log": {
+      "bytes": 12844,
+      "sha256": "28e558096b54df0945d73006e1e151bd4bede1a1cc0e6aae6e6190cbeb11741d"
+    },
+    "validation/native_game_007_host/ci-apple-ctest.log": {
+      "bytes": 12694,
+      "sha256": "7a85141796d9a52696a76d9193d91a0c89e4652f6efb4e7596fbe3a3c8bbfe1c"
+    }
+  }
+}

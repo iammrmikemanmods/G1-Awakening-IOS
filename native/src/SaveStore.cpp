@@ -13,7 +13,8 @@
 namespace g1 {
 namespace {
 constexpr std::array<std::uint8_t,8> magic{{'G','1','N','P','R','O','F',0}};
-constexpr std::size_t profile_size=8+4+4+2+8+25*12+4;
+constexpr std::size_t profile_v1_size=8+4+4+2+8+25*12+4;
+constexpr std::size_t profile_v2_size=profile_v1_size+1;
 
 void word(Bytes& out,std::uint32_t value) {
     for (unsigned i=0;i<4;++i) out.push_back(static_cast<std::uint8_t>(value>>(i*8)));
@@ -45,22 +46,27 @@ std::string failure(const char* action,int code) {
 Bytes encode_campaign_profile(const CampaignProfile& profile) {
     validate(profile);
     Bytes result(magic.begin(),magic.end());
-    word(result,1);word(result,static_cast<std::uint32_t>(profile_size));
+    word(result,2);word(result,static_cast<std::uint32_t>(profile_v2_size));
     for (auto value:profile.completed) result.push_back(value ? 1 : 0);
     for (auto value:profile.highest_unlocked) word(result,static_cast<std::uint32_t>(value));
     for (const auto& records:profile.records)
         for (const auto& record:records)
             for (auto value:{record.value_274,record.value_278,record.value_27c})
                 word(result,static_cast<std::uint32_t>(value));
+    result.push_back(profile.support_tutorial_pending ? 1 : 0);
     word(result,adler32_bytes(result));
     return result;
 }
 
 CampaignProfile decode_campaign_profile(const Bytes& input) {
-    if (input.size()!=profile_size || !std::equal(magic.begin(),magic.end(),input.begin()))
+    if ((input.size()!=profile_v1_size && input.size()!=profile_v2_size) ||
+        !std::equal(magic.begin(),magic.end(),input.begin()))
         throw FormatError("native profile size or signature is invalid");
     std::size_t cursor=8;
-    if (read_word(input,cursor)!=1 || read_word(input,cursor)!=profile_size)
+    const auto version=read_word(input,cursor);
+    const auto declared_size=read_word(input,cursor);
+    if (!((version==1 && input.size()==profile_v1_size) ||
+          (version==2 && input.size()==profile_v2_size)) || declared_size!=input.size())
         throw FormatError("native profile version or declared size is unsupported");
     std::size_t checksum_cursor=input.size()-4;
     const auto checksum=read_word(input,checksum_cursor);
@@ -78,11 +84,19 @@ CampaignProfile decode_campaign_profile(const Bytes& input) {
             record.value_278=signed_word(read_word(input,cursor));
             record.value_27c=signed_word(read_word(input,cursor));
         }
+    // Build006 profiles have no tutorial field. Preserve every record and
+    // unlock while giving them the original enabled-on-reset default.
+    if (version==2) {
+        if (input[cursor]>1) throw FormatError("native profile tutorial boolean is invalid");
+        result.support_tutorial_pending=input[cursor++]!=0;
+    }
+    if (cursor!=input.size()-4) throw FormatError("native profile field size is invalid");
     validate(result);
     return result;
 }
 
-SaveWriteResult write_native_save_atomic(const std::string& destination,const Bytes& data) {
+SaveWriteResult write_native_save_atomic(const std::string& destination,const Bytes& data,
+                                        bool replace_existing) {
     if (destination.empty() || destination.find('\0')!=std::string::npos ||
         data.empty() || data.size()>Archive::max_resource_size)
         return {false,"native save path or payload is invalid"};
@@ -111,7 +125,14 @@ SaveWriteResult write_native_save_atomic(const std::string& destination,const By
     if (fsync(descriptor)<0) return fail("flush temporary save",errno);
     if (close(descriptor)<0) {descriptor=-1;return fail("close temporary save",errno);}
     descriptor=-1;
-    if (rename(temporary.data(),destination.c_str())<0) return fail("replace native save",errno);
+    if (replace_existing) {
+        if (rename(temporary.data(),destination.c_str())<0) return fail("replace native save",errno);
+    } else {
+        // link publishes a complete already-flushed sibling without replacing
+        // a prior backup. The original name remains until publication succeeds.
+        if (link(temporary.data(),destination.c_str())<0) return fail("preserve native save backup",errno);
+        if (unlink(temporary.data())<0) return fail("retire backup temporary file",errno);
+    }
     renamed=true;
     descriptor=open(parent.c_str(),O_RDONLY|O_DIRECTORY);
     if (descriptor<0) return fail("open save directory",errno);

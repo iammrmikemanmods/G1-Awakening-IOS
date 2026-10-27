@@ -1,0 +1,22 @@
+{
+  "bitmap_font_original_functions": {
+    "passed": true,
+    "stdout": "bitmap font contract: 71678 checks, 240 original-function cases, 1052 original draws passed\n"
+  },
+  "presentation_epoch_delivery": {
+    "passed": true,
+    "stdout": "103 presentation epoch and queued callback checks passed; portable model only, no UIKit or Metal execution\n"
+  },
+  "support_tutorial_original_function_vectors": {
+    "passed": true,
+    "stdout": "2202 original support tutorial cases / 6606 scalar comparisons passed; helper identity and one-shot checks passed\n"
+  },
+  "native_profile_atomic_file": {
+    "passed": true,
+    "stdout": "806 native profile/atomic file checks passed; iPhone cold reload remains untested\n"
+  },
+  "campaign_actual_save_and_handoff": {
+    "passed": true,
+    "stdout": "92 campaign orchestration checks passed with real filesystem writes/failures; no UI/device draw claimed.\n"
+  }
+}

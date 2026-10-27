@@ -39,7 +39,9 @@
         self.opaque = NO;
         self.clipsToBounds = YES;
         self.isAccessibilityElement = YES;
-        _font = [UIFont systemFontOfSize:14 weight:UIFontWeightMedium];
+        // A compact mono bitmap-like face stays legible at the source 480x320
+        // panel size, rather than the oversized system font from Build012.
+        _font = [UIFont fontWithName:@"Menlo-Regular" size:11] ?: [UIFont systemFontOfSize:11 weight:UIFontWeightMedium];
         _storage = [NSTextStorage new];
         _layout = [NSLayoutManager new];
         _layout.usesFontLeading = NO;

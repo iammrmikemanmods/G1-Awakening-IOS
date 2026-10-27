@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "verified_utc": "2026-10-26T23:17:37.944706+00:00",
+  "scope": "Read-only native font selection and glyph geometry for all 23 actual unit primary names plus actual localized text503; no UIKit or device drawing claim.",
+  "archive_sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4",
+  "probe_source": "validation/native_game_007_host/banner-coverage-probe.cpp",
+  "probe_source_sha256": "3674b8e1d36e65e62337f2f5b08ac92ff29f6a4a963a96a52bba2a4dcf5e7401",
+  "original_report_sha256": "0f94efe4bafe9ea3491618199141160f4e77d23a758a9de5dcce4f9afdeab14c",
+  "summary": {
+    "banners": 23,
+    "slot0": 0,
+    "slot2": 23,
+    "native_fallback": 0,
+    "zero_sized_glyphs": 0,
+    "longest_source_width": 92,
+    "longest_width_at_17pt_height": 156.4,
+    "all_banner_bounds_fit_measured_width_and_line_height": true
+  },
+  "gpu_rendered": false,
+  "uikit_executed": false,
+  "physical_device_tested": false
+}
