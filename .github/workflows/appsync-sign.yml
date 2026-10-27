@@ -60,11 +60,23 @@ jobs:
               plistlib.dumps({'application-identifier':'org.g1awakening.native.test',
                                'get-task-allow':True},fmt=plistlib.FMT_XML))
           PY
-          BIN=artifacts/appsync/G1AwakeningNative.app/G1AwakeningNative
-          codesign --force --sign - --timestamp=none --generate-entitlement-der \
+          # Sign the raw Mach-O outside its .app: there are no original
+          # game assets in this CI job, so a bundle CodeResources seal would
+          # become stale after the original game archive/icons were added.
+          mkdir -p input/standalone
+          cp artifacts/appsync/G1AwakeningNative.app/G1AwakeningNative input/standalone/G1AwakeningNative
+          BIN=input/standalone/G1AwakeningNative
+          codesign --force --sign - --identifier org.g1awakening.native.test \
+            --timestamp=none --generate-entitlement-der \
             --entitlements input/appsync-entitlements.plist "$BIN"
           codesign --verify --strict --verbose=2 "$BIN"
+          codesign --display --verbose=3 "$BIN"
           codesign --display --entitlements :- "$BIN" > artifacts/appsync/extracted-entitlements.plist
+          cp "$BIN" artifacts/appsync/G1AwakeningNative.app/G1AwakeningNative
+          if test -e artifacts/appsync/G1AwakeningNative.app/_CodeSignature/CodeResources; then
+            echo 'Unexpected resource seal; no original assets available to CI signer' >&2
+            exit 1
+          fi
           python3 - <<'PY'
           import hashlib,json,plistlib
           from pathlib import Path
