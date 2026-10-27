@@ -1048,6 +1048,38 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
     _failed=false;_failure=nil;
 }
 
+
+- (void)primeModernTextures {
+    // This updates only derived host textures. The original archive,
+    // gameplay map, sprite geometry and shared RNG remain untouched.
+    if(!_renderer || !_scene || !_archive)return;
+    if(!_modernTextures)_modernTextures=[NSMutableDictionary new];
+    const auto cache=[&](std::uint32_t id,const g1::RgbaImage& image) {
+        if(image.width!=512 || image.height!=512)
+            throw g1::FormatError("Modern sprite source image differs from verified 512x512");
+        if(!_modernTextures[@(id)])
+            _modernTextures[@(id)]=_renderer->texture(g1::scale4x_rgba(image));
+    };
+    for(const auto& image:_scene->textures) {
+        const bool sprite=std::any_of(_scene->sprites.begin(),_scene->sprites.end(),[&](const auto& item) {
+            return item.resource.image_id==image.first;
+        });
+        if(sprite)cache(image.first,image.second);
+    }
+    for(const auto& decoration:_terrainSpriteDraws) {
+        const auto& resource=decoration.resource;
+        if(_modernTextures[@(resource.image_id)])continue;
+        const auto matches=_archive->find(resource.image_id,resource.resource_key);
+        if(matches.size()!=1)
+            throw g1::FormatError("Modern terrain decoration source is missing or ambiguous");
+        cache(resource.image_id,g1::decode_png(_archive->read(matches.front())));
+    }
+}
+- (id<MTLTexture>)spriteTexture:(std::uint32_t)resource {
+    if(_graphicsModern && _modernTextures[@(resource)])return _modernTextures[@(resource)];
+    return _textures[@(resource)];
+}
+
 - (void)rebuildScene:(BOOL)resetPlayback {
     const auto& world = _session->world();
     const bool mapChanged = !_scene || !_scene->matches_map(world);
@@ -1071,8 +1103,17 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
         }
     }
     if (!_textures) _textures = [NSMutableDictionary new];
-    for (const auto& image : next->textures)
+    if (!_modernTextures) _modernTextures = [NSMutableDictionary new];
+    for (const auto& image : next->textures) {
         if (!_textures[@(image.first)]) _textures[@(image.first)] = _renderer->texture(image.second);
+        if(_graphicsModern && !_modernTextures[@(image.first)]) {
+            const bool sprite=std::any_of(next->sprites.begin(),next->sprites.end(),[&](const auto& item) {
+                return item.resource.image_id==image.first;
+            });
+            if(sprite && image.second.width==512 && image.second.height==512)
+                _modernTextures[@(image.first)]=_renderer->texture(g1::scale4x_rgba(image.second));
+        }
+    }
     if (!_white) _white = _renderer->texture({1,1,{255,255,255,255}});
 
     std::map<std::uint8_t,std::size_t> oldByType;
@@ -1306,6 +1347,12 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
                 if(image.width!=512 || image.height!=512)
                     throw g1::FormatError("Terrain sprite atlas dimensions differ from original512x512");
                 _textures[@(resource.image_id)]=_renderer->texture(image);
+            }
+            if(_graphicsModern && !_modernTextures[@(resource.image_id)]) {
+                const auto image=g1::decode_png(read(resource.image_id,resource.resource_key));
+                if(image.width!=512 || image.height!=512)
+                    throw g1::FormatError("Modern decoration source is not a 512x512 atlas");
+                _modernTextures[@(resource.image_id)]=_renderer->texture(g1::scale4x_rgba(image));
             }
             if(!_terrainSpriteMeshes.count(resource.descriptor_id)) {
                 const g1::AtlasDescriptor descriptor(read(resource.descriptor_id,resource.resource_key));
@@ -1696,7 +1743,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
                         throw g1::FormatError("Missing pre-combat support sprite animation");
                     frame=sprite.descriptor.animations()[animation].front().frame_index;
                 }
-                snapshots.push_back({_spriteMeshes.at(i).at(frame),_textures[@(sprite.resource.image_id)],
+                snapshots.push_back({_spriteMeshes.at(i).at(frame),[self spriteTexture:sprite.resource.image_id],
                     unit_model(_session->world(),unit),{{1,1,1,1}},true});
             }
         }
@@ -2697,7 +2744,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
                 // presentation policy, not a claim of the full original draw tree.
                 for(const auto& decoration:_terrainSpriteDraws)
                     draws.push_back({_terrainSpriteMeshes.at(decoration.resource.descriptor_id).at(decoration.frame_index),
-                        _textures[@(decoration.resource.image_id)],
+                        [self spriteTexture:decoration.resource.image_id],
                         g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true});
                 for(const auto& overlay:_worldOverlays)
                     draws.push_back({overlay.mesh,_white,camera,overlay.tint,false});
@@ -2739,9 +2786,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
                     return pa[2] > pb[2];
                 });
                 for (const auto i : order) {
-                    const auto texture = _textures[@(_scene->sprites[i].resource.image_id)];
+                    const auto texture = [self spriteTexture:_scene->sprites[i].resource.image_id];
                     draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
-                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true});
+                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true,{},false,_graphicsModern});
                 }
                 }
                 _renderer->encode(command,pass,draws);
