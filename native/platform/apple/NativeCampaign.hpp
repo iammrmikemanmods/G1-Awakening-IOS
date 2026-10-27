@@ -64,6 +64,7 @@
 - (void)loadOriginalFonts:(const g1::Archive&)archive;
 - (void)loadOriginalMenuArtwork:(const g1::Archive&)archive;
 - (void)setOriginalMenuArtworkVisible:(BOOL)visible;
+- (void)setDisplaysMenuDetails:(BOOL)visible;
 - (NSInteger)originalHeadingFontSlot;
 - (G1BitmapFontFace*)originalFaceForMenuText:(NSString*)text;
 - (void)resetPresentation;
@@ -81,6 +82,7 @@
     G1BitmapFontFace* _smallOriginalFont;
     UIImage* _originalMenuArtwork;
     BOOL _menuArtworkVisible;
+    BOOL _menuDetailsVisible;
 }
 - (instancetype)initWithFrame:(CGRect)frame {
     self=[super initWithFrame:frame];
@@ -116,6 +118,11 @@
     _menuArtworkVisible=visible;
     _drawnToken=0;
     [self setNeedsDisplay];
+}
+- (void)setDisplaysMenuDetails:(BOOL)visible {
+    if(_menuDetailsVisible==visible)return;
+    _menuDetailsVisible=visible;
+    _drawnToken=0;[self setNeedsDisplay];
 }
 - (G1BitmapFontFace*)originalHeadingFace {
     if(!_heading || self.bounds.size.width<=32)return nil;
@@ -203,10 +210,10 @@
         // The original 2D background does not itself include the native
         // campaign transcript. Keep that auxiliary text ONLY on deep menu
         // pages where it is useful; main-menu artwork stays unobstructed.
-        if(![_heading isEqualToString:@"MAIN MENU"] && _body.length) {
-            const CGRect textRect=CGRectMake(dest.origin.x+dest.size.width*0.10,
-                dest.origin.y+dest.size.height*0.364,
-                dest.size.width*0.80,dest.size.height*0.25);
+        if(_menuDetailsVisible && _body.length) {
+            const CGRect textRect=CGRectMake(dest.origin.x+dest.size.width*0.22,
+                dest.origin.y+dest.size.height*0.833,
+                dest.size.width*0.56,dest.size.height*0.125);
             NSMutableParagraphStyle* centered=[NSMutableParagraphStyle new];
             centered.alignment=NSTextAlignmentCenter;
             centered.lineBreakMode=NSLineBreakByWordWrapping;

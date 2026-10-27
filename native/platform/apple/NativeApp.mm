@@ -278,6 +278,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     UIScrollView* _campaignScroll;
     G1CampaignCanvas* _campaignCanvas;
     UIStackView* _campaignButtons;
+    UITextView* _menuInfoText;
     NSLayoutConstraint* _campaignCanvasHeight;
     NSLayoutConstraint* _campaignActionsMenuCenter;
     NSLayoutConstraint* _campaignActionsNormalBottom;
@@ -577,6 +578,17 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     _campaignButtons.spacing=4;
     _campaignButtons.translatesAutoresizingMaskIntoConstraints=NO;
     [_campaignPanel addSubview:_campaignButtons];
+    _menuInfoText=[UITextView new];
+    _menuInfoText.translatesAutoresizingMaskIntoConstraints=NO;
+    _menuInfoText.backgroundColor=UIColor.clearColor;
+    _menuInfoText.textColor=UIColor.whiteColor;
+    _menuInfoText.font=[UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
+    _menuInfoText.editable=NO;_menuInfoText.selectable=NO;
+    _menuInfoText.textContainerInset=UIEdgeInsetsMake(2,4,2,4);
+    _menuInfoText.scrollEnabled=YES;
+    _menuInfoText.hidden=YES;
+    [_campaignPanel addSubview:_menuInfoText];
+    [_campaignPanel bringSubviewToFront:_campaignButtons];
     _campaignCanvasHeight=[_campaignCanvas.heightAnchor constraintEqualToConstant:180];
     _campaignActionsMenuCenter=[_campaignButtons.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:8];
     _campaignActionsNormalBottom=[_campaignButtons.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor constant:-12];
@@ -596,6 +608,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
         [_campaignCanvas.bottomAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.bottomAnchor],
         [_campaignCanvas.widthAnchor constraintEqualToAnchor:_campaignScroll.frameLayoutGuide.widthAnchor],
         _campaignCanvasHeight,
+        [_menuInfoText.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
+        [_menuInfoText.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:-32],
+        [_menuInfoText.widthAnchor constraintEqualToConstant:390],
+        [_menuInfoText.heightAnchor constraintEqualToConstant:94],
         [_campaignButtons.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
         [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:8],
         [_campaignButtons.trailingAnchor constraintLessThanOrEqualToAnchor:_campaignPanel.trailingAnchor constant:-8],
@@ -851,7 +867,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     if(sourceMenu)_campaignActionsMenuCenter.active=YES;
     else _campaignActionsNormalBottom.active=YES;
     _campaignScroll.scrollEnabled=!sourceMenu;
+    const BOOL information=purpose==NativePanel::help || purpose==NativePanel::credits;
+    _menuInfoText.hidden=!information;
+    _menuInfoText.text=information ? body : @"";
+    if(information && changed)[_menuInfoText setContentOffset:CGPointZero animated:NO];
+    _campaignActionsMenuCenter.constant=information ? 61 : 8;
     [_campaignCanvas setOriginalMenuArtworkVisible:sourceMenu];
+    [_campaignCanvas setDisplaysMenuDetails:sourceMenu && purpose==NativePanel::pause];
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
@@ -896,6 +918,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     _presentationEpoch.invalidate();
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
+    _menuInfoText.hidden=YES;
     [_campaignCanvas resetPresentation];
     _inputEdges=0;_simulationClock.reset();_clockStarted=false;
     if(_session)_previousUnits=_session->units();
