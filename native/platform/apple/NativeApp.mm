@@ -216,7 +216,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, mission_select, settings, help, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
+enum class NativePanel { none, startup, pause, results, ending, menu, mode_select, mission_select, settings, help, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -811,6 +811,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     }
     const BOOL originalMenu=[_campaignCanvas originalFaceForMenuText:@"MAIN MENU"] &&
         (_panelPurpose==NativePanel::startup || _panelPurpose==NativePanel::menu ||
+         _panelPurpose==NativePanel::mode_select ||
          _panelPurpose==NativePanel::mission_select || _panelPurpose==NativePanel::settings ||
          _panelPurpose==NativePanel::help || _panelPurpose==NativePanel::credits ||
          _panelPurpose==NativePanel::pause || _panelPurpose==NativePanel::arena ||
@@ -858,6 +859,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     _panelPurpose=purpose;_panelToken=token;
     const BOOL sourceMenu=
         purpose==NativePanel::startup || purpose==NativePanel::menu ||
+        purpose==NativePanel::mode_select ||
         purpose==NativePanel::settings || purpose==NativePanel::help ||
         purpose==NativePanel::credits || purpose==NativePanel::pause ||
         purpose==NativePanel::mission_select || purpose==NativePanel::arena ||
@@ -897,6 +899,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     const g1::MenuMusicNode* current=nullptr;
     switch(_panelPurpose) {
     case NativePanel::startup: case NativePanel::menu:
+    case NativePanel::mode_select:
     case NativePanel::settings: case NativePanel::help: case NativePanel::credits:
         current=&mainMenu;break;
     case NativePanel::mission_select: current=&missionList;break;
@@ -964,14 +967,26 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
         title:[self originalText:1169] body:body token:token];
     if([NSFileManager.defaultManager fileExistsAtPath:_sessionSavePath])
         [self addCampaignButton:[self originalText:771] action:@selector(continueCheckpoint)];
-    [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
-    [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
-    [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
+    [self addCampaignButton:[self originalText:471] action:@selector(showModesMenu)];
     [self addCampaignButton:[self originalText:468] action:@selector(openSettings)];
     [self addCampaignButton:[self originalText:754] action:@selector(showHelpMenu)];
     [self addCampaignButton:@"CREDITS" action:@selector(showCreditsMenu)];
     if(_session && _campaign->state().gate==g1::CampaignControllerGate::idle)
         [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
+}
+
+- (void)showModesMenu {
+    if(!_campaign)return;
+    const auto& profile=_campaign->profile();
+    NSString* body=[NSString stringWithFormat:@"%@: %d / %zu. %@",
+        [self originalText:617],profile.highest_unlocked[0]+1,
+        g1::campaign_mission_count(0),profile.completed[0] ? @"SHOWDOWN UNLOCKED" : @"SHOWDOWN LOCKED"];
+    [self showPanel:NativePanel::mode_select title:[self originalText:983]
+        body:body token:++_localPanelToken];
+    [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
+    [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
+    [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
+    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
 }
 
 - (BOOL)retireCheckpoint {
