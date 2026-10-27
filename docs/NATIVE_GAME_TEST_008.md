@@ -49,3 +49,46 @@ gameplay save; no migration is required from native test 007.
 
 The initial Build 008 source commit and compiled artifact identities
 must be added only after those exact builds have been verified.
+
+
+## Verified Apple and IPA build evidence
+
+The reviewed source commit is `fd78ea5138e4a1beb8a2224b304e72099ffc0266`,
+Git tree `e10f37569685acebaf40bb12e8310404cbc7388a`.
+The GitHub pull-request workflow compiled merge commit
+`bc4ab991bee493d282ed12bccafe9d07bc31895f`, whose Git
+tree is **identical** to the reviewed source. That exact compiled
+identity is embedded in the executable's Info.plist.
+
+[GitHub workflow 40424515585](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40424515585)
+succeeded: 62/62 portable tests on Linux and 62/62 on Apple ARM64, native
+iPhoneOS app compilation and runtime M3G Metal shader compilation, 14
+tactical/support and 12 M3G hosted Metal pixel checks. The GPU probes
+used synthetic geometry on Apple Paravirtual hardware; they are not
+original-game frame captures or an iPhone XR run.
+
+The unsigned `G1_Awakening_Native_Game_Test_008.ipa` has version
+0.8.0/build 8, size **7,611,886 bytes**, SHA256
+`e68a3830ad292e71cd8a4173940923e16f110ac400b51de1056129a39304e024`.
+The verified native ARM64 executable is 1,629,640 bytes, SHA256
+`5131341bff53fcd0ba2d8c9ba390f0790afb85dba46947b4bf01bfe60a27a7e7`.
+Hosted code artifact 12699223872 has SHA256
+`54de2db56b1a5e32d9b351065d7353828b8d33e0ff5e664eaa5e6f680cf0e20c`.
+
+The packaged ZIP, member bytes and CRCs were checked. It contains the
+hash-pinned original `iphone.big` and 480-byte static terrain data,
+native ARM64 executable, app metadata and licenses; it **does not**
+contain the original ARM32 executable, JIT or interpreter. The IPA is
+unsigned for Sideloadly signing. The existing bundle identifier and
+iOS 17.5 minimum are unchanged to support installing over Build 007
+with the same signing identity, preserving application data.
+
+The new UI heading/render changes were compiled but have not been
+visually compared with original screenshots on an actual XR. The
+user-reported Mission 1 success predates Build 008; it is **not** proof
+that the new Build 008 binary was executed on the phone. The existing
+headless complete Story run is not a rendered device playthrough.
+
+Machine-readable metadata:
+`validation/APPLE_NATIVE_GAME_008.json` and
+`validation/NATIVE_GAME_IPA_008.json`.
