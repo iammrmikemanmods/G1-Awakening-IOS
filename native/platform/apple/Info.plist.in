@@ -8,8 +8,8 @@
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>G1AwakeningNative</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.11.0</string>
-    <key>CFBundleVersion</key><string>11</string>
+    <key>CFBundleShortVersionString</key><string>0.12.0</string>
+    <key>CFBundleVersion</key><string>12</string>
     <!-- Names refer to original, user-supplied iTunesArtwork resized only
          at packaging time. Do not add copyrighted artwork to Git history.
          The application has NO asset catalog and therefore no false
@@ -43,6 +43,6 @@
     <key>UILaunchScreen</key><dict/>
     <key>ITSAppUsesNonExemptEncryption</key><false/>
     <key>G1SourceCommit</key><string>@G1_SOURCE_COMMIT@</string>
-    <key>G1ArtifactKind</key><string>Native original G1 frontend and gameplay restoration test</string>
+    <key>G1ArtifactKind</key><string>Native original G1 Help and HUD recovery test</string>
     <key>G1FeatureScope</key><string>Native complete campaign content, source G1 menu art and modern iPhone icon derived from original iTunesArtwork, saved sound/graphics/touch options, original 3D battle and support presentation, full native Story/Showdown/Arena logic with checkpoint restore. Full physical XR 17+29+Arena rendered playthrough and sustained device performance remain to be certified.</string>
 </dict></plist>
