@@ -742,10 +742,6 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     }];
     [self maintainMenuMusic];
 }
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [_openingPlayer pause];
-}
 - (void)loadOriginalHUD:(const g1::Archive&)archive {
     UIImage* silver=original_g1_ui_png(archive,1004,298,62);
     _gameHudFrame.image=[silver resizableImageWithCapInsets:UIEdgeInsetsMake(14,46,14,46)
@@ -1658,7 +1654,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     ++_contentGeneration;
 }
 
-- (void)dealloc { [_menuMusicTimer invalidate]; [[NSNotificationCenter defaultCenter] removeObserver:self]; }
+- (void)dealloc {
+    [_menuMusicTimer invalidate];
+    [_openingPlayer pause];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void)fail:(NSString*)message {
     _failed = true;
