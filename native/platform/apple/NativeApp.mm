@@ -594,7 +594,6 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
         [_title loadOriginalFonts:archive];
         [_campaignCanvas loadOriginalFonts:archive];
         [_campaignCanvas loadOriginalMenuArtwork:archive];
-        [_campaignCanvas loadOriginalFonts:archive];
         [_battleCanvas loadOriginalFonts:archive];
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
@@ -972,7 +971,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 
 - (void)showSettingsMenu {
     NSString* body=[NSString stringWithFormat:
-        @"Classic preserves the original source textures. Modern applies the PC port's lossless Scale4x rule to eligible 2D robot/decorative sprites at native resolution. Original 3D materials, map atlas and font sheets remain untouched.\\n\\n%@  /  %@",
+        @"Classic preserves the original source textures. Modern applies the PC port's lossless Scale4x rule to eligible 2D robot/decorative sprites at native resolution. Original 3D materials, map atlas and font sheets remain untouched.\n\n%@  /  %@",
         _graphicsModern?@"MODERN":@"CLASSIC",_showDiagnostics?@"DIAGNOSTICS ON":@"DIAGNOSTICS OFF"];
     [self showPanel:NativePanel::settings title:@"SETTINGS" body:body token:++_localPanelToken];
     [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
@@ -986,7 +985,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 - (void)showHelpMenu {
     if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
     [self showPanel:NativePanel::help title:@"HELP"
-        body:@"TAP a robot to select it. Choose MOVE then tap an available tile twice to confirm the route. ATTACK uses the target you tap. CAPTURE, TRANSFORM, REPAIR, UPGRADE and ACTIVATE use the displayed action buttons. END TURN advances to the enemy. Swipe the battlefield to pan, pinch to zoom, and use Reset view to frame the map.\\n\\nStory unlocks Showdown; Showdown unlocks Cybertron Arena. Pause with Menu; use Continue after relaunch to restore the last safe checkpoint."
+        body:@"TAP a robot to select it. Choose MOVE then tap an available tile twice to confirm the route. ATTACK uses the target you tap. CAPTURE, TRANSFORM, REPAIR, UPGRADE and ACTIVATE use the displayed action buttons. END TURN advances to the enemy. Swipe the battlefield to pan, pinch to zoom, and use Reset view to frame the map.\n\nStory unlocks Showdown; Showdown unlocks Cybertron Arena. Pause with Menu; use Continue after relaunch to restore the last safe checkpoint."
         token:++_localPanelToken];
     [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
 }
@@ -994,7 +993,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 - (void)showCreditsMenu {
     if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
     [self showPanel:NativePanel::credits title:@"CREDITS"
-        body:@"TRANSFORMERS G1: AWAKENING\\n\\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
+        body:@"TRANSFORMERS G1: AWAKENING\n\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
         token:++_localPanelToken];
     [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
 }
@@ -1785,7 +1784,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
                     frame=sprite.descriptor.animations()[animation].front().frame_index;
                 }
                 snapshots.push_back({_spriteMeshes.at(i).at(frame),[self spriteTexture:sprite.resource.image_id],
-                    unit_model(_session->world(),unit),{{1,1,1,1}},true});
+                    unit_model(_session->world(),unit),{{1,1,1,1}},true,{},false,_graphicsModern});
             }
         }
         _supportSavedCursor=_returnCursor;
@@ -2786,7 +2785,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
                 for(const auto& decoration:_terrainSpriteDraws)
                     draws.push_back({_terrainSpriteMeshes.at(decoration.resource.descriptor_id).at(decoration.frame_index),
                         [self spriteTexture:decoration.resource.image_id],
-                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true});
+                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true,{},false,_graphicsModern});
                 for(const auto& overlay:_worldOverlays)
                     draws.push_back({overlay.mesh,_white,camera,overlay.tint,false});
                 if(!support) {
