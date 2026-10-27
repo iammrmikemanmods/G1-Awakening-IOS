@@ -30,9 +30,9 @@ def inspect_executable(data):
             if target is not None or size < 24:
                 raise ValueError('invalid/repeated build target')
             platform, minimum, sdk, tools = struct.unpack_from('<4I', data, cursor + 8)
-            if platform != 2 or minimum != 0x00110500 or tools > (size - 24) // 8:
-                raise ValueError('expected iPhoneOS minimum 17.5')
-            target = {'platform': 'iPhoneOS', 'minimum_os': '17.5', 'sdk_encoded': sdk}
+            if platform != 2 or minimum not in (0x00110500, 0x000f0000) or tools > (size - 24) // 8:
+                raise ValueError('expected verified iPhoneOS 17.5 or 15.0 deployment')
+            target = {'platform': 'iPhoneOS', 'minimum_os': f'{minimum >> 16}.{(minimum >> 8) & 255}', 'sdk_encoded': sdk}
         elif command in (0xc, 0x80000018, 0x8000001f, 0x80000023):
             if size < 24:
                 raise ValueError('invalid linked-library command')
@@ -70,7 +70,7 @@ def inspect_app(app):
         raise ValueError('unexpected native executable name')
     if info.get('CFBundleIdentifier') != 'org.g1awakening.native.test':
         raise ValueError('unexpected test app identity')
-    if info.get('MinimumOSVersion') != '17.5' or info.get('UIDeviceFamily') != [1]:
+    if (info.get('MinimumOSVersion'), info.get('UIDeviceFamily')) not in [('17.5', [1]), ('15.0', [1, 2])]:
         raise ValueError('unexpected deployment target or device family')
     if info.get('CFBundleVersion') == '10':
         icons = info.get('CFBundleIcons', {}).get('CFBundlePrimaryIcon', {})
@@ -83,8 +83,12 @@ def inspect_app(app):
     if not re.fullmatch('[0-9a-f]{40}', commit):
         raise ValueError('source commit is not recorded in the app')
     result = inspect_executable((app / info['CFBundleExecutable']).read_bytes())
+    if result['minimum_os'] != info['MinimumOSVersion']:
+        raise ValueError('Mach-O deployment and Info.plist do not match')
+    if info.get('CFBundleVersion') == '15' and (result['minimum_os'] != '15.0' or info.get('UIDeviceFamily') != [1, 2]):
+        raise ValueError('Build015 must be compiled for universal iPhone/iPad iOS15')
     result.update({'source_commit': commit, 'bundle_identifier': info['CFBundleIdentifier'],
-                   'version': info['CFBundleShortVersionString'],
+                   'version': info['CFBundleShortVersionString'], 'device_families': info['UIDeviceFamily'],
                    'artifact_kind': info.get('G1ArtifactKind', 'native test app'),
                    'feature_scope': info.get('G1FeatureScope', 'See source-specific validation'),
                    'original_assets_bundled': (app / 'GameData' / 'iphone.big').is_file(),

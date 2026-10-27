@@ -27,6 +27,10 @@
     UIImage* _vehicleRedIcon;
     UIImage* _robotPurpleIcon;
     G1BitmapFontFace* _originalFont;
+    G1BitmapFontFace* _accentRedFont;
+    G1BitmapFontFace* _accentPurpleFont;
+    G1BitmapFontFace* _titleRedFont;
+    G1BitmapFontFace* _titlePurpleFont;
     NSString* _name;
     NSString* _quote;
     NSArray<NSString*>* _details;
@@ -36,7 +40,7 @@
 }
 - (instancetype)initWithFrame:(CGRect)frame {
     self=[super initWithFrame:frame];
-    if(self){self.opaque=YES;self.backgroundColor=UIColor.blackColor;
+    if(self){self.opaque=YES;self.contentMode=UIViewContentModeRedraw;self.backgroundColor=UIColor.blackColor;
         self.clipsToBounds=YES;self.isAccessibilityElement=NO;}
     return self;
 }
@@ -48,6 +52,10 @@
     _vehicleRedIcon=g1::source_art::png(archive,904,52,49);
     _robotPurpleIcon=g1::source_art::png(archive,657,52,49);
     _originalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:2];
+    _accentRedFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:4];
+    _accentPurpleFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:5];
+    _titleRedFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:6];
+    _titlePurpleFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:7];
 }
 - (void)show:(const g1::TechSpecsData&)specs name:(NSString*)name quote:(NSString*)quote
        details:(NSArray<NSString*>*)details portrait:(UIImage*)portrait {
@@ -64,9 +72,12 @@
 - (void)smallLine:(NSString*)line area:(CGRect)area height:(CGFloat)height color:(UIColor*)color
           align:(NSTextAlignment)align {
     if(!line.length)return;
-    if(_originalFont && [_originalFont supportsText:line] &&
-       [_originalFont sizeForText:line height:height].width<=area.size.width) {
-        [_originalFont drawText:line rect:area height:height alignment:align];
+    G1BitmapFontFace* face=[color isEqual:UIColor.whiteColor]?_originalFont:
+        height>=16?(_data.faction==0?_titleRedFont:_titlePurpleFont):
+        (_data.faction==0?_accentRedFont:_accentPurpleFont);
+    if(face && [face supportsText:line] &&
+       [face sizeForText:line height:height].width<=area.size.width) {
+        [face drawText:line rect:area height:height alignment:align];
     } else {
         NSMutableParagraphStyle* style=[NSMutableParagraphStyle new];style.alignment=align;
         [line drawInRect:area withAttributes:@{
@@ -102,19 +113,23 @@
     if(!_hasData || self.bounds.size.width<=0 || self.bounds.size.height<=0)return;
     CGContextRef ctx=UIGraphicsGetCurrentContext();if(!ctx)return;
     CGContextSaveGState(ctx);
-    CGContextScaleCTM(ctx,self.bounds.size.width/480.0,self.bounds.size.height/320.0);
+    const CGFloat scale=self.bounds.size.height/320.0;
+    const CGFloat extra=self.bounds.size.width/scale-480.0;
+    CGContextScaleCTM(ctx,scale,scale);
     CGContextSetInterpolationQuality(ctx,kCGInterpolationNone);
     CGContextSetShouldAntialias(ctx,false);
-    [(_data.faction==0?_autobotSheet:_decepticonSheet) drawInRect:CGRectMake(0,0,480,320)];
+    [[(_data.faction==0?_autobotSheet:_decepticonSheet)
+        resizableImageWithCapInsets:UIEdgeInsetsMake(36,123,12,125) resizingMode:UIImageResizingModeTile]
+        drawInRect:CGRectMake(0,0,480+extra,320)];
     UIColor* accent=_data.faction==0 ?
        [UIColor colorWithRed:1 green:.38 blue:.4 alpha:1] :
        [UIColor colorWithRed:.8 green:.38 blue:1 alpha:1];
-    [self smallLine:_name area:CGRectMake(115,4,253,25) height:18 color:accent
+    [self smallLine:_name area:CGRectMake(115,4,253+extra,25) height:18 color:accent
               align:NSTextAlignmentCenter];
     for(NSUInteger form=0;form<2;++form) {
         if(form>=_data.forms)continue;
         const auto& entry=_data.form[form];
-        const CGFloat x=form==0?78:363;
+        const CGFloat x=form==0?78:363+extra;
         [self smallLine:@"ATK" area:CGRectMake(x,51,39,16) height:13 color:accent align:NSTextAlignmentCenter];
         NSString* atk=entry.combat.attack_low<=0 && entry.combat.attack_high<=0 ? @"N/A" :
           [NSString stringWithFormat:@"%d-%d",int(entry.combat.attack_low),int(entry.combat.attack_high)];
@@ -129,7 +144,7 @@
     }
     UIImage* unitSymbol=_data.faction==0?_robotRedIcon:_robotPurpleIcon;
     [unitSymbol drawInRect:CGRectMake(74,139,42,39)];
-    if(_data.faction==0)[_vehicleRedIcon drawInRect:CGRectMake(363,139,42,39)];
+    if(_data.faction==0)[_vehicleRedIcon drawInRect:CGRectMake(363+extra,139,42,39)];
     // Only source-confirmed abilities are supplied by the caller. The original
     // tactical core owns combat bonuses; no unverified ability is invented.
     CGFloat y=184;
@@ -138,13 +153,13 @@
         y+=11;
         if(y>225)break;
     }
-    [self drawWrapped:_quote x:360 y:183 width:107 maxLines:4 fontHeight:8 color:UIColor.whiteColor];
+    [self drawWrapped:_quote x:360+extra y:183 width:107 maxLines:4 fontHeight:8 color:UIColor.whiteColor];
     if(_energyIcon)[_energyIcon drawInRect:CGRectMake(44,247,37,38)];
     [self smallLine:[NSString stringWithFormat:@"%d",int(_data.energon_price)]
               area:CGRectMake(49,287,30,20) height:16 color:accent align:NSTextAlignmentCenter];
     // Small original-game portrait when a source identity is known. The full
     // original 3D character mesh is drawn independently in the central Metal view.
-    if(_portrait)[_portrait drawInRect:CGRectMake(387,246,62,63)];
+    if(_portrait)[_portrait drawInRect:g1::adaptive_ui::aspect_fit(_portrait,CGRectMake(387+extra,246,62,63))];
     CGContextRestoreGState(ctx);
 }
 @end
@@ -174,7 +189,7 @@
         self.colorPixelFormat=MTLPixelFormatBGRA8Unorm;
         self.depthStencilPixelFormat=MTLPixelFormatDepth32Float;
         self.framebufferOnly=YES;
-        self.opaque=NO;
+        self.opaque=NO;self.contentMode=UIViewContentModeRedraw;
         self.backgroundColor=UIColor.clearColor;
         self.layer.opaque=NO;
         self.clearColor=MTLClearColorMake(0,0,0,0);

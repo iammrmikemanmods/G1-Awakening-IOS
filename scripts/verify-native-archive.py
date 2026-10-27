@@ -68,9 +68,9 @@ def inspect_object(name: str, data: bytes):
             platform, minimum, sdk, tool_count = struct.unpack_from('<4I', data, cursor + 8)
             if tool_count > (size - 24) // 8:
                 raise ValueError(f'{name}: invalid build tool list')
-            if platform != 2 or minimum != ((17 << 16) | (5 << 8)):
-                raise ValueError(f'{name}: expected iPhoneOS 17.5 target')
-            target = {'platform': 'iPhoneOS', 'minimum_os': '17.5',
+            if platform != 2 or minimum not in (((17 << 16) | (5 << 8)), (15 << 16)):
+                raise ValueError(f'{name}: unexpected iPhoneOS deployment target')
+            target = {'platform': 'iPhoneOS', 'minimum_os': f'{minimum >> 16}.{(minimum >> 8) & 255}',
                       'sdk_encoded': sdk}
         cursor += size
     if cursor != end or target is None:

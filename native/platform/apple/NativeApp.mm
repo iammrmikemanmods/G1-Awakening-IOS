@@ -6,6 +6,10 @@
 #include <sys/utsname.h>
 
 #include "MetalRenderer.hpp"
+#include "MetalSupersampling.hpp"
+#include "g1/ContactShadow.hpp"
+#include "g1/DamageAnchor.hpp"
+#include "g1/TileUpscale.hpp"
 #include "MetalM3GRenderer.hpp"
 #include "g1/M3GBattlePresentation.hpp"
 #include "g1/AudioMaintenance.hpp"
@@ -137,7 +141,8 @@ UIImage* original_g1_ui_png(const g1::Archive& archive,std::uint32_t id,
         throw g1::FormatError("Original game UI asset dimensions differ from source");
     UIImage* source=[UIImage imageWithData:[NSData dataWithBytes:bytes.data() length:bytes.size()]];
     if(!source.CGImage)throw g1::FormatError("Original game UI bitmap failed UIKit decode");
-    return [UIImage imageWithCGImage:source.CGImage scale:scale orientation:UIImageOrientationUp];
+    UIImage* enhanced=g1::adaptive_ui::image(pixels);
+    return [UIImage imageWithCGImage:enhanced.CGImage scale:4.0*scale orientation:UIImageOrientationUp];
 }
 
 UIButton* action_button(NSString* title, id target, SEL selector) {
@@ -349,6 +354,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     std::shared_ptr<const g1::Archive> _archive;
     g1::Bytes _terrainTableBytes;
     std::unique_ptr<g1::MetalRenderer> _renderer;
+    std::unique_ptr<g1::MetalSupersampling> _supersampling;
+    g1::quality::Plan _renderQuality;
+    bool _renderMemoryPressure;
+    id<MTLTexture> _contactShadowTexture;
+    std::shared_ptr<g1::MetalMesh> _contactShadowMesh;
     std::unique_ptr<g1::MetalM3GRenderer> _m3gRenderer;
     std::unique_ptr<g1::M3GBattlePresentation> _battlePresentation;
     std::unique_ptr<g1::SupportOverlayAssets> _supportAssets;
@@ -452,6 +462,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 }
 
 - (BOOL)prefersStatusBarHidden { return YES; }
+- (BOOL)prefersHomeIndicatorAutoHidden { return YES; }
+- (void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];[self.view setNeedsLayout];
+}
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations { return UIInterfaceOrientationMaskLandscape; }
 
 - (void)viewDidLoad {
@@ -546,7 +560,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     // Original landscape HUD uses vertical action banks at the sides,
     // plus a centre-top turn button. Source-space frames are assigned in
     // viewDidLayoutSubviews; no ten-button strip obscures the terrain.
-    _commands=[UIView new];
+    _commands=[G1PassthroughControls new];
     _commands.backgroundColor=UIColor.clearColor;
     _commands.translatesAutoresizingMaskIntoConstraints=YES;
     [self.view addSubview:_commands];
@@ -591,14 +605,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _dialoguePanel.hidden = YES;
     _commands.hidden = YES;
 
-    _battlePanel = [UIView new];
-    _battlePanel.backgroundColor = [UIColor colorWithRed:0.025 green:0.04 blue:0.065 alpha:0.76];
+    _battlePanel = [G1PassthroughControls new];
+    _battlePanel.backgroundColor = UIColor.clearColor;
     _battlePanel.layer.cornerRadius = 0;
     _battlePanel.layer.borderWidth = 0;
     _battlePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.6].CGColor;
     _battlePanel.translatesAutoresizingMaskIntoConstraints = YES;
     [self.view addSubview:_battlePanel];
     _battleCanvas = [G1BattleCanvas new];
+    _battleCanvas.userInteractionEnabled=NO;
     _battleCanvas.translatesAutoresizingMaskIntoConstraints = YES;
     [_battlePanel addSubview:_battleCanvas];
     _battlePanel.hidden = YES;
@@ -638,6 +653,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [self.view addSubview:_campaignPanel];
     _campaignScroll=[UIScrollView new];
     _campaignScroll.translatesAutoresizingMaskIntoConstraints=NO;
+    _campaignScroll.contentInsetAdjustmentBehavior=UIScrollViewContentInsetAdjustmentNever;
     [_campaignPanel addSubview:_campaignScroll];
     _campaignCanvas=[G1CampaignCanvas new];
     _campaignCanvas.translatesAutoresizingMaskIntoConstraints=NO;
@@ -667,10 +683,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _menuInfoHeight=[_menuInfoText.heightAnchor constraintEqualToConstant:63];
     _menuInfoCenterY=[_menuInfoText.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:-5];
     [NSLayoutConstraint activateConstraints:@[
-        [_campaignPanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:18],
-        [_campaignPanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-18],
-        [_campaignPanel.topAnchor constraintEqualToAnchor:safe.topAnchor constant:12],
-        [_campaignPanel.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-42],
+        [_campaignPanel.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [_campaignPanel.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        [_campaignPanel.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+        [_campaignPanel.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
         [_campaignScroll.leadingAnchor constraintEqualToAnchor:_campaignPanel.leadingAnchor],
         [_campaignScroll.trailingAnchor constraintEqualToAnchor:_campaignPanel.trailingAnchor],
         [_campaignScroll.topAnchor constraintEqualToAnchor:_campaignPanel.topAnchor],
@@ -681,9 +697,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         [_campaignCanvas.bottomAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.bottomAnchor],
         [_campaignCanvas.widthAnchor constraintEqualToAnchor:_campaignScroll.frameLayoutGuide.widthAnchor],
         _campaignCanvasHeight,
-        [_menuInfoText.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
+        [_menuInfoText.centerXAnchor constraintEqualToAnchor:_campaignPanel.safeAreaLayoutGuide.centerXAnchor],
         _menuInfoCenterY,_menuInfoWidth,_menuInfoHeight,
-        [_campaignButtons.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
+        [_campaignButtons.centerXAnchor constraintEqualToAnchor:_campaignPanel.safeAreaLayoutGuide.centerXAnchor],
         [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:8],
         [_campaignButtons.trailingAnchor constraintLessThanOrEqualToAnchor:_campaignPanel.trailingAnchor constant:-8],
         _campaignActionsWidth]];
@@ -713,6 +729,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 
     try {
         _renderer = std::make_unique<g1::MetalRenderer>(device);
+        _supersampling=std::make_unique<g1::MetalSupersampling>(_metalView.device);
+        _contactShadowTexture=_renderer->texture(g1::soft_contact_shadow());
+        _contactShadowMesh=_renderer->mesh(g1::contact_shadow_vertices());
         _m3gRenderer = std::make_unique<g1::MetalM3GRenderer>(device);
         _queue = [device newCommandQueue];
         if (!_queue) throw std::runtime_error("Metal command queue is unavailable");
@@ -833,7 +852,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 }
 - (void)loadOriginalHUD:(const g1::Archive&)archive {
     [_gameHudFrame loadOriginalArt:archive];
-    _dialogueBackdrop.image=original_g1_ui_png(archive,1034,480,93,1.0);
+    _dialogueBackdrop.image=[original_g1_ui_png(archive,1034,480,93,1.0)
+        resizableImageWithCapInsets:UIEdgeInsetsMake(12,174,8,155) resizingMode:UIImageResizingModeTile];
     _dialoguePortraits=[NSMutableDictionary new];
     for(const auto portrait : {g1::source_art::Portrait{1295,77,66},
                                g1::source_art::Portrait{396,70,66},
@@ -903,12 +923,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     UIButton* button=nil;
     if(originalMenu) {
         G1OriginalMenuButton* original=[G1OriginalMenuButton new];
+        title=title.uppercaseString;
         [original setTitle:title forState:UIControlStateNormal];
         [original setTitleColor:[UIColor colorWithRed:0.94 green:0.22 blue:0.26 alpha:1]
                         forState:UIControlStateNormal];
         [original setTitleColor:[UIColor colorWithWhite:0.48 alpha:1]
                         forState:UIControlStateDisabled];
-        original.titleLabel.font=[UIFont fontWithName:@"Menlo-Bold" size:11] ?: [UIFont boldSystemFontOfSize:11];
+        original.titleLabel.font=[UIFont boldSystemFontOfSize:13];
+        original.titleLabel.adjustsFontSizeToFitWidth=YES;original.titleLabel.minimumScaleFactor=0.65;
         original.backgroundColor=UIColor.clearColor;
         [original useOriginalFace:[_campaignCanvas originalFaceForMenuText:title]
                              fallback:[_campaignCanvas originalSmallFaceForMenuText:title]];
@@ -934,16 +956,33 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         if(std::abs(_campaignCanvasHeight.constant-target)>0.5)_campaignCanvasHeight.constant=target;
         // Every touch choice fits inside the untouched red source panel.
         // Preserve original 480:320 art aspect, including on XR.
-        const auto art=g1::original_ui::fit(width,height);
+        const auto screen=g1::adaptive_ui::layout(self.view);
+        const auto art=g1::original_ui::fit(screen.safe.width,screen.safe.height);
+        if(originalMenu) {
+            const CGFloat scale=screen.scale;
+            _campaignButtons.spacing=4*scale;
+            for(UIStackView* row in _campaignButtons.arrangedSubviews) {
+                row.spacing=3*scale;
+                for(UIButton* button in row.arrangedSubviews) {
+                    if([button isKindOfClass:G1OriginalMenuButton.class]) {
+                        [(G1OriginalMenuButton*)button setSourceScale:scale];
+                        for(NSLayoutConstraint* c in button.constraints)
+                            if(c.firstAttribute==NSLayoutAttributeHeight && !c.secondItem)c.constant=29*scale;
+                    }
+                }
+            }
+            _menuInfoText.font=[UIFont systemFontOfSize:12*scale weight:UIFontWeightMedium];
+        }
+
         const CGFloat actionsWidth=originalMenu ?
-            std::min(width-16,art.project(g1::original_ui::choices_region).width) : width-30;
+            std::max(CGFloat(0),CGFloat(screen.safe.width-52*screen.scale)) : width-30;
         if(std::abs(_campaignActionsWidth.constant-actionsWidth)>0.5)
             _campaignActionsWidth.constant=actionsWidth;
         if(originalMenu) {
             const BOOL information=_panelPurpose==NativePanel::help_topic || _panelPurpose==NativePanel::credits;
-            _campaignActionsMenuCenter.constant=art.source_offset_from_center(information ?
+            _campaignActionsMenuCenter.constant=(screen.safe.y+screen.safe.height/2-height/2)+art.source_offset_from_center(information ?
                 g1::original_ui::information_action_center_y : g1::original_ui::choices_center_y);
-            _menuInfoCenterY.constant=art.source_offset_from_center(
+            _menuInfoCenterY.constant=(screen.safe.y+screen.safe.height/2-height/2)+art.source_offset_from_center(
                 g1::original_ui::information_text.y + g1::original_ui::information_text.height/2);
             _menuInfoWidth.constant=std::min(width-16,art.project(g1::original_ui::information_text).width);
             _menuInfoHeight.constant=art.project(g1::original_ui::information_text).height;
@@ -1315,7 +1354,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 
 - (void)showSettingsMenu {
     NSString* body=[NSString stringWithFormat:
-        @"Classic uses the original G1 artwork. Modern upgrades eligible sprites while retaining the source layout.\n\n%@",
+        @"Enhanced original UI is shared by both modes. Modern adds supersampling and soft contact shadows; power and thermal limits reduce render resolution safely.\n\n%@",
         _graphicsModern?@"MODERN":@"CLASSIC"];
     [self showPanel:NativePanel::settings title:[self originalText:468] body:body token:++_localPanelToken];
     [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
@@ -1493,6 +1532,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
             _modernTextures[@(id)]=_renderer->texture(g1::scale4x_rgba(image));
     };
     for(const auto& image:_scene->textures) {
+        if(image.first==_scene->terrain.atlas_resource_id && !_modernTextures[@(image.first)])
+            _modernTextures[@(image.first)]=_renderer->texture(g1::scale4x_tiles(image.second,64,64));
         const bool sprite=std::any_of(_scene->sprites.begin(),_scene->sprites.end(),[&](const auto& item) {
             return item.resource.image_id==image.first;
         });
@@ -1802,6 +1843,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     ++_contentGeneration;
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    _renderMemoryPressure=true;
+    if(_supersampling)_supersampling->release_targets();
+    // Keep current source assets and saves intact. Supersampling stays off
+    // for this process after memory pressure instead of repeatedly reallocating.
+}
 - (void)dealloc {
     [_menuMusicTimer invalidate];
     [_openingPlayer pause];
@@ -1862,63 +1910,53 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 }
 
 - (CGRect)originalGameplayViewport {
-    const UIEdgeInsets safe=self.view.safeAreaInsets;
-    const CGSize available=CGSizeMake(MAX(CGFloat(0),self.view.bounds.size.width-safe.left-safe.right),
-        MAX(CGFloat(0),self.view.bounds.size.height-safe.top-safe.bottom));
-    const auto fitted=g1::original_ui::fit(available.width,available.height);
-    return CGRectMake(safe.left+fitted.artwork.x,safe.top+fitted.artwork.y,
-        fitted.artwork.width,fitted.artwork.height);
+    return g1::adaptive_ui::cg(g1::adaptive_ui::layout(self.view).source);
 }
 
 - (void)layoutOriginalGameplayUI {
-    const CGRect viewport=[self originalGameplayViewport];
-    if(viewport.size.width<=0 || viewport.size.height<=0)return;
-    const CGFloat scale=viewport.size.width/480.0;
-    const auto projected=[&](g1::original_ui::Rect r)->CGRect {
-        return CGRectMake(viewport.origin.x+scale*r.x,viewport.origin.y+scale*r.y,
-                          scale*r.width,scale*r.height);
+    using namespace g1::adaptive;
+    const auto l=g1::adaptive_ui::layout(self.view);
+    if(l.scale<=0)return;
+    const CGFloat scale=l.scale,extra=l.virtual_width-480.0;
+    const auto projected=[&](g1::adaptive::Rect r,Anchor h=Anchor::center,Anchor v=Anchor::center) {
+        return g1::adaptive_ui::cg(l.place(r,h,v));
     };
-    _gameHudFrame.frame=projected(g1::original_presentation::tactical_hud);
+    _gameHudFrame.frame=g1::adaptive_ui::cg(l.bottom(62));
     _techSpecsPanel.frame=self.view.bounds;
-    _techSpecsCanvas.frame=viewport;
-    _techSpecsModel.frame=CGRectMake(scale*123,scale*36,scale*232,scale*274);
-    _specsBackButton.frame=CGRectMake(0,0,scale*62,scale*53);
-    _specsPreviousButton.frame=CGRectMake(0,scale*65,scale*73,scale*83);
-    _specsNextButton.frame=CGRectMake(scale*405,scale*65,scale*75,scale*83);
-    _specsRobotButton.frame=CGRectMake(scale*75,scale*137,scale*48,scale*43);
-    _specsVehicleButton.frame=CGRectMake(scale*357,scale*137,scale*48,scale*43);
-    _techSpecsHotspot.frame=projected({0,258,60,62});
-    _battlePanel.frame=projected({0,256,480,64});
-    _battleCanvas.frame=_battlePanel.bounds;
-    _dialoguePanel.frame=projected(g1::original_presentation::dialogue);
+    _techSpecsCanvas.frame=CGRectMake(l.safe.x,l.source.y,l.safe.width,320*scale);
+    _techSpecsModel.frame=CGRectMake(123*scale,36*scale,(232+extra)*scale,274*scale);
+    _specsBackButton.frame=CGRectMake(0,0,62*scale,53*scale);
+    _specsPreviousButton.frame=CGRectMake(0,65*scale,73*scale,83*scale);
+    _specsNextButton.frame=CGRectMake((405+extra)*scale,65*scale,75*scale,83*scale);
+    _specsRobotButton.frame=CGRectMake(75*scale,137*scale,48*scale,43*scale);
+    _specsVehicleButton.frame=CGRectMake((357+extra)*scale,137*scale,48*scale,43*scale);
+    _techSpecsHotspot.frame=projected({0,258,60,62},Anchor::start,Anchor::end);
+    // Battle overlay spans the safe viewport: damage is above the combatants,
+    // not incorrectly written into their health plates.
+    _battlePanel.frame=g1::adaptive_ui::cg(l.safe);_battleCanvas.frame=_battlePanel.bounds;
+    _dialoguePanel.frame=g1::adaptive_ui::cg(l.bottom(93));
     _dialogueBackdrop.frame=_dialoguePanel.bounds;
-    const auto inside=[&](g1::original_ui::Rect r)->CGRect {
-        return CGRectMake(scale*r.x,scale*r.y,scale*r.width,scale*r.height);
-    };
-    _dialoguePortrait.frame=CGRectMake(scale*81,scale*17,scale*78,scale*69);
-    _dialogueHeading.frame=CGRectMake(scale*174,scale*17,scale*157,scale*14);
-    _dialogueHeading.font=[UIFont boldSystemFontOfSize:scale*10];
-    _dialogueCanvas.frame=CGRectMake(scale*174,scale*31,scale*151,scale*54);
-    _menuButton.frame=projected(g1::original_presentation::top_left_action);
-    _commands.frame=viewport;
-    const auto place=[&](UIButton* button,g1::original_ui::Rect rect){button.frame=inside(rect);};
-    // Recovered original screen has left/right action banks, never a bottom
-    // 10-icon text strip. Selection/availability stays in GameSession.
-    place(_healButton,g1::original_presentation::source_left_actions[0]);
-    place(_attackButton,g1::original_presentation::source_left_actions[1]);
-    place(_undoButton,g1::original_presentation::source_left_actions[2]);
-    place(_buildButton,g1::original_presentation::source_left_actions[3]);
-    place(_moveButton,g1::original_presentation::source_right_actions[0]);
-    place(_captureButton,g1::original_presentation::source_right_actions[1]);
-    place(_transformButton,g1::original_presentation::source_right_actions[2]);
-    place(_upgradeButton,g1::original_presentation::source_right_actions[3]);
-    place(_endTurnButton,g1::original_presentation::end_turn);
-    // Deploy replaces Activate Unit in the same source slot only when valid.
-    // Its visibility is selected from genuine native eligibility, not an
-    // invented action or a duplicate icon outside the source art.
-    place(_deployButton,g1::original_presentation::source_left_actions[3]);
-    _resetButton.frame=CGRectMake(viewport.origin.x+64*scale,viewport.origin.y+3*scale,85*scale,27*scale);
-    _reportButton.frame=CGRectMake(viewport.origin.x+340*scale,viewport.origin.y+3*scale,85*scale,27*scale);
+    _dialoguePortrait.frame=CGRectMake(81*scale,17*scale,78*scale,69*scale);
+    _dialogueHeading.frame=CGRectMake(174*scale,17*scale,(157+extra)*scale,14*scale);
+    _dialogueHeading.font=[UIFont boldSystemFontOfSize:10*scale];
+    _dialogueCanvas.frame=CGRectMake(174*scale,31*scale,(151+extra)*scale,54*scale);
+    [_dialogueCanvas setPresentationScale:scale];
+    _menuButton.frame=projected({0,0,60,49},Anchor::start,Anchor::start);
+    _commands.frame=self.view.bounds;
+    const auto place=[&](UIButton* button,g1::adaptive::Rect r,Anchor h){button.frame=projected(r,h);};
+    using namespace g1::original_presentation;
+    place(_healButton,source_left_actions[0],Anchor::start);
+    place(_attackButton,source_left_actions[1],Anchor::start);
+    place(_undoButton,source_left_actions[2],Anchor::start);
+    place(_buildButton,source_left_actions[3],Anchor::start);
+    place(_moveButton,source_right_actions[0],Anchor::end);
+    place(_captureButton,source_right_actions[1],Anchor::end);
+    place(_transformButton,source_right_actions[2],Anchor::end);
+    place(_upgradeButton,source_right_actions[3],Anchor::end);
+    place(_deployButton,source_left_actions[3],Anchor::start);
+    _endTurnButton.frame=projected(end_turn,Anchor::center,Anchor::start);
+    _resetButton.frame=projected({64,3,85,27},Anchor::start,Anchor::start);
+    _reportButton.frame=projected({340,3,85,27},Anchor::end,Anchor::start);
 }
 
 - (void)setSourceTopLeftDialogueMode:(BOOL)dialogue {
@@ -2542,6 +2580,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     const auto& definition=world.unit_definitions.at(unit.type);
     const auto& combat=_session->combat_units().at(index);
     const auto stats=g1::read_tech_specs(definition,combat.level);
+    // Extend only the original faction grid under any safe-area / window surplus.
+    _techSpecsPanel.backgroundColor=[UIColor colorWithPatternImage:
+        g1::source_art::png(*_archive,stats.faction==0?874:799,128,63)];
     const auto asText=[&](std::uint16_t raw) {
         return native_text(_text->at(g1::script_text_id(g1::unit_text_index(raw))));
     };
@@ -2978,11 +3019,17 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     const auto& state=_campaign->state();
     if(!state.results)throw g1::FormatError("Campaign results request is missing its real record");
     const auto& result=*state.results;
-    NSString* body=[NSString stringWithFormat:@"%@ %d\n\n%@ %d\n%@ · %@ %d",
-        [self originalText:1242],result.campaign.mission_index+1,
-        [self originalText:667],result.current_record.value_274,
-        [self originalText:535],[self originalText:667],result.best_record.value_274];
-    [self showPanel:NativePanel::results title:[self originalText:1266] body:body token:state.token];
+    NSString* missionName=_session && _session->world().title_text_index ?
+        native_text(_text->at(g1::script_text_id(*_session->world().title_text_index))) : @"";
+    NSMutableString* body=[NSMutableString stringWithFormat:@"%@%d: %@\n\n%@ %d\n%@ %d\n%@ %d",
+        [self originalText:784],result.campaign.mission_index+1,missionName,
+        [self originalText:1217],result.current_record.value_278,
+        [self originalText:941],result.current_record.value_27c,
+        [self originalText:667],result.current_record.value_274];
+    if(!result.finished_campaign)[body appendFormat:@"\n\n%@",[self originalText:1321]];
+    // Never advertise a save until CampaignController confirms the filesystem write.
+    if(state.profile_persisted)[body appendFormat:@"\n%@",[self originalText:462]];
+    [self showPanel:NativePanel::results title:[self originalText:1323] body:body token:state.token];
     _panelContinueButton=[self addCampaignButton:[self originalText:587] action:@selector(continueResults)];
     _panelContinueButton.enabled=NO;
 }
@@ -3392,6 +3439,16 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
             id<CAMetalDrawable> drawable = view.currentDrawable;
             MTLRenderPassDescriptor* pass = view.currentRenderPassDescriptor;
             if (!drawable || !pass) return;
+            g1::quality::Capability capabilities;
+            capabilities.memory_bytes=NSProcessInfo.processInfo.physicalMemory;
+            capabilities.low_power=NSProcessInfo.processInfo.lowPowerModeEnabled;
+            capabilities.thermal_serious=NSProcessInfo.processInfo.thermalState>=NSProcessInfoThermalStateSerious;
+            capabilities.memory_pressure=_renderMemoryPressure;
+            _renderQuality=g1::quality::plan(static_cast<std::uint32_t>(view.drawableSize.width),
+                static_cast<std::uint32_t>(view.drawableSize.height),
+                _graphicsModern?g1::quality::Mode::modern:g1::quality::Mode::classic,capabilities);
+            pass=_supersampling->begin(pass,_renderQuality);
+            const CGSize renderSize=_supersampling->active()?CGSizeMake(_renderQuality.width,_renderQuality.height):view.drawableSize;
             const double now = CACurrentMediaTime();
             if (!_clockStarted) { _clockOrigin = now; _lastTick = 0; _clockStarted = true; }
             const auto tick = static_cast<std::uint32_t>(
@@ -3415,17 +3472,31 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
             if (_session->battle() && !support) {
                 std::vector<const g1::M3GRenderAsset*> uploaded;
                 for (const auto& model:_battleModels) uploaded.push_back(&model->asset());
-                const auto size=view.drawableSize;
+                const auto size=renderSize;
                 // Native XR policy: preserve authored vertical FOV/parallel
                 // height, changing only aspect for the actual drawable.
                 const auto output=_battlePresentation->prepare_frame(
                     {{static_cast<float>(size.width),static_cast<float>(size.height)}},uploaded,
                     _simulationClock.interpolation(),static_cast<float>(size.width/size.height));
+                const auto damageStatus=_battlePresentation->status();
+                if(damageStatus.damage_text) {
+                    const std::size_t target=damageStatus.damage_on_left?1U:2U;
+                    for(const auto& submission:output.submissions)if(submission.asset_index==target) {
+                        if(const auto anchor=g1::projected_actor_top(submission.frame)) {
+                            const CGPoint rootPoint=CGPointMake((*anchor)[0]*view.bounds.size.width,(*anchor)[1]*view.bounds.size.height);
+                            const CGPoint p=[view convertPoint:rootPoint toView:_battleCanvas];
+                            if(_battleCanvas.bounds.size.width>0 && _battleCanvas.bounds.size.height>0)
+                                [_battleCanvas setDamageAnchor:CGPointMake(p.x/_battleCanvas.bounds.size.width,p.y/_battleCanvas.bounds.size.height)
+                                    token:output.token revision:output.revision];
+                        }
+                    }
+                }
                 pass.colorAttachments[0].loadAction=output.clear_color ? MTLLoadActionClear : MTLLoadActionLoad;
                 pass.colorAttachments[0].clearColor=MTLClearColorMake(output.background_color[0],
                     output.background_color[1],output.background_color[2],output.background_color[3]);
                 pass.depthAttachment.loadAction=output.clear_depth ? MTLLoadActionClear : MTLLoadActionLoad;
                 pass.depthAttachment.clearDepth=1;
+                _supersampling->sanitize_new_target(pass);
                 id<MTLRenderCommandEncoder> encoder=[command renderCommandEncoderWithDescriptor:pass];
                 if (!encoder) throw g1::FormatError("Metal battle render encoder is unavailable");
                 [encoder setViewport:MTLViewport{0,0,size.width,size.height,0,1}];
@@ -3446,7 +3517,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                 pass.depthAttachment.clearDepth=1;
                 const auto camera = _camera.matrix();
                 std::vector<g1::MetalDraw> draws{
-                    {_terrain,_textures[@(_scene->terrain.atlas_resource_id)],camera,{{1,1,1,1}},true}};
+                    {_terrain,[self spriteTexture:_scene->terrain.atlas_resource_id],camera,{{1,1,1,1}},true}};
                 if(_scene->terrain.animated_surface && !_session->terrain_state())
                     throw g1::FormatError("Animated terrain has no native clock state");
                 const float terrainOffset=_session->terrain_state() ?
@@ -3488,7 +3559,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                     const auto status=_supportPresentation->status();
                     if(!status.effect_complete) {
                         const auto& unit=_session->battle()->units_before.at(status.helper_unit.value());
-                        const auto size=view.drawableSize;
+                        const auto size=renderSize;
                         const auto vertices=g1::support_overlay_vertices(_supportAssets->descriptor,status.effect_frame,
                             _supportAssets->image.width,_supportAssets->image.height,camera,unit.tile_x,unit.tile_y,
                             static_cast<float>(size.width),static_cast<float>(size.height));
@@ -3504,6 +3575,20 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                     const auto pb = transform(g1::multiply_matrix(camera,_unitModels[b]),{{0,0,0,1}});
                     return pa[2] > pb[2];
                 });
+                if(_renderQuality.soft_contact_shadows && !support && _contactShadowMesh) {
+                    for(const auto i:order) {
+                        const auto& unit=_session->units().at(_scene->sprites[i].unit_index);
+                        if(!unit.active || unit.tile_x>=_session->world().grid.width ||
+                            unit.tile_y>=_session->world().grid.height)continue;
+                        const auto cell=_session->world().grid.tile_at(unit.tile_x,unit.tile_y);
+                        if(cell>=32)continue;
+                        auto model=g1::identity_matrix();
+                        model[12]=_unitModels[i][12];model[14]=_unitModels[i][14];
+                        model[13]=_terrainTables.at(_session->world().style).at(cell).height_steps*0.32F+0.002F;
+                        draws.push_back({_contactShadowMesh,_contactShadowTexture,
+                            g1::multiply_matrix(camera,model),{{1,1,1,1}},false});
+                    }
+                }
                 for (const auto i : order) {
                     const auto texture = [self spriteTexture:_scene->sprites[i].resource.image_id];
                     draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
@@ -3538,6 +3623,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                         frame->transforms.push_back(*pending);
                 }
             }
+            _supersampling->resolve(command,drawable.texture);
             __weak G1ViewController* weakSelf = self;
             const std::shared_ptr<const NativePresentedFrame> presentedFrame = frame;
             auto delivery=std::make_shared<NativePresentationDelivery>();
@@ -3691,7 +3777,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         @"campaign_profile_save_error":_campaign && !_campaign->state().save_error.empty() ?
             native_text(_campaign->state().save_error) : NSNull.null,
         @"mode_menu_policy":@"Original Story/Showdown/Arena definitions, unlocks and results; native G1-art menu",
-        @"graphics_mode":_graphicsModern?@"Modern Scale4x":@"Classic Original",
+        @"graphics_mode":_graphicsModern?@"Modern":@"Classic",
+        @"ui_enhancement_shared":@YES,
+        @"adaptive_viewport_points":@[@(self.view.bounds.size.width),@(self.view.bounds.size.height)],
+        @"adaptive_safe_insets":@[@(self.view.safeAreaInsets.top),@(self.view.safeAreaInsets.left),
+                                  @(self.view.safeAreaInsets.bottom),@(self.view.safeAreaInsets.right)],
+        @"device_family":@(UIDevice.currentDevice.userInterfaceIdiom),
+        @"supersampling_enabled":@(_supersampling && _supersampling->active()),
+        @"scene_render_pixels":@[@(_renderQuality.width),@(_renderQuality.height)],
+        @"supersampling_allocation_fallbacks":@(_supersampling?_supersampling->allocation_fallbacks():0),
         @"new_native_intro_file":@"G1OpeningXR.mp4; AVPlayer; user film; tap-to-skip",
         @"native_intro_active":@(_openingVisible),
         @"touch_camera_sensitivity":@(_touchCameraSpeed),

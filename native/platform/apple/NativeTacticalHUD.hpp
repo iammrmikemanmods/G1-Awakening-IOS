@@ -30,6 +30,7 @@
     UIImage* _portraitArtwork;
     NSMutableDictionary<NSNumber*,UIImage*>* _portraits;
     G1BitmapFontFace* _font;
+    G1BitmapFontFace* _redFont;
     NSString* _name;
     NSString* _objective;
     std::int32_t _hp,_low,_high,_def,_speed,_funds;
@@ -51,6 +52,7 @@
     _redBackground=g1::source_art::png(archive,874,128,63);
     _energonArtwork=g1::source_art::png(archive,709,51,54);
     _font=[[G1BitmapFontFace alloc] initWithArchive:archive slot:2];
+    _redFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:4];
     // The four confirmed main story portraits come from the original BMP
     // resources (masked magenta), not from the M3G texture atlas.
     for(const auto info : {g1::source_art::Portrait{731,54,50},
@@ -96,8 +98,9 @@
 
 - (void)drawLine:(NSString*)line in:(CGRect)area size:(CGFloat)height color:(UIColor*)color {
     if(!line.length)return;
-    if([_font supportsText:line] && [_font sizeForText:line height:height].width<=area.size.width) {
-        [_font drawText:line rect:area height:height alignment:NSTextAlignmentLeft];
+    G1BitmapFontFace* face=[color isEqual:UIColor.whiteColor]?_font:_redFont;
+    if([face supportsText:line] && [face sizeForText:line height:height].width<=area.size.width) {
+        [face drawText:line rect:area height:height alignment:NSTextAlignmentLeft];
     } else {
         [line drawWithRect:area options:NSStringDrawingUsesLineFragmentOrigin
             attributes:@{NSFontAttributeName:[UIFont fontWithName:@"Menlo-Bold" size:height] ?: [UIFont boldSystemFontOfSize:height],
@@ -112,36 +115,39 @@
     CGContextSaveGState(ctx);
     // One uniform source-space scale: never stretch the legacy grid, robot
     // portraits or control artwork independently along X and Y.
-    CGContextScaleCTM(ctx,self.bounds.size.width/480.0,self.bounds.size.height/62.0);
+    const CGFloat scale=self.bounds.size.height/62.0;
+    const CGFloat extra=self.bounds.size.width/scale-480.0;
+    CGContextScaleCTM(ctx,scale,scale);
     CGContextSetInterpolationQuality(ctx,kCGInterpolationNone);
     CGContextSetShouldAntialias(ctx,false);
     if(_redBackground){
-        [_redBackground drawInRect:CGRectMake(59,11,285,50)];
-        [_redBackground drawInRect:CGRectMake(367,10,62,52)];
+        [_redBackground drawInRect:CGRectMake(59,11,285+extra,50)];
+        [_redBackground drawInRect:CGRectMake(367+extra,10,62,52)];
     }
-    [_frameArtwork drawInRect:CGRectMake(0,0,480,62)];
-    if(_energonArtwork)[_energonArtwork drawInRect:CGRectMake(433,11,47,50)];
-    if(_portraitArtwork)[_portraitArtwork drawInRect:CGRectMake(1,0,60,61)];
+    [[_frameArtwork resizableImageWithCapInsets:UIEdgeInsetsMake(0,72,0,142)]
+        drawInRect:CGRectMake(0,0,480+extra,62)];
+    if(_energonArtwork)[_energonArtwork drawInRect:g1::adaptive_ui::aspect_fit(_energonArtwork,CGRectMake(433+extra,11,47,50))];
+    if(_portraitArtwork)[_portraitArtwork drawInRect:g1::adaptive_ui::aspect_fit(_portraitArtwork,CGRectMake(1,0,60,61))];
     UIColor* red=[UIColor colorWithRed:1 green:0.36 blue:0.37 alpha:1];
     if(_showsUnit){
-        [self drawLine:_name in:CGRectMake(94,21,126,18) size:13 color:red];
+        [self drawLine:_name in:CGRectMake(94,21,126+extra,18) size:13 color:red];
         [self drawLine:[NSString stringWithFormat:@"%d",int(_hp)]
             in:CGRectMake(73,39,46,18) size:12 color:red];
-        [self drawLine:@"ATK" in:CGRectMake(217,20,49,14) size:11 color:red];
-        [self drawLine:@"DEF" in:CGRectMake(279,20,37,14) size:11 color:red];
-        [self drawLine:@"SPD" in:CGRectMake(316,20,37,14) size:11 color:red];
+        [self drawLine:@"ATK" in:CGRectMake(217+extra,20,49,14) size:11 color:red];
+        [self drawLine:@"DEF" in:CGRectMake(279+extra,20,37,14) size:11 color:red];
+        [self drawLine:@"SPD" in:CGRectMake(316+extra,20,37,14) size:11 color:red];
         [self drawLine:[NSString stringWithFormat:@"%d-%d",int(_low),int(_high)]
-            in:CGRectMake(217,39,57,17) size:12 color:red];
+            in:CGRectMake(217+extra,39,57,17) size:12 color:red];
         [self drawLine:[NSString stringWithFormat:@"%d",int(_def)]
-            in:CGRectMake(282,39,34,17) size:12 color:red];
+            in:CGRectMake(282+extra,39,34,17) size:12 color:red];
         [self drawLine:[NSString stringWithFormat:@"%d",int(_speed)]
-            in:CGRectMake(318,39,32,17) size:12 color:red];
+            in:CGRectMake(318+extra,39,32,17) size:12 color:red];
     }else{
-        [self drawLine:_name in:CGRectMake(85,21,243,14) size:12 color:red];
-        [self drawLine:_objective in:CGRectMake(84,37,249,17) size:9 color:UIColor.whiteColor];
+        [self drawLine:_name in:CGRectMake(85,21,243+extra,14) size:12 color:red];
+        [self drawLine:_objective in:CGRectMake(84,37,249+extra,17) size:9 color:UIColor.whiteColor];
     }
     [self drawLine:[NSString stringWithFormat:@"%d",int(_funds)]
-         in:CGRectMake(400,39,29,16) size:11 color:red];
+         in:CGRectMake(400+extra,39,29,16) size:11 color:red];
     CGContextRestoreGState(ctx);
 }
 @end

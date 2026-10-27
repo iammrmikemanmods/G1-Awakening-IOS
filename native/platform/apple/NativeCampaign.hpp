@@ -3,6 +3,7 @@
 #import <UIKit/UIKit.h>
 #include "NativeBitmapFont.hpp"
 #include "g1/OriginalUI.hpp"
+#include "NativeAdaptiveUI.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -12,25 +13,33 @@
 // otherwise the readable UIKit title remains. No rebuilt or generated art.
 @interface G1OriginalMenuButton : UIButton
 - (void)useOriginalFace:(G1BitmapFontFace*)face fallback:(G1BitmapFontFace*)fallback;
+- (void)setSourceScale:(CGFloat)scale;
 @end
 
 @implementation G1OriginalMenuButton {
     G1BitmapFontFace* _originalFace;
     G1BitmapFontFace* _fallbackFace;
+    CGFloat _sourceScale;
 }
 - (void)useOriginalFace:(G1BitmapFontFace*)face fallback:(G1BitmapFontFace*)fallback {
     _originalFace=face;_fallbackFace=fallback;
     [self setNeedsLayout];[self setNeedsDisplay];
 }
+- (void)setSourceScale:(CGFloat)scale {
+    if(_sourceScale==scale)return;_sourceScale=scale;
+    self.titleLabel.font=[UIFont boldSystemFontOfSize:13*scale];
+    [self setNeedsLayout];[self setNeedsDisplay];
+}
+- (CGFloat)glyphHeight { return 15*(_sourceScale>0?_sourceScale:1); }
 - (G1BitmapFontFace*)visibleOriginalFace {
     NSString* title=[self titleForState:UIControlStateNormal];
     if(_originalFace && [_originalFace supportsText:title]) {
-        const CGSize size=[_originalFace sizeForText:title height:15];
+        const CGSize size=[_originalFace sizeForText:title height:[self glyphHeight]];
         if(size.width<=self.bounds.size.width-8 && size.height<=self.bounds.size.height)
             return _originalFace;
     }
     if(_fallbackFace && [_fallbackFace supportsText:title]) {
-        const CGSize size=[_fallbackFace sizeForText:title height:15];
+        const CGSize size=[_fallbackFace sizeForText:title height:[self glyphHeight]];
         if(size.width<=self.bounds.size.width-8 && size.height<=self.bounds.size.height)
             return _fallbackFace;
     }
@@ -59,7 +68,7 @@
         CGContextSaveGState(context);
         CGContextSetAlpha(context,self.enabled ? 1 : 0.38);
         [face drawText:[self titleForState:UIControlStateNormal] rect:CGRectInset(rect,4,1)
-            height:15 alignment:NSTextAlignmentCenter];
+            height:[self glyphHeight] alignment:NSTextAlignmentCenter];
         CGContextRestoreGState(context);
     }
 }
@@ -91,13 +100,14 @@
     std::int32_t _backgroundOffset;
     G1BitmapFontFace* _largeOriginalFont;
     G1BitmapFontFace* _smallOriginalFont;
+    G1BitmapFontFace* _menuRedOriginalFont;
     UIImage* _originalMenuArtwork;
     BOOL _menuArtworkVisible;
     BOOL _menuDetailsVisible;
 }
 - (instancetype)initWithFrame:(CGRect)frame {
     self=[super initWithFrame:frame];
-    if(self) { self.opaque=YES; self.isAccessibilityElement=YES; self.clipsToBounds=YES; }
+    if(self) { self.opaque=YES;self.contentMode=UIViewContentModeRedraw; self.isAccessibilityElement=YES; self.clipsToBounds=YES; }
     return self;
 }
 - (void)loadOriginalFonts:(const g1::Archive&)archive {
@@ -105,6 +115,7 @@
     // single-line titles; leave uncovered or long text readable in UIKit.
     _largeOriginalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:0];
     _smallOriginalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:2];
+    _menuRedOriginalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:6];
     _drawnToken=0;
     [self setNeedsDisplay];
 }
@@ -118,7 +129,7 @@
     const auto image=g1::decode_png(bytes);
     if(image.width!=480 || image.height!=320)
         throw g1::FormatError("Original G1 menu artwork dimensions changed");
-    _originalMenuArtwork=[UIImage imageWithData:[NSData dataWithBytes:bytes.data() length:bytes.size()]];
+    _originalMenuArtwork=g1::adaptive_ui::image(image);
     if(!_originalMenuArtwork.CGImage)
         throw g1::FormatError("Native original G1 menu art could not be decoded");
     _drawnToken=0;
@@ -152,6 +163,7 @@
     return face ? [face fontSlot] : -1;
 }
 - (G1BitmapFontFace*)originalFaceForMenuText:(NSString*)text {
+    if([_menuRedOriginalFont supportsText:text])return _menuRedOriginalFont;
     if([_largeOriginalFont supportsText:text])return _largeOriginalFont;
     if([_smallOriginalFont supportsText:text])return _smallOriginalFont;
     return nil;
@@ -195,23 +207,14 @@
     [[UIColor colorWithRed:0.025 green:0.045 blue:0.075 alpha:1] setFill];
     UIRectFill(self.bounds);
     if(_menuArtworkVisible && _originalMenuArtwork) {
-        // Preserve the complete old 480x320 picture without independent X/Y
-        // stretching. Dark side pillars accommodate the wide XR aspect.
-        const CGFloat scale=std::min(self.bounds.size.width/480.0,self.bounds.size.height/320.0);
-        const CGSize pic=CGSizeMake(480.0*scale,320.0*scale);
-        const CGRect dest=CGRectMake((self.bounds.size.width-pic.width)*0.5,
-            (self.bounds.size.height-pic.height)*0.5,pic.width,pic.height);
-        [_originalMenuArtwork drawInRect:dest];
-        // Restore the actual source-composed menu. The 480x320 PNG already
-        // contains the logo, portraits, silver rails, red panel and blank
-        // title slot: no extra fake band or recolouring is drawn on top.
-        // Positions below are in the original asset's 480x320 coordinates.
-        const auto titleSlot=g1::original_ui::fit(self.bounds.size.width,self.bounds.size.height)
-            .project(g1::original_ui::heading_slot);
-        const CGRect headingRect=CGRectMake(titleSlot.x,titleSlot.y,titleSlot.width,titleSlot.height);
-        G1BitmapFontFace* face=[self originalFaceForMenuText:_heading];
+        const auto screen=g1::adaptive_ui::layout(self);
+        g1::adaptive_ui::menu(_originalMenuArtwork,self.bounds,self.safeAreaInsets);
+        const CGRect dest=g1::adaptive_ui::cg(screen.source);
+        const auto titleSlot=screen.place(g1::original_ui::heading_slot);
+        const CGRect headingRect=g1::adaptive_ui::cg(titleSlot);
+        G1BitmapFontFace* face=[_largeOriginalFont supportsText:_heading] ? _largeOriginalFont : [self originalHeadingFace];
         if(face) {
-            [face drawText:_heading rect:headingRect height:std::min(CGFloat(17),headingRect.size.height)
+            [face drawText:_heading rect:headingRect height:17*screen.scale
                 alignment:NSTextAlignmentCenter];
         } else {
             NSMutableParagraphStyle* centered=[NSMutableParagraphStyle new];

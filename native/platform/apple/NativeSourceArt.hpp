@@ -4,6 +4,7 @@
 #include "g1/Archive.hpp"
 #include "g1/Image.hpp"
 #include "g1/IndexedBitmap.hpp"
+#include "NativeAdaptiveUI.hpp"
 
 // Original FGIB PNG/BMP resources, decoded at runtime from the untouched user
 // archive. Nothing is resampled, redrawn, downloaded, or bundled separately.
@@ -18,7 +19,7 @@ inline UIImage* indexed_bmp(const Archive& archive,std::uint32_t resource,
     const auto png=encode_png(bitmap);
     UIImage* image=[UIImage imageWithData:[NSData dataWithBytes:png.data() length:png.size()]];
     if(!image.CGImage)throw FormatError("Original indexed BMP did not decode to a UIKit image");
-    return [UIImage imageWithCGImage:image.CGImage scale:1 orientation:UIImageOrientationUp];
+    return adaptive_ui::image(bitmap);
 }
 
 inline UIImage* png(const Archive& archive,std::uint32_t resource,
@@ -31,7 +32,7 @@ inline UIImage* png(const Archive& archive,std::uint32_t resource,
         throw FormatError("Original UI PNG size mismatch");
     UIImage* result=[UIImage imageWithData:[NSData dataWithBytes:bytes.data() length:bytes.size()]];
     if(!result.CGImage)throw FormatError("Original UI PNG did not decode to a UIKit image");
-    return [UIImage imageWithCGImage:result.CGImage scale:1 orientation:UIImageOrientationUp];
+    return adaptive_ui::image(image);
 }
 
 struct Portrait {
