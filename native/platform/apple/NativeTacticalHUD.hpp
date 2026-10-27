@@ -53,7 +53,7 @@
     _font=[[G1BitmapFontFace alloc] initWithArchive:archive slot:2];
     // The four confirmed main story portraits come from the original BMP
     // resources (masked magenta), not from the M3G texture atlas.
-    for(const auto info : {g1::source_art::Portrait{731,54,60},
+    for(const auto info : {g1::source_art::Portrait{731,54,50},
                            g1::source_art::Portrait{396,70,66},
                            g1::source_art::Portrait{878,73,70},
                            g1::source_art::Portrait{670,54,51}})

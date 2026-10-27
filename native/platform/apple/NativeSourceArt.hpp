@@ -51,7 +51,7 @@ inline Portrait dialogue_portrait(NSString* speaker) {
 }
 inline Portrait tactical_portrait(NSString* name) {
     NSString* upper=name.uppercaseString ?: @"";
-    if([upper containsString:@"BUMBLEBEE"])return {731,54,60};
+    if([upper containsString:@"BUMBLEBEE"])return {731,54,50};
     if([upper containsString:@"RATCHET"])return {396,70,66};
     if([upper containsString:@"OPTIMUS"])return {878,73,70};
     if([upper containsString:@"MEGATRON"])return {670,54,51};

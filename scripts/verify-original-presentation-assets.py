@@ -19,6 +19,7 @@ PNG = {
     709: (51,54,'f6356f1e24285dfb2f2e08b4928770447998644e23cd7dd78bbfa218e15dd735'),
     1034:(480,93,'bcb21e991868503d4a986fa007f60d6496e3603aef32596c2a385ba74f9da312'),
     1038:(156,58,'0a2eabdc0965540843b84d32c118144424307fc78103b1e8acd0b3d21ca06b60'),
+    721:(52,49,'7fb785f36c5d974c6345f3c174358a1b97503f58092e68dac3d74a4921b93c6f'),
     1118:(52,49,'6abdf383748fc4ab119dd1031a54a43500f97b873d2390333da27737424848bf'),
     919:(52,49,'a2b984932b89b64cf7b055ed51493c4e6bde648ce5da2ce805b42c87777d1bf6'),
     633:(52,49,'d8c428f2f7dcb7afffedfcdbb5552390503241180d9b1d486a86d5769e2f3e27'),
@@ -88,6 +89,16 @@ def check(ipa):
             dimensions=struct.unpack_from('<II',raw,18)
         if dimensions!=(width,height) or (wanted and hashlib.sha256(raw).hexdigest()!=wanted):
             raise ValueError(f'{rid} original dimensions or checksum failed')
+    # Same source ID and dimensions consumed at runtime. Catch regressions
+    # where a port changes hardcoded BMP size without updating source data.
+    from pathlib import Path
+    runtime=(Path(__file__).resolve().parents[1]/'native/platform/apple/NativeSourceArt.hpp').read_text()
+    hud=(Path(__file__).resolve().parents[1]/'native/platform/apple/NativeTacticalHUD.hpp').read_text()
+    for ident in (731,396,878,670,1295,1156):
+        w,h,_=BMP[ident]
+        expected=f'{{{ident},{w},{h}}}'
+        if expected not in runtime or (ident in (731,396,878,670) and expected not in hud):
+            raise ValueError(f'{ident} runtime BMP declaration diverges from original archive')
     return {'source_sha256':SOURCE_SHA,'source_png_contracts':len(PNG),
             'source_bmp_portrait_contracts':len(BMP),'all_checked':True,
             'on_device_render_validation':False}

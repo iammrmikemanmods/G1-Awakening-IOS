@@ -13,7 +13,7 @@
 3. Dialogue is positioned as the original 480×93 bottom panel using source 1034 (no stretched full-scene red glass panel). Native text is now compact and page/progress-sensitive, and the speaker portrait loads directly from verified original BMP bank for Bumblebee, Ratchet, Optimus and Megatron. Tapping panel advances; top-left source skip icon remains separate. Eliminates artificial oversized UIKit Back / Continue / Skip dialogue buttons.
 4. Combat HUD renders original mechanical status plates source 1038, faction red/purple gridded artwork 874/799, at bottom with names, health and damage numbers sourced from native `M3GBattleStatus`, rather than a generic opaque top overlay. Does **not** assert the M3G battle camera/animation matches the source game.
 5. Public game HUD hides debug text, permanent legend and test report buttons when diagnostics are disabled. Internal diagnostics and source save/mission executors are retained.
-6. Adds a pure C++ layout contract with geometry assertions for 480×320, iPhone XR-ish 896×414 and other sizes; asset script checks all 24 original UI PNGs and 6 BMP identity/dimensions/SHA-256 directly in the original IPA without exporting the art.
+6. Adds a pure C++ layout contract with geometry assertions for 480×320, iPhone XR-ish 896×414 and other sizes; asset script checks all 25 original UI PNGs and 6 BMP identity/dimensions/SHA-256 directly in the original IPA without exporting the art.
 
 ## Remaining gaps — must not be called complete
 
