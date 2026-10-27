@@ -200,7 +200,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, settings, help, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
+enum class NativePanel { none, startup, pause, results, ending, menu, mission_select, settings, help, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -331,6 +331,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
     std::uint64_t _panelToken;
     std::uint64_t _localPanelToken;
     std::uint32_t _resultsInputEdges;
+    std::int32_t _missionPickerPage;
+    std::uint8_t _missionPickerGroup;
     std::int32_t _pendingArenaIndex;
     std::uint8_t _pendingArenaFaction;
     std::vector<std::uint32_t> _pendingMessageIds;
@@ -659,7 +661,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
         purpose==NativePanel::startup || purpose==NativePanel::menu ||
         purpose==NativePanel::settings || purpose==NativePanel::help ||
         purpose==NativePanel::credits || purpose==NativePanel::pause ||
-        purpose==NativePanel::arena || purpose==NativePanel::arena_opponent];
+        purpose==NativePanel::mission_select || purpose==NativePanel::arena ||
+        purpose==NativePanel::arena_opponent];
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
@@ -684,6 +687,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
     case NativePanel::startup: case NativePanel::menu:
     case NativePanel::settings: case NativePanel::help: case NativePanel::credits:
         current=&mainMenu;break;
+    case NativePanel::mission_select: current=&missionList;break;
     case NativePanel::arena: current=&faction;break;
     case NativePanel::arena_opponent: current=&opponent;break;
     case NativePanel::pause: current=&pause;break;
@@ -819,24 +823,59 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
 - (void)chooseArena { if(_campaign && _campaign->profile().completed[1])[self chooseCampaign:2]; }
 
 - (void)chooseCampaign:(std::uint8_t)group {
-    if(!_campaign)return;
+    if(!_campaign || group>2)return;
+    _missionPickerGroup=group;
+    _missionPickerPage=0;
+    [self showMissionPicker];
+}
+- (void)showMissionPicker {
+    if(!_campaign || _missionPickerGroup>2)return;
+    const auto group=_missionPickerGroup;
     const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
-    const auto maximum=group==2 ? count-1 : std::min(count-1,_campaign->profile().highest_unlocked.at(group));
-    UIAlertController* menu=[UIAlertController alertControllerWithTitle:[self originalText:group==0 ? 617 : group==1 ? 1151 : 1190]
-        message:@"Choose an unlocked mission. A new mission replaces Continue when it starts."
-        preferredStyle:UIAlertControllerStyleActionSheet];
-    __weak G1ViewController* weakSelf=self;
-    for(std::int32_t index=0;index<=maximum;++index) {
-        NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2 ? 536 : 1242],index+1];
-        [menu addAction:[UIAlertAction actionWithTitle:label style:UIAlertActionStyleDefault
-            handler:^(UIAlertAction* action){(void)action;
-                if(group==2)[weakSelf chooseArenaFaction:index];
-                else [weakSelf startCampaign:group mission:index faction:0 opponent:1];}]];
+    const auto maximum=group==2 ? count-1 :
+        std::min(count-1,_campaign->profile().highest_unlocked.at(group));
+    const auto start=_missionPickerPage*8;
+    if(start<0 || start>maximum)return;
+    NSString* title=[self originalText:group==0?617:group==1?1151:1190];
+    NSString* body=[NSString stringWithFormat:
+        @"Select an unlocked mission. Page %d of %d. Starting a mission replaces Continue only after the new session has installed.",
+        int(_missionPickerPage+1),int(maximum/8+1)];
+    [self showPanel:NativePanel::mission_select title:title body:body token:++_localPanelToken];
+    for(std::int32_t index=start;index<=maximum && index<start+8;++index) {
+        NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2?536:1242],index+1];
+        UIButton* button=[self addCampaignButton:label action:@selector(selectMissionFromButton:)];
+        button.tag=index;
     }
-    [menu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-    menu.popoverPresentationController.sourceView=_campaignButtons;
-    menu.popoverPresentationController.sourceRect=_campaignButtons.bounds;
-    [self presentViewController:menu animated:YES completion:nil];
+    if(_missionPickerPage>0)[self addCampaignButton:@"Previous" action:@selector(previousMissionPage)];
+    if(start+8<=maximum)[self addCampaignButton:@"Next" action:@selector(nextMissionPage)];
+    [self addCampaignButton:@"Back" action:@selector(showProfileMenu)];
+}
+- (void)selectMissionFromButton:(UIButton*)button {
+    if(_panelPurpose!=NativePanel::mission_select || !button ||
+       _missionPickerGroup>2 || !_campaign)return;
+    const auto group=_missionPickerGroup;
+    const auto index=static_cast<std::int32_t>(button.tag);
+    const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
+    const auto maximum=group==2 ? count-1 :
+        std::min(count-1,_campaign->profile().highest_unlocked.at(group));
+    if(index<0 || index>maximum || index/8!=_missionPickerPage)return;
+    if(group==2)[self chooseArenaFaction:index];
+    else [self startCampaign:group mission:index faction:0 opponent:1];
+}
+- (void)previousMissionPage {
+    if(_panelPurpose!=NativePanel::mission_select || _missionPickerPage<=0)return;
+    --_missionPickerPage;[self showMissionPicker];
+}
+- (void)nextMissionPage {
+    if(_panelPurpose!=NativePanel::mission_select || !_campaign)return;
+    const auto group=_missionPickerGroup;
+    if(group>2)return;
+    const auto maximum=group==2 ?
+        static_cast<std::int32_t>(g1::campaign_mission_count(2))-1 :
+        std::min(static_cast<std::int32_t>(g1::campaign_mission_count(group))-1,
+                 _campaign->profile().highest_unlocked.at(group));
+    if((_missionPickerPage+1)*8>maximum)return;
+    ++_missionPickerPage;[self showMissionPicker];
 }
 
 - (void)chooseArenaFaction:(std::int32_t)index {
@@ -945,6 +984,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
 }
 
 - (void)showHelpMenu {
+    if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
     [self showPanel:NativePanel::help title:@"HELP"
         body:@"TAP a robot to select it. Choose MOVE then tap an available tile twice to confirm the route. ATTACK uses the target you tap. CAPTURE, TRANSFORM, REPAIR, UPGRADE and ACTIVATE use the displayed action buttons. END TURN advances to the enemy. Swipe the battlefield to pan, pinch to zoom, and use Reset view to frame the map.\\n\\nStory unlocks Showdown; Showdown unlocks Cybertron Arena. Pause with Menu; use Continue after relaunch to restore the last safe checkpoint."
         token:++_localPanelToken];
@@ -952,6 +992,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, settings, 
 }
 
 - (void)showCreditsMenu {
+    if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
     [self showPanel:NativePanel::credits title:@"CREDITS"
         body:@"TRANSFORMERS G1: AWAKENING\\n\\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
         token:++_localPanelToken];
