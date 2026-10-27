@@ -17,15 +17,19 @@ def identity(path):
 
 def profile(path):
     data = path.read_bytes()
-    if len(data) != 330 or data[:8] != b"G1NPROF\0":
+    if len(data) not in (330, 331) or data[:8] != b"G1NPROF\0":
         raise ValueError("Invalid native profile signature/size")
-    if struct.unpack_from("<II", data, 8) != (1, 330):
+    version, declared = struct.unpack_from("<II", data, 8)
+    if (version, declared) not in ((1, 330), (2, 331)) or declared != len(data):
         raise ValueError("Invalid native profile version/declared size")
-    if zlib.adler32(data[:-4]) != struct.unpack_from("<I", data, 326)[0]:
+    if zlib.adler32(data[:-4]) != struct.unpack_from("<I", data, len(data)-4)[0]:
         raise ValueError("Native profile checksum mismatch")
     if any(x not in (0, 1) for x in data[16:18]):
         raise ValueError("Invalid native profile flag")
-    return {"completed": [bool(x) for x in data[16:18]],
+    if version == 2 and data[326] not in (0, 1):
+        raise ValueError("Invalid native support tutorial flag")
+    return {"support_tutorial_pending": bool(data[326]) if version == 2 else True,
+            "completed": [bool(x) for x in data[16:18]],
             "highest_unlocked": list(struct.unpack_from("<ii", data, 18)),
             "records": [list(struct.unpack_from("<iii", data, 26 + i*12)) for i in range(25)]}
 

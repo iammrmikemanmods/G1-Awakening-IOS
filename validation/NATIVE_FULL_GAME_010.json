@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "product": "G1 Awakening iOS Native Full Game Build010",
+  "version": "0.10.0",
+  "ios_min": "17.5",
+  "ios_target": "iPhone XR",
+  "native_architecture": "arm64",
+  "compiled_source_commit": "802d26180b5c1c6a68d0ebe3ef6af63fc19c0413",
+  "source_tree": "eb44ec926a98330c11ed646bc05694edc069d912",
+  "apple_compiled_merge": "00952f1c520fdb0b14a758471d2b6988f4240473",
+  "merge_tree": "eb44ec926a98330c11ed646bc05694edc069d912",
+  "docs_only_followup": true,
+  "hosted_ci": {
+    "run": 40435216799,
+    "status": "success",
+    "linux_ctest": [
+      63,
+      63
+    ],
+    "apple_ctest": [
+      63,
+      63
+    ],
+    "metal_tactical_support": 14,
+    "metal_m3g": 12,
+    "synthetic_geometry": true
+  },
+  "code_artifact": {
+    "id": 12703826559,
+    "sha256": "46384ef6dc82eea1b76135674aaa57234e4c753285b7e42f3ce4a3ee6049b72d"
+  },
+  "source_artifact": {
+    "id": 12704341041,
+    "sha256": "ba1b96c2018b54b7bcd6ed5dd1264f26148c51c45333ce1570128e2058b01e7a",
+    "inner_tar_sha256": "3fa70b5a2b1f4a923169a98c3b7b7341c2b746d621f6cbc350b9dfcecdbded49"
+  },
+  "original_resources": {
+    "archive_sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4",
+    "all_decoded": true,
+    "count": 559,
+    "png": 140,
+    "m3g": 36,
+    "bmp": 52,
+    "ogg": 24,
+    "bin": 307
+  },
+  "gameplay_current_source": {
+    "story": {
+      "complete": true,
+      "missions": 17,
+      "profile_writes": 17,
+      "replay_checks": 797,
+      "events_sha256": "fa43728c1bed9ce58f0eaad2c1c28d4db7b434019d1d26956403bd5d6b72ec38"
+    },
+    "showdown": {
+      "complete": true,
+      "missions": 8,
+      "story_preserved": true,
+      "events_sha256": "76f624361a0d5fdcdca5ad34be1fef78ee5b3f0734a3cc816959e1b91023c666"
+    },
+    "arena": {
+      "normal_handoffs": 20,
+      "expected": 20,
+      "all_profile_files_byte_equal": true,
+      "events_matrix_sha256": "2570d5aa638d727df163004ff5123d0d0013719da3f984088b03789edf94cd22"
+    },
+    "support": {
+      "passed": true,
+      "battles": 19,
+      "checks": 25875,
+      "state_checks": 574,
+      "report_sha256": "0b1a7560ac00a7fff3263e9bebd706ad4941b505ce1dcb9acb58df0fedfaff1d"
+    },
+    "original_arm_executable_executed": false,
+    "presentation_feedback": "synthetic"
+  },
+  "ipa": {
+    "name": "G1_Awakening_Native_Full_Game_010.ipa",
+    "bytes": 7772336,
+    "sha256": "42be2c0a16c8b1f32afeda445c90cd92ba02bf742d5c0ebe2b293d60a4bfdb77",
+    "unsigned": true,
+    "sideloadly_signing_required": true,
+    "compiled_executable_sha256": "c6f02ec45ac9646bc4941172c9eaf43598b0ac412fe564a85881458dd1d4ea90",
+    "bundle_id": "org.g1awakening.native.test",
+    "original_icon_source_sha256": "21503f76f7c3aefdf5d23c5be7229bd43134b2cbf2b08af155982e2543a837f8",
+    "icon_sizes": [
+      40,
+      60,
+      80,
+      120,
+      180
+    ],
+    "icon_files": 6,
+    "all_members_verified": true,
+    "original_machine_code_shipped": false
+  },
+  "physical_device": {
+    "build_010_tested": false,
+    "complete_rendered_playthrough_verified": false,
+    "sustained_fps_verified": false,
+    "real_audio_verified": false
+  }
+}

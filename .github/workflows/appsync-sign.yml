@@ -1,0 +1,126 @@
+name: AppSync signing for validated Build 010
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/appsync-sign.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  sign-compiled-app-for-appsync:
+    runs-on: macos-26
+    timeout-minutes: 12
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      ORIGINAL_CODE_SHA256: 46384ef6dc82eea1b76135674aaa57234e4c753285b7e42f3ce4a3ee6049b72d
+    steps:
+      - name: Check out verification tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Fetch exact already-tested Build010 ARM64 app from this repo's CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p input artifacts/appsync
+          curl -fLsS --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/12703826559/zip" -o input/code010.zip
+          echo "${ORIGINAL_CODE_SHA256}  input/code010.zip" | shasum -a 256 --check
+          unzip -q input/code010.zip -d input/unsigned
+          cp -R input/unsigned/G1AwakeningNative.app artifacts/appsync/G1AwakeningNative.app
+          cp input/unsigned/README_MEMORY_ZIP_POLICY.md artifacts/appsync/README_MEMORY_ZIP_POLICY.md
+          python3 - <<'PY'
+          import hashlib,plistlib
+          from pathlib import Path
+          app=Path('artifacts/appsync/G1AwakeningNative.app')
+          exe=app/'G1AwakeningNative'
+          info=plistlib.loads((app/'Info.plist').read_bytes())
+          assert hashlib.sha256(exe.read_bytes()).hexdigest()=='c6f02ec45ac9646bc4941172c9eaf43598b0ac412fe564a85881458dd1d4ea90'
+          assert info['CFBundleIdentifier']=='org.g1awakening.native.test'
+          assert info['G1SourceCommit']=='00952f1c520fdb0b14a758471d2b6988f4240473'
+          assert info['CFBundleVersion']=='10'
+          PY
+      - name: Embed the missing application-identifier entitlement by ad-hoc code signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import plistlib
+          from pathlib import Path
+          Path('input/appsync-entitlements.plist').write_bytes(
+              plistlib.dumps({'application-identifier':'org.g1awakening.native.test',
+                               'get-task-allow':True},fmt=plistlib.FMT_XML))
+          PY
+          # Sign the raw Mach-O outside its .app: there are no original
+          # game assets in this CI job, so a bundle CodeResources seal would
+          # become stale after the original game archive/icons were added.
+          mkdir -p input/standalone
+          cp artifacts/appsync/G1AwakeningNative.app/G1AwakeningNative input/standalone/G1AwakeningNative
+          BIN=input/standalone/G1AwakeningNative
+          codesign --force --sign - --identifier org.g1awakening.native.test \
+            --timestamp=none --generate-entitlement-der \
+            --entitlements input/appsync-entitlements.plist "$BIN"
+          codesign --verify --strict --verbose=2 "$BIN"
+          codesign --display --verbose=3 "$BIN"
+          codesign --display --entitlements :- "$BIN" > artifacts/appsync/extracted-entitlements.plist
+          cp "$BIN" artifacts/appsync/G1AwakeningNative.app/G1AwakeningNative
+          if test -e artifacts/appsync/G1AwakeningNative.app/_CodeSignature/CodeResources; then
+            echo 'Unexpected resource seal; no original assets available to CI signer' >&2
+            exit 1
+          fi
+          python3 - <<'PY'
+          import hashlib,json,plistlib
+          from pathlib import Path
+          app=Path('artifacts/appsync')
+          ent=plistlib.loads((app/'extracted-entitlements.plist').read_bytes())
+          assert ent=={'application-identifier':'org.g1awakening.native.test','get-task-allow':True},ent
+          binary=app/'G1AwakeningNative.app/G1AwakeningNative'
+          evidence={'schema':1,
+                    'binary_sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),
+                    'binary_bytes':binary.stat().st_size,
+                    'application_identifier':ent['application-identifier'],
+                    'get_task_allow':ent['get-task-allow'],
+                    'signing_method':'Apple codesign ad-hoc, executable only',
+                    'original_unsigned_binary_sha256':'c6f02ec45ac9646bc4941172c9eaf43598b0ac412fe564a85881458dd1d4ea90',
+                    'original_compiled_source_commit':'00952f1c520fdb0b14a758471d2b6988f4240473',
+                    'bundle_identifier':'org.g1awakening.native.test',
+                    'apple_developer_provisioning':False,
+                    'appsync_unified_required':True,
+                    'device_installation_verified':False}
+          (app/'appsync-signature-validation.json').write_text(json.dumps(evidence,indent=2)+'\n')
+          PY
+      - name: Validate re-signed native app and unchanged compiled source identity
+        run: |
+          set -euo pipefail
+          python3 scripts/verify-native-app.py artifacts/appsync/G1AwakeningNative.app --out artifacts/appsync/native-app-validation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('artifacts/appsync')
+          app=json.loads((p/'native-app-validation.json').read_text())
+          signed=json.loads((p/'appsync-signature-validation.json').read_text())
+          assert app['architecture']=='arm64' and app['minimum_os']=='17.5'
+          assert app['source_commit']==signed['original_compiled_source_commit']
+          assert app['executable_sha256']==signed['binary_sha256']
+          assert app['bundle_identifier']==signed['bundle_identifier']
+          PY
+      - name: Retain signed Build010 code without copyrighted original game assets
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: G1-build010-appsync-signed-native-code
+          path: artifacts/appsync/
+          retention-days: 14
+          if-no-files-found: error
+      - name: Define tested boundary
+        run: |
+          echo 'Build010 gameplay code unchanged; ad-hoc signature supplies application-identifier.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Only for jailbreaks with AppSync Unified. Real Filza installation is not verified.' >> "$GITHUB_STEP_SUMMARY"
