@@ -15,6 +15,7 @@
 #include "g1/SupportOverlayAssets.hpp"
 #include "g1/SupportGeometry.hpp"
 #include "g1/SupportTutorial.hpp"
+#include "g1/TextureEnhancement.hpp"
 #include "g1/PresentationEpoch.hpp"
 #include "g1/InitialPresentation.hpp"
 #include "g1/GameSession.hpp"
@@ -124,9 +125,11 @@ UIButton* action_button(NSString* title, id target, SEL selector) {
     [button setTitle:title forState:UIControlStateNormal];
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [button setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateDisabled];
-    button.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightSemibold];
-    button.backgroundColor = [UIColor colorWithWhite:0.12 alpha:0.92];
-    button.layer.cornerRadius = 7;
+    button.titleLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:13] ?: [UIFont boldSystemFontOfSize:13];
+    button.backgroundColor = [UIColor colorWithRed:0.18 green:0.024 blue:0.045 alpha:0.96];
+    button.layer.borderWidth = 1.0;
+    button.layer.borderColor = [UIColor colorWithRed:0.68 green:0.22 blue:0.26 alpha:1].CGColor;
+    button.layer.cornerRadius = 3;
     [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
     [button.widthAnchor constraintGreaterThanOrEqualToConstant:82].active = YES;
     [button.heightAnchor constraintEqualToConstant:40].active = YES;
@@ -197,7 +200,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
+enum class NativePanel { none, startup, pause, results, ending, menu, settings, help, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -226,6 +229,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     MTKView* _metalView;
     id<MTLCommandQueue> _queue;
     NSMutableDictionary<NSNumber*, id<MTLTexture>>* _textures;
+    NSMutableDictionary<NSNumber*, id<MTLTexture>>* _modernTextures;
     id<MTLTexture> _white;
     G1WorldTitleLabel* _title;
     UILabel* _hint;
@@ -355,6 +359,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     std::uint64_t _staleGpuErrors;
     std::uint8_t _lastMissionMode;
     bool _clockStarted, _loaded, _failed, _moveMode, _attackMode, _rangeDirty;
+    bool _graphicsModern, _showDiagnostics, _settingsFromPause;
     NSString* _failure;
     NSString* _notice;
     double _noticeUntil;
@@ -586,13 +591,20 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         _text = std::make_unique<g1::TextTable>(g1::load_text_table(archive));
         [_title loadOriginalFonts:archive];
         [_campaignCanvas loadOriginalFonts:archive];
+        [_campaignCanvas loadOriginalMenuArtwork:archive];
+        [_campaignCanvas loadOriginalFonts:archive];
         [_battleCanvas loadOriginalFonts:archive];
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
         _randomSeed = static_cast<std::uint32_t>(std::time(nullptr));
         _audio = [[G1AppleAudio alloc] initWithArchive:archive];
-        [NSUserDefaults.standardUserDefaults registerDefaults:@{@"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES}];
+        [NSUserDefaults.standardUserDefaults registerDefaults:@{
+            @"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES,
+            @"G1GraphicsModern":@NO,@"G1DiagnosticsEnabled":@NO}];
+        _graphicsModern=[NSUserDefaults.standardUserDefaults boolForKey:@"G1GraphicsModern"];
+        _showDiagnostics=[NSUserDefaults.standardUserDefaults boolForKey:@"G1DiagnosticsEnabled"];
+        [self updateDiagnosticsVisibility];
         [_audio setMusicEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1MusicEnabled"]
             soundEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1SoundEnabled"]];
         for (std::int32_t group=0;group<3;++group)
@@ -643,6 +655,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     const bool changed=_panelPurpose!=purpose || _panelToken!=token;
     if(changed){_supportDisplay.invalidate();_presentationEpoch.invalidate();}
     _panelPurpose=purpose;_panelToken=token;
+    [_campaignCanvas setOriginalMenuArtworkVisible:
+        purpose==NativePanel::startup || purpose==NativePanel::menu ||
+        purpose==NativePanel::settings || purpose==NativePanel::help ||
+        purpose==NativePanel::credits || purpose==NativePanel::pause ||
+        purpose==NativePanel::arena || purpose==NativePanel::arena_opponent];
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
@@ -664,7 +681,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     static const g1::MenuMusicNode enableSounds{}, pause{}, unitActions{}, opponent{&faction};
     const g1::MenuMusicNode* current=nullptr;
     switch(_panelPurpose) {
-    case NativePanel::startup: case NativePanel::menu: current=&mainMenu;break;
+    case NativePanel::startup: case NativePanel::menu:
+    case NativePanel::settings: case NativePanel::help: case NativePanel::credits:
+        current=&mainMenu;break;
     case NativePanel::arena: current=&faction;break;
     case NativePanel::arena_opponent: current=&opponent;break;
     case NativePanel::pause: current=&pause;break;
@@ -731,8 +750,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
     [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
     [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
-    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
-    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:@"Settings" action:@selector(openSettings)];
+    [self addCampaignButton:@"Help" action:@selector(showHelpMenu)];
+    [self addCampaignButton:@"Credits" action:@selector(showCreditsMenu)];
     if(_session && _campaign->state().gate==g1::CampaignControllerGate::idle)
         [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
 }
@@ -887,27 +907,95 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
     if(_checkpointRetryRequired)[self addCampaignButton:@"Retry save" action:@selector(retryCheckpoint)];
     [self addCampaignButton:[self originalText:1169] action:@selector(showProfileMenu)];
-    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
-    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:@"Settings" action:@selector(openSettings)];
+    [self addCampaignButton:@"Help" action:@selector(showHelpMenu)];
 }
 
 - (void)resumeGame { if(_session && !_failed){[self hidePanel];[self refreshControls];} }
 - (void)retryCheckpoint {
     _checkpointRetryRequired=false;_checkpointRequested=true;[self saveCheckpoint];[self showPauseMenu];
 }
+- (void)updateDiagnosticsVisibility {
+    _fps.hidden=!_showDiagnostics;
+    _worldLegend.hidden=!_showDiagnostics;
+    _reportButton.hidden=!_showDiagnostics;
+}
+
+- (void)openSettings {
+    _settingsFromPause=_panelPurpose==NativePanel::pause;
+    [self showSettingsMenu];
+}
+
+- (void)returnFromSettings {
+    if(_settingsFromPause && _session && !_failed)[self showPauseMenu];
+    else [self showProfileMenu];
+}
+
+- (void)showSettingsMenu {
+    NSString* body=[NSString stringWithFormat:
+        @"Classic preserves the original source textures. Modern applies the PC port's lossless Scale4x rule to eligible 2D robot/decorative sprites at native resolution. Original 3D materials, map atlas and font sheets remain untouched.\\n\\n%@  /  %@",
+        _graphicsModern?@"MODERN":@"CLASSIC",_showDiagnostics?@"DIAGNOSTICS ON":@"DIAGNOSTICS OFF"];
+    [self showPanel:NativePanel::settings title:@"SETTINGS" body:body token:++_localPanelToken];
+    [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
+    [self addCampaignButton:[_audio musicEnabled]?@"Music: On":@"Music: Off" action:@selector(toggleMusic)];
+    [self addCampaignButton:[_audio soundEnabled]?@"Sound: On":@"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:_showDiagnostics?@"Diagnostics: On":@"Diagnostics: Off" action:@selector(toggleDiagnostics)];
+    [self addCampaignButton:@"Export report" action:@selector(shareReport)];
+    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+}
+
+- (void)showHelpMenu {
+    [self showPanel:NativePanel::help title:@"HELP"
+        body:@"TAP a robot to select it. Choose MOVE then tap an available tile twice to confirm the route. ATTACK uses the target you tap. CAPTURE, TRANSFORM, REPAIR, UPGRADE and ACTIVATE use the displayed action buttons. END TURN advances to the enemy. Swipe the battlefield to pan, pinch to zoom, and use Reset view to frame the map.\\n\\nStory unlocks Showdown; Showdown unlocks Cybertron Arena. Pause with Menu; use Continue after relaunch to restore the last safe checkpoint."
+        token:++_localPanelToken];
+    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+}
+
+- (void)showCreditsMenu {
+    [self showPanel:NativePanel::credits title:@"CREDITS"
+        body:@"TRANSFORMERS G1: AWAKENING\\n\\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
+        token:++_localPanelToken];
+    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+}
+
+- (void)toggleGraphics {
+    const bool next=!_graphicsModern;
+    if(next) {
+        try {
+            [self primeModernTextures];
+        } catch(const std::exception& e) {
+            [self showPanel:NativePanel::settings title:@"Graphics could not be changed"
+                body:native_text(e.what()) token:++_localPanelToken];
+            [self addCampaignButton:@"Back" action:@selector(showSettingsMenu)];
+            return;
+        }
+    }
+    _graphicsModern=next;
+    [NSUserDefaults.standardUserDefaults setBool:next forKey:@"G1GraphicsModern"];
+    ++_contentGeneration;
+    [self showSettingsMenu];
+}
+
+- (void)toggleDiagnostics {
+    _showDiagnostics=!_showDiagnostics;
+    [NSUserDefaults.standardUserDefaults setBool:_showDiagnostics forKey:@"G1DiagnosticsEnabled"];
+    [self updateDiagnosticsVisibility];
+    [self showSettingsMenu];
+}
+
 - (void)toggleMusic {
     const BOOL enabled=![_audio musicEnabled];
     [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1MusicEnabled"];
     [_audio setMusicEnabled:enabled soundEnabled:[_audio soundEnabled]];
-    if(enabled && _panelPurpose==NativePanel::pause && _lastMapMusic)
+    if(enabled && _settingsFromPause && _lastMapMusic)
         [self dispatchAudio:*_lastMapMusic];
-    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+    [self showSettingsMenu];
 }
 - (void)toggleSound {
     const BOOL enabled=![_audio soundEnabled];
     [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1SoundEnabled"];
     [_audio setMusicEnabled:[_audio musicEnabled] soundEnabled:enabled];
-    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+    [self showSettingsMenu];
 }
 
 - (void)installSession:(std::unique_ptr<g1::GameSession>)session {
@@ -2836,7 +2924,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"campaign_error":_campaignError ?: NSNull.null,
         @"campaign_profile_save_error":_campaign && !_campaign->state().save_error.empty() ?
             native_text(_campaign->state().save_error) : NSNull.null,
-        @"mode_menu_policy":@"Original Story/Showdown/Arena definitions and completion locks; native UIKit selection and results layout",
+        @"mode_menu_policy":@"Original Story/Showdown/Arena definitions, unlocks and results; native G1-art menu",
+        @"graphics_mode":_graphicsModern?@"Modern Scale4x":@"Classic Original",
+        @"modern_sprite_texture_cache_count":@(_modernTextures.count),
+        @"diagnostics_enabled":@(_showDiagnostics),
+        @"branding_policy":@"Original G1 menu background resource1002, iammrmikeman fan port credits; no Glu splash/blog/feedback screen; original archive retained byte-for-byte",
         @"simulation_step_ms": @(g1::SimulationClock::step_ms),
         @"simulation_ticks_total": @(_simulationTicks),
         @"clock_clamp_intervals_over1000ms": @(_clampedClockIntervals),
