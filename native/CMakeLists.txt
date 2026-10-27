@@ -10,7 +10,7 @@ target_compile_definitions(g1_vorbis PRIVATE STB_VORBIS_NO_STDIO STB_VORBIS_NO_P
 target_include_directories(g1_vorbis PUBLIC third_party/stb)
 target_compile_features(g1_vorbis PUBLIC cxx_std_17)
 add_library(g1_resources STATIC src/Archive.cpp src/M3G.cpp src/M3GScene.cpp src/Mission.cpp src/Movement.cpp
-    src/Atlas.cpp src/Image.cpp src/BitmapFont.cpp src/SpriteGeometry.cpp src/SpriteAnimation.cpp
+    src/Atlas.cpp src/Image.cpp src/TextureEnhancement.cpp src/BitmapFont.cpp src/SpriteGeometry.cpp src/SpriteAnimation.cpp
     src/OverlayDescriptor.cpp src/IndexedBitmap.cpp src/SupportOverlayAssets.cpp
     src/SupportPresentation.cpp src/SupportGeometry.cpp
     src/SpritePlacement.cpp src/Terrain.cpp src/World.cpp src/Scene.cpp src/InitialPresentation.cpp
@@ -172,6 +172,9 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
         add_executable(g1_atlas_tests tests/atlas_test.cpp)
         target_link_libraries(g1_atlas_tests PRIVATE g1_resources)
         add_test(NAME atlas_format_geometry_contract COMMAND g1_atlas_tests)
+        add_executable(g1_texture_enhancement_tests tests/texture_enhancement_test.cpp)
+        target_link_libraries(g1_texture_enhancement_tests PRIVATE g1_resources)
+        add_test(NAME texture_scale4x_palette_contract COMMAND g1_texture_enhancement_tests)
         add_executable(g1_image_tests tests/image_test.cpp)
         target_link_libraries(g1_image_tests PRIVATE g1_resources)
         add_test(NAME png_rgba_contract COMMAND g1_image_tests)
