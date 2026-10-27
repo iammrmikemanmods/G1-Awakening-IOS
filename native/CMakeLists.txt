@@ -275,7 +275,7 @@ if(APPLE)
             platform/apple/AppleAudio.mm)
         target_link_libraries(G1AwakeningNative PRIVATE g1_metal
             "-framework UIKit" "-framework MetalKit" "-framework QuartzCore" "-framework CoreGraphics"
-            "-framework AVFAudio")
+            "-framework AVFAudio" "-framework AVFoundation")
         target_compile_options(G1AwakeningNative PRIVATE -fobjc-arc)
         set_target_properties(G1AwakeningNative PROPERTIES
             OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED YES

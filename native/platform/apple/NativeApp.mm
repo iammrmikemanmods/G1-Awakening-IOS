@@ -636,12 +636,74 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
             repeats:YES block:^(NSTimer* timer){(void)timer;[weakSelf maintainMenuMusic];}];
         [NSRunLoop.mainRunLoop addTimer:_menuMusicTimer forMode:NSRunLoopCommonModes];
         [self.view layoutIfNeeded];
+        _openingVisible=YES; // Defer source menu music while the user's intro plays.
         [self loadCampaignMenu];
+        [self startOpening];
     } catch (const std::exception& error) {
         [self fail:[NSString stringWithUTF8String:error.what()]];
     }
 }
 
+// A native 64-bit media pipeline plays the supplied replacement cinematic.
+// This contains no legacy Glu splash or original ARM32 startup code.
+- (void)startOpening {
+    NSURL* url=[NSBundle.mainBundle URLForResource:@"G1OpeningXR" withExtension:@"mp4"];
+    if(!url) {
+        _openingVisible=NO;
+        throw g1::FormatError("The replacement G1 opening movie is missing from the IPA");
+    }
+    _openingPlayer=[AVPlayer playerWithURL:url];
+    if(!_openingPlayer || !_openingPlayer.currentItem) {
+        _openingVisible=NO;
+        throw g1::FormatError("Native AVPlayer could not open the replacement G1 intro");
+    }
+    _openingPlayer.actionAtItemEnd=AVPlayerActionAtItemEndPause;
+    _openingView=[[UIView alloc] initWithFrame:self.view.bounds];
+    _openingView.autoresizingMask=UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    _openingView.backgroundColor=UIColor.blackColor;
+    _openingLayer=[AVPlayerLayer playerLayerWithPlayer:_openingPlayer];
+    _openingLayer.frame=_openingView.bounds;
+    _openingLayer.videoGravity=AVLayerVideoGravityResizeAspect;
+    [_openingView.layer addSublayer:_openingLayer];
+    [_openingView addGestureRecognizer:[[UITapGestureRecognizer alloc]
+        initWithTarget:self action:@selector(skipOpening:)]];
+    _openingView.isAccessibilityElement=YES;
+    _openingView.accessibilityLabel=@"G1 Awakening opening cinematic. Double tap to skip.";
+    [self.view addSubview:_openingView];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openingDidStop:)
+        name:AVPlayerItemDidPlayToEndTimeNotification object:_openingPlayer.currentItem];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openingDidStop:)
+        name:AVPlayerItemFailedToPlayToEndTimeNotification object:_openingPlayer.currentItem];
+    [_openingPlayer play];
+}
+- (void)skipOpening:(UITapGestureRecognizer*)gesture {
+    if(gesture.state==UIGestureRecognizerStateEnded)[self finishOpening];
+}
+- (void)openingDidStop:(NSNotification*)event {
+    (void)event;[self finishOpening];
+}
+- (void)finishOpening {
+    if(!_openingVisible)return;
+    _openingVisible=NO;
+    if(_openingPlayer.currentItem)
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification
+            object:_openingPlayer.currentItem];
+    if(_openingPlayer.currentItem)
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemFailedToPlayToEndTimeNotification
+            object:_openingPlayer.currentItem];
+    [_openingPlayer pause];
+    [_openingPlayer replaceCurrentItemWithPlayerItem:nil];
+    UIView* view=_openingView;
+    _openingPlayer=nil;_openingLayer=nil;_openingView=nil;
+    [UIView animateWithDuration:0.20 animations:^{view.alpha=0;} completion:^(BOOL completed){
+        (void)completed;[view removeFromSuperview];
+    }];
+    [self maintainMenuMusic];
+}
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_openingPlayer pause];
+}
 - (NSString*)originalText:(std::uint16_t)identifier {
     return native_text(_text->at(identifier));
 }
@@ -1506,6 +1568,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 
 - (void)inactive:(NSNotification*)notification {
     (void)notification;
+    if(_openingVisible)[_openingPlayer pause];
     _checkpointRequested=true;[self saveCheckpoint];
     _metalView.paused = YES;
     _clockStarted = false;
@@ -1520,6 +1583,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 
 - (void)active:(NSNotification*)notification {
     (void)notification;
+    if(_openingVisible)[_openingPlayer play];
     _presentationEpoch.invalidate();
     _clockStarted = false;
     _simulationClock.reset();
@@ -1538,6 +1602,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    if(_openingLayer)_openingLayer.frame=_openingView.bounds;
     [self updateCampaignLayout];
     UIScreen* screen = self.view.window.screen ?: UIScreen.mainScreen;
     // Allocate the render target at the attached display's native pixel scale,
@@ -3089,6 +3154,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
             native_text(_campaign->state().save_error) : NSNull.null,
         @"mode_menu_policy":@"Original Story/Showdown/Arena definitions, unlocks and results; native G1-art menu",
         @"graphics_mode":_graphicsModern?@"Modern Scale4x":@"Classic Original",
+        @"new_native_intro_file":@"G1OpeningXR.mp4; AVPlayer; user film; tap-to-skip",
+        @"native_intro_active":@(_openingVisible),
         @"touch_camera_sensitivity":@(_touchCameraSpeed),
         @"installed_icon_source":@"Original user IPA iTunesArtwork, 512x512, PNG derivatives packaged outside source control",
         @"modern_sprite_texture_cache_count":@(_modernTextures.count),
