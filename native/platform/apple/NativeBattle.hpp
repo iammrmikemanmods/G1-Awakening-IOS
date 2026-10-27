@@ -1,6 +1,7 @@
 #pragma once
 
 #import <UIKit/UIKit.h>
+#include "NativeBitmapFont.hpp"
 #include "g1/M3GBattlePresentation.hpp"
 #include <algorithm>
 
@@ -9,6 +10,7 @@
 // private animation clock, invented HP tween or gameplay acknowledgement.
 @interface G1BattleCanvas : UIView
 - (void)resetPresentation;
+- (void)loadOriginalFonts:(const g1::Archive&)archive;
 - (void)showStatus:(const g1::M3GBattleStatus&)status left:(NSString*)left right:(NSString*)right;
 - (BOOL)hasDrawnToken:(std::uint64_t)token revision:(std::uint64_t)revision;
 @end
@@ -18,12 +20,19 @@
     NSString* _leftName;
     NSString* _rightName;
     std::uint64_t _drawnToken, _drawnRevision;
+    G1BitmapFontFace* _originalNameFont;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) { self.opaque = NO; self.clipsToBounds = YES; self.isAccessibilityElement = YES; }
     return self;
+}
+
+- (void)loadOriginalFonts:(const g1::Archive&)archive {
+    _originalNameFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:2];
+    _drawnToken=0; _drawnRevision=0;
+    [self setNeedsDisplay];
 }
 
 - (void)showStatus:(const g1::M3GBattleStatus&)status left:(NSString*)left right:(NSString*)right {
@@ -47,9 +56,16 @@
 
 - (void)drawCombatant:(NSString*)name health:(std::int32_t)health x:(CGFloat)x
                  width:(CGFloat)width color:(UIColor*)color {
-    [name drawInRect:CGRectMake(x,1,width-62,21) withAttributes:@{
-        NSFontAttributeName:[UIFont systemFontOfSize:15 weight:UIFontWeightBold],
-        NSForegroundColorAttributeName:UIColor.whiteColor}];
+    const CGRect nameRect=CGRectMake(x,1,width-62,21);
+    const BOOL useOriginal=_originalNameFont && [_originalNameFont supportsText:name] &&
+        [_originalNameFont sizeForText:name height:15].width<=nameRect.size.width &&
+        [_originalNameFont sizeForText:name height:15].height<=nameRect.size.height;
+    if(useOriginal)
+        [_originalNameFont drawText:name rect:nameRect height:15 alignment:NSTextAlignmentLeft];
+    else
+        [name drawInRect:nameRect withAttributes:@{
+            NSFontAttributeName:[UIFont systemFontOfSize:15 weight:UIFontWeightBold],
+            NSForegroundColorAttributeName:UIColor.whiteColor}];
     NSString* label = [NSString stringWithFormat:@"HP %d",int(health)];
     [label drawInRect:CGRectMake(x+width-62,2,62,20) withAttributes:@{
         NSFontAttributeName:[UIFont monospacedDigitSystemFontOfSize:14 weight:UIFontWeightSemibold],

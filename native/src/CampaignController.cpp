@@ -22,7 +22,7 @@ std::uint64_t next_request_token() {
         if(next.compare_exchange_weak(value,value+1U,std::memory_order_relaxed))return value;
     }
 }
-CampaignProfile load_profile(const std::string& path) {
+CampaignProfile load_profile(const std::string& path,Bytes& legacy) {
     require(!path.empty() && path.find('\0')==std::string::npos,
             "native profile destination is invalid");
     struct stat info{};
@@ -32,7 +32,10 @@ CampaignProfile load_profile(const std::string& path) {
         throw FormatError(std::string("cannot inspect native campaign profile: ")+std::strerror(error));
     }
     require(S_ISREG(info.st_mode),"native campaign profile is not a regular file");
-    return decode_campaign_profile(read_file(path,4096));
+    auto bytes=read_file(path,4096);
+    auto profile=decode_campaign_profile(bytes);
+    if(bytes.at(8)==1U)legacy=std::move(bytes);
+    return profile;
 }
 bool same_random(const GameRandom::State& a,const GameRandom::State& b) noexcept {
     return a.words==b.words && a.index==b.index && a.draws==b.draws;
@@ -44,7 +47,37 @@ bool same_identity(const WorldUnit& a,const WorldUnit& b) noexcept {
 } // namespace
 
 CampaignController::CampaignController(std::string destination)
-    : destination_(std::move(destination)),profile_(load_profile(destination_)) {}
+    : destination_(std::move(destination)) {
+    profile_=load_profile(destination_,legacy_profile_bytes_);
+}
+
+SaveWriteResult CampaignController::preserve_legacy_profile() {
+    if(legacy_profile_bytes_.empty())return {true,{}};
+    const auto backup=destination_+".v1-backup";
+    struct stat info{};
+    if(lstat(backup.c_str(),&info)==0) {
+        if(!S_ISREG(info.st_mode))return {false,"native profile backup is not a regular file"};
+        try {
+            if(read_file(backup,4096)==legacy_profile_bytes_)return {true,{}};
+        } catch(const std::exception& error) { return {false,error.what()}; }
+        return {false,"existing native profile backup differs; original profile preserved"};
+    }
+    if(errno!=ENOENT)return {false,std::string("cannot inspect native profile backup: ")+std::strerror(errno)};
+    return write_native_save_atomic(backup,legacy_profile_bytes_,false);
+}
+
+SaveWriteResult CampaignController::consume_support_tutorial() {
+    require(state_.gate==CampaignControllerGate::idle && state_.token==0U,
+            "support tutorial cannot change a pending campaign handoff");
+    if(!profile_.support_tutorial_pending)return {true,{}};
+    auto next=profile_;
+    next.support_tutorial_pending=false;
+    const auto backup=preserve_legacy_profile();
+    if(!backup.succeeded)return backup;
+    const auto written=write_native_save_atomic(destination_,encode_campaign_profile(next));
+    if(written.succeeded){profile_=std::move(next);legacy_profile_bytes_.clear();}
+    return written;
+}
 
 void CampaignController::require_gate(std::uint64_t token,CampaignControllerGate gate) const {
     require(token!=0U && token==state_.token && state_.gate==gate,
@@ -90,7 +123,8 @@ SaveWriteResult CampaignController::attempt_save() {
     require(state_.save_attempts!=std::numeric_limits<std::uint32_t>::max(),
             "campaign save retry counter exhausted");
     ++state_.save_attempts;
-    const auto written=write_native_save_atomic(destination_,prepared_bytes_);
+    auto written=preserve_legacy_profile();
+    if(written.succeeded)written=write_native_save_atomic(destination_,prepared_bytes_);
     state_.profile_persisted=written.succeeded;
     state_.save_error=written.error;
     if(!written.succeeded) {
@@ -99,6 +133,7 @@ SaveWriteResult CampaignController::attempt_save() {
         return written;
     }
     profile_=prepared_update_->profile;
+    legacy_profile_bytes_.clear();
     if(campaign_save_disposition(source_campaign_.group,true)==CampaignSaveDisposition::present_results) {
         CampaignResultsPresentation results;
         results.campaign=source_campaign_;results.current_record=source_record_;

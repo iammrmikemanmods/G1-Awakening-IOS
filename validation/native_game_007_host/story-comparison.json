@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "baseline_commit": "f41c436a26414df55daa92d257f942da19d80280",
+  "baseline_result": "validation/native_game_006_story/result.json",
+  "baseline_events": "validation/native_game_006_story/events.jsonl",
+  "result_changed_fields": [
+    {
+      "field": "wall_seconds",
+      "build006": 52.4078,
+      "build007": 52.5103
+    }
+  ],
+  "excluded_nondeterministic_fields": [
+    "wall_seconds"
+  ],
+  "stable_result_fields_identical": true,
+  "events_byte_identical": true,
+  "events_line_count": 5461,
+  "event_stream_identity": {
+    "bytes": 840169,
+    "sha256": "fa43728c1bed9ce58f0eaad2c1c28d4db7b434019d1d26956403bd5d6b72ec38"
+  },
+  "events_not_duplicated_reason": "Build007 event bytes are identical to retained build006 event stream; reference existing file and exact hash.",
+  "support_report_byte_identical": true,
+  "profile": {
+    "format": 2,
+    "bytes": 331,
+    "sha256": "d76b54ba54dbf828bdfd3e012ddc281debf542d2a156ed795706a644bf2455e8",
+    "checksum_valid": true,
+    "completed": [
+      true,
+      false
+    ],
+    "highest_unlocked": [
+      17,
+      0
+    ],
+    "story_records_equal_build006_result": true,
+    "showdown_records_remain_unset": true,
+    "support_tutorial_pending": true,
+    "scope": "The headless pilot does not invoke UIKit tutorial consumption. The flag remains pending; dedicated profile/controller tests verify its consumption and persistence.",
+    "old_profile_bytes_compared": false,
+    "old_profile_comparison_scope": "Historical result records and frozen v1 migration fixtures, not an available build006 Story profile file."
+  }
+}
