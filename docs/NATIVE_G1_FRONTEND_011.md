@@ -90,3 +90,66 @@ original icon files and the supplied video. Do not overwrite the
 last working Filza/AppSync-signed Build010. Produce separate signed
 Filza build after Apple compilation using a standalone Mach-O signature
 and `application-identifier=org.g1awakening.native.test`.
+
+
+## Verified Build011 source, native Apple compile and signed IPA
+
+The signed iPhone package was built from the same reviewed production
+source tree, without changing core gameplay, saves, assets or controls
+after compilation:
+
+| Evidence | Exact result |
+|---|---|
+| Reviewed source commit | `3025e446283d55199feb2b2017fc73fa16f3d6c2` |
+| Compiled PR merge commit | `5db26ba75ae5175c9653aadadef83a78de75dae6` |
+| Identical Git tree | `c8d697ae9ee186384659fb91a7779e8101d0d8ca` |
+| Linux+Apple workflow | [40448818218](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40448818218) — success |
+| Portable suites | **63/63 Linux and 63/63 Apple ARM64** |
+| Hosted GPU probe | 14 tactical/support + 12 M3G checks passed with synthetic geometry |
+| iPhoneOS app / shader | Both compiled successfully with iPhoneOS17.5 ARM64 target |
+| Unsigned code artifact | `12709905179`, SHA256 `5df47e932ba9c07d41ff41cc19088b263ae2baa1e571d34fa61ccac233f0a38d` |
+| Signed-code workflow | [40449223649](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40449223649) — success |
+| Signed-code artifact | `12710305079`, SHA256 `d77b2b085b94612a2ff6a5ee5d601c558b9be29a0cfcf8cd57fcbb2f3a4cd0d5` |
+
+The native ARM64 compiled executable was already verified through the
+Apple app test. Only its **ad-hoc signature** was added separately with
+`application-identifier=org.g1awakening.native.test` and
+`get-task-allow=true`, using Apple's `codesign` on the standalone
+Mach-O, not the incomplete `.app`, to avoid stale resource seals.
+
+**User-installable Filza/AppSync variant:**
+
+`G1_Awakening_Native_G1_UI_011_Filza_AppSync.ipa`
+
+- Size: **39,557,427 bytes**
+- SHA256: `fe4f3f66b4349f24fa62dfd6b135db421b2bea1476b5d27130c844efe9193121`
+- Minimum iOS17.5, native ARM64, version0.11.0/build11.
+- Original user source `iphone.big` SHA256 remains
+  `663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4`.
+- Original source `1002` menu art, `1004` HUD frame, `1034`
+  dialogue frame and ten actual source PNG action icons validated by
+  key, SHA and exact geometry (14 source art contracts).
+- The new user startup `G1OpeningXR.mp4` is embedded byte-exact:
+  31,809,816 bytes, SHA256
+  `86a1a9a559843e2ab13e8f513617c8c63e29ef6cd56fe0f6a0446fab7e3911d6`,
+  H.264 1792×828 at60fps, AAC stereo48kHz, 23s.
+- ZIP member inventory and CRCs verified. Comparing unsigned and
+  AppSync variants, **only**
+  `Payload/G1AwakeningNative.app/G1AwakeningNative` differs (signature).
+  Film, icons, original data, metadata, license text and source provenance
+  are otherwise byte-for-byte identical.
+- Source archive, movie and original game payloads were never uploaded
+  into Git history.
+
+**This is still an integration candidate**, not a finished fully
+parity-matched native original. Apple hosted probes did not draw a full
+G1 in-game UIKit screenshot, and the signed Filza IPA has not been
+installed on a physical XR from this session. Original front-end
+automata, full results/HUD behaviours, energy/power station models,
+native tactical camera parity, game audio playback through a real
+iPhone speaker and full rendered 17+8+Arena progression are not yet
+certified. Do not infer them from the established *headless* campaign
+results or synthetic Metal checks.
+
+Machine-readable validation is supplied separately as
+`G1_Awakening_Native_UI_011_Validation.json` with the signed IPA.
