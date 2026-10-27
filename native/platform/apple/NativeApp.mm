@@ -30,6 +30,7 @@
 #include "NativeTacticalHUD.hpp"
 #include "NativeDialogue.hpp"
 #include "NativeBattle.hpp"
+#include "NativeTechSpecs.hpp"
 #include "NativeCampaign.hpp"
 #include "AppleAudio.hpp"
 
@@ -244,7 +245,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, mode_select, mission_select, settings, help, help_topic, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
+enum class NativePanel { none, startup, pause, results, ending, menu, mode_select, mission_select, settings, help, help_topic, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error, tech_specs };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -313,6 +314,20 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     G1DialogueCanvas* _dialogueCanvas;
     UIView* _battlePanel;
     G1BattleCanvas* _battleCanvas;
+    UIView* _techSpecsPanel;
+    G1TechSpecsCanvas* _techSpecsCanvas;
+    G1TechSpecsModelView* _techSpecsModel;
+    UIButton* _techSpecsHotspot;
+    UIButton* _specsBackButton;
+    UIButton* _specsPreviousButton;
+    UIButton* _specsNextButton;
+    UIButton* _specsRobotButton;
+    UIButton* _specsVehicleButton;
+    NSMutableDictionary<NSNumber*,UIImage*>* _techSpecsPortraits;
+    std::vector<std::size_t> _techSpecsRoster;
+    std::size_t _techSpecsPosition;
+    std::uint8_t _techSpecsPreviewForm;
+    BOOL _techSpecsFromPause;
     UIView* _campaignPanel;
     UIScrollView* _campaignScroll;
     G1CampaignCanvas* _campaignCanvas;
@@ -588,6 +603,33 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [_battlePanel addSubview:_battleCanvas];
     _battlePanel.hidden = YES;
 
+    // Restore the original source 480x320 faction-specific Transformer
+    // character Tech Specs interface, isolated from GameSession actions.
+    _techSpecsPanel=[UIView new];
+    _techSpecsPanel.frame=self.view.bounds;
+    _techSpecsPanel.autoresizingMask=UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    _techSpecsPanel.backgroundColor=[UIColor colorWithRed:.012 green:.018 blue:.034 alpha:1];
+    _techSpecsPanel.hidden=YES;
+    [self.view addSubview:_techSpecsPanel];
+    _techSpecsCanvas=[G1TechSpecsCanvas new];
+    _techSpecsCanvas.translatesAutoresizingMaskIntoConstraints=YES;
+    [_techSpecsPanel addSubview:_techSpecsCanvas];
+    _techSpecsModel=[[G1TechSpecsModelView alloc] initWithMetalDevice:device];
+    _techSpecsModel.translatesAutoresizingMaskIntoConstraints=YES;
+    [_techSpecsCanvas addSubview:_techSpecsModel];
+    const auto installTechButton=[&](NSString* label,SEL action) {
+        UIButton* button=[UIButton buttonWithType:UIButtonTypeCustom];
+        button.accessibilityLabel=label;button.isAccessibilityElement=YES;
+        button.backgroundColor=UIColor.clearColor;
+        [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+        [_techSpecsCanvas addSubview:button];return button;
+    };
+    _specsBackButton=installTechButton(@"Back to game",@selector(closeTechSpecs));
+    _specsPreviousButton=installTechButton(@"Previous Transformer",@selector(previousTechSpecs));
+    _specsNextButton=installTechButton(@"Next Transformer",@selector(nextTechSpecs));
+    _specsRobotButton=installTechButton(@"View robot form",@selector(showTechRobot));
+    _specsVehicleButton=installTechButton(@"View alternate form",@selector(showTechVehicle));
+
     _campaignPanel=[UIView new];
     _campaignPanel.backgroundColor=[UIColor colorWithRed:0.025 green:0.045 blue:0.075 alpha:0.99];
     _campaignPanel.layer.cornerRadius=0; // Source G1 artwork supplies its own frame.
@@ -648,6 +690,16 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _campaignActionsNormalBottom.active=YES;
     _campaignPanel.hidden=YES;
 
+    _techSpecsHotspot=[UIButton buttonWithType:UIButtonTypeCustom];
+    _techSpecsHotspot.backgroundColor=UIColor.clearColor;
+    _techSpecsHotspot.isAccessibilityElement=YES;
+    _techSpecsHotspot.accessibilityLabel=@"Selected Transformer Tech Specs";
+    _techSpecsHotspot.accessibilityHint=@"Opens the original character statistics and 3D model.";
+    [_techSpecsHotspot addTarget:self action:@selector(openTechSpecs)
+        forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_techSpecsHotspot];
+    _techSpecsHotspot.hidden=YES;
+
     [_metalView addGestureRecognizer:[[UITapGestureRecognizer alloc]
         initWithTarget:self action:@selector(tap:)]];
     [_metalView addGestureRecognizer:[[UIPanGestureRecognizer alloc]
@@ -680,6 +732,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         [_battleCanvas loadOriginalFonts:archive];
         [_dialogueHeading loadOriginalFonts:archive];
         [self loadOriginalHUD:archive];
+        [_techSpecsCanvas loadOriginalArt:archive];
+        _techSpecsPortraits=[NSMutableDictionary new];
+        for(const auto info : {g1::source_art::Portrait{731,54,50},
+                               g1::source_art::Portrait{878,73,70},
+                               g1::source_art::Portrait{670,54,51},
+                               g1::source_art::Portrait{646,48,51}})
+            _techSpecsPortraits[@(info.id)]=g1::source_art::indexed_bmp(archive,
+                info.id,info.width,info.height);
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
@@ -919,7 +979,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
     _campaignPanel.hidden=NO;
-    _menuButton.hidden=YES;_gameHudFrame.hidden=YES;
+    _menuButton.hidden=YES;_gameHudFrame.hidden=YES;_techSpecsHotspot.hidden=YES;
     _title.hidden=YES;_hint.hidden=YES;_worldLegend.hidden=YES;_fps.hidden=YES;
     _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;
     [_campaignCanvas showTitle:title body:body token:token];
@@ -963,7 +1023,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _presentationEpoch.invalidate();
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
-    _menuButton.hidden=NO;_gameHudFrame.hidden=NO;
+    _menuButton.hidden=NO;_gameHudFrame.hidden=NO;_techSpecsHotspot.hidden=YES;
     _fps.hidden=!_showDiagnostics;
     _title.hidden=!_showDiagnostics;_hint.hidden=!_showDiagnostics;
     _worldLegend.hidden=!_showDiagnostics;
@@ -1225,6 +1285,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [self addCampaignButton:[self originalText:1169] action:@selector(showProfileMenu)];
     [self addCampaignButton:@"Settings" action:@selector(openSettings)];
     [self addCampaignButton:@"Help" action:@selector(showHelpMenu)];
+    if(_session && !_session->world().units.empty())
+        [self addCampaignButton:@"TECH SPECS" action:@selector(openTechSpecs)];
 }
 
 - (void)resumeGame { if(_session && !_failed){[self hidePanel];[self refreshControls];} }
@@ -1405,6 +1467,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _productionRange.reset();_typeListOpen=false;_controlQuads.clear();
     [_dialogueCanvas resetPresentation]; [_battleCanvas resetPresentation];
     _dialoguePanel.hidden = YES; _battlePanel.hidden = YES;
+    _techSpecsPanel.hidden=YES;_techSpecsHotspot.hidden=YES;
+    _techSpecsRoster.clear();
     [_gameHudFrame clearStatus];_dialoguePortrait.image=nil;
     _clockStarted = false; _simulationClock.reset(); _frameStats.times.clear();
     [self rebuildScene:YES];
@@ -1755,6 +1819,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _commands.hidden = YES;
     _dialoguePanel.hidden = YES;
     _battlePanel.hidden = YES;
+    _techSpecsPanel.hidden=YES;_techSpecsHotspot.hidden=YES;
     _campaignPanel.hidden=YES;_panelPurpose=NativePanel::none;
     _typeListOpen=false;
     if([self.presentedViewController isKindOfClass:UIAlertController.class])
@@ -1783,7 +1848,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _clockStarted = false;
     _simulationClock.reset();
     if (_session) _previousUnits = _session->units();
-    if (_loaded && !_failed) _metalView.paused = NO;
+    if (_loaded && !_failed && _panelPurpose!=NativePanel::tech_specs)
+        _metalView.paused = NO;
     [_audio setForegroundActive:YES];
 }
 
@@ -1813,6 +1879,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                           scale*r.width,scale*r.height);
     };
     _gameHudFrame.frame=projected(g1::original_presentation::tactical_hud);
+    _techSpecsPanel.frame=self.view.bounds;
+    _techSpecsCanvas.frame=viewport;
+    _techSpecsModel.frame=CGRectMake(scale*123,scale*36,scale*232,scale*274);
+    _specsBackButton.frame=CGRectMake(0,0,scale*62,scale*53);
+    _specsPreviousButton.frame=CGRectMake(0,scale*65,scale*73,scale*83);
+    _specsNextButton.frame=CGRectMake(scale*405,scale*65,scale*75,scale*83);
+    _specsRobotButton.frame=CGRectMake(scale*75,scale*137,scale*48,scale*43);
+    _specsVehicleButton.frame=CGRectMake(scale*357,scale*137,scale*48,scale*43);
+    _techSpecsHotspot.frame=projected({0,258,60,62});
     _battlePanel.frame=projected({0,256,480,64});
     _battleCanvas.frame=_battlePanel.bounds;
     _dialoguePanel.frame=projected(g1::original_presentation::dialogue);
@@ -2304,7 +2379,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 - (void)refreshControls {
     if (!_session || _failed) return;
     if(_panelPurpose!=NativePanel::none) {
-        _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;return;
+        _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;
+        _techSpecsHotspot.hidden=YES;return;
     }
     if (_lastMissionMode != _session->mission().interaction_mode) {
         _lastMissionMode = _session->mission().interaction_mode;
@@ -2353,6 +2429,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _dialoguePanel.hidden = !dialogue || battle;
     _gameHudFrame.hidden=dialogue || battle;
     [self setSourceTopLeftDialogueMode:dialogue];
+    _techSpecsHotspot.hidden = !_session->selected() || dialogue || battle ||
+         mission.interaction_mode != 0 || _session->moving() || _session->focus_request() ||
+         _session->world_presentation() || _session->turn().controllers[_session->current_player()]==1;
     _commands.hidden = battle || dialogue || mission.interaction_mode != 0 ||
         _session->moving() || _session->focus_request().has_value() || _session->world_presentation().has_value() ||
         _session->turn().controllers[_session->current_player()]==1;
@@ -2450,6 +2529,132 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _buildButton.hidden=deploying;
     if (_session->world().title_text_index)
         _title.text = native_text(_text->at(g1::script_text_id(*_session->world().title_text_index)));
+}
+
+// The original character panel is read-only. Its price and both forms are
+// decoded from the same canonical unit definition as the gameplay core.
+- (void)renderCurrentTechSpecs {
+    if(!_session || _techSpecsPosition>=_techSpecsRoster.size() || !_text)return;
+    const std::size_t index=_techSpecsRoster[_techSpecsPosition];
+    const auto& world=_session->world();
+    if(index>=world.units.size() || index>=_session->combat_units().size())return;
+    const auto& unit=world.units[index];
+    const auto& definition=world.unit_definitions.at(unit.type);
+    const auto& combat=_session->combat_units().at(index);
+    const auto stats=g1::read_tech_specs(definition,combat.level);
+    const auto asText=[&](std::uint16_t raw) {
+        return native_text(_text->at(g1::script_text_id(g1::unit_text_index(raw))));
+    };
+    NSString* name=asText(definition.raw_text_indices[0]);
+    NSString* quote=asText(definition.raw_text_indices[1]);
+    NSMutableArray<NSString*>* features=[NSMutableArray new];
+    const auto& form=stats.form[0];
+    NSString* range=form.min_range==form.max_range ?
+        [NSString stringWithFormat:@"ATTACK RANGE: %u",unsigned(form.max_range)] :
+        [NSString stringWithFormat:@"ATTACK RANGE: %u-%u",unsigned(form.min_range),unsigned(form.max_range)];
+    [features addObject:range];
+    // The original PC screenshots supplied by the owner confirm these exact
+    // abilities for Bumblebee and Frenzy. All strings come from source FGIB
+    // localization entries; no approximate descriptions are manufactured.
+    if(definition.type==11) {
+        for(const std::uint16_t id:{807,714,929})[features addObject:native_text(_text->at(id))];
+    }else if(definition.type==19) {
+        for(const std::uint16_t id:{807,929,1174})[features addObject:native_text(_text->at(id))];
+    } else {
+        for(auto raw:definition.raw_detail_text_indices) {
+            NSString* detail=asText(raw);
+            if([detail isEqualToString:@"ATTACK RANGE: "] ||
+               [detail isEqualToString:@"NEXT LEVEL UNLOCKED!"] ||
+               ([detail isEqualToString:@"CANNOT ATTACK"] && form.combat.attack_low>0))continue;
+            [features addObject:detail];
+        }
+    }
+    std::uint32_t portraitId=0;
+    if(definition.type==11)portraitId=731;
+    else if(definition.type==19)portraitId=646;
+    else if(definition.type==0)portraitId=878;
+    else if(definition.type==2)portraitId=670;
+    [_techSpecsCanvas show:stats name:name quote:quote details:features
+                   portrait:portraitId?_techSpecsPortraits[@(portraitId)]:nil];
+    // Default to the actual current form when moving between Transformers.
+    // Touching a form icon previews it without executing Transform or saving.
+    _techSpecsPreviewForm=std::min<std::uint8_t>(unit.form,stats.forms-1);
+    _specsVehicleButton.enabled=stats.forms>1;
+    _specsVehicleButton.accessibilityValue=stats.forms>1?@"Available":@"Unavailable";
+    if(![_techSpecsModel displayUnit:unit.type form:_techSpecsPreviewForm archive:*_archive]) {
+        _techSpecsCanvas.accessibilityHint=[NSString stringWithFormat:
+             @"Original M3G preview unavailable: %@",[_techSpecsModel lastModelError]];
+    } else _techSpecsCanvas.accessibilityHint=nil;
+}
+- (void)openTechSpecs {
+    if(!_session || !_archive || !_text || !_loaded || _failed || _typeListOpen ||
+        (_panelPurpose!=NativePanel::none && _panelPurpose!=NativePanel::pause) ||
+        _session->battle() || _session->moving() || _session->focus_request() ||
+        _session->mission().gate==g1::MissionGate::dialogue)return;
+    try {
+        std::vector<std::size_t> roster;
+        const auto& units=_session->world().units;
+        for(std::size_t n=0;n<units.size();++n)
+            if(units[n].active && units[n].type<_session->world().unit_definitions.size())
+                roster.push_back(n);
+        if(roster.empty())return;
+        _techSpecsFromPause=_panelPurpose==NativePanel::pause;
+        _techSpecsRoster=std::move(roster);
+        _techSpecsPosition=0;
+        if(_session->selected()){
+            const auto it=std::find(_techSpecsRoster.begin(),_techSpecsRoster.end(),*_session->selected());
+            if(it!=_techSpecsRoster.end())_techSpecsPosition=std::distance(_techSpecsRoster.begin(),it);
+        }
+        if(_techSpecsFromPause)_campaignPanel.hidden=YES;
+        _panelPurpose=NativePanel::tech_specs;
+        _inputEdges=0;_simulationClock.reset();_clockStarted=false;
+        _metalView.paused=YES;
+        _gameHudFrame.hidden=YES;_menuButton.hidden=YES;_techSpecsHotspot.hidden=YES;
+        _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;
+        _fps.hidden=YES;_title.hidden=YES;_hint.hidden=YES;_worldLegend.hidden=YES;
+        _techSpecsPanel.hidden=NO;
+        [self.view bringSubviewToFront:_techSpecsPanel];
+        [self layoutOriginalGameplayUI];
+        [self renderCurrentTechSpecs];
+    }catch(const std::exception& error){[self fail:native_text(error.what())];}
+}
+- (void)closeTechSpecs {
+    if(_panelPurpose!=NativePanel::tech_specs)return;
+    _techSpecsPanel.hidden=YES;
+    _techSpecsRoster.clear();
+    if(_techSpecsFromPause){_techSpecsFromPause=NO;[self showPauseMenu];return;}
+    _panelPurpose=NativePanel::none;
+    _simulationClock.reset();_clockStarted=false;
+    if(_session)_previousUnits=_session->units();
+    // restore the original always-visible tactical shell; refreshControls
+    // updates command availability but intentionally does not own these views.
+    _menuButton.hidden=NO;
+    _gameHudFrame.hidden=NO;
+    if(_loaded && !_failed)_metalView.paused=NO;
+    [self refreshControls];
+}
+- (void)nextTechSpecs {
+    if(_panelPurpose!=NativePanel::tech_specs || _techSpecsRoster.empty())return;
+    _techSpecsPosition=(_techSpecsPosition+1)%_techSpecsRoster.size();
+    [self renderCurrentTechSpecs];
+}
+- (void)previousTechSpecs {
+    if(_panelPurpose!=NativePanel::tech_specs || _techSpecsRoster.empty())return;
+    _techSpecsPosition=(_techSpecsPosition+_techSpecsRoster.size()-1)%_techSpecsRoster.size();
+    [self renderCurrentTechSpecs];
+}
+- (void)showTechRobot {
+    if(_panelPurpose!=NativePanel::tech_specs || _techSpecsRoster.empty())return;
+    const auto type=_session->world().units.at(_techSpecsRoster.at(_techSpecsPosition)).type;
+    _techSpecsPreviewForm=0;
+    [_techSpecsModel displayUnit:type form:0 archive:*_archive];
+}
+- (void)showTechVehicle {
+    if(_panelPurpose!=NativePanel::tech_specs || _techSpecsRoster.empty())return;
+    const auto& unit=_session->world().units.at(_techSpecsRoster.at(_techSpecsPosition));
+    if(_session->world().unit_definitions.at(unit.type).forms.size()<2)return;
+    _techSpecsPreviewForm=1;
+    [_techSpecsModel displayUnit:unit.type form:1 archive:*_archive];
 }
 
 - (void)beginMove {

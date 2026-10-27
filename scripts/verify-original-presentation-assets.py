@@ -2,7 +2,7 @@
 """Read-only G1 1.1.3 original HUD/dialogue/battle asset provenance check.
 
 This script never exports or rewrites copyrighted source images, and verifies
-original FGIB members used by the native iPhone XR Build013 UI changes.
+original FGIB members used by the native iPhone XR Build014 UI changes.
 """
 import argparse
 import hashlib
@@ -13,6 +13,11 @@ import zlib
 
 SOURCE_SHA = '663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4'
 PNG = {
+    # Complete original 480x320 tech specs background images for each faction,
+    # verified against screenshots supplied by the owner.
+    1224: (480,320,'9a124f219b854a957c2f9aa95ba471f90ab6b45af3fa394c1eb5e7536f1d9812'),
+    417: (480,320,'bb27c30c5894af2d9bf6209a116a5d215eb8bfefdd53dbc467543e227cd8651b'),
+    657: (52,49,'e98fc1c9be033c4686e14c1def7e700fa2e7ec927423d1ae31af5c929226ff19'),
     514: (480,62,'ee83f54f96a08df966558d2116906af0cf4fced85dbed37611a351efb13d867d'),
     874: (128,63,'f0d0f0d5accf7210ed410b5e7f2a0493f648f85864d54ddb045e06f02056d15c'),
     799: (128,63,'d27f3e12779c2056faff69ec32a992f69909a6e1553aabfaf3d1b27bdfcff46a'),  # compared via descriptor and original source SHA
@@ -40,6 +45,7 @@ PNG = {
     719:(60,49,'64b7cba7b9e226ebd5a1f02374c1b072212fba319381b5b9fc6c042f4f3eb502'),
 }
 BMP = {
+    646: (48,51,'5c71ba42af5b8be3bd3c66eb6e8e9d3bc03116fe16e82c2e3294aadebaff078c'),
     731: (54,50,'dcf4ca21049346044c78ae435e8c34bc7a9fd6ff46fccfbb639dbbedf898989e'),
     396: (70,66,'a79fb2a89411ff68ea2a86e69e159fc95b2ad6162f712c2b9d1944f3d0988ff2'),
     878: (73,70,'cba97ef5edb70a8f1b55e6e04923efdabcce7c8753f7729369821d0f3a0acb91'),
@@ -99,6 +105,13 @@ def check(ipa):
         expected=f'{{{ident},{w},{h}}}'
         if expected not in runtime or (ident in (731,396,878,670) and expected not in hud):
             raise ValueError(f'{ident} runtime BMP declaration diverges from original archive')
+    tech_source=(Path(__file__).resolve().parents[1]/'native/platform/apple/NativeTechSpecs.hpp').read_text()
+    for ident,w,h in ((1224,480,320),(417,480,320),(709,51,54),
+                      (442,52,49),(904,52,49),(657,52,49)):
+        if f'archive,{ident},{w},{h}' not in tech_source:
+            raise ValueError(f'{ident} tech specs runtime source contract changed')
+    if '{646,48,51}' not in (Path(__file__).resolve().parents[1]/'native/platform/apple/NativeApp.mm').read_text():
+        raise ValueError('Original Frenzy portrait 646 native runtime dimensions diverged')
     return {'source_sha256':SOURCE_SHA,'source_png_contracts':len(PNG),
             'source_bmp_portrait_contracts':len(BMP),'all_checked':True,
             'on_device_render_validation':False}
