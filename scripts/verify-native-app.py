@@ -72,6 +72,13 @@ def inspect_app(app):
         raise ValueError('unexpected test app identity')
     if info.get('MinimumOSVersion') != '17.5' or info.get('UIDeviceFamily') != [1]:
         raise ValueError('unexpected deployment target or device family')
+    if info.get('CFBundleVersion') == '10':
+        icons = info.get('CFBundleIcons', {}).get('CFBundlePrimaryIcon', {})
+        expected = {'Icon-60', 'Icon-60@2x', 'Icon-60@3x',
+                    'Icon-Small-40', 'Icon-Small-40@2x', 'Icon-Small-40@3x'}
+        if set(icons.get('CFBundleIconFiles', [])) != expected or \
+                icons.get('UIPrerenderedIcon') is not True or icons.get('CFBundleIconName'):
+            raise ValueError('Build 010 has missing/misconfigured original iOS icon declarations')
     commit = info.get('G1SourceCommit', '')
     if not re.fullmatch('[0-9a-f]{40}', commit):
         raise ValueError('source commit is not recorded in the app')

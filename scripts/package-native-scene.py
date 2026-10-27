@@ -78,8 +78,8 @@ def original_icon_files(source_zip, info):
     listed = primary.get("CFBundleIconFiles")
     if listed is None:
         return {}, None
-    if not isinstance(listed, list) or set(listed) != set(ORIGINAL_ICON_SIZES) or \\
-            len(listed) != len(ORIGINAL_ICON_SIZES):
+    if (not isinstance(listed, list) or set(listed) != set(ORIGINAL_ICON_SIZES) or
+            len(listed) != len(ORIGINAL_ICON_SIZES)):
         raise ValueError("compiled Info.plist does not list exactly the original icon sizes")
     if primary.get("CFBundleIconName"):
         raise ValueError("a non-existent asset-catalog icon may not override bundled PNG icons")
@@ -159,6 +159,9 @@ def main():
         raise ValueError('app bytes do not match cloud validation metadata')
     if args.expected_commit and info['G1SourceCommit'] != args.expected_commit:
         raise ValueError('cloud artifact is from a different source commit')
+    if info.get('CFBundleVersion') == '10' and \
+            set(info.get('CFBundleIcons', {}).get('CFBundlePrimaryIcon', {}).get('CFBundleIconFiles', [])) != set(ORIGINAL_ICON_SIZES):
+        raise ValueError('Build 010 requires every original icon variant')
     tables, table_record = extractor.extract_tables_from_ipa(args.source_ipa)
     if sha(tables) != 'b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8':
         raise ValueError('terrain tables differ from the reviewed data')
