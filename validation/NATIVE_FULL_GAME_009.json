@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "kind": "Native G1 Awakening full-game iPhoneOS ARM64 candidate 009: validated host build, not certified device release",
+  "repo": "iammrmikemanmods/G1-Awakening-IOS",
+  "branch": "resume/native-full-game-009",
+  "pull_request": 4,
+  "production_source_commit": "bf3e6cc8f953e49e068a40886d6bbb902b73a098",
+  "production_source_tree": "14dbee478e9a84227dfc030143890551b8cfa0de",
+  "compiled_merge_commit": "b3372a08630f586e81b79935d01d9e5c2be2a52b",
+  "compiled_merge_tree": "14dbee478e9a84227dfc030143890551b8cfa0de",
+  "compiled_commit_parents": [
+    "f41c436a26414df55daa92d257f942da19d80280",
+    "bf3e6cc8f953e49e068a40886d6bbb902b73a098"
+  ],
+  "source_tree_identical_to_compiled_tree": true,
+  "github_run": {
+    "id": 40428437855,
+    "url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40428437855",
+    "conclusion": "success",
+    "linux_job": 121939937321,
+    "apple_job": 121939937085,
+    "linux_ctest": {
+      "passed": 63,
+      "total": 63
+    },
+    "apple_arm64_ctest": {
+      "passed": 63,
+      "total": 63
+    },
+    "iphoneos_app_compiled": true,
+    "iphoneos_m3g_shader_compiled": true,
+    "tactical_support_metal_pixel_checks": 14,
+    "m3g_metal_pixel_checks": 12,
+    "gpu_device": "Apple Paravirtual device",
+    "original_game_data_rendered_in_gpu_probes": false,
+    "iphone_hardware_tested_in_ci": false
+  },
+  "code_artifact": {
+    "github_artifact_id": 12701156994,
+    "filename": "G1-native-full-game-009-code.zip",
+    "sha256": "c3887b394310f153c235910eed3f4f15ed552647c4e3ca0a3b4502a3f58388aa",
+    "zip_bytes": 710218
+  },
+  "app": {
+    "arm64_executable_sha256": "b838fcb21cba84d02d492c4b6883e22f2d30696b1a1b79f3b5ce8f5502193bcc",
+    "arm64_executable_bytes": 1648792,
+    "min_ios": "17.5",
+    "bundle_id": "org.g1awakening.native.test",
+    "version": "0.9.0",
+    "build": 9
+  },
+  "packaged_ipa": {
+    "filename": "G1_Awakening_Native_Full_Game_Candidate_009.ipa",
+    "bytes": 7620314,
+    "sha256": "50319fce313046edab13de066df252aa55bbe4c8ff4d87d80888882fa692d1b7",
+    "validated_crc_and_exact_members": true,
+    "original_source_ipa_sha256": "b24fbe5cc4d5cb603189a476c4f81dd2a6ecc18b025eae913262055a7fc443fd",
+    "original_archive_sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4",
+    "terrain_bytes": 480,
+    "terrain_sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8",
+    "original_executable_packaged": false,
+    "compatibility_runtime_packaged": false,
+    "unsigned": true,
+    "requires_sideloadly_signing": true,
+    "library_file_id": "libfile_aed5be503acc8191af0271aff3f1fdab"
+  },
+  "menu_art": {
+    "original_archive_resource": 1002,
+    "resource_key": "0xb7178678",
+    "png_bytes": 108595,
+    "png_sha256": "47f5a6c38db8c69f0b585d3430a274ceb27152d232dd0758b4b2e2efc3c9f691",
+    "dimensions": [
+      480,
+      320
+    ],
+    "original_archive_unchanged": true,
+    "old_glu_assets_never_requested_by_app": true
+  },
+  "native_core_modes": {
+    "story_missions": 17,
+    "showdown_missions": 8,
+    "arena_maps": 5,
+    "headless_existing_complete_success_pilots": true,
+    "build_009_repeated_full_modes_pilots": false
+  },
+  "user_reported_native_mission_1_success_prior_build": true,
+  "build_009_iphone_hardware_tested": false,
+  "build_009_full_rendered_playthrough_verified": false,
+  "full_original_audio_and_graphics_parity_verified": false,
+  "sustained_60_hz_verified": false
+}

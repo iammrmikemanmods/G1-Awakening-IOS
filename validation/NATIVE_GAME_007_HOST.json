@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-26T23:22:12.362455+00:00",
+  "build": 7,
+  "baseline_commit": "f41c436a26414df55daa92d257f942da19d80280",
+  "source_state": "Production source published on resume/native-game-007; exact portable source identities recorded below. Apple host changes require separate Apple compilation.",
+  "scope": "Linux portable contracts, original-function recovery, source-asset CPU checks and fresh complete headless Story; presentation feedback is synthetic. No current Apple/GPU/device verification is asserted by this report.",
+  "ctest": {
+    "passed": 62,
+    "total": 62,
+    "log": "validation/native_game_007_host/ctest.log",
+    "bytes": 9050,
+    "sha256": "eb00febca94be2e7fe89381d81f25f4e7286d32ba5cc0651f818d57817f8777b"
+  },
+  "focused_contract_outputs": "validation/native_game_007_host/focused-contracts.json",
+  "checks": {
+    "presentation_epoch": {
+      "checks": 103,
+      "scope": "Portable queued-callback model, including both completion/presentation orders and stale failure identity; not UIKit/Metal execution."
+    },
+    "profile_storage": {
+      "checks": 806,
+      "scope": "Actual host filesystem and version1/version2 profile migration, flags, backup safety and failure checks."
+    },
+    "campaign_controller": {
+      "checks": 92,
+      "scope": "Actual host profile consumption, persistence/failure/retry and campaign handoff checks; no UI drawing."
+    },
+    "support_tutorial": {
+      "original_cases": 2202,
+      "output_scalar_comparisons": 6606,
+      "original_profile_flag_roundtrips": 256,
+      "report": "native/research/support_tutorial_recovery/original_tutorial.json",
+      "report_sha256": "608d2427227182ffe64a31b3497b571b84e7c5758436661adc0faa75f83af07a"
+    },
+    "bitmap_font": {
+      "fixture_checks": 71678,
+      "with_source_asset_checks": 72042,
+      "original_width_draw_cases": 240,
+      "original_draw_records": 1052,
+      "report": "native/research/font_recovery/VALIDATION.json",
+      "report_sha256": "014dd564fd17d88beccf3bdef03351132dae40210c0f27fe6f0651e2b66bde03",
+      "scope": "Native metrics/draw plans and keyed source-image decoding; no original or native UIKit/GPU glyph output verified."
+    },
+    "source_support_banners": {
+      "banners": 23,
+      "selected_font_slot": 2,
+      "fallbacks": 0,
+      "report": "validation/native_game_007_host/banner-coverage.json",
+      "scope": "All actual primary-name plus text503 strings supported; CPU selection/geometry only."
+    }
+  },
+  "story": {
+    "result": "validation/native_game_007_host/story-result.json",
+    "comparison": "validation/native_game_007_host/story-comparison.json",
+    "support_report": "validation/native_game_007_host/story-support.json",
+    "outcome": "native_campaign_ending",
+    "completed_missions": 17,
+    "ticks": 17422,
+    "simulation_step_ms": 30,
+    "profile_writes": 17,
+    "checkpoint_writes": 0,
+    "live_replay_checkpoint_matches": 797,
+    "stable_result_fields_equal_build006": true,
+    "event_lines": 5461,
+    "event_bytes_equal_build006": true,
+    "support_report_equal_build006": true,
+    "gameplay_state_forced": false,
+    "presentation_feedback": "synthetic: world/camera/dialogue/focus/transform/battle/results/menu/ending",
+    "device_or_rendered_playthrough": false,
+    "tutorial_ui_executed": false,
+    "persisted_tutorial_pending": true,
+    "source_inputs": {
+      "archive": {
+        "bytes": 6994213,
+        "sha256": "663d2888982093ce66b7811ccb7a6ad3acd37fc02ffa85144775b88c39e83cb4"
+      },
+      "terrain_tables": {
+        "bytes": 480,
+        "sha256": "b870e3d74244741003c8068178e7f58bb5fbe35599599c918e024227463725a8"
+      },
+      "pilot": {
+        "bytes": 1029864,
+        "sha256": "bc60c612e7c202fbc35f116516b5cde8057858e51d318192da5628c7d28de4ea"
+      }
+    }
+  },
+  "source_sha256": {
+    "native/CMakeLists.txt": "29e65bae8d97a3050fd12e84ff41e65314e359bdf88e92ca438b620954d2431a",
+    "native/include/g1/SupportTutorial.hpp": "0533df8b8b2cc896bac9eae2b73554ef90e12ad739c6906a35e9e98d4bb7715a",
+    "native/include/g1/PresentationEpoch.hpp": "5d33342d503569cd81c5d0989bd0d7e5c55e549401eb5a3d4211d696370052e3",
+    "native/include/g1/BitmapFont.hpp": "0c4389b816c54894d22478e9a20eb4d71908702f3bddf9ddd36862366fd3da47",
+    "native/include/g1/MissionProgression.hpp": "cb5325dea7fbe840e5fefef6e41431215813306e534145cebf75d0c1ec7aac91",
+    "native/include/g1/SaveStore.hpp": "8285ac6697069dca83eb23deebd6b065aa750aaea459fc0e7d5f2f4604687f3f",
+    "native/include/g1/CampaignController.hpp": "b69f6ada9009cabfb57b45632e26b052f3e09612ac01451828360ca1cfcbcf9c",
+    "native/src/BitmapFont.cpp": "10b63c7fbcd0b3ffc123c62c6a2864025fef971ad31102fdd0a83c99b8da0209",
+    "native/src/SaveStore.cpp": "257c2c252ba2fa3de5f17c02b2de277feb132d532e24668690ab7da6d6edc4a4",
+    "native/src/CampaignController.cpp": "f97a5770c88b8e7b9abb0088b00975c9c953025ffc3916c3094d51a8f6c3443a",
+    "native/tests/support_tutorial_test.cpp": "75246f5017ba8ccc6d3a602c38546066fc0379993efa1fa056433aeb9fc4ee04",
+    "native/tests/presentation_epoch_test.cpp": "3590b8a1d2a3fee18025597aaa84b8c64e8937a46698cfdf556688f1d8ad7874",
+    "native/tests/bitmap_font_test.cpp": "c893aace55108ecf60cf91cd648eefbdc6ce92ea6b732fd57eabbeed0a0a0fae",
+    "native/tests/save_store_test.cpp": "f0c31952b75ad910e95e61c60e97574fcc8ec2671176d606a416788419b56865",
+    "native/tests/campaign_controller_test.cpp": "49ca704d8c13ffcd085149e0c27391cd17c05934a26c7e440aa5eb915e4f0947",
+    "native/tests/campaign_profile_v1_fixture.hpp": "4f4de65cc8651b6fe09f537bb9179fba1c24f5ddf59706696cecf00befd87a09"
+  },
+  "evidence_files": {
+    "validation/native_game_007_host/banner-coverage-probe.cpp": {
+      "bytes": 2751,
+      "sha256": "3674b8e1d36e65e62337f2f5b08ac92ff29f6a4a963a96a52bba2a4dcf5e7401"
+    },
+    "validation/native_game_007_host/banner-coverage.json": {
+      "bytes": 948,
+      "sha256": "10becb2c29bcb7385482c998dff28e8155d2362038656e4e7d726eb1d7cb8604"
+    },
+    "validation/native_game_007_host/ctest.log": {
+      "bytes": 9050,
+      "sha256": "eb00febca94be2e7fe89381d81f25f4e7286d32ba5cc0651f818d57817f8777b"
+    },
+    "validation/native_game_007_host/focused-contracts.json": {
+      "bytes": 915,
+      "sha256": "aa01df0321e033c26b3e76adb59059de07078098d1987fa85ca28301264920e3"
+    },
+    "validation/native_game_007_host/story-comparison.json": {
+      "bytes": 1605,
+      "sha256": "4f01256da6a49c8af06528c2a6f59944c65d2f39c4dc2410fcab020baf987d43"
+    },
+    "validation/native_game_007_host/story-result.json": {
+      "bytes": 5167,
+      "sha256": "c5b6132a981eb6a664cb00ff131a371fe6c5b9977aa6823bfb9dde9a6ee072db"
+    },
+    "validation/native_game_007_host/story-support.json": {
+      "bytes": 772,
+      "sha256": "bd66b7c6a99e44a4a4600f83d5b6752ff0784228d3a85ae85d7bedc21e5f843a"
+    }
+  },
+  "current_apple_build": "passed; see validation/APPLE_NATIVE_GAME_007.json",
+  "current_apple_gpu_execution": "passed14 tactical/support and12 M3G synthetic pixel cases; see separate Apple report",
+  "physical_iphone_xr_tested": false,
+  "full_rendered_playthrough_verified": false,
+  "sustained_60fps_verified": false,
+  "preservation": "No original archive, executable, source pixels, compiled binaries or runtime profile copied into validation evidence. Identical historical event stream referenced by hash.",
+  "published_source_commit": "62e29e63b3d881eb57345f0276ad00484abee5b4"
+}
