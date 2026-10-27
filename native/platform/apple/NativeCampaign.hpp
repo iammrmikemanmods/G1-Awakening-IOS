@@ -6,11 +6,15 @@
 #include <cmath>
 #include <cstdint>
 
-// Native campaign/menu/results surface. A token is visible only after its
-// current text has actually drawn. This is not an original background or font.
+// Native campaign/menu/results surface. Game menus use source artwork 1002,
+// with original bitmap headings and native readable body text. Geometry
+// adapts to wide screens without stretching the 480x320 source. Results and
+// script-critical panels retain their independent draw-token contract.
 @interface G1CampaignCanvas : UIView
 - (void)showTitle:(NSString*)title body:(NSString*)body token:(std::uint64_t)token;
 - (void)loadOriginalFonts:(const g1::Archive&)archive;
+- (void)loadOriginalMenuArtwork:(const g1::Archive&)archive;
+- (void)setOriginalMenuArtworkVisible:(BOOL)visible;
 - (NSInteger)originalHeadingFontSlot;
 - (void)resetPresentation;
 - (std::uint64_t)drawnToken;
@@ -25,6 +29,8 @@
     std::int32_t _backgroundOffset;
     G1BitmapFontFace* _largeOriginalFont;
     G1BitmapFontFace* _smallOriginalFont;
+    UIImage* _originalMenuArtwork;
+    BOOL _menuArtworkVisible;
 }
 - (instancetype)initWithFrame:(CGRect)frame {
     self=[super initWithFrame:frame];
@@ -36,6 +42,28 @@
     // single-line titles; leave uncovered or long text readable in UIKit.
     _largeOriginalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:0];
     _smallOriginalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:2];
+    _drawnToken=0;
+    [self setNeedsDisplay];
+}
+- (void)loadOriginalMenuArtwork:(const g1::Archive&)archive {
+    // The actual 480x320 G1 background includes the Transformers title and
+    // original faction portraits, but not a Glu splash. No new artwork is
+    // generated, stretched or embedded into the source repository.
+    const auto resources=archive.find(1002,0xb7178678U);
+    if(resources.size()!=1)throw g1::FormatError("Original G1 menu art identity is ambiguous");
+    const auto bytes=archive.read(resources.front());
+    const auto image=g1::decode_png(bytes);
+    if(image.width!=480 || image.height!=320)
+        throw g1::FormatError("Original G1 menu artwork dimensions changed");
+    _originalMenuArtwork=[UIImage imageWithData:[NSData dataWithBytes:bytes.data() length:bytes.size()]];
+    if(!_originalMenuArtwork.CGImage)
+        throw g1::FormatError("Native original G1 menu art could not be decoded");
+    _drawnToken=0;
+    [self setNeedsDisplay];
+}
+- (void)setOriginalMenuArtworkVisible:(BOOL)visible {
+    if(_menuArtworkVisible==visible)return;
+    _menuArtworkVisible=visible;
     _drawnToken=0;
     [self setNeedsDisplay];
 }
@@ -77,7 +105,8 @@
     const CGRect body=[_body ?: @"" boundingRectWithSize:CGSizeMake(width-32,CGFLOAT_MAX)
         options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
         attributes:[self bodyAttributes] context:nil];
-    return std::max(CGFloat(150),CGFloat(90)+std::ceil(body.size.height));
+    return _menuArtworkVisible ? std::max(CGFloat(240),CGFloat(148)+std::ceil(body.size.height)) :
+         std::max(CGFloat(150),CGFloat(90)+std::ceil(body.size.height));
 }
 - (std::uint64_t)drawnToken { return _drawnToken; }
 - (void)setBackgroundOffset:(std::int32_t)offset {
@@ -89,21 +118,52 @@
     if(self.bounds.size.width<=32 || self.bounds.size.height<=0 || !_heading || !_body)return;
     [[UIColor colorWithRed:0.025 green:0.045 blue:0.075 alpha:1] setFill];
     UIRectFill(self.bounds);
-    // The recovered results accumulator drives this native background. Its
-    // pattern is a host UI choice, never a claim of original image fidelity.
-    [[UIColor colorWithWhite:0.5 alpha:0.06] setFill];
-    const CGFloat phase=std::fmod(static_cast<double>(_backgroundOffset)/65536.0,48.0);
-    for(CGFloat y=phase-48;y<self.bounds.size.height;y+=48)
-        UIRectFill(CGRectMake(0,y,self.bounds.size.width,1));
-    const CGRect headingRect=CGRectMake(16,14,self.bounds.size.width-32,34);
-    G1BitmapFontFace* face=[self originalHeadingFace];
-    if(face) [face drawText:_heading rect:headingRect height:22 alignment:NSTextAlignmentLeft];
-    else [_heading drawInRect:headingRect withAttributes:@{
-        NSFontAttributeName:[UIFont systemFontOfSize:22 weight:UIFontWeightBold],
-        NSForegroundColorAttributeName:[UIColor colorWithRed:1 green:0.84 blue:0.25 alpha:1]}];
-    [_body drawWithRect:CGRectMake(16,62,self.bounds.size.width-32,self.bounds.size.height-74)
-        options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
-        attributes:[self bodyAttributes] context:nil];
+    if(_menuArtworkVisible && _originalMenuArtwork) {
+        // Preserve the complete old 480x320 picture without independent X/Y
+        // stretching. Dark side pillars accommodate the wide XR aspect.
+        const CGFloat scale=std::min(self.bounds.size.width/480.0,self.bounds.size.height/320.0);
+        const CGSize pic=CGSizeMake(480.0*scale,320.0*scale);
+        const CGRect dest=CGRectMake((self.bounds.size.width-pic.width)*0.5,
+            (self.bounds.size.height-pic.height)*0.5,pic.width,pic.height);
+        [_originalMenuArtwork drawInRect:dest];
+        // Thin source-colour borders and a readable native transcript strip.
+        [[UIColor colorWithRed:0.72 green:0.1 blue:0.13 alpha:0.8] setStroke];
+        UIBezierPath* frame=[UIBezierPath bezierPathWithRect:CGRectInset(self.bounds,1,1)];
+        frame.lineWidth=2;[frame stroke];
+        const CGFloat top=std::max(CGFloat(104),self.bounds.size.height*0.45);
+        const CGFloat bodyHeight=std::max(CGFloat(42),self.bounds.size.height-top-10);
+        [[UIColor colorWithRed:0.08 green:0.018 blue:0.034 alpha:0.85] setFill];
+        UIRectFill(CGRectMake(5,top-30,self.bounds.size.width-10,bodyHeight+34));
+        [[UIColor colorWithRed:0.8 green:0.12 blue:0.15 alpha:0.9] setFill];
+        UIRectFill(CGRectMake(5,top-30,self.bounds.size.width-10,2));
+        const CGRect headingRect=CGRectMake(18,top-28,self.bounds.size.width-36,26);
+        G1BitmapFontFace* face=[self originalHeadingFace];
+        if(face)[face drawText:_heading rect:headingRect height:18 alignment:NSTextAlignmentCenter];
+        else [_heading drawInRect:headingRect withAttributes:@{
+            NSFontAttributeName:[UIFont boldSystemFontOfSize:18],
+            NSForegroundColorAttributeName:UIColor.whiteColor}];
+        NSMutableDictionary* attr=[[self bodyAttributes] mutableCopy];
+        attr[NSFontAttributeName]=[UIFont systemFontOfSize:13 weight:UIFontWeightMedium];
+        [_body drawWithRect:CGRectMake(20,top+3,self.bounds.size.width-40,bodyHeight-8)
+            options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+            attributes:attr context:nil];
+    } else {
+        // Results/dialogue have distinct original state and presentation
+        // guards. Retain readable text with the animated results accumulator.
+        [[UIColor colorWithWhite:0.5 alpha:0.06] setFill];
+        const CGFloat phase=std::fmod(static_cast<double>(_backgroundOffset)/65536.0,48.0);
+        for(CGFloat y=phase-48;y<self.bounds.size.height;y+=48)
+            UIRectFill(CGRectMake(0,y,self.bounds.size.width,1));
+        const CGRect headingRect=CGRectMake(16,14,self.bounds.size.width-32,34);
+        G1BitmapFontFace* face=[self originalHeadingFace];
+        if(face)[face drawText:_heading rect:headingRect height:22 alignment:NSTextAlignmentLeft];
+        else [_heading drawInRect:headingRect withAttributes:@{
+            NSFontAttributeName:[UIFont systemFontOfSize:22 weight:UIFontWeightBold],
+            NSForegroundColorAttributeName:[UIColor colorWithRed:1 green:0.84 blue:0.25 alpha:1]}];
+        [_body drawWithRect:CGRectMake(16,62,self.bounds.size.width-32,self.bounds.size.height-74)
+            options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+            attributes:[self bodyAttributes] context:nil];
+    }
     _drawnToken=_token;
 }
 @end
