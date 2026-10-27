@@ -1918,7 +1918,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     const auto l=g1::adaptive_ui::layout(self.view);
     if(l.scale<=0)return;
     const CGFloat scale=l.scale,extra=l.virtual_width-480.0;
-    const auto projected=[&](Rect r,Anchor h=Anchor::center,Anchor v=Anchor::center) {
+    const auto projected=[&](g1::adaptive::Rect r,Anchor h=Anchor::center,Anchor v=Anchor::center) {
         return g1::adaptive_ui::cg(l.place(r,h,v));
     };
     _gameHudFrame.frame=g1::adaptive_ui::cg(l.bottom(62));
@@ -1943,7 +1943,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [_dialogueCanvas setPresentationScale:scale];
     _menuButton.frame=projected({0,0,60,49},Anchor::start,Anchor::start);
     _commands.frame=self.view.bounds;
-    const auto place=[&](UIButton* button,Rect r,Anchor h){button.frame=projected(r,h);};
+    const auto place=[&](UIButton* button,g1::adaptive::Rect r,Anchor h){button.frame=projected(r,h);};
     using namespace g1::original_presentation;
     place(_healButton,source_left_actions[0],Anchor::start);
     place(_attackButton,source_left_actions[1],Anchor::start);
