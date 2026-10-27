@@ -14,6 +14,9 @@
 #include "g1/SupportDisplayGate.hpp"
 #include "g1/SupportOverlayAssets.hpp"
 #include "g1/SupportGeometry.hpp"
+#include "g1/SupportTutorial.hpp"
+#include "g1/TextureEnhancement.hpp"
+#include "g1/PresentationEpoch.hpp"
 #include "g1/InitialPresentation.hpp"
 #include "g1/GameSession.hpp"
 #include "g1/SessionSave.hpp"
@@ -122,9 +125,11 @@ UIButton* action_button(NSString* title, id target, SEL selector) {
     [button setTitle:title forState:UIControlStateNormal];
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [button setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateDisabled];
-    button.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightSemibold];
-    button.backgroundColor = [UIColor colorWithWhite:0.12 alpha:0.92];
-    button.layer.cornerRadius = 7;
+    button.titleLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:13] ?: [UIFont boldSystemFontOfSize:13];
+    button.backgroundColor = [UIColor colorWithRed:0.18 green:0.024 blue:0.045 alpha:0.96];
+    button.layer.borderWidth = 1.0;
+    button.layer.borderColor = [UIColor colorWithRed:0.68 green:0.22 blue:0.26 alpha:1].CGColor;
+    button.layer.cornerRadius = 3;
     [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
     [button.widthAnchor constraintGreaterThanOrEqualToConstant:82].active = YES;
     [button.heightAnchor constraintEqualToConstant:40].active = YES;
@@ -174,7 +179,7 @@ struct NativePresentedFrame {
         bool complete{};
         std::size_t queued_draws{};
     };
-    std::uint64_t scene_revision{}, content_generation{};
+    std::uint64_t scene_revision{}, content_generation{}, presentation_epoch{};
     std::optional<std::size_t> mission_camera;
     std::optional<std::uint64_t> session_focus;
     std::optional<std::uint64_t> world;
@@ -195,7 +200,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena, arena_opponent };
+enum class NativePanel { none, startup, pause, results, ending, menu, mission_select, settings, help, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -203,6 +208,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)rebuildScene:(BOOL)resetPlayback;
 - (void)prepareBattle;
 - (void)showSupportHelper;
+- (void)requestSupportTutorial;
+- (void)retrySupportTutorial;
 - (void)maintainMusicAfterStep:(g1::MusicMaintenanceSite)site;
 - (void)finishBattleFrame:(const NativePresentedFrame::Battle&)frame;
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame;
@@ -222,6 +229,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     MTKView* _metalView;
     id<MTLCommandQueue> _queue;
     NSMutableDictionary<NSNumber*, id<MTLTexture>>* _textures;
+    NSMutableDictionary<NSNumber*, id<MTLTexture>>* _modernTextures;
     id<MTLTexture> _white;
     G1WorldTitleLabel* _title;
     UILabel* _hint;
@@ -270,6 +278,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     NSString* _supportSavedTitle;
     g1::SupportDisplayGate _supportDisplay;
     std::uint64_t _supportTicks,_supportPresentedFrames,_supportSequences;
+    std::uint64_t _supportTutorialRequests;
+    bool _supportTutorialRetryRequired;
     std::vector<std::shared_ptr<g1::MetalM3GModel>> _battleModels;
     std::unique_ptr<g1::MissionScene> _scene;
     std::unique_ptr<g1::GameSession> _session;
@@ -321,6 +331,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     std::uint64_t _panelToken;
     std::uint64_t _localPanelToken;
     std::uint32_t _resultsInputEdges;
+    std::int32_t _missionPickerPage;
+    std::uint8_t _missionPickerGroup;
     std::int32_t _pendingArenaIndex;
     std::uint8_t _pendingArenaFaction;
     std::vector<std::uint32_t> _pendingMessageIds;
@@ -342,12 +354,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     std::uint64_t _battlePresentedToken, _battlePreparedFrames, _battlePresentedFrames;
     std::uint64_t _lastBattleFinalToken, _lastBattleFinalRevision, _battleQueuedDrawsPresented;
     std::uint64_t _sceneRevision, _sceneRebuilds, _sessionInstalls;
+    g1::PresentationEpoch _presentationEpoch;
     std::uint64_t _focusReports, _transformReports, _spawnPlaybackResets;
     std::uint64_t _worldReports, _checkpointWrites, _checkpointLoads, _checkpointRetirements;
     std::uint64_t _healActions, _upgradeActions, _endTurnActions, _resultsReports, _endingReports;
     std::uint64_t _staleGpuErrors;
     std::uint8_t _lastMissionMode;
     bool _clockStarted, _loaded, _failed, _moveMode, _attackMode, _rangeDirty;
+    bool _graphicsModern, _showDiagnostics, _settingsFromPause;
     NSString* _failure;
     NSString* _notice;
     double _noticeUntil;
@@ -577,12 +591,21 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         _terrainTables = g1::decode_terrain_tables(_terrainTableBytes);
         const auto& archive = *_archive;
         _text = std::make_unique<g1::TextTable>(g1::load_text_table(archive));
+        [_title loadOriginalFonts:archive];
+        [_campaignCanvas loadOriginalFonts:archive];
+        [_campaignCanvas loadOriginalMenuArtwork:archive];
+        [_battleCanvas loadOriginalFonts:archive];
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
         _randomSeed = static_cast<std::uint32_t>(std::time(nullptr));
         _audio = [[G1AppleAudio alloc] initWithArchive:archive];
-        [NSUserDefaults.standardUserDefaults registerDefaults:@{@"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES}];
+        [NSUserDefaults.standardUserDefaults registerDefaults:@{
+            @"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES,
+            @"G1GraphicsModern":@NO,@"G1DiagnosticsEnabled":@NO}];
+        _graphicsModern=[NSUserDefaults.standardUserDefaults boolForKey:@"G1GraphicsModern"];
+        _showDiagnostics=[NSUserDefaults.standardUserDefaults boolForKey:@"G1DiagnosticsEnabled"];
+        [self updateDiagnosticsVisibility];
         [_audio setMusicEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1MusicEnabled"]
             soundEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1SoundEnabled"]];
         for (std::int32_t group=0;group<3;++group)
@@ -631,8 +654,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)showPanel:(NativePanel)purpose title:(NSString*)title body:(NSString*)body token:(std::uint64_t)token {
     const bool changed=_panelPurpose!=purpose || _panelToken!=token;
-    if(changed){_supportDisplay.invalidate();}
+    if(changed){_supportDisplay.invalidate();_presentationEpoch.invalidate();}
     _panelPurpose=purpose;_panelToken=token;
+    [_campaignCanvas setOriginalMenuArtworkVisible:
+        purpose==NativePanel::startup || purpose==NativePanel::menu ||
+        purpose==NativePanel::settings || purpose==NativePanel::help ||
+        purpose==NativePanel::credits || purpose==NativePanel::pause ||
+        purpose==NativePanel::mission_select || purpose==NativePanel::arena ||
+        purpose==NativePanel::arena_opponent];
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
@@ -654,7 +683,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     static const g1::MenuMusicNode enableSounds{}, pause{}, unitActions{}, opponent{&faction};
     const g1::MenuMusicNode* current=nullptr;
     switch(_panelPurpose) {
-    case NativePanel::startup: case NativePanel::menu: current=&mainMenu;break;
+    case NativePanel::startup: case NativePanel::menu:
+    case NativePanel::settings: case NativePanel::help: case NativePanel::credits:
+        current=&mainMenu;break;
+    case NativePanel::mission_select: current=&missionList;break;
     case NativePanel::arena: current=&faction;break;
     case NativePanel::arena_opponent: current=&opponent;break;
     case NativePanel::pause: current=&pause;break;
@@ -670,6 +702,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)hidePanel {
     _supportDisplay.invalidate();
+    _presentationEpoch.invalidate();
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
     [_campaignCanvas resetPresentation];
@@ -720,8 +753,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
     [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
     [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
-    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
-    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:@"Settings" action:@selector(openSettings)];
+    [self addCampaignButton:@"Help" action:@selector(showHelpMenu)];
+    [self addCampaignButton:@"Credits" action:@selector(showCreditsMenu)];
     if(_session && _campaign->state().gate==g1::CampaignControllerGate::idle)
         [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
 }
@@ -788,24 +822,59 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)chooseArena { if(_campaign && _campaign->profile().completed[1])[self chooseCampaign:2]; }
 
 - (void)chooseCampaign:(std::uint8_t)group {
-    if(!_campaign)return;
+    if(!_campaign || group>2)return;
+    _missionPickerGroup=group;
+    _missionPickerPage=0;
+    [self showMissionPicker];
+}
+- (void)showMissionPicker {
+    if(!_campaign || _missionPickerGroup>2)return;
+    const auto group=_missionPickerGroup;
     const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
-    const auto maximum=group==2 ? count-1 : std::min(count-1,_campaign->profile().highest_unlocked.at(group));
-    UIAlertController* menu=[UIAlertController alertControllerWithTitle:[self originalText:group==0 ? 617 : group==1 ? 1151 : 1190]
-        message:@"Choose an unlocked mission. A new mission replaces Continue when it starts."
-        preferredStyle:UIAlertControllerStyleActionSheet];
-    __weak G1ViewController* weakSelf=self;
-    for(std::int32_t index=0;index<=maximum;++index) {
-        NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2 ? 536 : 1242],index+1];
-        [menu addAction:[UIAlertAction actionWithTitle:label style:UIAlertActionStyleDefault
-            handler:^(UIAlertAction* action){(void)action;
-                if(group==2)[weakSelf chooseArenaFaction:index];
-                else [weakSelf startCampaign:group mission:index faction:0 opponent:1];}]];
+    const auto maximum=group==2 ? count-1 :
+        std::min(count-1,_campaign->profile().highest_unlocked.at(group));
+    const auto start=_missionPickerPage*8;
+    if(start<0 || start>maximum)return;
+    NSString* title=[self originalText:group==0?617:group==1?1151:1190];
+    NSString* body=[NSString stringWithFormat:
+        @"Select an unlocked mission. Page %d of %d. Starting a mission replaces Continue only after the new session has installed.",
+        int(_missionPickerPage+1),int(maximum/8+1)];
+    [self showPanel:NativePanel::mission_select title:title body:body token:++_localPanelToken];
+    for(std::int32_t index=start;index<=maximum && index<start+8;++index) {
+        NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2?536:1242],index+1];
+        UIButton* button=[self addCampaignButton:label action:@selector(selectMissionFromButton:)];
+        button.tag=index;
     }
-    [menu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-    menu.popoverPresentationController.sourceView=_campaignButtons;
-    menu.popoverPresentationController.sourceRect=_campaignButtons.bounds;
-    [self presentViewController:menu animated:YES completion:nil];
+    if(_missionPickerPage>0)[self addCampaignButton:@"Previous" action:@selector(previousMissionPage)];
+    if(start+8<=maximum)[self addCampaignButton:@"Next" action:@selector(nextMissionPage)];
+    [self addCampaignButton:@"Back" action:@selector(showProfileMenu)];
+}
+- (void)selectMissionFromButton:(UIButton*)button {
+    if(_panelPurpose!=NativePanel::mission_select || !button ||
+       _missionPickerGroup>2 || !_campaign)return;
+    const auto group=_missionPickerGroup;
+    const auto index=static_cast<std::int32_t>(button.tag);
+    const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
+    const auto maximum=group==2 ? count-1 :
+        std::min(count-1,_campaign->profile().highest_unlocked.at(group));
+    if(index<0 || index>maximum || index/8!=_missionPickerPage)return;
+    if(group==2)[self chooseArenaFaction:index];
+    else [self startCampaign:group mission:index faction:0 opponent:1];
+}
+- (void)previousMissionPage {
+    if(_panelPurpose!=NativePanel::mission_select || _missionPickerPage<=0)return;
+    --_missionPickerPage;[self showMissionPicker];
+}
+- (void)nextMissionPage {
+    if(_panelPurpose!=NativePanel::mission_select || !_campaign)return;
+    const auto group=_missionPickerGroup;
+    if(group>2)return;
+    const auto maximum=group==2 ?
+        static_cast<std::int32_t>(g1::campaign_mission_count(2))-1 :
+        std::min(static_cast<std::int32_t>(g1::campaign_mission_count(group))-1,
+                 _campaign->profile().highest_unlocked.at(group));
+    if((_missionPickerPage+1)*8>maximum)return;
+    ++_missionPickerPage;[self showMissionPicker];
 }
 
 - (void)chooseArenaFaction:(std::int32_t)index {
@@ -876,27 +945,97 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
     if(_checkpointRetryRequired)[self addCampaignButton:@"Retry save" action:@selector(retryCheckpoint)];
     [self addCampaignButton:[self originalText:1169] action:@selector(showProfileMenu)];
-    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
-    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:@"Settings" action:@selector(openSettings)];
+    [self addCampaignButton:@"Help" action:@selector(showHelpMenu)];
 }
 
 - (void)resumeGame { if(_session && !_failed){[self hidePanel];[self refreshControls];} }
 - (void)retryCheckpoint {
     _checkpointRetryRequired=false;_checkpointRequested=true;[self saveCheckpoint];[self showPauseMenu];
 }
+- (void)updateDiagnosticsVisibility {
+    _fps.hidden=!_showDiagnostics;
+    _worldLegend.hidden=!_showDiagnostics;
+    _reportButton.hidden=!_showDiagnostics;
+}
+
+- (void)openSettings {
+    _settingsFromPause=_panelPurpose==NativePanel::pause;
+    [self showSettingsMenu];
+}
+
+- (void)returnFromSettings {
+    if(_settingsFromPause && _session && !_failed)[self showPauseMenu];
+    else [self showProfileMenu];
+}
+
+- (void)showSettingsMenu {
+    NSString* body=[NSString stringWithFormat:
+        @"Classic preserves the original source textures. Modern applies the PC port's lossless Scale4x rule to eligible 2D robot/decorative sprites at native resolution. Original 3D materials, map atlas and font sheets remain untouched.\n\n%@  /  %@",
+        _graphicsModern?@"MODERN":@"CLASSIC",_showDiagnostics?@"DIAGNOSTICS ON":@"DIAGNOSTICS OFF"];
+    [self showPanel:NativePanel::settings title:@"SETTINGS" body:body token:++_localPanelToken];
+    [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
+    [self addCampaignButton:[_audio musicEnabled]?@"Music: On":@"Music: Off" action:@selector(toggleMusic)];
+    [self addCampaignButton:[_audio soundEnabled]?@"Sound: On":@"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:_showDiagnostics?@"Diagnostics: On":@"Diagnostics: Off" action:@selector(toggleDiagnostics)];
+    [self addCampaignButton:@"Export report" action:@selector(shareReport)];
+    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+}
+
+- (void)showHelpMenu {
+    if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
+    [self showPanel:NativePanel::help title:@"HELP"
+        body:@"TAP a robot to select it. Choose MOVE then tap an available tile twice to confirm the route. ATTACK uses the target you tap. CAPTURE, TRANSFORM, REPAIR, UPGRADE and ACTIVATE use the displayed action buttons. END TURN advances to the enemy. Swipe the battlefield to pan, pinch to zoom, and use Reset view to frame the map.\n\nStory unlocks Showdown; Showdown unlocks Cybertron Arena. Pause with Menu; use Continue after relaunch to restore the last safe checkpoint."
+        token:++_localPanelToken];
+    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+}
+
+- (void)showCreditsMenu {
+    if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
+    [self showPanel:NativePanel::credits title:@"CREDITS"
+        body:@"TRANSFORMERS G1: AWAKENING\n\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
+        token:++_localPanelToken];
+    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+}
+
+- (void)toggleGraphics {
+    const bool next=!_graphicsModern;
+    if(next) {
+        try {
+            [self primeModernTextures];
+        } catch(const std::exception& e) {
+            [self showPanel:NativePanel::settings title:@"Graphics could not be changed"
+                body:native_text(e.what()) token:++_localPanelToken];
+            [self addCampaignButton:@"Back" action:@selector(showSettingsMenu)];
+            return;
+        }
+    }
+    _graphicsModern=next;
+    [NSUserDefaults.standardUserDefaults setBool:next forKey:@"G1GraphicsModern"];
+    ++_contentGeneration;
+    [self showSettingsMenu];
+}
+
+- (void)toggleDiagnostics {
+    _showDiagnostics=!_showDiagnostics;
+    [NSUserDefaults.standardUserDefaults setBool:_showDiagnostics forKey:@"G1DiagnosticsEnabled"];
+    [self updateDiagnosticsVisibility];
+    [self showSettingsMenu];
+}
+
 - (void)toggleMusic {
     const BOOL enabled=![_audio musicEnabled];
     [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1MusicEnabled"];
     [_audio setMusicEnabled:enabled soundEnabled:[_audio soundEnabled]];
-    if(enabled && _panelPurpose==NativePanel::pause && _lastMapMusic)
+    if(enabled && _settingsFromPause && _lastMapMusic)
         [self dispatchAudio:*_lastMapMusic];
-    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+    [self showSettingsMenu];
 }
 - (void)toggleSound {
     const BOOL enabled=![_audio soundEnabled];
     [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1SoundEnabled"];
     [_audio setMusicEnabled:[_audio musicEnabled] soundEnabled:enabled];
-    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+    [self showSettingsMenu];
 }
 
 - (void)installSession:(std::unique_ptr<g1::GameSession>)session {
@@ -908,6 +1047,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     // repeat in a new session. Invalidate every old drawable callback before
     // replacing it, and clear UIKit caches before showing the new requests.
     ++_sceneRevision; ++_sessionInstalls;
+    _presentationEpoch.invalidate();
     _session = std::move(session);
     _title.text=[self originalText:715];
     _scene.reset(); _cameraPan.reset();
@@ -927,6 +1067,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _supportPresentation.reset(); _supportUnitDraws.clear(); _supportCursor.reset();
     _supportSavedCursor.reset(); _supportDisplay.invalidate();
     _supportSavedTitle=nil;
+    _supportTutorialRetryRequired=false;
     _presentedMessageIds.clear();
     _notice = nil; _noticeUntil = 0;
     _checkpointCommand=std::numeric_limits<std::size_t>::max();
@@ -945,6 +1086,38 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     }
     _loaded = true;
     _failed=false;_failure=nil;
+}
+
+
+- (void)primeModernTextures {
+    // This updates only derived host textures. The original archive,
+    // gameplay map, sprite geometry and shared RNG remain untouched.
+    if(!_renderer || !_scene || !_archive)return;
+    if(!_modernTextures)_modernTextures=[NSMutableDictionary new];
+    const auto cache=[&](std::uint32_t id,const g1::RgbaImage& image) {
+        if(image.width!=512 || image.height!=512)
+            throw g1::FormatError("Modern sprite source image differs from verified 512x512");
+        if(!_modernTextures[@(id)])
+            _modernTextures[@(id)]=_renderer->texture(g1::scale4x_rgba(image));
+    };
+    for(const auto& image:_scene->textures) {
+        const bool sprite=std::any_of(_scene->sprites.begin(),_scene->sprites.end(),[&](const auto& item) {
+            return item.resource.image_id==image.first;
+        });
+        if(sprite)cache(image.first,image.second);
+    }
+    for(const auto& decoration:_terrainSpriteDraws) {
+        const auto& resource=decoration.resource;
+        if(_modernTextures[@(resource.image_id)])continue;
+        const auto matches=_archive->find(resource.image_id,resource.resource_key);
+        if(matches.size()!=1)
+            throw g1::FormatError("Modern terrain decoration source is missing or ambiguous");
+        cache(resource.image_id,g1::decode_png(_archive->read(matches.front())));
+    }
+}
+- (id<MTLTexture>)spriteTexture:(std::uint32_t)resource {
+    if(_graphicsModern && _modernTextures[@(resource)])return _modernTextures[@(resource)];
+    return _textures[@(resource)];
 }
 
 - (void)rebuildScene:(BOOL)resetPlayback {
@@ -970,8 +1143,17 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         }
     }
     if (!_textures) _textures = [NSMutableDictionary new];
-    for (const auto& image : next->textures)
+    if (!_modernTextures) _modernTextures = [NSMutableDictionary new];
+    for (const auto& image : next->textures) {
         if (!_textures[@(image.first)]) _textures[@(image.first)] = _renderer->texture(image.second);
+        if(_graphicsModern && !_modernTextures[@(image.first)]) {
+            const bool sprite=std::any_of(next->sprites.begin(),next->sprites.end(),[&](const auto& item) {
+                return item.resource.image_id==image.first;
+            });
+            if(sprite && image.second.width==512 && image.second.height==512)
+                _modernTextures[@(image.first)]=_renderer->texture(g1::scale4x_rgba(image.second));
+        }
+    }
     if (!_white) _white = _renderer->texture({1,1,{255,255,255,255}});
 
     std::map<std::uint8_t,std::size_t> oldByType;
@@ -1206,6 +1388,12 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     throw g1::FormatError("Terrain sprite atlas dimensions differ from original512x512");
                 _textures[@(resource.image_id)]=_renderer->texture(image);
             }
+            if(_graphicsModern && !_modernTextures[@(resource.image_id)]) {
+                const auto image=g1::decode_png(read(resource.image_id,resource.resource_key));
+                if(image.width!=512 || image.height!=512)
+                    throw g1::FormatError("Modern decoration source is not a 512x512 atlas");
+                _modernTextures[@(resource.image_id)]=_renderer->texture(g1::scale4x_rgba(image));
+            }
             if(!_terrainSpriteMeshes.count(resource.descriptor_id)) {
                 const g1::AtlasDescriptor descriptor(read(resource.descriptor_id,resource.resource_key));
                 std::vector<std::shared_ptr<g1::MetalMesh>> frames;
@@ -1248,6 +1436,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _clockStarted = false;
     _simulationClock.reset();
     _supportDisplay.invalidate();
+    _presentationEpoch.invalidate();
     _inputEdges = 0;
     if (_session) _previousUnits = _session->units();
     _frameStats.times.clear();
@@ -1256,6 +1445,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)active:(NSNotification*)notification {
     (void)notification;
+    _presentationEpoch.invalidate();
     _clockStarted = false;
     _simulationClock.reset();
     if (_session) _previousUnits = _session->units();
@@ -1593,8 +1783,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                         throw g1::FormatError("Missing pre-combat support sprite animation");
                     frame=sprite.descriptor.animations()[animation].front().frame_index;
                 }
-                snapshots.push_back({_spriteMeshes.at(i).at(frame),_textures[@(sprite.resource.image_id)],
-                    unit_model(_session->world(),unit),{{1,1,1,1}},true});
+                snapshots.push_back({_spriteMeshes.at(i).at(frame),[self spriteTexture:sprite.resource.image_id],
+                    unit_model(_session->world(),unit),{{1,1,1,1}},true,{},false,_graphicsModern});
             }
         }
         _supportSavedCursor=_returnCursor;
@@ -1616,6 +1806,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         if(!_supportPresentation->status().complete) {
             ++_supportSequences;[self showSupportHelper];
             _clockStarted=false;_simulationClock.reset();++_contentGeneration;
+            [self requestSupportTutorial];
         }
     }
     if(!_supportPresentation->status().complete)return;
@@ -1666,6 +1857,46 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     ++_contentGeneration;
 }
 
+- (void)requestSupportTutorial {
+    if(!_campaign || !_session || !_session->battle() || !_supportPresentation ||
+       _supportPresentation->status().complete)return;
+    const auto& pending=*_session->battle();
+    g1::SupportTutorialSlots owners{};
+    if(pending.exchange.support_units.size()>owners.size())
+        throw g1::FormatError("Support tutorial helper list exceeds original six slots");
+    for(std::size_t i=0;i<pending.exchange.support_units.size();++i)
+        owners[i]=_session->world().units.at(pending.exchange.support_units[i]).owner;
+    const auto player=_session->current_player();
+    const auto decision=g1::support_tutorial_entry(
+        _campaign->profile().support_tutorial_pending ? 1U : 0U,player,
+        _session->turn().controllers.at(player),owners);
+    if(!decision.request_message)return;
+    // Original code clears its profile flag before requesting this text.
+    // Native policy also persists that change atomically before the popup;
+    // a failed write keeps the pending battle and exposes an explicit retry.
+    const auto written=_campaign->consume_support_tutorial();
+    if(!written.succeeded) {
+        _supportTutorialRetryRequired=true;
+        [self showPanel:NativePanel::tutorial_save_error title:@"Tutorial progress could not be saved"
+            body:native_text(written.error) token:++_localPanelToken];
+        [self addCampaignButton:@"Retry save" action:@selector(retrySupportTutorial)];
+        return;
+    }
+    _supportTutorialRetryRequired=false;
+    _pendingMessageIds.push_back(g1::support_tutorial_text_resource);
+    ++_supportTutorialRequests;
+    [self showNextMessage];
+}
+
+- (void)retrySupportTutorial {
+    if(!_supportTutorialRetryRequired || _panelPurpose!=NativePanel::tutorial_save_error)return;
+    try {
+        [self hidePanel];
+        [self requestSupportTutorial];
+        [self refreshControls];
+    } catch(const std::exception& error) { [self fail:native_text(error.what())]; }
+}
+
 - (void)refreshControls {
     if (!_session || _failed) return;
     if(_panelPurpose!=NativePanel::none) {
@@ -1694,6 +1925,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     if (battle) {
         [self prepareBattle];
         _commands.hidden=YES;_dialoguePanel.hidden=YES;
+        // prepareBattle may have opened the original one-time explanation
+        // or a retryable profile-save error. Preserve that modal's ownership.
+        if(_panelPurpose!=NativePanel::none){_battlePanel.hidden=YES;return;}
         if(_supportPresentation && !_supportPresentation->status().complete) {
             _battlePanel.hidden=YES;_title.hidden=NO;
             _hint.hidden=YES;_worldLegend.hidden=YES;
@@ -1821,6 +2055,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)beginProduction { [self showProductionTypes:g1::ProductionMode::ordinary]; }
 - (void)beginDeploy { [self showProductionTypes:g1::ProductionMode::deploy]; }
 - (void)cancelProduction {
+    _presentationEpoch.invalidate();
     _typeListOpen=false;_productionMode.reset();_productionType.reset();_productionPlacement.reset();
     _pendingDestination.reset();_rangeDirty=true;_clockStarted=false;_simulationClock.reset();
     [self refreshControls];
@@ -1854,7 +2089,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             handler:^(UIAlertAction* action){(void)action;[weakSelf cancelProduction];}]];
         choices.popoverPresentationController.sourceView=_commands;
         choices.popoverPresentationController.sourceRect=_commands.bounds;
-        _typeListOpen=true;_simulationClock.reset();
+        _typeListOpen=true;_simulationClock.reset();_presentationEpoch.invalidate();
         [self presentViewController:choices animated:YES completion:nil];
         choices.presentationController.delegate=self;
     } catch(const std::exception& e){[self fail:native_text(e.what())];}
@@ -1865,7 +2100,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     if(session!=_sessionInstalls || !_session || !_session->selected() ||
        producer>=_session->units().size() || *_session->selected()!=producer ||
        _session->unit_spawn_generation(producer)!=spawn)return;
-    _typeListOpen=false;_clockStarted=false;_simulationClock.reset();
+    _typeListOpen=false;_clockStarted=false;_simulationClock.reset();_presentationEpoch.invalidate();
     try {
         const auto candidates=_session->selected_production_candidates(mode);
         if(std::find(candidates.begin(),candidates.end(),type)==candidates.end())
@@ -2305,6 +2540,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     for (std::uint32_t n=0;n<steps;++n) {
         _previousUnits = _session->units();
         [self refreshControls];
+        if(_panelPurpose!=NativePanel::none)break;
         if (_session->battle()) {
             if(_supportPresentation && !_supportPresentation->status().complete) {
                 const auto status=_supportPresentation->status();
@@ -2395,7 +2631,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame {
-    if (!frame || frame->scene_revision != _sceneRevision) return;
+    if (!frame || frame->scene_revision != _sceneRevision ||
+        !_presentationEpoch.matches(frame->presentation_epoch)) return;
     if (_failed || _metalView.paused || time <= 0 || !std::isfinite(time)) return;
     if (!_frameStats.times.empty() && time <= _frameStats.times.back()) return;
     _frameStats.add(time);
@@ -2464,8 +2701,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
 }
 
-- (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision {
-    if(revision!=_sceneRevision){++_staleGpuErrors;return;}
+- (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision epoch:(std::uint64_t)epoch {
+    if(revision!=_sceneRevision || !_presentationEpoch.matches(epoch)){++_staleGpuErrors;return;}
     [self fail:message];
 }
 
@@ -2493,6 +2730,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             frame->content_generation = _contentGeneration;
             frame->scene_revision = _sceneRevision;
             if(_session->battle())[self prepareBattle];
+            frame->presentation_epoch = _presentationEpoch.current();
             const bool support=_session->battle() && _supportPresentation &&
                 !_supportPresentation->status().complete;
             if (_session->battle() && !support) {
@@ -2546,8 +2784,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                 // presentation policy, not a claim of the full original draw tree.
                 for(const auto& decoration:_terrainSpriteDraws)
                     draws.push_back({_terrainSpriteMeshes.at(decoration.resource.descriptor_id).at(decoration.frame_index),
-                        _textures[@(decoration.resource.image_id)],
-                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true});
+                        [self spriteTexture:decoration.resource.image_id],
+                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true,{},false,_graphicsModern});
                 for(const auto& overlay:_worldOverlays)
                     draws.push_back({overlay.mesh,_white,camera,overlay.tint,false});
                 if(!support) {
@@ -2588,9 +2826,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     return pa[2] > pb[2];
                 });
                 for (const auto i : order) {
-                    const auto texture = _textures[@(_scene->sprites[i].resource.image_id)];
+                    const auto texture = [self spriteTexture:_scene->sprites[i].resource.image_id];
                     draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
-                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true});
+                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true,{},false,_graphicsModern});
                 }
                 }
                 _renderer->encode(command,pass,draws);
@@ -2637,7 +2875,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     NSString* reason = completed.error.localizedDescription ?: @"Metal command failed";
                     dispatch_async(dispatch_get_main_queue(),^{
                         delivery->failed=true;
-                        [weakSelf recordCommandFailure:reason revision:presentedFrame->scene_revision];
+                        [weakSelf recordCommandFailure:reason revision:presentedFrame->scene_revision
+                            epoch:presentedFrame->presentation_epoch];
                     });
                 } else if (completed.status == MTLCommandBufferStatusCompleted) {
                     dispatch_async(dispatch_get_main_queue(),^{
@@ -2655,6 +2894,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)shareReport {
+    if(self.presentedViewController)return;
     struct utsname system{};
     uname(&system);
     NSDictionary* info = NSBundle.mainBundle.infoDictionary;
@@ -2725,6 +2965,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"device": [NSString stringWithUTF8String:system.machine], @"ios": UIDevice.currentDevice.systemVersion,
         @"native_scene_loaded": @(_loaded), @"failure": _failure ?: NSNull.null,
         @"scene_revision":@(_sceneRevision),@"scene_rebuilds":@(_sceneRebuilds),
+        @"presentation_epoch":@(_presentationEpoch.current()),
         @"session_installs":@(_sessionInstalls),@"spawn_playback_resets":@(_spawnPlaybackResets),
         @"scene_sprite_asset_count":@(_scene ? _scene->sprites.size() : 0),
         @"scene_grid_resource":@(_scene ? _scene->world.grid_resource_id : 0),
@@ -2770,7 +3011,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"campaign_error":_campaignError ?: NSNull.null,
         @"campaign_profile_save_error":_campaign && !_campaign->state().save_error.empty() ?
             native_text(_campaign->state().save_error) : NSNull.null,
-        @"mode_menu_policy":@"Original Story/Showdown/Arena definitions and completion locks; native UIKit selection and results layout",
+        @"mode_menu_policy":@"Original Story/Showdown/Arena definitions, unlocks and results; native G1-art menu",
+        @"graphics_mode":_graphicsModern?@"Modern Scale4x":@"Classic Original",
+        @"modern_sprite_texture_cache_count":@(_modernTextures.count),
+        @"diagnostics_enabled":@(_showDiagnostics),
+        @"branding_policy":@"Original G1 menu background resource1002, iammrmikeman fan port credits; no Glu splash/blog/feedback screen; original archive retained byte-for-byte",
         @"simulation_step_ms": @(g1::SimulationClock::step_ms),
         @"simulation_ticks_total": @(_simulationTicks),
         @"clock_clamp_intervals_over1000ms": @(_clampedClockIntervals),
@@ -2796,8 +3041,16 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"support_frames_presented":@(_supportPresentedFrames),
         @"support_active":@(_supportPresentation && !_supportPresentation->status().complete),
         @"support_helper_slot":@(_supportPresentation ? int(_supportPresentation->status().slot) : -1),
+        @"support_tutorial_requests":@(_supportTutorialRequests),
+        @"support_tutorial_pending":_campaign ? @(_campaign->profile().support_tutorial_pending) : NSNull.null,
+        @"support_tutorial_save_retry_required":@(_supportTutorialRetryRequired),
+        @"original_title_font_slot":@([_title originalFontSlot]),
+        @"campaign_original_heading_font_slot":@([_campaignCanvas originalHeadingFontSlot]),
+        @"original_bitmap_panel_policy":@"Campaign/results headings use original slot0 or slot2 and combat names use slot2 only when a complete single-line glyph run fits; otherwise readable system text. Original palette retained; UIKit body and HUD layout are native.",
+        @"title_font_policy":@"Original keyed bitmap glyphs and measured spacing for supported single-line titles/support banners; native17-point nominal height and nearest sampling; existing UIKit fallback for uncovered text. Dialogue layout remains TextKit",
+        @"native_profile_format":@2,
         @"support_presentation":@"Original helper order, primary-name banner and keyed percentage artwork; separate effect ends at1680ms, cue hands off at2010ms; at most five helpers displayed without reducing six-helper combat",
-        @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original tutorial/camera/GPU parity remains unverified",
+        @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original one-time tutorial predicate/text, with native atomic profile persistence and drawn-message acknowledgement. Original camera/GPU parity remains unverified",
         @"battle_metal_frames_prepared": @(_battlePreparedFrames),
         @"battle_metal_frames_presented": @(_battlePresentedFrames),
         @"battle_queued_draws_in_presented_frames": @(_battleQueuedDrawsPresented),
@@ -2826,7 +3079,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"random_seed": @(_randomSeed), @"units":unitState, @"sites":siteState,
         @"full_gameplay_implemented": @NO, @"full_campaign_verified": @NO,
         @"native_save_reload_verified": @NO,
-        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, battle/support GPU output fidelity and sustained60Hz validation; original first-use support tutorial, site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
+        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, tutorial/lifecycle and battle/support GPU output fidelity and sustained60Hz validation; site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
         @"measurement_scope": @"Positive monotonic Metal presentedTime samples from current native scene; not full-game performance"
     };
     NSError* error = nil;
@@ -2840,6 +3093,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     }
     UIActivityViewController* sheet = [[UIActivityViewController alloc]
         initWithActivityItems:@[file] applicationActivities:nil];
+    // A share sheet hides gameplay just like Pause. Keep a pre-existing
+    // message/menu intact; active gameplay requires an explicit Resume when
+    // the sheet closes, so battles cannot finish unseen behind diagnostics.
+    if(_session && !_failed && _panelPurpose==NativePanel::none)[self openMenu];
     sheet.popoverPresentationController.sourceView = _reportButton;
     sheet.popoverPresentationController.sourceRect = _reportButton.bounds;
     [self presentViewController:sheet animated:YES completion:nil];

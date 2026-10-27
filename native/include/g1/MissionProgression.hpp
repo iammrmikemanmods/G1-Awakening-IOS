@@ -56,6 +56,9 @@ struct CampaignProfile {
     std::array<std::int32_t, 2> highest_unlocked{{0, 0}};
     std::array<std::vector<MissionRecord>, 2> records{{
         std::vector<MissionRecord>(17U), std::vector<MissionRecord>(8U)}};
+    // Original profile config+0x0e: enabled by reset, consumed before the
+    // first eligible human support explanation. Independent of mission saves.
+    bool support_tutorial_pending{true};
 };
 
 // Direct signed comparisons from original 0x44058; independent of the
