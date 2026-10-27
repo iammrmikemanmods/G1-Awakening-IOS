@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "branch_source_commit": "fd78ea5138e4a1beb8a2224b304e72099ffc0266",
+  "compiled_commit": "bc4ab991bee493d282ed12bccafe9d07bc31895f",
+  "source_tree": "e10f37569685acebaf40bb12e8310404cbc7388a",
+  "compiled_source_tree": "e10f37569685acebaf40bb12e8310404cbc7388a",
+  "compiled_source_match": true,
+  "compiled_commit_kind": "GitHub pull-request merge; tree identical to branch source",
+  "compiled_commit_parents": [
+    "f41c436a26414df55daa92d257f942da19d80280",
+    "fd78ea5138e4a1beb8a2224b304e72099ffc0266"
+  ],
+  "branch": "resume/native-game-008",
+  "pull_request": 3,
+  "run_id": 40424515585,
+  "run_url": "https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40424515585",
+  "conclusion": "success",
+  "jobs": {
+    "linux": 121926829667,
+    "apple": 121926830004
+  },
+  "portable_tests": {
+    "linux_passed": 62,
+    "linux_total": 62,
+    "apple_passed": 62,
+    "apple_total": 62
+  },
+  "iphoneos_app_compiled": true,
+  "iphoneos_m3g_runtime_shader_compiled": true,
+  "minimum_os": "17.5",
+  "native_app": {
+    "architecture": "arm64",
+    "executable_sha256": "5131341bff53fcd0ba2d8c9ba390f0790afb85dba46947b4bf01bfe60a27a7e7",
+    "executable_bytes": 1629640,
+    "embedded_compiled_source_commit": "bc4ab991bee493d282ed12bccafe9d07bc31895f",
+    "version": "0.8.0",
+    "build": 8
+  },
+  "hosted_gpu": {
+    "device": "Apple Paravirtual device",
+    "synthetic_geometry_only": true,
+    "tactical_support_pixel_checks_passed": 14,
+    "m3g_pixel_checks_passed": 12,
+    "iphone_execution": false
+  },
+  "artifact": {
+    "id": 12699223872,
+    "name": "G1-native-game-unsigned-code",
+    "sha256": "54de2db56b1a5e32d9b351065d7353828b8d33e0ff5e664eaa5e6f680cf0e20c"
+  },
+  "user_reported_mission_1_success_prior_build": true,
+  "build_008_phone_execution_verified": false,
+  "original_UI_pixel_parity_verified": false,
+  "full_device_playthrough_verified": false,
+  "sustained_60fps_verified": false
+}

@@ -45,6 +45,22 @@ jobs:
         run: cmake --build build/native --parallel 2
       - name: Test recovered native behavior
         run: ctest --test-dir build/native --output-on-failure --no-tests=error
+      - name: Freeze exact portable source for user's original-data campaign pilots
+        run: |
+          mkdir -p artifacts
+          tar -czf artifacts/G1-native-full-game-source.tar.gz \
+            --exclude='*.ipa' --exclude='*.exe' --exclude='*.app' \
+            native analysis_tools scripts docs .github README.md PORT_STATUS.json
+          sha256sum artifacts/G1-native-full-game-source.tar.gz > artifacts/G1-native-full-game-source.sha256
+      - name: Preserve reproducible native game source
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: G1-native-full-game-reviewed-source
+          path: |
+            artifacts/G1-native-full-game-source.tar.gz
+            artifacts/G1-native-full-game-source.sha256
+          retention-days: 14
+          if-no-files-found: error
 
   iphoneos-arm64:
     runs-on: macos-26
