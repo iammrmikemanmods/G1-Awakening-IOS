@@ -121,6 +121,21 @@ NSString* native_text(const std::string& value) {
     return text;
 }
 
+// Original source-pack UI icons are preserved as pixel-for-pixel PNG bytes;
+// UIKit sees them at native Retina scale, never as AI-generated replacements.
+UIImage* original_g1_ui_png(const g1::Archive& archive,std::uint32_t id,
+                          std::uint32_t width,std::uint32_t height) {
+    const auto ids=archive.find(id,0xb7178678U);
+    if(ids.size()!=1)throw g1::FormatError("Original game UI asset is missing or ambiguous");
+    const auto bytes=archive.read(ids.front());
+    const auto pixels=g1::decode_png(bytes);
+    if(pixels.width!=width || pixels.height!=height)
+        throw g1::FormatError("Original game UI asset dimensions differ from source");
+    UIImage* source=[UIImage imageWithData:[NSData dataWithBytes:bytes.data() length:bytes.size()]];
+    if(!source.CGImage)throw g1::FormatError("Original game UI bitmap failed UIKit decode");
+    return [UIImage imageWithCGImage:source.CGImage scale:2.0 orientation:UIImageOrientationUp];
+}
+
 UIButton* action_button(NSString* title, id target, SEL selector) {
     UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
     [button setTitle:title forState:UIControlStateNormal];
@@ -254,7 +269,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     UIButton* _skipButton;
     UIStackView* _commands;
     UIView* _dialoguePanel;
-    UILabel* _dialogueHeading;
+    G1WorldTitleLabel* _dialogueHeading;
+    UIImageView* _gameHudFrame;
     G1DialogueCanvas* _dialogueCanvas;
     UIView* _battlePanel;
     G1BattleCanvas* _battleCanvas;
@@ -415,6 +431,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     _worldLegend.font=[UIFont systemFontOfSize:10 weight:UIFontWeightMedium];
     _worldLegend.textColor=[UIColor colorWithWhite:0.75 alpha:1];
     _worldLegend.text=@"□ Site · ◇ Capture point · Gold/cyan: mission markers";
+    _gameHudFrame=[UIImageView new];
+    _gameHudFrame.contentMode=UIViewContentModeScaleToFill;
+    _gameHudFrame.translatesAutoresizingMaskIntoConstraints=NO;
+    [self.view addSubview:_gameHudFrame];
     UIStackView* headings = [[UIStackView alloc] initWithArrangedSubviews:@[_title,_hint,_worldLegend]];
     headings.axis = UILayoutConstraintAxisVertical;
     headings.spacing = 4;
@@ -443,6 +463,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     [self.view addSubview:buttons];
     UILayoutGuide* safe = self.view.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
+        [_gameHudFrame.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:8],
+        [_gameHudFrame.topAnchor constraintEqualToAnchor:safe.topAnchor constant:1],
+        [_gameHudFrame.widthAnchor constraintEqualToConstant:370],
+        [_gameHudFrame.heightAnchor constraintEqualToConstant:73],
         [headings.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:16],
         [headings.topAnchor constraintEqualToAnchor:safe.topAnchor constant:10],
         [headings.trailingAnchor constraintLessThanOrEqualToAnchor:safe.trailingAnchor constant:-16],
@@ -475,12 +499,12 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     [self.view addSubview:_commands];
     _dialoguePanel = [UIView new];
     _dialoguePanel.backgroundColor = [UIColor colorWithRed:0.02 green:0.04 blue:0.07 alpha:0.96];
-    _dialoguePanel.layer.cornerRadius = 12;
-    _dialoguePanel.layer.borderWidth = 1;
+    _dialoguePanel.layer.cornerRadius = 0; // The source frame supplies the corners.
+    _dialoguePanel.layer.borderWidth = 0;
     _dialoguePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.5].CGColor;
     _dialoguePanel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_dialoguePanel];
-    _dialogueHeading = [UILabel new];
+    _dialogueHeading = [G1WorldTitleLabel new];
     _dialogueHeading.font = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     _dialogueHeading.textColor = [UIColor colorWithRed:1 green:0.84 blue:0.25 alpha:1];
     _dialogueHeading.translatesAutoresizingMaskIntoConstraints = NO;
@@ -516,8 +540,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 
     _battlePanel = [UIView new];
     _battlePanel.backgroundColor = [UIColor colorWithRed:0.025 green:0.04 blue:0.065 alpha:0.76];
-    _battlePanel.layer.cornerRadius = 14;
-    _battlePanel.layer.borderWidth = 1;
+    _battlePanel.layer.cornerRadius = 0;
+    _battlePanel.layer.borderWidth = 0;
     _battlePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.6].CGColor;
     _battlePanel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_battlePanel];
@@ -609,6 +633,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
         [_campaignCanvas loadOriginalFonts:archive];
         [_campaignCanvas loadOriginalMenuArtwork:archive];
         [_battleCanvas loadOriginalFonts:archive];
+        [_dialogueHeading loadOriginalFonts:archive];
+        [self loadOriginalHUD:archive];
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
@@ -703,6 +729,53 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_openingPlayer pause];
+}
+- (void)loadOriginalHUD:(const g1::Archive&)archive {
+    UIImage* silver=original_g1_ui_png(archive,1004,298,62);
+    _gameHudFrame.image=[silver resizableImageWithCapInsets:UIEdgeInsetsMake(14,46,14,46)
+        resizingMode:UIImageResizingModeStretch];
+    UIImage* red=original_g1_ui_png(archive,1034,480,93);
+    UIImageView* dialogueArt=[[UIImageView alloc] initWithImage:
+        [red resizableImageWithCapInsets:UIEdgeInsetsMake(17,45,17,45)
+                             resizingMode:UIImageResizingModeStretch]];
+    dialogueArt.translatesAutoresizingMaskIntoConstraints=NO;
+    dialogueArt.contentMode=UIViewContentModeScaleToFill;
+    [_dialoguePanel insertSubview:dialogueArt atIndex:0];
+    [NSLayoutConstraint activateConstraints:@[
+        [dialogueArt.leadingAnchor constraintEqualToAnchor:_dialoguePanel.leadingAnchor],
+        [dialogueArt.trailingAnchor constraintEqualToAnchor:_dialoguePanel.trailingAnchor],
+        [dialogueArt.topAnchor constraintEqualToAnchor:_dialoguePanel.topAnchor],
+        [dialogueArt.bottomAnchor constraintEqualToAnchor:_dialoguePanel.bottomAnchor]]];
+    _dialoguePanel.backgroundColor=UIColor.clearColor;
+    UIImageView* battleArt=[[UIImageView alloc] initWithImage:_gameHudFrame.image];
+    battleArt.translatesAutoresizingMaskIntoConstraints=NO;
+    [_battlePanel insertSubview:battleArt atIndex:0];
+    [NSLayoutConstraint activateConstraints:@[
+        [battleArt.leadingAnchor constraintEqualToAnchor:_battlePanel.leadingAnchor],
+        [battleArt.trailingAnchor constraintEqualToAnchor:_battlePanel.trailingAnchor],
+        [battleArt.topAnchor constraintEqualToAnchor:_battlePanel.topAnchor],
+        [battleArt.bottomAnchor constraintEqualToAnchor:_battlePanel.bottomAnchor]]];
+    _battlePanel.backgroundColor=UIColor.clearColor;
+    // All icons are sourced from the original PNG atlas. Semantic assignment
+    // is native touch affordance; exact original HUD hit-region parity still
+    // requires the recovered 32-bit UI table, not invented geometry.
+    const std::array<std::pair<UIButton*,std::uint32_t>,10> mapped{{
+        {_moveButton,721},{_captureButton,639},{_transformButton,793},
+        {_attackButton,660},{_healButton,726},{_upgradeButton,1118},
+        {_endTurnButton,719},{_buildButton,454},{_deployButton,919},
+        {_undoButton,1076}}};
+    for(const auto& [button,identifier]:mapped) {
+        UIImage* icon=original_g1_ui_png(archive,identifier,identifier==719?60:52,49);
+        [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                forState:UIControlStateNormal];
+        button.imageView.contentMode=UIViewContentModeScaleAspectFit;
+        button.titleLabel.adjustsFontSizeToFitWidth=YES;
+        button.semanticContentAttribute=UISemanticContentAttributeForceLeftToRight;
+        button.contentEdgeInsets=UIEdgeInsetsMake(0,5,0,5);
+    }
+    [_menuButton setImage:[[original_g1_ui_png(archive,905,60,49)
+        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] copy]
+        forState:UIControlStateNormal];
 }
 - (NSString*)originalText:(std::uint16_t)identifier {
     return native_text(_text->at(identifier));
