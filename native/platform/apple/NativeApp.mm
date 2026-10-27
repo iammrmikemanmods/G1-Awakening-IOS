@@ -362,7 +362,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     std::uint8_t _lastMissionMode;
     bool _clockStarted, _loaded, _failed, _moveMode, _attackMode, _rangeDirty;
     bool _graphicsModern, _showDiagnostics, _settingsFromPause, _infoFromSettings;
-    float _touchCameraSpeed{1.0F};
+    float _touchCameraSpeed; // initialized from registered defaults in viewDidLoad
     NSString* _failure;
     NSString* _notice;
     double _noticeUntil;
