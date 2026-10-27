@@ -6,6 +6,55 @@
 #include <cmath>
 #include <cstdint>
 
+// Original 32-bit G1 menu affordance retained as native iOS touch control.
+// The source colour/advance bitmap font is used when complete coverage fits;
+// otherwise the readable UIKit title remains. No rebuilt or generated art.
+@interface G1OriginalMenuButton : UIButton
+- (void)useOriginalFace:(G1BitmapFontFace*)face;
+@end
+
+@implementation G1OriginalMenuButton {
+    G1BitmapFontFace* _originalFace;
+}
+- (void)useOriginalFace:(G1BitmapFontFace*)face {
+    _originalFace=face;
+    [self setNeedsLayout];
+    [self setNeedsDisplay];
+}
+- (BOOL)usesOriginal {
+    NSString* title=[self titleForState:UIControlStateNormal];
+    if(!_originalFace || ![_originalFace supportsText:title])return NO;
+    const CGSize size=[_originalFace sizeForText:title height:15];
+    return size.width<=self.bounds.size.width-8 && size.height<=self.bounds.size.height;
+}
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.titleLabel.hidden=[self usesOriginal];
+}
+- (void)setEnabled:(BOOL)enabled {
+    [super setEnabled:enabled];[self setNeedsDisplay];
+}
+- (void)setHighlighted:(BOOL)highlighted {
+    [super setHighlighted:highlighted];[self setNeedsDisplay];
+}
+- (void)drawRect:(CGRect)rect {
+    [super drawRect:rect];
+    if(self.highlighted || self.isFocused) {
+        [[UIColor colorWithRed:0.89 green:0.92 blue:0.95 alpha:1] setStroke];
+        UIBezierPath* outline=[UIBezierPath bezierPathWithRect:CGRectInset(self.bounds,1,1)];
+        outline.lineWidth=1.5;[outline stroke];
+    }
+    if([self usesOriginal]) {
+        CGContextRef context=UIGraphicsGetCurrentContext();
+        CGContextSaveGState(context);
+        CGContextSetAlpha(context,self.enabled ? 1 : 0.38);
+        [_originalFace drawText:[self titleForState:UIControlStateNormal] rect:CGRectInset(rect,4,1)
+            height:15 alignment:NSTextAlignmentCenter];
+        CGContextRestoreGState(context);
+    }
+}
+@end
+
 // Native campaign/menu/results surface. Game menus use source artwork 1002,
 // with original bitmap headings and native readable body text. Geometry
 // adapts to wide screens without stretching the 480x320 source. Results and
@@ -16,6 +65,7 @@
 - (void)loadOriginalMenuArtwork:(const g1::Archive&)archive;
 - (void)setOriginalMenuArtworkVisible:(BOOL)visible;
 - (NSInteger)originalHeadingFontSlot;
+- (G1BitmapFontFace*)originalFaceForMenuText:(NSString*)text;
 - (void)resetPresentation;
 - (std::uint64_t)drawnToken;
 - (CGFloat)heightForWidth:(CGFloat)width;
@@ -83,6 +133,11 @@
     G1BitmapFontFace* face=[self originalHeadingFace];
     return face ? [face fontSlot] : -1;
 }
+- (G1BitmapFontFace*)originalFaceForMenuText:(NSString*)text {
+    if([_largeOriginalFont supportsText:text])return _largeOriginalFont;
+    if([_smallOriginalFont supportsText:text])return _smallOriginalFont;
+    return nil;
+}
 - (NSDictionary*)bodyAttributes {
     NSMutableParagraphStyle* paragraph=[NSMutableParagraphStyle new];
     paragraph.lineSpacing=4;
@@ -126,27 +181,41 @@
         const CGRect dest=CGRectMake((self.bounds.size.width-pic.width)*0.5,
             (self.bounds.size.height-pic.height)*0.5,pic.width,pic.height);
         [_originalMenuArtwork drawInRect:dest];
-        // Thin source-colour borders and a readable native transcript strip.
-        [[UIColor colorWithRed:0.72 green:0.1 blue:0.13 alpha:0.8] setStroke];
-        UIBezierPath* frame=[UIBezierPath bezierPathWithRect:CGRectInset(self.bounds,1,1)];
-        frame.lineWidth=2;[frame stroke];
-        const CGFloat top=std::max(CGFloat(104),self.bounds.size.height*0.45);
-        const CGFloat bodyHeight=std::max(CGFloat(42),self.bounds.size.height-top-10);
-        [[UIColor colorWithRed:0.08 green:0.018 blue:0.034 alpha:0.85] setFill];
-        UIRectFill(CGRectMake(5,top-30,self.bounds.size.width-10,bodyHeight+34));
-        [[UIColor colorWithRed:0.8 green:0.12 blue:0.15 alpha:0.9] setFill];
-        UIRectFill(CGRectMake(5,top-30,self.bounds.size.width-10,2));
-        const CGRect headingRect=CGRectMake(18,top-28,self.bounds.size.width-36,26);
-        G1BitmapFontFace* face=[self originalHeadingFace];
-        if(face)[face drawText:_heading rect:headingRect height:18 alignment:NSTextAlignmentCenter];
-        else [_heading drawInRect:headingRect withAttributes:@{
-            NSFontAttributeName:[UIFont boldSystemFontOfSize:18],
-            NSForegroundColorAttributeName:UIColor.whiteColor}];
-        NSMutableDictionary* attr=[[self bodyAttributes] mutableCopy];
-        attr[NSFontAttributeName]=[UIFont systemFontOfSize:13 weight:UIFontWeightMedium];
-        [_body drawWithRect:CGRectMake(20,top+3,self.bounds.size.width-40,bodyHeight-8)
-            options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
-            attributes:attr context:nil];
+        // Restore the actual source-composed menu. The 480x320 PNG already
+        // contains the logo, portraits, silver rails, red panel and blank
+        // title slot: no extra fake band or recolouring is drawn on top.
+        // Positions below are in the original asset's 480x320 coordinates.
+        const CGRect headingRect=CGRectMake(dest.origin.x+dest.size.width*(132.0/480.0),
+            dest.origin.y+dest.size.height*(84.0/320.0),
+            dest.size.width*(216.0/480.0),dest.size.height*(22.0/320.0));
+        G1BitmapFontFace* face=[self originalFaceForMenuText:_heading];
+        if(face) {
+            [face drawText:_heading rect:headingRect height:std::min(CGFloat(17),headingRect.size.height)
+                alignment:NSTextAlignmentCenter];
+        } else {
+            NSMutableParagraphStyle* centered=[NSMutableParagraphStyle new];
+            centered.alignment=NSTextAlignmentCenter;
+            [_heading drawInRect:headingRect withAttributes:@{
+                NSFontAttributeName:[UIFont boldSystemFontOfSize:std::min(CGFloat(16),headingRect.size.height)],
+                NSForegroundColorAttributeName:UIColor.whiteColor,
+                NSParagraphStyleAttributeName:centered}];
+        }
+        // The original 2D background does not itself include the native
+        // campaign transcript. Keep that auxiliary text ONLY on deep menu
+        // pages where it is useful; main-menu artwork stays unobstructed.
+        if(![_heading isEqualToString:@"MAIN MENU"] && _body.length) {
+            const CGRect textRect=CGRectMake(dest.origin.x+dest.size.width*0.10,
+                dest.origin.y+dest.size.height*0.364,
+                dest.size.width*0.80,dest.size.height*0.25);
+            NSMutableParagraphStyle* centered=[NSMutableParagraphStyle new];
+            centered.alignment=NSTextAlignmentCenter;
+            centered.lineBreakMode=NSLineBreakByWordWrapping;
+            [_body drawWithRect:textRect
+                options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:11 weight:UIFontWeightMedium],
+                    NSForegroundColorAttributeName:UIColor.whiteColor,
+                    NSParagraphStyleAttributeName:centered} context:nil];
+        }
     } else {
         // Results/dialogue have distinct original state and presentation
         // guards. Retain readable text with the animated results accumulator.
