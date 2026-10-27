@@ -32,7 +32,7 @@ jobs:
           cmake -S native -B build/host015 -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
           cmake --build build/host015 --parallel 2
           ctest --test-dir build/host015 --output-on-failure --no-tests=error | tee artifacts/linux-tests.txt
-          grep -q '0 tests failed out of 69' artifacts/linux-tests.txt
+          grep -Eq '^100% tests passed(, 0 tests failed)? out of 69$' artifacts/linux-tests.txt
       - name: Publish verified source without force or main changes
         id: publish
         run: python3 buildwork/015/apply-workorder.py publish
@@ -83,7 +83,7 @@ jobs:
           cmake -S native -B build/mac015 -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
           cmake --build build/mac015 --parallel 2
           ctest --test-dir build/mac015 -E '^(metal_offscreen_pixels|m3g_metal_offscreen_pixels|adaptive_supersampling_gpu_resolve)$' --output-on-failure --no-tests=error | tee artifacts/apple-tests.txt
-          grep -q '0 tests failed out of 69' artifacts/apple-tests.txt
+          grep -Eq '^100% tests passed(, 0 tests failed)? out of 69$' artifacts/apple-tests.txt
       - name: Actual hosted GPU pixels and supersampling resolve
         run: |
           set -euo pipefail
