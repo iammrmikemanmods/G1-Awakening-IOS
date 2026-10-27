@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "fix": "AppSync Filza installer application-identifier missing",
+  "target_device": "jailbroken iPhone XR iOS17.5+",
+  "fixed_ipa": "G1_Awakening_Native_Full_Game_010_Filza_AppSync.ipa",
+  "ipa_sha256": "dca308f16617fb48bdfc4aa0f70da6a182c385961034183f48a0fc261e55a639",
+  "ipa_bytes": 7777280,
+  "original_unsigned_ipa_sha256": "42be2c0a16c8b1f32afeda445c90cd92ba02bf742d5c0ebe2b293d60a4bfdb77",
+  "compiled_source_commit": "00952f1c520fdb0b14a758471d2b6988f4240473",
+  "original_unsigned_executable_sha256": "c6f02ec45ac9646bc4941172c9eaf43598b0ac412fe564a85881458dd1d4ea90",
+  "signed_executable_sha256": "e71256843a055b24b8ba54e79b045609aaa66624b248fea2d1e259ede422786f",
+  "signed_executable_bytes": 1671440,
+  "code_signature": {
+    "kind": "ad-hoc Mach-O standalone",
+    "LC_CODE_SIGNATURE_present": true,
+    "xml_entitlements_present": true,
+    "application_identifier": "org.g1awakening.native.test",
+    "get_task_allow": true,
+    "resource_seal_incomplete_bundle": false,
+    "apple_codesign_strict_verification_passed": true
+  },
+  "previous_ipa_missing_code_signature": true,
+  "changed_ipa_members": [
+    "Payload/G1AwakeningNative.app/G1AwakeningNative"
+  ],
+  "all_other_app_assets_and_icons_byte_identical": true,
+  "ci": {
+    "run_id": 40442335711,
+    "status": "success",
+    "artifact_id": 12707080814,
+    "artifact_sha256": "c722b4f672d798e0c034369eee7a8f7c615194959eb0eeb96da9a0533f88ac22",
+    "uses_existing_compiled_code": true,
+    "original_game_data_uploaded": false
+  },
+  "distribution": {
+    "requires_AppSync_Unified": true,
+    "AppleDeveloper_provisioned": false,
+    "requires_Sideloadly": false
+  },
+  "limitations": {
+    "physical_filza_install_verified": false,
+    "real_iphone_runtime_verified_for_this_variant": false,
+    "full_rendered_playthrough_verified": false,
+    "possible_existing_signature_upgrade_conflict": true
+  },
+  "library": {
+    "ipa_file_id": "libfile_9660eea02e6881919e6ccdf1d0ce365e",
+    "report_file_id": "libfile_c64e3c37ee708191a73fd2c51e534985"
+  }
+}

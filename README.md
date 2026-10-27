@@ -12,13 +12,15 @@ actions and production, campaign results/handoff, cold-launch Continue, all
 three terrain styles' decorative animation, and the original ordinary M3G
 battles. The battle path uses the real models, forms, texture replacements,
 cameras, animation clips, shot/hit/destruction effects and completion sequence.
-The updated Apple build has passed and the unsigned native game test IPA is
-packaged for Sideloadly. Physical iPhone XR validation is still pending.
-Build 006 integrates the original tactical support percentage artwork, helper
-order and timing before the 3D cinematic. It has passed Apple validation and
-is packaged for Sideloadly testing.
-Original HUD/site-marker/tactical camera/font fidelity, the first-use support
-tutorial and remaining sound-event coverage remain release work.
+Build 007 has passed Apple validation and its unsigned native game test IPA
+is packaged for Sideloadly. Physical iPhone XR validation is still pending.
+Build 007 adds the original first-use support tutorial, covered original bitmap
+headings, safe profile migration and presentation-epoch protection across
+pauses. All 62 portable suites pass on Linux and Apple ARM64; a fresh complete
+headless Story run preserves build 006 gameplay. Source and review are on
+[pull request 2](https://github.com/iammrmikemanmods/G1-Awakening-IOS/pull/2).
+Original HUD/site-marker/tactical camera and wider font/layout fidelity, plus
+remaining sound-event coverage, remain release work.
 Mission, battle and menu music maintenance are now connected with the original
 playing-state queries and menu exclusions.
 
@@ -30,11 +32,11 @@ playing-state queries and menu exclusions.
 | Missions | All 30 streams / 803 commands, actual world operations and four objective kinds; bounded host pilot completes all 17 Story missions through the campaign ending | Rendered and physical-device playthrough |
 | Human actions | Movement, capture, transformation, Undo, attack, upgrade, heal, production and carrier/tape transitions | Original control/presentation parity |
 | Enemy | Continuous production, movement, attack, capture and repair through actual native actions; turn reset/income | Broad gameplay and mission-balance verification |
-| Combat | Original damage/counterattack/death rules, tactical support artwork/timing and connected animated M3G battles; actual controller health, ordered effects and presented-frame completion | Actual game-scene GPU/device output and original first-use support tutorial |
+| Combat | Original damage/counterattack/death rules, tactical support artwork/timing and connected animated M3G battles; actual controller health, ordered effects and presented-frame completion | Actual game-scene GPU/device output and tutorial UI validation |
 | Rendering | All 23 unit descriptors and21 actual map/style pairs; native Metal sprites/terrain; all three styles' session-owned decoration; ordinary original 3D scene/model/effect assets | Visual/device validation and original tactical artwork/camera/font fidelity |
 | Modes | Story, Showdown and Cybertron Arena with profile gates and explicit Arena faction/opponent choices | Physical-device menu, results and ending validation |
 | Audio | Original event dispatcher, battle shot/hit cues, native AVAudioEngine, active mission/battle and menu music maintenance; persisted Music/Sound preferences | Remaining sound-event coverage and device output |
-| Saving | Atomic profile/results/handoff; format 3 checkpoints preserve all gameplay, RNG and terrain/sprite clocks; cold Continue | Physical-device lifecycle testing; busy actions resume from the last durable boundary |
+| Saving | Atomic profile/results/handoff; format 3 checkpoints preserve all gameplay, RNG and terrain/sprite clocks; cold Continue; profile-v1 migration with exclusive backup and persisted tutorial flag | Physical-device lifecycle testing; busy actions resume from the last durable boundary |
 | Timing | Separate 30 ms simulation and up to 60 Hz interpolated tactical/battle display; XR camera aspect adaptation preserves vertical field of view | Sustained physical-XR performance and complete timing validation |
 
 The product compiles portable C++ and Objective-C++ directly to ARM64. It reads
@@ -43,6 +45,20 @@ functions only during development; those tools and the ARM32 executable are
 not linked or packaged into the app.
 
 ## Evidence and build scope
+
+Build 007 source `62e29e63b3d881eb57345f0276ad00484abee5b4` adds
+2,202 original tutorial cases, 806 save/storage checks, 92 campaign checks,
+103 presentation-epoch checks and bounded original bitmap-font decoding.
+All 23 actual support banners have complete source-font coverage. Its fresh
+17-mission Story run retains all 5,461 build-006 event lines byte for byte;
+the UI acknowledgements remain synthetic. See
+[build 007 notes](docs/NATIVE_GAME_TEST_007.md) and
+`validation/NATIVE_GAME_007_HOST.json`. Apple run
+[40419564778](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40419564778)
+passed actual iPhoneOS app/runtime shader compilation, 62/62 suites on both
+hosts, and 14 tactical/support plus 12 M3G synthetic GPU pixel checks. See
+`validation/APPLE_NATIVE_GAME_007.json`; physical-device validation remains
+outstanding.
 
 The preceding native interaction checkpoint at
 `5795315e970d34419c739bbd4b81ff2011a9ecd4` passed all 29 host suites, an actual
@@ -105,7 +121,18 @@ presentation updates and 217 prepared frames, keeps gameplay RNG unchanged,
 and retains its real pending token until explicit host feedback. These are
 CPU integration results; they do not establish Metal or physical output.
 
-**The current package is `G1_Awakening_Native_Game_Test_006.ipa`, version 0.6.0 /
+**The current package is `G1_Awakening_Native_Game_Test_007.ipa`, version 0.7.0 /
+build 7**, 7,611,418 bytes, unsigned for Sideloadly. Its SHA-256 is
+`1dd01f50abffa352a0b42a4585d73ab5d78cca0d24becd51d734af67ea193556`.
+The compiled source is the PR merge commit
+`5671a5323f2cc1044a9afd618219578696191b1e`; its tree is verified identical to
+branch source `62e29e63b3d881eb57345f0276ad00484abee5b4`. See
+[build 007 device notes](docs/NATIVE_GAME_TEST_007.md),
+`validation/NATIVE_GAME_IPA_007.json` and `validation/NATIVE_GAME_007_SOURCE.json`.
+Existing build-006 profiles load with an exclusive byte-exact backup before
+migration to profile format 2. Gameplay checkpoints remain format 3.
+
+**The previous package is `G1_Awakening_Native_Game_Test_006.ipa`, version 0.6.0 /
 build 6**, compiled from `97809786653cbf9e99976b0c69bcac093c5ed148`. It is
 7,596,333 bytes, unsigned, and ready for Sideloadly signing. Its SHA-256 is
 `ef2a7fce7c50eccbce36c796ea0a030d0386971ed45ba45d6fb249537e3da337`.
@@ -178,9 +205,9 @@ local IPA:
 python3 scripts/package-native-scene.py \
   --code-artifact G1-native-game-unsigned-code.zip \
   --source-ipa G1awakening_v1.1.3_os30.ipa \
-  --out G1_Awakening_Native_Game_Test_006.ipa \
-  --report G1_Awakening_Native_Game_Test_006.validation.json \
-  --expected-commit SOURCE_COMMIT_FROM_THE_RUN
+  --out G1_Awakening_Native_Game_Test_007.ipa \
+  --report G1_Awakening_Native_Game_Test_007.validation.json \
+  --expected-commit COMPILED_SOURCE_COMMIT_FROM_APP_VALIDATION
 ```
 
 The script retains its historical filename. It verifies the original source,
@@ -209,7 +236,7 @@ retained only on `archive/compatibility-experiment` and is not the requested
 native deliverable. This project does not use the GTA repository.
 
 A full-game completion estimate is not established. The outstanding release
-work includes the original first-use support tutorial, remaining sound events
-and original UI/artwork fidelity, rendered campaign/mode traversal, and
+work includes tutorial UI/device validation, remaining sound events and
+original UI/artwork fidelity, rendered campaign/mode traversal, and
 actual XR testing of installation, saves/resume, native resolution and sustained
 60 Hz presentation.

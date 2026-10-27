@@ -1,0 +1,130 @@
+Internal ctest changing into directory: /workspace/scratch/0726520d1977/g1_private/build_007
+Test project /workspace/scratch/0726520d1977/g1_private/build_007
+      Start  1: bitmap_font_original_functions
+ 1/62 Test  #1: bitmap_font_original_functions .........................   Passed    0.01 sec
+      Start  2: presentation_epoch_delivery
+ 2/62 Test  #2: presentation_epoch_delivery ............................   Passed    0.00 sec
+      Start  3: support_assets_contract
+ 3/62 Test  #3: support_assets_contract ................................   Passed    0.00 sec
+      Start  4: support_presentation_contract
+ 4/62 Test  #4: support_presentation_contract ..........................   Passed    0.00 sec
+      Start  5: support_geometry_contract
+ 5/62 Test  #5: support_geometry_contract ..............................   Passed    0.00 sec
+      Start  6: support_display_gate_contract
+ 6/62 Test  #6: support_display_gate_contract ..........................   Passed    0.00 sec
+      Start  7: support_tutorial_original_function_vectors
+ 7/62 Test  #7: support_tutorial_original_function_vectors .............   Passed    0.00 sec
+      Start  8: m3g_scene_contract
+ 8/62 Test  #8: m3g_scene_contract .....................................   Passed    0.00 sec
+      Start  9: m3g_animation_contract
+ 9/62 Test  #9: m3g_animation_contract .................................   Passed    0.04 sec
+      Start 10: m3g_spline_contract
+10/62 Test #10: m3g_spline_contract ....................................   Passed    0.00 sec
+      Start 11: m3g_scene_pose_contract
+11/62 Test #11: m3g_scene_pose_contract ................................   Passed    0.10 sec
+      Start 12: m3g_camera_contract
+12/62 Test #12: m3g_camera_contract ....................................   Passed    0.00 sec
+      Start 13: m3g_battle_timeline_contract
+13/62 Test #13: m3g_battle_timeline_contract ...........................   Passed    0.00 sec
+      Start 14: m3g_render_asset_contract
+14/62 Test #14: m3g_render_asset_contract ..............................   Passed    0.02 sec
+      Start 15: m3g_render_frame_contract
+15/62 Test #15: m3g_render_frame_contract ..............................   Passed    0.00 sec
+      Start 16: m3g_bindings_contract
+16/62 Test #16: m3g_bindings_contract ..................................   Passed    0.01 sec
+      Start 17: m3g_battle_camera_contract
+17/62 Test #17: m3g_battle_camera_contract .............................   Passed    0.00 sec
+      Start 18: m3g_runtime_state_contract
+18/62 Test #18: m3g_runtime_state_contract .............................   Passed    0.00 sec
+      Start 19: m3g_sprite3d_original_function_vectors
+19/62 Test #19: m3g_sprite3d_original_function_vectors .................   Passed    0.00 sec
+      Start 20: m3g_material_overrides_original_vectors
+20/62 Test #20: m3g_material_overrides_original_vectors ................   Passed    0.02 sec
+      Start 21: m3g_battle_controller_original_vectors
+21/62 Test #21: m3g_battle_controller_original_vectors .................   Passed    0.02 sec
+      Start 22: mission_format_contract
+22/62 Test #22: mission_format_contract ................................   Passed    0.01 sec
+      Start 23: movement_original_function_vectors
+23/62 Test #23: movement_original_function_vectors .....................   Passed    0.00 sec
+      Start 24: movement_action_contract
+24/62 Test #24: movement_action_contract ...............................   Passed    0.00 sec
+      Start 25: movement_arrival_contract
+25/62 Test #25: movement_arrival_contract ..............................   Passed    0.00 sec
+      Start 26: text_original_function_vectors
+26/62 Test #26: text_original_function_vectors .........................   Passed    0.00 sec
+      Start 27: mission_execution_original_function_vectors
+27/62 Test #27: mission_execution_original_function_vectors ............   Passed    0.00 sec
+      Start 28: capture_action_contract
+28/62 Test #28: capture_action_contract ................................   Passed    0.00 sec
+      Start 29: transform_action_contract
+29/62 Test #29: transform_action_contract ..............................   Passed    0.00 sec
+      Start 30: combat_original_function_vectors
+30/62 Test #30: combat_original_function_vectors .......................   Passed    0.01 sec
+      Start 31: native_session_integration
+31/62 Test #31: native_session_integration .............................   Passed    0.00 sec
+      Start 32: mission_progression_original_function_vectors
+32/62 Test #32: mission_progression_original_function_vectors ..........   Passed    0.00 sec
+      Start 33: turn_original_function_vectors
+33/62 Test #33: turn_original_function_vectors .........................   Passed    0.01 sec
+      Start 34: mission_objectives_original_function_vectors
+34/62 Test #34: mission_objectives_original_function_vectors ...........   Passed    0.00 sec
+      Start 35: ai_attack_original_function_vectors
+35/62 Test #35: ai_attack_original_function_vectors ....................   Passed    0.01 sec
+      Start 36: ai_planner_original_function_vectors
+36/62 Test #36: ai_planner_original_function_vectors ...................   Passed    0.01 sec
+      Start 37: ai_turn_admission_original_function_vectors
+37/62 Test #37: ai_turn_admission_original_function_vectors ............   Passed    0.01 sec
+      Start 38: ai_site_original_function_vectors
+38/62 Test #38: ai_site_original_function_vectors ......................   Passed    0.01 sec
+      Start 39: atlas_format_geometry_contract
+39/62 Test #39: atlas_format_geometry_contract .........................   Passed    0.01 sec
+      Start 40: png_rgba_contract
+40/62 Test #40: png_rgba_contract ......................................   Passed    0.00 sec
+      Start 41: sprite_geometry_contract
+41/62 Test #41: sprite_geometry_contract ...............................   Passed    0.00 sec
+      Start 42: terrain_original_function_vectors
+42/62 Test #42: terrain_original_function_vectors ......................   Passed    0.00 sec
+      Start 43: world_bootstrap_contract
+43/62 Test #43: world_bootstrap_contract ...............................   Passed    0.00 sec
+      Start 44: sprite_animation_contract
+44/62 Test #44: sprite_animation_contract ..............................   Passed    0.00 sec
+      Start 45: sprite_placement_contract
+45/62 Test #45: sprite_placement_contract ..............................   Passed    0.00 sec
+      Start 46: initial_animation_table_contract
+46/62 Test #46: initial_animation_table_contract .......................   Passed    0.00 sec
+      Start 47: vorbis_format_contract
+47/62 Test #47: vorbis_format_contract .................................   Passed    0.00 sec
+      Start 48: audio_dispatch_original_function_vectors
+48/62 Test #48: audio_dispatch_original_function_vectors ...............   Passed    0.00 sec
+      Start 49: audio_maintenance_original_function_vectors
+49/62 Test #49: audio_maintenance_original_function_vectors ............   Passed    0.00 sec
+      Start 50: menu_music_original_function_vectors
+50/62 Test #50: menu_music_original_function_vectors ...................   Passed    0.01 sec
+      Start 51: native_profile_atomic_file
+51/62 Test #51: native_profile_atomic_file .............................   Passed    0.01 sec
+      Start 52: unit_spawn_original_function_vectors
+52/62 Test #52: unit_spawn_original_function_vectors ...................   Passed    0.00 sec
+      Start 53: unit_actions_original_function_vectors
+53/62 Test #53: unit_actions_original_function_vectors .................   Passed    0.01 sec
+      Start 54: ai_execution_original_function_vectors
+54/62 Test #54: ai_execution_original_function_vectors .................   Passed    0.00 sec
+      Start 55: world_commands_original_function_vectors
+55/62 Test #55: world_commands_original_function_vectors ...............   Passed    0.00 sec
+      Start 56: campaign_actual_save_and_handoff
+56/62 Test #56: campaign_actual_save_and_handoff .......................   Passed    0.01 sec
+      Start 57: native_session_checkpoint_and_resume
+57/62 Test #57: native_session_checkpoint_and_resume ...................   Passed    0.01 sec
+      Start 58: unit_interactions_original_functions
+58/62 Test #58: unit_interactions_original_functions ...................   Passed    0.02 sec
+      Start 59: unit_commands_original_functions
+59/62 Test #59: unit_commands_original_functions .......................   Passed    0.01 sec
+      Start 60: terrain_decorations_original_function_vectors
+60/62 Test #60: terrain_decorations_original_function_vectors ..........   Passed    0.00 sec
+      Start 61: terrain_animated_original_function_vectors
+61/62 Test #61: terrain_animated_original_function_vectors .............   Passed    0.00 sec
+      Start 62: terrain_sprite_decorations_original_function_vectors
+62/62 Test #62: terrain_sprite_decorations_original_function_vectors ...   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 62
+
+Total Test time (real) =   0.46 sec

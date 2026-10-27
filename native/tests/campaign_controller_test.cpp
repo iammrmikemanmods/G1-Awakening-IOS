@@ -1,5 +1,7 @@
 #include "g1/CampaignController.hpp"
+#include "campaign_profile_v1_fixture.hpp"
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -95,6 +97,174 @@ void results_continue(g1::CampaignController& controller) {
     const auto input=controller.update_results(token,16,0);
     check(input.request_handoff && input.remaining_input_edges==0,"valid result Continue did not request handoff");
 }
+void check_idle_tutorial_owner(const g1::CampaignController& controller) {
+    const auto& state=controller.state();
+    check(state.gate==g1::CampaignControllerGate::idle && state.token==0 && state.save_attempts==0 &&
+          !state.profile_persisted && state.save_error.empty() && !state.results && !state.handoff,
+          "support tutorial persistence modified campaign transaction state");
+}
+void tutorial_persistence_cases(const std::filesystem::path& directory,const g1::Archive& data,
+                                const g1::GameSession& source) {
+    const auto legacy=g1_test::build006_story_profile_v1();
+    const auto parent=directory/"tutorial-legacy";
+    const auto held=directory/"tutorial-legacy-held";
+    std::filesystem::create_directory(parent);
+    const auto path=(parent/"profile.g1native").string();
+    const auto backup=path+".v1-backup";
+    check(g1::write_native_save_atomic(path,legacy).succeeded,"could not stage actual Build006 profile");
+    g1::CampaignController controller(path);
+    check_idle_tutorial_owner(controller);
+    check(controller.profile().support_tutorial_pending && controller.profile().completed[0] &&
+          controller.profile().highest_unlocked[0]==17 && g1::read_file(path,4096)==legacy &&
+          !std::filesystem::exists(backup),"loading Build006 profile changed bytes or migration default");
+    const auto before=g1::encode_campaign_profile(controller.profile());
+
+    // Renaming the whole parent is a real, portable failure even when tests
+    // run as root. Its original closed profile stays available for comparison.
+    std::filesystem::rename(parent,held);
+    const auto failed=controller.consume_support_tutorial();
+    check(!failed.succeeded && !failed.error.empty() && controller.profile().support_tutorial_pending &&
+          g1::encode_campaign_profile(controller.profile())==before &&
+          !std::filesystem::exists(parent) &&
+          g1::read_file((held/"profile.g1native").string(),4096)==legacy,
+          "failed tutorial write consumed state, fabricated progress or damaged Build006 bytes");
+    check_idle_tutorial_owner(controller);
+    std::filesystem::rename(held,parent);
+    const auto written=controller.consume_support_tutorial();
+    check(written.succeeded && written.error.empty() && !controller.profile().support_tutorial_pending,
+          "tutorial persistence did not retry after a real filesystem failure");
+    check_idle_tutorial_owner(controller);
+    const auto saved=g1::read_file(path,4096);
+    check(saved.size()==331 && saved[326]==0 &&
+          std::equal(legacy.begin()+16,legacy.end()-4,saved.begin()+16) &&
+          g1::encode_campaign_profile(controller.profile())==saved,
+          "tutorial consumption lost actual legacy records/unlocks or disagrees with disk");
+    check(g1::read_file(backup,4096)==legacy,"tutorial migration failed to preserve exact rollback v1 bytes");
+    g1::CampaignController reopened(path);
+    check(!reopened.profile().support_tutorial_pending &&
+          g1::encode_campaign_profile(reopened.profile())==saved,
+          "fresh controller forgot consumed tutorial or changed migrated progress");
+    check_idle_tutorial_owner(reopened);
+
+    // An already consumed flag must be a no-write success. Removing the path
+    // makes a hidden second write fail, without depending on timestamp precision.
+    std::filesystem::rename(parent,held);
+    const auto repeated=controller.consume_support_tutorial();
+    check(repeated.succeeded && repeated.error.empty() && !std::filesystem::exists(parent) &&
+          g1::read_file((held/"profile.g1native").string(),4096)==saved &&
+          g1::read_file((held/"profile.g1native.v1-backup").string(),4096)==legacy,
+          "already consumed tutorial performed another write or changed its backup");
+    check_idle_tutorial_owner(controller);
+    std::filesystem::rename(held,parent);
+
+    // Normal campaign persistence must carry the consumed flag forward, while
+    // the existing raw v1 backup must survive all subsequent v2 writes.
+    check(controller.begin(source).succeeded && !controller.profile().support_tutorial_pending &&
+          controller.profile().completed[0] && controller.profile().highest_unlocked[0]==17,
+          "normal campaign save reset consumed tutorial or lost old campaign completion");
+    const auto campaign_saved=g1::read_file(path,4096);
+    check(!g1::decode_campaign_profile(campaign_saved).support_tutorial_pending &&
+          g1::read_file(backup,4096)==legacy,"campaign save changed tutorial state or original rollback backup");
+    rejects([&]{(void)controller.consume_support_tutorial();},
+            "consumed tutorial bypassed ownership check while results were pending");
+    check(g1::read_file(path,4096)==campaign_saved,"forbidden results-time tutorial call changed profile");
+    results_continue(controller);
+    rejects([&]{(void)controller.consume_support_tutorial();},"tutorial consumed during next-mission handoff");
+    const auto token=controller.state().token;
+    const auto prepared=controller.prepare_next_campaign(token,data);
+    g1::GameSession installed(data,prepared.bootstrap,prepared.context);
+    controller.report_next_session_installed(token,installed);
+    rejects([&]{(void)controller.consume_support_tutorial();},"handed-off controller consumed tutorial");
+    g1::CampaignController after_handoff(path);
+    check(!after_handoff.profile().support_tutorial_pending &&
+          g1::encode_campaign_profile(after_handoff.profile())==campaign_saved,
+          "next controller reload reset tutorial after campaign handoff");
+
+    const auto fresh_path=(directory/"fresh-tutorial.g1native").string();
+    g1::CampaignController fresh(fresh_path);
+    check(fresh.profile().support_tutorial_pending && !std::filesystem::exists(fresh_path),
+          "fresh tutorial default created a profile before persistence");
+    check(fresh.consume_support_tutorial().succeeded && !fresh.profile().support_tutorial_pending &&
+          !g1::decode_campaign_profile(g1::read_file(fresh_path,4096)).support_tutorial_pending &&
+          !std::filesystem::exists(fresh_path+".v1-backup"),
+          "fresh tutorial consumption failed or fabricated a legacy backup");
+    check_idle_tutorial_owner(fresh);
+
+    // The v2 path has no backup stage: fail the actual candidate write and
+    // verify that both its in-memory flag and original closed bytes survive.
+    const auto current_parent=directory/"tutorial-v2";
+    const auto current_held=directory/"tutorial-v2-held";
+    std::filesystem::create_directory(current_parent);
+    const auto current_path=(current_parent/"profile.g1native").string();
+    check(g1::write_native_save_atomic(current_path,before).succeeded,"could not stage pending v2 profile");
+    g1::CampaignController current(current_path);
+    std::filesystem::rename(current_parent,current_held);
+    const auto current_failed=current.consume_support_tutorial();
+    check(!current_failed.succeeded && !current_failed.error.empty() &&
+          current.profile().support_tutorial_pending &&
+          g1::encode_campaign_profile(current.profile())==before &&
+          g1::read_file((current_held/"profile.g1native").string(),4096)==before,
+          "failed v2 tutorial write changed pending state or original profile bytes");
+    check_idle_tutorial_owner(current);
+    std::filesystem::rename(current_held,current_parent);
+    check(current.consume_support_tutorial().succeeded && !current.profile().support_tutorial_pending &&
+          g1::read_file(current_path,4096)==saved &&
+          !std::filesystem::exists(current_path+".v1-backup"),
+          "pending v2 tutorial retry lost progress or fabricated a legacy backup");
+    g1::CampaignController current_reopened(current_path);
+    check(!current_reopened.profile().support_tutorial_pending &&
+          g1::encode_campaign_profile(current_reopened.profile())==saved,
+          "fresh v2 controller disagreed with retried tutorial persistence");
+
+    // Existing different backup bytes must never be overwritten silently.
+    const auto conflict_path=(directory/"tutorial-conflict.g1native").string();
+    const auto conflict_backup=conflict_path+".v1-backup";
+    const g1::Bytes unrelated{0x43,0x4f,0x4e,0x46,0x4c,0x49,0x43,0x54};
+    check(g1::write_native_save_atomic(conflict_path,legacy).succeeded &&
+          g1::write_native_save_atomic(conflict_backup,unrelated).succeeded,
+          "could not stage tutorial backup conflict");
+    g1::CampaignController conflict(conflict_path);
+    const auto conflict_result=conflict.consume_support_tutorial();
+    check(!conflict_result.succeeded && !conflict_result.error.empty() &&
+          conflict.profile().support_tutorial_pending &&
+          g1::read_file(conflict_path,4096)==legacy && g1::read_file(conflict_backup,4096)==unrelated,
+          "conflicting v1 backup was overwritten or source profile was consumed");
+    check_idle_tutorial_owner(conflict);
+    std::filesystem::remove(conflict_backup);
+    check(conflict.consume_support_tutorial().succeeded && !conflict.profile().support_tutorial_pending &&
+          g1::read_file(conflict_backup,4096)==legacy,
+          "tutorial backup conflict was not retryable after its explicit removal");
+
+    const auto resumed_path=(directory/"tutorial-backup-resume.g1native").string();
+    check(g1::write_native_save_atomic(resumed_path,legacy).succeeded &&
+          g1::write_native_save_atomic(resumed_path+".v1-backup",legacy).succeeded,
+          "could not stage already-preserved v1 migration");
+    g1::CampaignController resumed(resumed_path);
+    check(resumed.consume_support_tutorial().succeeded && !resumed.profile().support_tutorial_pending &&
+          g1::read_file(resumed_path,4096)==saved && g1::read_file(resumed_path+".v1-backup",4096)==legacy,
+          "identical existing backup prevented migration or changed rollback bytes");
+
+    // Migration via the ordinary mission-results write uses the same backup
+    // policy, including the existing save-failed token and its checked retry.
+    const auto begin_path=(directory/"begin-migration.g1native").string();
+    const auto begin_backup=begin_path+".v1-backup";
+    check(g1::write_native_save_atomic(begin_path,legacy).succeeded &&
+          g1::write_native_save_atomic(begin_backup,unrelated).succeeded,
+          "could not stage campaign migration conflict");
+    g1::CampaignController begin(begin_path);
+    const auto begin_failed=begin.begin(source);
+    check(!begin_failed.succeeded && begin.state().gate==g1::CampaignControllerGate::save_failed &&
+          begin.profile().support_tutorial_pending &&
+          g1::read_file(begin_path,4096)==legacy && g1::read_file(begin_backup,4096)==unrelated,
+          "campaign migration bypassed conflicting backup protection");
+    rejects([&]{(void)begin.consume_support_tutorial();},"tutorial consumed during pending failed campaign save");
+    std::filesystem::remove(begin_backup);
+    check(begin.retry_save(begin.state().token).succeeded && begin.profile().support_tutorial_pending &&
+          begin.state().gate==g1::CampaignControllerGate::results &&
+          g1::read_file(begin_backup,4096)==legacy &&
+          g1::decode_campaign_profile(g1::read_file(begin_path,4096)).support_tutorial_pending,
+          "campaign migration retry lost pending tutorial or rollback v1 bytes");
+}
 } // namespace
 
 int main() {
@@ -108,6 +278,7 @@ int main() {
         std::vector<char> name(pattern.begin(),pattern.end());name.push_back(0);
         const auto made=mkdtemp(name.data());if(!made)throw std::runtime_error("could not create isolated test directory");
         directory=made;
+        tutorial_persistence_cases(directory,data,source);
         const auto save_path=(directory/"initially-missing"/"profile.g1native").string();
         g1::CampaignController controller(save_path);
         const auto before=g1::encode_campaign_profile(controller.profile());
