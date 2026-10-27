@@ -585,6 +585,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         const auto& archive = *_archive;
         _text = std::make_unique<g1::TextTable>(g1::load_text_table(archive));
         [_title loadOriginalFonts:archive];
+        [_campaignCanvas loadOriginalFonts:archive];
+        [_battleCanvas loadOriginalFonts:archive];
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
@@ -2864,6 +2866,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"support_tutorial_pending":_campaign ? @(_campaign->profile().support_tutorial_pending) : NSNull.null,
         @"support_tutorial_save_retry_required":@(_supportTutorialRetryRequired),
         @"original_title_font_slot":@([_title originalFontSlot]),
+        @"campaign_original_heading_font_slot":@([_campaignCanvas originalHeadingFontSlot]),
+        @"original_bitmap_panel_policy":@"Campaign/results headings use original slot0 or slot2 and combat names use slot2 only when a complete single-line glyph run fits; otherwise readable system text. Original palette retained; UIKit body and HUD layout are native.",
         @"title_font_policy":@"Original keyed bitmap glyphs and measured spacing for supported single-line titles/support banners; native17-point nominal height and nearest sampling; existing UIKit fallback for uncovered text. Dialogue layout remains TextKit",
         @"native_profile_format":@2,
         @"support_presentation":@"Original helper order, primary-name banner and keyed percentage artwork; separate effect ends at1680ms, cue hands off at2010ms; at most five helpers displayed without reducing six-helper combat",

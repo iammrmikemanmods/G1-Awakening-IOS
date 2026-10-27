@@ -10,6 +10,8 @@
 // current text has actually drawn. This is not an original background or font.
 @interface G1CampaignCanvas : UIView
 - (void)showTitle:(NSString*)title body:(NSString*)body token:(std::uint64_t)token;
+- (void)loadOriginalFonts:(const g1::Archive&)archive;
+- (NSInteger)originalHeadingFontSlot;
 - (void)resetPresentation;
 - (std::uint64_t)drawnToken;
 - (CGFloat)heightForWidth:(CGFloat)width;
@@ -21,11 +23,37 @@
     NSString* _body;
     std::uint64_t _token, _drawnToken;
     std::int32_t _backgroundOffset;
+    G1BitmapFontFace* _largeOriginalFont;
+    G1BitmapFontFace* _smallOriginalFont;
 }
 - (instancetype)initWithFrame:(CGRect)frame {
     self=[super initWithFrame:frame];
     if(self) { self.opaque=YES; self.isAccessibilityElement=YES; self.clipsToBounds=YES; }
     return self;
+}
+- (void)loadOriginalFonts:(const g1::Archive&)archive {
+    // Original keyed sheets are kept unmodified. Draw only complete, fitted
+    // single-line titles; leave uncovered or long text readable in UIKit.
+    _largeOriginalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:0];
+    _smallOriginalFont=[[G1BitmapFontFace alloc] initWithArchive:archive slot:2];
+    _drawnToken=0;
+    [self setNeedsDisplay];
+}
+- (G1BitmapFontFace*)originalHeadingFace {
+    if(!_heading || self.bounds.size.width<=32)return nil;
+    const CGFloat width=self.bounds.size.width-32;
+    const auto fits=[&](G1BitmapFontFace* font) -> BOOL {
+        if(!font || ![font supportsText:_heading])return NO;
+        const CGSize size=[font sizeForText:_heading height:22];
+        return size.width<=width && size.height<=34;
+    };
+    if(fits(_largeOriginalFont))return _largeOriginalFont;
+    if(fits(_smallOriginalFont))return _smallOriginalFont;
+    return nil;
+}
+- (NSInteger)originalHeadingFontSlot {
+    G1BitmapFontFace* face=[self originalHeadingFace];
+    return face ? [face fontSlot] : -1;
 }
 - (NSDictionary*)bodyAttributes {
     NSMutableParagraphStyle* paragraph=[NSMutableParagraphStyle new];
@@ -67,7 +95,10 @@
     const CGFloat phase=std::fmod(static_cast<double>(_backgroundOffset)/65536.0,48.0);
     for(CGFloat y=phase-48;y<self.bounds.size.height;y+=48)
         UIRectFill(CGRectMake(0,y,self.bounds.size.width,1));
-    [_heading drawInRect:CGRectMake(16,14,self.bounds.size.width-32,34) withAttributes:@{
+    const CGRect headingRect=CGRectMake(16,14,self.bounds.size.width-32,34);
+    G1BitmapFontFace* face=[self originalHeadingFace];
+    if(face) [face drawText:_heading rect:headingRect height:22 alignment:NSTextAlignmentLeft];
+    else [_heading drawInRect:headingRect withAttributes:@{
         NSFontAttributeName:[UIFont systemFontOfSize:22 weight:UIFontWeightBold],
         NSForegroundColorAttributeName:[UIColor colorWithRed:1 green:0.84 blue:0.25 alpha:1]}];
     [_body drawWithRect:CGRectMake(16,62,self.bounds.size.width-32,self.bounds.size.height-74)

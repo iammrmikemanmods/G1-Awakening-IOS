@@ -8,8 +8,8 @@
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>G1AwakeningNative</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.7.0</string>
-    <key>CFBundleVersion</key><string>7</string>
+    <key>CFBundleShortVersionString</key><string>0.8.0</string>
+    <key>CFBundleVersion</key><string>8</string>
     <key>CFBundleSupportedPlatforms</key><array><string>iPhoneOS</string></array>
     <key>MinimumOSVersion</key><string>17.5</string>
     <key>UIDeviceFamily</key><array><integer>1</integer></array>
@@ -24,5 +24,5 @@
     <key>ITSAppUsesNonExemptEncryption</key><false/>
     <key>G1SourceCommit</key><string>@G1_SOURCE_COMMIT@</string>
     <key>G1ArtifactKind</key><string>Native campaign integration test</string>
-    <key>G1FeatureScope</key><string>Native tactical gameplay, campaign and checkpoint restore, original support presentation and first-use tutorial, original bitmap headings, profile migration and pause-safe presentation; full rendered playthrough, remaining original output fidelity and physical iPhone XR validation remain outstanding</string>
+    <key>G1FeatureScope</key><string>Native tactical gameplay, campaign and checkpoint restore, original support presentation and first-use tutorial, original bitmap headings including campaign results and combat names, profile migration and pause-safe presentation; full rendered playthrough, remaining original output fidelity and physical iPhone XR validation remain outstanding</string>
 </dict></plist>
