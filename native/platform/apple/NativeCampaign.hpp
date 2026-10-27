@@ -2,6 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #include "NativeBitmapFont.hpp"
+#include "g1/OriginalUI.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -10,26 +11,34 @@
 // The source colour/advance bitmap font is used when complete coverage fits;
 // otherwise the readable UIKit title remains. No rebuilt or generated art.
 @interface G1OriginalMenuButton : UIButton
-- (void)useOriginalFace:(G1BitmapFontFace*)face;
+- (void)useOriginalFace:(G1BitmapFontFace*)face fallback:(G1BitmapFontFace*)fallback;
 @end
 
 @implementation G1OriginalMenuButton {
     G1BitmapFontFace* _originalFace;
+    G1BitmapFontFace* _fallbackFace;
 }
-- (void)useOriginalFace:(G1BitmapFontFace*)face {
-    _originalFace=face;
-    [self setNeedsLayout];
-    [self setNeedsDisplay];
+- (void)useOriginalFace:(G1BitmapFontFace*)face fallback:(G1BitmapFontFace*)fallback {
+    _originalFace=face;_fallbackFace=fallback;
+    [self setNeedsLayout];[self setNeedsDisplay];
 }
-- (BOOL)usesOriginal {
+- (G1BitmapFontFace*)visibleOriginalFace {
     NSString* title=[self titleForState:UIControlStateNormal];
-    if(!_originalFace || ![_originalFace supportsText:title])return NO;
-    const CGSize size=[_originalFace sizeForText:title height:15];
-    return size.width<=self.bounds.size.width-8 && size.height<=self.bounds.size.height;
+    if(_originalFace && [_originalFace supportsText:title]) {
+        const CGSize size=[_originalFace sizeForText:title height:15];
+        if(size.width<=self.bounds.size.width-8 && size.height<=self.bounds.size.height)
+            return _originalFace;
+    }
+    if(_fallbackFace && [_fallbackFace supportsText:title]) {
+        const CGSize size=[_fallbackFace sizeForText:title height:15];
+        if(size.width<=self.bounds.size.width-8 && size.height<=self.bounds.size.height)
+            return _fallbackFace;
+    }
+    return nil;
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.titleLabel.hidden=[self usesOriginal];
+    self.titleLabel.hidden=[self visibleOriginalFace]!=nil;
 }
 - (void)setEnabled:(BOOL)enabled {
     [super setEnabled:enabled];[self setNeedsDisplay];
@@ -44,11 +53,12 @@
         UIBezierPath* outline=[UIBezierPath bezierPathWithRect:CGRectInset(self.bounds,1,1)];
         outline.lineWidth=1.5;[outline stroke];
     }
-    if([self usesOriginal]) {
+    G1BitmapFontFace* face=[self visibleOriginalFace];
+    if(face) {
         CGContextRef context=UIGraphicsGetCurrentContext();
         CGContextSaveGState(context);
         CGContextSetAlpha(context,self.enabled ? 1 : 0.38);
-        [_originalFace drawText:[self titleForState:UIControlStateNormal] rect:CGRectInset(rect,4,1)
+        [face drawText:[self titleForState:UIControlStateNormal] rect:CGRectInset(rect,4,1)
             height:15 alignment:NSTextAlignmentCenter];
         CGContextRestoreGState(context);
     }
@@ -67,6 +77,7 @@
 - (void)setDisplaysMenuDetails:(BOOL)visible;
 - (NSInteger)originalHeadingFontSlot;
 - (G1BitmapFontFace*)originalFaceForMenuText:(NSString*)text;
+- (G1BitmapFontFace*)originalSmallFaceForMenuText:(NSString*)text;
 - (void)resetPresentation;
 - (std::uint64_t)drawnToken;
 - (CGFloat)heightForWidth:(CGFloat)width;
@@ -145,6 +156,9 @@
     if([_smallOriginalFont supportsText:text])return _smallOriginalFont;
     return nil;
 }
+- (G1BitmapFontFace*)originalSmallFaceForMenuText:(NSString*)text {
+    return [_smallOriginalFont supportsText:text] ? _smallOriginalFont : nil;
+}
 - (NSDictionary*)bodyAttributes {
     NSMutableParagraphStyle* paragraph=[NSMutableParagraphStyle new];
     paragraph.lineSpacing=4;
@@ -192,9 +206,9 @@
         // contains the logo, portraits, silver rails, red panel and blank
         // title slot: no extra fake band or recolouring is drawn on top.
         // Positions below are in the original asset's 480x320 coordinates.
-        const CGRect headingRect=CGRectMake(dest.origin.x+dest.size.width*(132.0/480.0),
-            dest.origin.y+dest.size.height*(84.0/320.0),
-            dest.size.width*(216.0/480.0),dest.size.height*(22.0/320.0));
+        const auto titleSlot=g1::original_ui::fit(self.bounds.size.width,self.bounds.size.height)
+            .project(g1::original_ui::heading_slot);
+        const CGRect headingRect=CGRectMake(titleSlot.x,titleSlot.y,titleSlot.width,titleSlot.height);
         G1BitmapFontFace* face=[self originalFaceForMenuText:_heading];
         if(face) {
             [face drawText:_heading rect:headingRect height:std::min(CGFloat(17),headingRect.size.height)

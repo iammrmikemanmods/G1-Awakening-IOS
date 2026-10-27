@@ -19,6 +19,7 @@
 #include "g1/TextureEnhancement.hpp"
 #include "g1/PresentationEpoch.hpp"
 #include "g1/InitialPresentation.hpp"
+#include "g1/OriginalUI.hpp"
 #include "g1/GameSession.hpp"
 #include "g1/SessionSave.hpp"
 #include "g1/CampaignController.hpp"
@@ -124,7 +125,7 @@ NSString* native_text(const std::string& value) {
 // Original source-pack UI icons are preserved as pixel-for-pixel PNG bytes;
 // UIKit sees them at native Retina scale, never as AI-generated replacements.
 UIImage* original_g1_ui_png(const g1::Archive& archive,std::uint32_t id,
-                          std::uint32_t width,std::uint32_t height) {
+                          std::uint32_t width,std::uint32_t height,CGFloat scale=2.0) {
     const auto ids=archive.find(id,0xb7178678U);
     if(ids.size()!=1)throw g1::FormatError("Original game UI asset is missing or ambiguous");
     const auto bytes=archive.read(ids.front());
@@ -133,7 +134,7 @@ UIImage* original_g1_ui_png(const g1::Archive& archive,std::uint32_t id,
         throw g1::FormatError("Original game UI asset dimensions differ from source");
     UIImage* source=[UIImage imageWithData:[NSData dataWithBytes:bytes.data() length:bytes.size()]];
     if(!source.CGImage)throw g1::FormatError("Original game UI bitmap failed UIKit decode");
-    return [UIImage imageWithCGImage:source.CGImage scale:2.0 orientation:UIImageOrientationUp];
+    return [UIImage imageWithCGImage:source.CGImage scale:scale orientation:UIImageOrientationUp];
 }
 
 UIButton* action_button(NSString* title, id target, SEL selector) {
@@ -150,6 +151,30 @@ UIButton* action_button(NSString* title, id target, SEL selector) {
     [button.widthAnchor constraintGreaterThanOrEqualToConstant:82].active = YES;
     [button.heightAnchor constraintEqualToConstant:40].active = YES;
     return button;
+}
+
+// The 52x49 source action icon is the complete visible control; its name is
+// kept as a VoiceOver label, not drawn beside original G1 artwork. No UIKit
+// button backplate, simulated texture or replacement illustration is added.
+UIButton* original_action_button(NSString* label, id target, SEL selector, CGFloat width=52) {
+    UIButton* button=[UIButton buttonWithType:UIButtonTypeCustom];
+    button.isAccessibilityElement=YES;
+    button.accessibilityLabel=label;
+    button.accessibilityHint=@"Tap to perform this action when available.";
+    button.adjustsImageWhenDisabled=NO;
+    button.adjustsImageWhenHighlighted=NO;
+    button.contentEdgeInsets=UIEdgeInsetsZero;
+    button.imageView.contentMode=UIViewContentModeScaleAspectFit;
+    [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
+    [button.widthAnchor constraintEqualToConstant:width].active=YES;
+    [button.heightAnchor constraintEqualToConstant:49].active=YES;
+    return button;
+}
+
+void update_original_action_state(UIButton* button, BOOL active) {
+    button.alpha=button.enabled ? 1.0 : 0.38;
+    button.layer.borderWidth=active && button.enabled ? 2.0 : 0.0;
+    button.layer.borderColor=[UIColor colorWithRed:0.95 green:0.25 blue:0.29 alpha:1].CGColor;
 }
 
 g1::Matrix4 unit_model(const g1::WorldBootstrap& world, const g1::MovementUnitState& unit) {
@@ -216,7 +241,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, mode_select, mission_select, settings, help, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
+enum class NativePanel { none, startup, pause, results, ending, menu, mode_select, mission_select, settings, help, help_topic, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -252,6 +277,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     UILabel* _fps;
     UILabel* _worldLegend;
     UIButton* _reportButton;
+    UIButton* _resetButton;
     UIButton* _moveButton;
     UIButton* _captureButton;
     UIButton* _transformButton;
@@ -283,6 +309,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     NSLayoutConstraint* _campaignActionsMenuCenter;
     NSLayoutConstraint* _campaignActionsNormalBottom;
     NSLayoutConstraint* _campaignActionsWidth;
+    NSLayoutConstraint* _menuInfoWidth;
+    NSLayoutConstraint* _menuInfoHeight;
+    NSLayoutConstraint* _menuInfoCenterY;
     AVPlayer* _openingPlayer;
     AVPlayerLayer* _openingLayer;
     UIView* _openingView;
@@ -353,6 +382,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     NSString* _checkpointError;
     NSString* _campaignError;
     NativePanel _panelPurpose;
+    NativePanel _informationReturnPanel;
     std::uint64_t _panelToken;
     std::uint64_t _localPanelToken;
     std::uint32_t _resultsInputEdges;
@@ -386,7 +416,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     std::uint64_t _staleGpuErrors;
     std::uint8_t _lastMissionMode;
     bool _clockStarted, _loaded, _failed, _moveMode, _attackMode, _rangeDirty;
-    bool _graphicsModern, _showDiagnostics, _settingsFromPause, _infoFromSettings;
+    bool _graphicsModern, _showDiagnostics, _settingsFromPause;
     float _touchCameraSpeed; // initialized from registered defaults in viewDidLoad
     NSString* _failure;
     NSString* _notice;
@@ -449,17 +479,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _fps.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_fps];
 
-    UIButton* reset = [UIButton buttonWithType:UIButtonTypeSystem];
-    [reset setTitle:@"Reset view" forState:UIControlStateNormal];
-    [reset addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
+    _resetButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [_resetButton setTitle:@"Reset view" forState:UIControlStateNormal];
+    [_resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
     _reportButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [_reportButton setTitle:@"Test report" forState:UIControlStateNormal];
     [_reportButton addTarget:self action:@selector(shareReport) forControlEvents:UIControlEventTouchUpInside];
-    _menuButton=[UIButton buttonWithType:UIButtonTypeSystem];
-    [_menuButton setTitle:@"Menu" forState:UIControlStateNormal];
-    [_menuButton addTarget:self action:@selector(openMenu) forControlEvents:UIControlEventTouchUpInside];
-    UIStackView* buttons = [[UIStackView alloc] initWithArrangedSubviews:@[reset,_menuButton,_reportButton]];
-    buttons.spacing = 18;
+    _menuButton=original_action_button(@"Pause menu",self,@selector(openMenu),60);
+    UIStackView* buttons = [[UIStackView alloc] initWithArrangedSubviews:@[_resetButton,_menuButton,_reportButton]];
+    buttons.spacing = 8;
     buttons.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:buttons];
     UILayoutGuide* safe = self.view.safeAreaLayoutGuide;
@@ -476,26 +504,26 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         [buttons.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
         [buttons.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-4]]];
 
-    _moveButton = action_button(@"Move",self,@selector(beginMove));
-    _captureButton = action_button(@"Capture",self,@selector(capture));
-    _transformButton = action_button(@"Transform",self,@selector(transformUnit));
-    _attackButton = action_button(@"Attack",self,@selector(beginAttack));
-    _healButton = action_button(@"Repair",self,@selector(beginHeal));
-    _upgradeButton = action_button(@"Upgrade",self,@selector(upgradeUnit));
-    _endTurnButton = action_button(@"End turn",self,@selector(endTurn));
-    _buildButton = action_button(@"Activate unit",self,@selector(beginProduction));
-    _deployButton = action_button(@"Activate tape",self,@selector(beginDeploy));
-    _undoButton = action_button(@"Undo",self,@selector(undoAction));
+    _moveButton = original_action_button(@"Move",self,@selector(beginMove));
+    _captureButton = original_action_button(@"Capture",self,@selector(capture));
+    _transformButton = original_action_button(@"Transform",self,@selector(transformUnit));
+    _attackButton = original_action_button(@"Attack",self,@selector(beginAttack));
+    _healButton = original_action_button(@"Repair",self,@selector(beginHeal));
+    _upgradeButton = original_action_button(@"Upgrade",self,@selector(upgradeUnit));
+    _endTurnButton = original_action_button(@"End turn",self,@selector(endTurn),60);
+    _buildButton = original_action_button(@"Activate unit",self,@selector(beginProduction));
+    _deployButton = original_action_button(@"Activate tape",self,@selector(beginDeploy));
+    _undoButton = original_action_button(@"Undo",self,@selector(undoAction));
     _endTurnButton.hidden=NO;
     UIStackView* primaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
         @[_moveButton,_captureButton,_transformButton,_attackButton,_healButton]];
-    primaryCommands.spacing=8;
+    primaryCommands.spacing=3;
     UIStackView* secondaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
         @[_buildButton,_deployButton,_upgradeButton,_undoButton,_endTurnButton]];
-    secondaryCommands.spacing=8;
+    secondaryCommands.spacing=3;
     _commands = [[UIStackView alloc] initWithArrangedSubviews:@[primaryCommands,secondaryCommands]];
     _commands.axis=UILayoutConstraintAxisVertical;_commands.alignment=UIStackViewAlignmentTrailing;
-    _commands.spacing = 6;
+    _commands.spacing = 3;
     _commands.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_commands];
     _dialoguePanel = [UIView new];
@@ -522,7 +550,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [_dialoguePanel addSubview:dialogueButtons];
     [NSLayoutConstraint activateConstraints:@[
         [_commands.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
-        [_commands.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-42],
+        [_commands.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-56],
         [_dialoguePanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:16],
         [_dialoguePanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
         [_dialoguePanel.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-40],
@@ -584,15 +612,18 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _menuInfoText.textColor=UIColor.whiteColor;
     _menuInfoText.font=[UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
     _menuInfoText.editable=NO;_menuInfoText.selectable=NO;
-    _menuInfoText.textContainerInset=UIEdgeInsetsMake(2,4,2,4);
+    _menuInfoText.textContainerInset=UIEdgeInsetsMake(1,3,1,3);
     _menuInfoText.scrollEnabled=YES;
     _menuInfoText.hidden=YES;
     [_campaignPanel addSubview:_menuInfoText];
     [_campaignPanel bringSubviewToFront:_campaignButtons];
     _campaignCanvasHeight=[_campaignCanvas.heightAnchor constraintEqualToConstant:180];
-    _campaignActionsMenuCenter=[_campaignButtons.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:8];
+    _campaignActionsMenuCenter=[_campaignButtons.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:4];
     _campaignActionsNormalBottom=[_campaignButtons.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor constant:-12];
     _campaignActionsWidth=[_campaignButtons.widthAnchor constraintEqualToConstant:390];
+    _menuInfoWidth=[_menuInfoText.widthAnchor constraintEqualToConstant:372];
+    _menuInfoHeight=[_menuInfoText.heightAnchor constraintEqualToConstant:63];
+    _menuInfoCenterY=[_menuInfoText.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:-5];
     [NSLayoutConstraint activateConstraints:@[
         [_campaignPanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:18],
         [_campaignPanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-18],
@@ -609,9 +640,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         [_campaignCanvas.widthAnchor constraintEqualToAnchor:_campaignScroll.frameLayoutGuide.widthAnchor],
         _campaignCanvasHeight,
         [_menuInfoText.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
-        [_menuInfoText.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:-32],
-        [_menuInfoText.widthAnchor constraintEqualToConstant:390],
-        [_menuInfoText.heightAnchor constraintEqualToConstant:94],
+        _menuInfoCenterY,_menuInfoWidth,_menuInfoHeight,
         [_campaignButtons.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
         [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:8],
         [_campaignButtons.trailingAnchor constraintLessThanOrEqualToAnchor:_campaignPanel.trailingAnchor constant:-8],
@@ -777,17 +806,21 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         {_endTurnButton,719},{_buildButton,454},{_deployButton,919},
         {_undoButton,1076}}};
     for(const auto& [button,identifier]:mapped) {
-        UIImage* icon=original_g1_ui_png(archive,identifier,identifier==719?60:52,49);
+        UIImage* icon=original_g1_ui_png(archive,identifier,identifier==719?60:52,49,1.0);
         [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                 forState:UIControlStateNormal];
         button.imageView.contentMode=UIViewContentModeScaleAspectFit;
-        button.titleLabel.adjustsFontSizeToFitWidth=YES;
-        button.semanticContentAttribute=UISemanticContentAttributeForceLeftToRight;
-        button.contentEdgeInsets=UIEdgeInsetsMake(0,5,0,5);
+        button.contentHorizontalAlignment=UIControlContentHorizontalAlignmentCenter;
+        button.contentVerticalAlignment=UIControlContentVerticalAlignmentCenter;
+        // Buttons have no visible UIKit title, so the source icon is never
+        // clipped by an adjacent system-font word.
+        button.accessibilityIdentifier=[NSString stringWithFormat:@"g1-action-%u",identifier];
     }
-    [_menuButton setImage:[[original_g1_ui_png(archive,905,60,49)
-        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] copy]
-        forState:UIControlStateNormal];
+    UIImage* menuImage=[original_g1_ui_png(archive,905,60,49,1.0)
+        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    [_menuButton setImage:menuImage forState:UIControlStateNormal];
+    [_menuButton setImage:menuImage forState:UIControlStateDisabled];
+    _menuButton.accessibilityIdentifier=@"g1-original-pause-menu";
 }
 - (NSString*)originalText:(std::uint16_t)identifier {
     return native_text(_text->at(identifier));
@@ -801,7 +834,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 
 - (UIButton*)addCampaignButton:(NSString*)title action:(SEL)action {
     UIStackView* row=(UIStackView*)_campaignButtons.arrangedSubviews.lastObject;
-    if(!row || row.arrangedSubviews.count>=4) {
+    const BOOL isSourceMenu=_campaignActionsMenuCenter.active;
+    if(!row || row.arrangedSubviews.count>=(isSourceMenu?g1::original_ui::menu_columns:4)) {
         row=[UIStackView new];row.spacing=3;row.distribution=UIStackViewDistributionFillEqually;
         [_campaignButtons addArrangedSubview:row];
     }
@@ -809,7 +843,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         (_panelPurpose==NativePanel::startup || _panelPurpose==NativePanel::menu ||
          _panelPurpose==NativePanel::mode_select ||
          _panelPurpose==NativePanel::mission_select || _panelPurpose==NativePanel::settings ||
-         _panelPurpose==NativePanel::help || _panelPurpose==NativePanel::credits ||
+         _panelPurpose==NativePanel::help || _panelPurpose==NativePanel::help_topic ||
+         _panelPurpose==NativePanel::credits ||
          _panelPurpose==NativePanel::pause || _panelPurpose==NativePanel::arena ||
          _panelPurpose==NativePanel::arena_opponent);
     UIButton* button=nil;
@@ -822,12 +857,16 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                         forState:UIControlStateDisabled];
         original.titleLabel.font=[UIFont fontWithName:@"Menlo-Bold" size:11] ?: [UIFont boldSystemFontOfSize:11];
         original.backgroundColor=UIColor.clearColor;
-        [original useOriginalFace:[_campaignCanvas originalFaceForMenuText:title]];
+        [original useOriginalFace:[_campaignCanvas originalFaceForMenuText:title]
+                             fallback:[_campaignCanvas originalSmallFaceForMenuText:title]];
         [original.heightAnchor constraintEqualToConstant:29].active=YES;
         button=original;
         [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
     } else button=action_button(title,self,action);
     [row addArrangedSubview:button];
+    // Source menus must not exceed the recovered 3-row artwork region.
+    if(originalMenu && _campaignButtons.arrangedSubviews.count>3)
+        NSAssert(NO,@"Original menu choices exceed the artwork's native three-row capacity");
     return button;
 }
 
@@ -842,10 +881,20 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         if(std::abs(_campaignCanvasHeight.constant-target)>0.5)_campaignCanvasHeight.constant=target;
         // Every touch choice fits inside the untouched red source panel.
         // Preserve original 480:320 art aspect, including on XR.
-        const CGFloat scale=std::min(width/480.0,height/320.0);
-        const CGFloat actionsWidth=originalMenu ? std::min(width-16,430.0*scale) : width-30;
+        const auto art=g1::original_ui::fit(width,height);
+        const CGFloat actionsWidth=originalMenu ?
+            std::min(width-16,art.project(g1::original_ui::choices_region).width) : width-30;
         if(std::abs(_campaignActionsWidth.constant-actionsWidth)>0.5)
             _campaignActionsWidth.constant=actionsWidth;
+        if(originalMenu) {
+            const BOOL information=_panelPurpose==NativePanel::help_topic || _panelPurpose==NativePanel::credits;
+            _campaignActionsMenuCenter.constant=art.source_offset_from_center(information ?
+                g1::original_ui::information_action_center_y : g1::original_ui::choices_center_y);
+            _menuInfoCenterY.constant=art.source_offset_from_center(
+                g1::original_ui::information_text.y + g1::original_ui::information_text.height/2);
+            _menuInfoWidth.constant=std::min(width-16,art.project(g1::original_ui::information_text).width);
+            _menuInfoHeight.constant=art.project(g1::original_ui::information_text).height;
+        }
     }
 }
 
@@ -857,7 +906,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         purpose==NativePanel::startup || purpose==NativePanel::menu ||
         purpose==NativePanel::mode_select ||
         purpose==NativePanel::settings || purpose==NativePanel::help ||
-        purpose==NativePanel::credits || purpose==NativePanel::pause ||
+        purpose==NativePanel::help_topic || purpose==NativePanel::credits || purpose==NativePanel::pause ||
         purpose==NativePanel::mission_select || purpose==NativePanel::arena ||
         purpose==NativePanel::arena_opponent;
     _campaignActionsNormalBottom.active=NO;
@@ -865,17 +914,19 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     if(sourceMenu)_campaignActionsMenuCenter.active=YES;
     else _campaignActionsNormalBottom.active=YES;
     _campaignScroll.scrollEnabled=!sourceMenu;
-    const BOOL information=purpose==NativePanel::help || purpose==NativePanel::credits;
+    const BOOL information=purpose==NativePanel::help_topic || purpose==NativePanel::credits;
     _menuInfoText.hidden=!information;
     _menuInfoText.text=information ? body : @"";
     if(information && changed)[_menuInfoText setContentOffset:CGPointZero animated:NO];
-    _campaignActionsMenuCenter.constant=information ? 61 : 8;
+    // Source-space positions and information scroll limits are calculated
+    // by updateCampaignLayout after the original 480x320 image is fitted.
     [_campaignCanvas setOriginalMenuArtworkVisible:sourceMenu];
     [_campaignCanvas setDisplaysMenuDetails:sourceMenu && purpose==NativePanel::pause];
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
     _campaignPanel.hidden=NO;
+    _menuButton.hidden=YES;_gameHudFrame.hidden=YES;
     _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;
     [_campaignCanvas showTitle:title body:body token:token];
     if(changed)[_campaignScroll setContentOffset:CGPointZero animated:NO];
@@ -896,7 +947,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     switch(_panelPurpose) {
     case NativePanel::startup: case NativePanel::menu:
     case NativePanel::mode_select:
-    case NativePanel::settings: case NativePanel::help: case NativePanel::credits:
+    case NativePanel::settings: case NativePanel::help: case NativePanel::help_topic:
+    case NativePanel::credits:
         current=&mainMenu;break;
     case NativePanel::mission_select: current=&missionList;break;
     case NativePanel::arena: current=&faction;break;
@@ -917,6 +969,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _presentationEpoch.invalidate();
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
+    _menuButton.hidden=NO;_gameHudFrame.hidden=NO;
     _menuInfoText.hidden=YES;
     [_campaignCanvas resetPresentation];
     _inputEdges=0;_simulationClock.reset();_clockStarted=false;
@@ -982,7 +1035,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
     [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
     [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
-    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+    [self addCampaignButton:@"Back" action:@selector(showProfileMenu)];
 }
 
 - (BOOL)retireCheckpoint {
@@ -1058,21 +1111,22 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
     const auto maximum=group==2 ? count-1 :
         std::min(count-1,_campaign->profile().highest_unlocked.at(group));
-    const auto start=_missionPickerPage*8;
+    const auto start=_missionPickerPage*g1::original_ui::mission_page_size;
     if(start<0 || start>maximum)return;
     NSString* title=[self originalText:group==0?617:group==1?1151:1190];
     NSString* body=[NSString stringWithFormat:
         @"Select an unlocked mission. Page %d of %d. Starting a mission replaces Continue only after the new session has installed.",
-        int(_missionPickerPage+1),int(maximum/8+1)];
+        int(_missionPickerPage+1),int(g1::original_ui::mission_page_count(maximum+1))];
     [self showPanel:NativePanel::mission_select title:title body:body token:++_localPanelToken];
-    for(std::int32_t index=start;index<=maximum && index<start+8;++index) {
+    for(std::int32_t index=start;index<=maximum &&
+        index<start+g1::original_ui::mission_page_size;++index) {
         NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2?536:1242],index+1];
         UIButton* button=[self addCampaignButton:label action:@selector(selectMissionFromButton:)];
         button.tag=index;
     }
     if(_missionPickerPage>0)[self addCampaignButton:@"Previous" action:@selector(previousMissionPage)];
-    if(start+8<=maximum)[self addCampaignButton:@"Next" action:@selector(nextMissionPage)];
-    [self addCampaignButton:@"Back" action:@selector(showProfileMenu)];
+    if(start+g1::original_ui::mission_page_size<=maximum)[self addCampaignButton:@"Next" action:@selector(nextMissionPage)];
+    [self addCampaignButton:@"Back" action:@selector(showModesMenu)];
 }
 - (void)selectMissionFromButton:(UIButton*)button {
     if(_panelPurpose!=NativePanel::mission_select || !button ||
@@ -1082,7 +1136,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
     const auto maximum=group==2 ? count-1 :
         std::min(count-1,_campaign->profile().highest_unlocked.at(group));
-    if(index<0 || index>maximum || index/8!=_missionPickerPage)return;
+    if(index<0 || index>maximum ||
+       index/g1::original_ui::mission_page_size!=_missionPickerPage)return;
     if(group==2)[self chooseArenaFaction:index];
     else [self startCampaign:group mission:index faction:0 opponent:1];
 }
@@ -1098,27 +1153,28 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         static_cast<std::int32_t>(g1::campaign_mission_count(2))-1 :
         std::min(static_cast<std::int32_t>(g1::campaign_mission_count(group))-1,
                  _campaign->profile().highest_unlocked.at(group));
-    if((_missionPickerPage+1)*8>maximum)return;
+    if((_missionPickerPage+1)*g1::original_ui::mission_page_size>maximum)return;
     ++_missionPickerPage;[self showMissionPicker];
 }
 
 - (void)chooseArenaFaction:(std::int32_t)index {
     _pendingArenaIndex=index;
-    [self showPanel:NativePanel::arena title:[self originalText:1190]
-        body:@"Choose player one's faction." token:++_localPanelToken];
+    [self showPanel:NativePanel::arena title:[self originalText:1022]
+        body:@"" token:++_localPanelToken];
     [self addCampaignButton:[self originalText:501] action:@selector(arenaAutobots)];
     [self addCampaignButton:[self originalText:1315] action:@selector(arenaDecepticons)];
-    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+    [self addCampaignButton:@"Back" action:@selector(showMissionPicker)];
 }
 
 - (void)chooseArenaOpponent:(std::int32_t)index faction:(std::uint8_t)faction {
     _pendingArenaIndex=index;_pendingArenaFaction=faction;
-    [self showPanel:NativePanel::arena_opponent title:[self originalText:1190]
-        body:@"Choose the other player." token:++_localPanelToken];
-    [self addCampaignButton:@"Computer" action:@selector(arenaComputer)];
+    [self showPanel:NativePanel::arena_opponent title:[self originalText:1313]
+        body:@"" token:++_localPanelToken];
+    [self addCampaignButton:[self originalText:580] action:@selector(arenaComputer)];
     [self addCampaignButton:[self originalText:690] action:@selector(arenaHuman)];
-    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+    [self addCampaignButton:@"Back" action:@selector(returnToArenaFaction)];
 }
+- (void)returnToArenaFaction { [self chooseArenaFaction:_pendingArenaIndex]; }
 - (void)arenaAutobots { [self chooseArenaOpponent:_pendingArenaIndex faction:0]; }
 - (void)arenaDecepticons { [self chooseArenaOpponent:_pendingArenaIndex faction:1]; }
 - (void)arenaComputer { [self startCampaign:2 mission:_pendingArenaIndex faction:_pendingArenaFaction opponent:1]; }
@@ -1182,6 +1238,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _fps.hidden=!_showDiagnostics;
     _worldLegend.hidden=!_showDiagnostics;
     _reportButton.hidden=!_showDiagnostics;
+    _resetButton.hidden=!_showDiagnostics;
 }
 
 - (void)openSettings {
@@ -1198,29 +1255,48 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     NSString* body=[NSString stringWithFormat:
         @"Classic preserves the original source textures. Modern applies the PC port's lossless Scale4x rule to eligible 2D robot/decorative sprites at native resolution. Original 3D materials, map atlas and font sheets remain untouched.\n\n%@  /  %@",
         _graphicsModern?@"MODERN":@"CLASSIC",_showDiagnostics?@"DIAGNOSTICS ON":@"DIAGNOSTICS OFF"];
-    [self showPanel:NativePanel::settings title:@"SETTINGS" body:body token:++_localPanelToken];
+    [self showPanel:NativePanel::settings title:[self originalText:468] body:body token:++_localPanelToken];
     [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
-    [self addCampaignButton:[_audio musicEnabled]?@"Music: On":@"Music: Off" action:@selector(toggleMusic)];
-    [self addCampaignButton:[_audio soundEnabled]?@"Sound: On":@"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:[self originalText:[_audio musicEnabled]?495:1222] action:@selector(toggleMusic)];
+    [self addCampaignButton:[self originalText:[_audio soundEnabled]?855:923] action:@selector(toggleSound)];
     [self addCampaignButton:[NSString stringWithFormat:@"Camera: %.2fx",_touchCameraSpeed]
         action:@selector(cycleTouchCameraSpeed)];
     [self addCampaignButton:_showDiagnostics?@"Diagnostics: On":@"Diagnostics: Off" action:@selector(toggleDiagnostics)];
-    [self addCampaignButton:@"Export report" action:@selector(shareReport)];
+    if(_showDiagnostics)[self addCampaignButton:@"Export report" action:@selector(shareReport)];
     [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
 }
 
+// The original iPhone text bank provides four real HELP topics (overview,
+// controls, modes and tips). Retain their exact source text rather than a
+// substitute instructions paragraph. This is native dispatch, not the old
+// ARM32 UI callback table (which still needs independent parity verification).
 - (void)showHelpMenu {
-    _infoFromSettings=_panelPurpose==NativePanel::settings;
-    if(!_infoFromSettings)_settingsFromPause=_panelPurpose==NativePanel::pause;
-    [self showPanel:NativePanel::help title:@"HELP"
-        body:@"TAP a robot to select it. Choose MOVE then tap an available tile twice to confirm the route. ATTACK uses the target you tap. CAPTURE, TRANSFORM, REPAIR, UPGRADE and ACTIVATE use the displayed action buttons. END TURN advances to the enemy. Swipe the battlefield to pan, pinch to zoom, and use Reset view to frame the map.\n\nStory unlocks Showdown; Showdown unlocks Cybertron Arena. Pause with Menu; use Continue after relaunch to restore the last safe checkpoint."
+    _informationReturnPanel=_panelPurpose;
+    [self showHelpIndex];
+}
+- (void)showHelpIndex {
+    [self showPanel:NativePanel::help title:[self originalText:754] body:@""
         token:++_localPanelToken];
+    const std::array<std::uint16_t,4> tabs{{630,1181,983,1200}};
+    for(std::size_t i=0;i<tabs.size();++i) {
+        UIButton* choice=[self addCampaignButton:[self originalText:tabs[i]]
+            action:@selector(openOriginalHelpTopic:)];
+        choice.tag=static_cast<NSInteger>(i);
+    }
     [self addCampaignButton:@"Back" action:@selector(backFromInformation)];
+}
+- (void)openOriginalHelpTopic:(UIButton*)choice {
+    if(_panelPurpose!=NativePanel::help || !choice || choice.tag<0 || choice.tag>=4)return;
+    const std::array<std::uint16_t,4> titles{{630,1181,983,1200}};
+    const std::array<std::uint16_t,4> bodies{{861,458,788,393}};
+    const std::size_t i=static_cast<std::size_t>(choice.tag);
+    [self showPanel:NativePanel::help_topic title:[self originalText:titles[i]]
+        body:[self originalText:bodies[i]] token:++_localPanelToken];
+    [self addCampaignButton:@"Back" action:@selector(showHelpIndex)];
 }
 
 - (void)showCreditsMenu {
-    _infoFromSettings=_panelPurpose==NativePanel::settings;
-    if(!_infoFromSettings)_settingsFromPause=_panelPurpose==NativePanel::pause;
+    _informationReturnPanel=_panelPurpose;
     [self showPanel:NativePanel::credits title:@"CREDITS"
         body:@"TRANSFORMERS G1: AWAKENING\n\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
         token:++_localPanelToken];
@@ -1228,8 +1304,17 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
 }
 
 - (void)backFromInformation {
-    if(_infoFromSettings)[self showSettingsMenu];
-    else [self returnFromSettings];
+    const auto destination=_informationReturnPanel;
+    _informationReturnPanel=NativePanel::none;
+    switch(destination) {
+    case NativePanel::settings:[self showSettingsMenu];break;
+    case NativePanel::pause:[self showPauseMenu];break;
+    case NativePanel::mode_select:[self showModesMenu];break;
+    case NativePanel::mission_select:[self showMissionPicker];break;
+    case NativePanel::arena:[self chooseArenaFaction:_pendingArenaIndex];break;
+    case NativePanel::arena_opponent:[self returnToArenaFaction];break;
+    default:[self showProfileMenu];break;
+    }
 }
 
 - (void)cycleTouchCameraSpeed {
@@ -2246,11 +2331,18 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _buildButton.enabled=_session->selected_production_eligibility(g1::ProductionMode::ordinary)==g1::ProductionEligibility::allowed;
     _deployButton.enabled=_session->selected_production_eligibility(g1::ProductionMode::deploy)==g1::ProductionEligibility::allowed;
     _undoButton.enabled=_session->selected_can_undo();
+    // Upgrade cost is spoken by VoiceOver; never overprint the original icon.
     if(_session->selected()) {
         const auto& unit=_session->world().units.at(*_session->selected());
         const auto cost=g1::unit_spawn_cost(_session->world().unit_definitions.at(unit.type));
-        [_upgradeButton setTitle:[NSString stringWithFormat:@"Upgrade (%d)",int(cost)] forState:UIControlStateNormal];
-    } else [_upgradeButton setTitle:@"Upgrade" forState:UIControlStateNormal];
+        _upgradeButton.accessibilityValue=[NSString stringWithFormat:@"%d Energon",int(cost)];
+    } else _upgradeButton.accessibilityValue=nil;
+    update_original_action_state(_moveButton,_moveMode);
+    update_original_action_state(_attackButton,_attackMode);
+    update_original_action_state(_healButton,_healMode);
+    for(UIButton* button in @[_captureButton,_transformButton,_upgradeButton,_endTurnButton,
+                             _buildButton,_deployButton,_undoButton])
+        update_original_action_state(button,NO);
     if (_session->world().title_text_index)
         _title.text = native_text(_text->at(g1::script_text_id(*_session->world().title_text_index)));
 }
