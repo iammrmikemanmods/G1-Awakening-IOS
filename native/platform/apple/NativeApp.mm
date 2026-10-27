@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <MetalKit/MetalKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import <AVFoundation/AVFoundation.h>
 #import <CommonCrypto/CommonDigest.h>
 #include <sys/utsname.h>
 
@@ -14,7 +15,11 @@
 #include "g1/SupportDisplayGate.hpp"
 #include "g1/SupportOverlayAssets.hpp"
 #include "g1/SupportGeometry.hpp"
+#include "g1/SupportTutorial.hpp"
+#include "g1/TextureEnhancement.hpp"
+#include "g1/PresentationEpoch.hpp"
 #include "g1/InitialPresentation.hpp"
+#include "g1/OriginalUI.hpp"
 #include "g1/GameSession.hpp"
 #include "g1/SessionSave.hpp"
 #include "g1/CampaignController.hpp"
@@ -117,18 +122,59 @@ NSString* native_text(const std::string& value) {
     return text;
 }
 
+// Original source-pack UI icons are preserved as pixel-for-pixel PNG bytes;
+// UIKit sees them at native Retina scale, never as AI-generated replacements.
+UIImage* original_g1_ui_png(const g1::Archive& archive,std::uint32_t id,
+                          std::uint32_t width,std::uint32_t height,CGFloat scale=2.0) {
+    const auto ids=archive.find(id,0xb7178678U);
+    if(ids.size()!=1)throw g1::FormatError("Original game UI asset is missing or ambiguous");
+    const auto bytes=archive.read(ids.front());
+    const auto pixels=g1::decode_png(bytes);
+    if(pixels.width!=width || pixels.height!=height)
+        throw g1::FormatError("Original game UI asset dimensions differ from source");
+    UIImage* source=[UIImage imageWithData:[NSData dataWithBytes:bytes.data() length:bytes.size()]];
+    if(!source.CGImage)throw g1::FormatError("Original game UI bitmap failed UIKit decode");
+    return [UIImage imageWithCGImage:source.CGImage scale:scale orientation:UIImageOrientationUp];
+}
+
 UIButton* action_button(NSString* title, id target, SEL selector) {
     UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
     [button setTitle:title forState:UIControlStateNormal];
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [button setTitleColor:[UIColor colorWithWhite:0.5 alpha:1] forState:UIControlStateDisabled];
-    button.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightSemibold];
-    button.backgroundColor = [UIColor colorWithWhite:0.12 alpha:0.92];
-    button.layer.cornerRadius = 7;
+    button.titleLabel.font = [UIFont fontWithName:@"Menlo-Bold" size:13] ?: [UIFont boldSystemFontOfSize:13];
+    button.backgroundColor = [UIColor colorWithRed:0.18 green:0.024 blue:0.045 alpha:0.96];
+    button.layer.borderWidth = 1.0;
+    button.layer.borderColor = [UIColor colorWithRed:0.68 green:0.22 blue:0.26 alpha:1].CGColor;
+    button.layer.cornerRadius = 3;
     [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
     [button.widthAnchor constraintGreaterThanOrEqualToConstant:82].active = YES;
     [button.heightAnchor constraintEqualToConstant:40].active = YES;
     return button;
+}
+
+// The 52x49 source action icon is the complete visible control; its name is
+// kept as a VoiceOver label, not drawn beside original G1 artwork. No UIKit
+// button backplate, simulated texture or replacement illustration is added.
+UIButton* original_action_button(NSString* label, id target, SEL selector, CGFloat width=52) {
+    UIButton* button=[UIButton buttonWithType:UIButtonTypeCustom];
+    button.isAccessibilityElement=YES;
+    button.accessibilityLabel=label;
+    button.accessibilityHint=@"Tap to perform this action when available.";
+    button.adjustsImageWhenDisabled=NO;
+    button.adjustsImageWhenHighlighted=NO;
+    button.contentEdgeInsets=UIEdgeInsetsZero;
+    button.imageView.contentMode=UIViewContentModeScaleAspectFit;
+    [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
+    [button.widthAnchor constraintEqualToConstant:width].active=YES;
+    [button.heightAnchor constraintEqualToConstant:49].active=YES;
+    return button;
+}
+
+void update_original_action_state(UIButton* button, BOOL active) {
+    button.alpha=button.enabled ? 1.0 : 0.38;
+    button.layer.borderWidth=active && button.enabled ? 2.0 : 0.0;
+    button.layer.borderColor=[UIColor colorWithRed:0.95 green:0.25 blue:0.29 alpha:1].CGColor;
 }
 
 g1::Matrix4 unit_model(const g1::WorldBootstrap& world, const g1::MovementUnitState& unit) {
@@ -174,7 +220,7 @@ struct NativePresentedFrame {
         bool complete{};
         std::size_t queued_draws{};
     };
-    std::uint64_t scene_revision{}, content_generation{};
+    std::uint64_t scene_revision{}, content_generation{}, presentation_epoch{};
     std::optional<std::size_t> mission_camera;
     std::optional<std::uint64_t> session_focus;
     std::optional<std::uint64_t> world;
@@ -195,7 +241,7 @@ struct NativeWorldOverlay {
     std::shared_ptr<g1::MetalMesh> mesh;
     std::array<float,4> tint;
 };
-enum class NativePanel { none, startup, pause, results, ending, menu, save_error, load_error, message, arena, arena_opponent };
+enum class NativePanel { none, startup, pause, results, ending, menu, mode_select, mission_select, settings, help, help_topic, credits, save_error, load_error, message, arena, arena_opponent, tutorial_save_error };
 } // namespace
 
 @interface G1ViewController : UIViewController <MTKViewDelegate,UIAdaptivePresentationControllerDelegate>
@@ -203,6 +249,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)rebuildScene:(BOOL)resetPlayback;
 - (void)prepareBattle;
 - (void)showSupportHelper;
+- (void)requestSupportTutorial;
+- (void)retrySupportTutorial;
 - (void)maintainMusicAfterStep:(g1::MusicMaintenanceSite)site;
 - (void)finishBattleFrame:(const NativePresentedFrame::Battle&)frame;
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame;
@@ -222,12 +270,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     MTKView* _metalView;
     id<MTLCommandQueue> _queue;
     NSMutableDictionary<NSNumber*, id<MTLTexture>>* _textures;
+    NSMutableDictionary<NSNumber*, id<MTLTexture>>* _modernTextures;
     id<MTLTexture> _white;
     G1WorldTitleLabel* _title;
     UILabel* _hint;
     UILabel* _fps;
     UILabel* _worldLegend;
     UIButton* _reportButton;
+    UIButton* _resetButton;
     UIButton* _moveButton;
     UIButton* _captureButton;
     UIButton* _transformButton;
@@ -245,7 +295,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     UIButton* _skipButton;
     UIStackView* _commands;
     UIView* _dialoguePanel;
-    UILabel* _dialogueHeading;
+    G1WorldTitleLabel* _dialogueHeading;
+    UIImageView* _gameHudFrame;
     G1DialogueCanvas* _dialogueCanvas;
     UIView* _battlePanel;
     G1BattleCanvas* _battleCanvas;
@@ -253,7 +304,18 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     UIScrollView* _campaignScroll;
     G1CampaignCanvas* _campaignCanvas;
     UIStackView* _campaignButtons;
+    UITextView* _menuInfoText;
     NSLayoutConstraint* _campaignCanvasHeight;
+    NSLayoutConstraint* _campaignActionsMenuCenter;
+    NSLayoutConstraint* _campaignActionsNormalBottom;
+    NSLayoutConstraint* _campaignActionsWidth;
+    NSLayoutConstraint* _menuInfoWidth;
+    NSLayoutConstraint* _menuInfoHeight;
+    NSLayoutConstraint* _menuInfoCenterY;
+    AVPlayer* _openingPlayer;
+    AVPlayerLayer* _openingLayer;
+    UIView* _openingView;
+    BOOL _openingVisible;
     G1AppleAudio* _audio;
     NSTimer* _menuMusicTimer;
     std::shared_ptr<const g1::Archive> _archive;
@@ -270,6 +332,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     NSString* _supportSavedTitle;
     g1::SupportDisplayGate _supportDisplay;
     std::uint64_t _supportTicks,_supportPresentedFrames,_supportSequences;
+    std::uint64_t _supportTutorialRequests;
+    bool _supportTutorialRetryRequired;
     std::vector<std::shared_ptr<g1::MetalM3GModel>> _battleModels;
     std::unique_ptr<g1::MissionScene> _scene;
     std::unique_ptr<g1::GameSession> _session;
@@ -318,9 +382,12 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     NSString* _checkpointError;
     NSString* _campaignError;
     NativePanel _panelPurpose;
+    NativePanel _informationReturnPanel;
     std::uint64_t _panelToken;
     std::uint64_t _localPanelToken;
     std::uint32_t _resultsInputEdges;
+    std::int32_t _missionPickerPage;
+    std::uint8_t _missionPickerGroup;
     std::int32_t _pendingArenaIndex;
     std::uint8_t _pendingArenaFaction;
     std::vector<std::uint32_t> _pendingMessageIds;
@@ -342,12 +409,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     std::uint64_t _battlePresentedToken, _battlePreparedFrames, _battlePresentedFrames;
     std::uint64_t _lastBattleFinalToken, _lastBattleFinalRevision, _battleQueuedDrawsPresented;
     std::uint64_t _sceneRevision, _sceneRebuilds, _sessionInstalls;
+    g1::PresentationEpoch _presentationEpoch;
     std::uint64_t _focusReports, _transformReports, _spawnPlaybackResets;
     std::uint64_t _worldReports, _checkpointWrites, _checkpointLoads, _checkpointRetirements;
     std::uint64_t _healActions, _upgradeActions, _endTurnActions, _resultsReports, _endingReports;
     std::uint64_t _staleGpuErrors;
     std::uint8_t _lastMissionMode;
     bool _clockStarted, _loaded, _failed, _moveMode, _attackMode, _rangeDirty;
+    bool _graphicsModern, _showDiagnostics, _settingsFromPause;
+    float _touchCameraSpeed; // initialized from registered defaults in viewDidLoad
     NSString* _failure;
     NSString* _notice;
     double _noticeUntil;
@@ -392,6 +462,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _worldLegend.font=[UIFont systemFontOfSize:10 weight:UIFontWeightMedium];
     _worldLegend.textColor=[UIColor colorWithWhite:0.75 alpha:1];
     _worldLegend.text=@"□ Site · ◇ Capture point · Gold/cyan: mission markers";
+    _gameHudFrame=[UIImageView new];
+    _gameHudFrame.contentMode=UIViewContentModeScaleToFill;
+    _gameHudFrame.translatesAutoresizingMaskIntoConstraints=NO;
+    [self.view addSubview:_gameHudFrame];
     UIStackView* headings = [[UIStackView alloc] initWithArrangedSubviews:@[_title,_hint,_worldLegend]];
     headings.axis = UILayoutConstraintAxisVertical;
     headings.spacing = 4;
@@ -405,21 +479,23 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _fps.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_fps];
 
-    UIButton* reset = [UIButton buttonWithType:UIButtonTypeSystem];
-    [reset setTitle:@"Reset view" forState:UIControlStateNormal];
-    [reset addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
+    _resetButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [_resetButton setTitle:@"Reset view" forState:UIControlStateNormal];
+    [_resetButton addTarget:self action:@selector(resetView) forControlEvents:UIControlEventTouchUpInside];
     _reportButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [_reportButton setTitle:@"Test report" forState:UIControlStateNormal];
     [_reportButton addTarget:self action:@selector(shareReport) forControlEvents:UIControlEventTouchUpInside];
-    _menuButton=[UIButton buttonWithType:UIButtonTypeSystem];
-    [_menuButton setTitle:@"Menu" forState:UIControlStateNormal];
-    [_menuButton addTarget:self action:@selector(openMenu) forControlEvents:UIControlEventTouchUpInside];
-    UIStackView* buttons = [[UIStackView alloc] initWithArrangedSubviews:@[reset,_menuButton,_reportButton]];
-    buttons.spacing = 18;
+    _menuButton=original_action_button(@"Pause menu",self,@selector(openMenu),60);
+    UIStackView* buttons = [[UIStackView alloc] initWithArrangedSubviews:@[_resetButton,_menuButton,_reportButton]];
+    buttons.spacing = 8;
     buttons.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:buttons];
     UILayoutGuide* safe = self.view.safeAreaLayoutGuide;
     [NSLayoutConstraint activateConstraints:@[
+        [_gameHudFrame.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:8],
+        [_gameHudFrame.topAnchor constraintEqualToAnchor:safe.topAnchor constant:1],
+        [_gameHudFrame.widthAnchor constraintEqualToConstant:370],
+        [_gameHudFrame.heightAnchor constraintEqualToConstant:73],
         [headings.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:16],
         [headings.topAnchor constraintEqualToAnchor:safe.topAnchor constant:10],
         [headings.trailingAnchor constraintLessThanOrEqualToAnchor:safe.trailingAnchor constant:-16],
@@ -428,36 +504,36 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         [buttons.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
         [buttons.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-4]]];
 
-    _moveButton = action_button(@"Move",self,@selector(beginMove));
-    _captureButton = action_button(@"Capture",self,@selector(capture));
-    _transformButton = action_button(@"Transform",self,@selector(transformUnit));
-    _attackButton = action_button(@"Attack",self,@selector(beginAttack));
-    _healButton = action_button(@"Repair",self,@selector(beginHeal));
-    _upgradeButton = action_button(@"Upgrade",self,@selector(upgradeUnit));
-    _endTurnButton = action_button(@"End turn",self,@selector(endTurn));
-    _buildButton = action_button(@"Activate unit",self,@selector(beginProduction));
-    _deployButton = action_button(@"Activate tape",self,@selector(beginDeploy));
-    _undoButton = action_button(@"Undo",self,@selector(undoAction));
+    _moveButton = original_action_button(@"Move",self,@selector(beginMove));
+    _captureButton = original_action_button(@"Capture",self,@selector(capture));
+    _transformButton = original_action_button(@"Transform",self,@selector(transformUnit));
+    _attackButton = original_action_button(@"Attack",self,@selector(beginAttack));
+    _healButton = original_action_button(@"Repair",self,@selector(beginHeal));
+    _upgradeButton = original_action_button(@"Upgrade",self,@selector(upgradeUnit));
+    _endTurnButton = original_action_button(@"End turn",self,@selector(endTurn),60);
+    _buildButton = original_action_button(@"Activate unit",self,@selector(beginProduction));
+    _deployButton = original_action_button(@"Activate tape",self,@selector(beginDeploy));
+    _undoButton = original_action_button(@"Undo",self,@selector(undoAction));
     _endTurnButton.hidden=NO;
     UIStackView* primaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
         @[_moveButton,_captureButton,_transformButton,_attackButton,_healButton]];
-    primaryCommands.spacing=8;
+    primaryCommands.spacing=3;
     UIStackView* secondaryCommands=[[UIStackView alloc] initWithArrangedSubviews:
         @[_buildButton,_deployButton,_upgradeButton,_undoButton,_endTurnButton]];
-    secondaryCommands.spacing=8;
+    secondaryCommands.spacing=3;
     _commands = [[UIStackView alloc] initWithArrangedSubviews:@[primaryCommands,secondaryCommands]];
     _commands.axis=UILayoutConstraintAxisVertical;_commands.alignment=UIStackViewAlignmentTrailing;
-    _commands.spacing = 6;
+    _commands.spacing = 3;
     _commands.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_commands];
     _dialoguePanel = [UIView new];
     _dialoguePanel.backgroundColor = [UIColor colorWithRed:0.02 green:0.04 blue:0.07 alpha:0.96];
-    _dialoguePanel.layer.cornerRadius = 12;
-    _dialoguePanel.layer.borderWidth = 1;
+    _dialoguePanel.layer.cornerRadius = 0; // The source frame supplies the corners.
+    _dialoguePanel.layer.borderWidth = 0;
     _dialoguePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.5].CGColor;
     _dialoguePanel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_dialoguePanel];
-    _dialogueHeading = [UILabel new];
+    _dialogueHeading = [G1WorldTitleLabel new];
     _dialogueHeading.font = [UIFont systemFontOfSize:14 weight:UIFontWeightBold];
     _dialogueHeading.textColor = [UIColor colorWithRed:1 green:0.84 blue:0.25 alpha:1];
     _dialogueHeading.translatesAutoresizingMaskIntoConstraints = NO;
@@ -474,7 +550,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [_dialoguePanel addSubview:dialogueButtons];
     [NSLayoutConstraint activateConstraints:@[
         [_commands.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
-        [_commands.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-42],
+        [_commands.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-56],
         [_dialoguePanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:16],
         [_dialoguePanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-16],
         [_dialoguePanel.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor constant:-40],
@@ -493,8 +569,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
     _battlePanel = [UIView new];
     _battlePanel.backgroundColor = [UIColor colorWithRed:0.025 green:0.04 blue:0.065 alpha:0.76];
-    _battlePanel.layer.cornerRadius = 14;
-    _battlePanel.layer.borderWidth = 1;
+    _battlePanel.layer.cornerRadius = 0;
+    _battlePanel.layer.borderWidth = 0;
     _battlePanel.layer.borderColor = [UIColor colorWithWhite:0.5 alpha:0.6].CGColor;
     _battlePanel.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_battlePanel];
@@ -514,7 +590,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
     _campaignPanel=[UIView new];
     _campaignPanel.backgroundColor=[UIColor colorWithRed:0.025 green:0.045 blue:0.075 alpha:0.99];
-    _campaignPanel.layer.cornerRadius=12;
+    _campaignPanel.layer.cornerRadius=0; // Source G1 artwork supplies its own frame.
     _campaignPanel.clipsToBounds=YES;
     _campaignPanel.translatesAutoresizingMaskIntoConstraints=NO;
     [self.view addSubview:_campaignPanel];
@@ -526,11 +602,28 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [_campaignScroll addSubview:_campaignCanvas];
     _campaignButtons=[UIStackView new];
     _campaignButtons.axis=UILayoutConstraintAxisVertical;
-    _campaignButtons.alignment=UIStackViewAlignmentTrailing;
-    _campaignButtons.spacing=8;
+    _campaignButtons.alignment=UIStackViewAlignmentFill;
+    _campaignButtons.spacing=4;
     _campaignButtons.translatesAutoresizingMaskIntoConstraints=NO;
     [_campaignPanel addSubview:_campaignButtons];
+    _menuInfoText=[UITextView new];
+    _menuInfoText.translatesAutoresizingMaskIntoConstraints=NO;
+    _menuInfoText.backgroundColor=UIColor.clearColor;
+    _menuInfoText.textColor=UIColor.whiteColor;
+    _menuInfoText.font=[UIFont systemFontOfSize:12 weight:UIFontWeightMedium];
+    _menuInfoText.editable=NO;_menuInfoText.selectable=NO;
+    _menuInfoText.textContainerInset=UIEdgeInsetsMake(1,3,1,3);
+    _menuInfoText.scrollEnabled=YES;
+    _menuInfoText.hidden=YES;
+    [_campaignPanel addSubview:_menuInfoText];
+    [_campaignPanel bringSubviewToFront:_campaignButtons];
     _campaignCanvasHeight=[_campaignCanvas.heightAnchor constraintEqualToConstant:180];
+    _campaignActionsMenuCenter=[_campaignButtons.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:4];
+    _campaignActionsNormalBottom=[_campaignButtons.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor constant:-12];
+    _campaignActionsWidth=[_campaignButtons.widthAnchor constraintEqualToConstant:390];
+    _menuInfoWidth=[_menuInfoText.widthAnchor constraintEqualToConstant:372];
+    _menuInfoHeight=[_menuInfoText.heightAnchor constraintEqualToConstant:63];
+    _menuInfoCenterY=[_menuInfoText.centerYAnchor constraintEqualToAnchor:_campaignPanel.centerYAnchor constant:-5];
     [NSLayoutConstraint activateConstraints:@[
         [_campaignPanel.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor constant:18],
         [_campaignPanel.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor constant:-18],
@@ -539,16 +632,20 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         [_campaignScroll.leadingAnchor constraintEqualToAnchor:_campaignPanel.leadingAnchor],
         [_campaignScroll.trailingAnchor constraintEqualToAnchor:_campaignPanel.trailingAnchor],
         [_campaignScroll.topAnchor constraintEqualToAnchor:_campaignPanel.topAnchor],
-        [_campaignScroll.bottomAnchor constraintEqualToAnchor:_campaignButtons.topAnchor constant:-10],
+        [_campaignScroll.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor],
         [_campaignCanvas.leadingAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.leadingAnchor],
         [_campaignCanvas.trailingAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.trailingAnchor],
         [_campaignCanvas.topAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.topAnchor],
         [_campaignCanvas.bottomAnchor constraintEqualToAnchor:_campaignScroll.contentLayoutGuide.bottomAnchor],
         [_campaignCanvas.widthAnchor constraintEqualToAnchor:_campaignScroll.frameLayoutGuide.widthAnchor],
         _campaignCanvasHeight,
-        [_campaignButtons.trailingAnchor constraintEqualToAnchor:_campaignPanel.trailingAnchor constant:-14],
-        [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:14],
-        [_campaignButtons.bottomAnchor constraintEqualToAnchor:_campaignPanel.bottomAnchor constant:-12]]];
+        [_menuInfoText.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
+        _menuInfoCenterY,_menuInfoWidth,_menuInfoHeight,
+        [_campaignButtons.centerXAnchor constraintEqualToAnchor:_campaignPanel.centerXAnchor],
+        [_campaignButtons.leadingAnchor constraintGreaterThanOrEqualToAnchor:_campaignPanel.leadingAnchor constant:8],
+        [_campaignButtons.trailingAnchor constraintLessThanOrEqualToAnchor:_campaignPanel.trailingAnchor constant:-8],
+        _campaignActionsWidth]];
+    _campaignActionsNormalBottom.active=YES;
     _campaignPanel.hidden=YES;
 
     [_metalView addGestureRecognizer:[[UITapGestureRecognizer alloc]
@@ -577,12 +674,27 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         _terrainTables = g1::decode_terrain_tables(_terrainTableBytes);
         const auto& archive = *_archive;
         _text = std::make_unique<g1::TextTable>(g1::load_text_table(archive));
+        [_title loadOriginalFonts:archive];
+        [_campaignCanvas loadOriginalFonts:archive];
+        [_campaignCanvas loadOriginalMenuArtwork:archive];
+        [_battleCanvas loadOriginalFonts:archive];
+        [_dialogueHeading loadOriginalFonts:archive];
+        [self loadOriginalHUD:archive];
         const auto animationTable = archive.find(309,0xf4e02223U);
         if (animationTable.size() != 1) throw g1::FormatError("Unit animation table is missing");
         _animationTable = g1::decode_unit_animation_table(archive.read(animationTable.front()));
         _randomSeed = static_cast<std::uint32_t>(std::time(nullptr));
         _audio = [[G1AppleAudio alloc] initWithArchive:archive];
-        [NSUserDefaults.standardUserDefaults registerDefaults:@{@"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES}];
+        [NSUserDefaults.standardUserDefaults registerDefaults:@{
+            @"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES,
+            @"G1GraphicsModern":@NO,@"G1DiagnosticsEnabled":@NO,
+            @"G1TouchCameraSpeed":@1.0F}];
+        _graphicsModern=[NSUserDefaults.standardUserDefaults boolForKey:@"G1GraphicsModern"];
+        _showDiagnostics=[NSUserDefaults.standardUserDefaults boolForKey:@"G1DiagnosticsEnabled"];
+        const float storedSpeed=[NSUserDefaults.standardUserDefaults floatForKey:@"G1TouchCameraSpeed"];
+        _touchCameraSpeed=std::isfinite(storedSpeed) ?
+            std::clamp(storedSpeed,0.75F,1.5F) : 1.0F;
+        [self updateDiagnosticsVisibility];
         [_audio setMusicEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1MusicEnabled"]
             soundEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1SoundEnabled"]];
         for (std::int32_t group=0;group<3;++group)
@@ -595,12 +707,121 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             repeats:YES block:^(NSTimer* timer){(void)timer;[weakSelf maintainMenuMusic];}];
         [NSRunLoop.mainRunLoop addTimer:_menuMusicTimer forMode:NSRunLoopCommonModes];
         [self.view layoutIfNeeded];
+        _openingVisible=YES; // Defer source menu music while the user's intro plays.
         [self loadCampaignMenu];
+        [self startOpening];
     } catch (const std::exception& error) {
         [self fail:[NSString stringWithUTF8String:error.what()]];
     }
 }
 
+// A native 64-bit media pipeline plays the supplied replacement cinematic.
+// This contains no legacy Glu splash or original ARM32 startup code.
+- (void)startOpening {
+    NSURL* url=[NSBundle.mainBundle URLForResource:@"G1OpeningXR" withExtension:@"mp4"];
+    if(!url) {
+        _openingVisible=NO;
+        throw g1::FormatError("The replacement G1 opening movie is missing from the IPA");
+    }
+    _openingPlayer=[AVPlayer playerWithURL:url];
+    if(!_openingPlayer || !_openingPlayer.currentItem) {
+        _openingVisible=NO;
+        throw g1::FormatError("Native AVPlayer could not open the replacement G1 intro");
+    }
+    _openingPlayer.actionAtItemEnd=AVPlayerActionAtItemEndPause;
+    _openingView=[[UIView alloc] initWithFrame:self.view.bounds];
+    _openingView.autoresizingMask=UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+    _openingView.backgroundColor=UIColor.blackColor;
+    _openingLayer=[AVPlayerLayer playerLayerWithPlayer:_openingPlayer];
+    _openingLayer.frame=_openingView.bounds;
+    _openingLayer.videoGravity=AVLayerVideoGravityResizeAspect;
+    [_openingView.layer addSublayer:_openingLayer];
+    [_openingView addGestureRecognizer:[[UITapGestureRecognizer alloc]
+        initWithTarget:self action:@selector(skipOpening:)]];
+    _openingView.isAccessibilityElement=YES;
+    _openingView.accessibilityLabel=@"G1 Awakening opening cinematic. Double tap to skip.";
+    [self.view addSubview:_openingView];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openingDidStop:)
+        name:AVPlayerItemDidPlayToEndTimeNotification object:_openingPlayer.currentItem];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openingDidStop:)
+        name:AVPlayerItemFailedToPlayToEndTimeNotification object:_openingPlayer.currentItem];
+    [_openingPlayer play];
+}
+- (void)skipOpening:(UITapGestureRecognizer*)gesture {
+    if(gesture.state==UIGestureRecognizerStateEnded)[self finishOpening];
+}
+- (void)openingDidStop:(NSNotification*)event {
+    (void)event;[self finishOpening];
+}
+- (void)finishOpening {
+    if(!_openingVisible)return;
+    _openingVisible=NO;
+    if(_openingPlayer.currentItem)
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification
+            object:_openingPlayer.currentItem];
+    if(_openingPlayer.currentItem)
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemFailedToPlayToEndTimeNotification
+            object:_openingPlayer.currentItem];
+    [_openingPlayer pause];
+    [_openingPlayer replaceCurrentItemWithPlayerItem:nil];
+    UIView* view=_openingView;
+    _openingPlayer=nil;_openingLayer=nil;_openingView=nil;
+    [UIView animateWithDuration:0.20 animations:^{view.alpha=0;} completion:^(BOOL completed){
+        (void)completed;[view removeFromSuperview];
+    }];
+    [self maintainMenuMusic];
+}
+- (void)loadOriginalHUD:(const g1::Archive&)archive {
+    UIImage* silver=original_g1_ui_png(archive,1004,298,62);
+    _gameHudFrame.image=[silver resizableImageWithCapInsets:UIEdgeInsetsMake(14,46,14,46)
+        resizingMode:UIImageResizingModeStretch];
+    UIImage* red=original_g1_ui_png(archive,1034,480,93);
+    UIImageView* dialogueArt=[[UIImageView alloc] initWithImage:
+        [red resizableImageWithCapInsets:UIEdgeInsetsMake(17,45,17,45)
+                             resizingMode:UIImageResizingModeStretch]];
+    dialogueArt.translatesAutoresizingMaskIntoConstraints=NO;
+    dialogueArt.contentMode=UIViewContentModeScaleToFill;
+    [_dialoguePanel insertSubview:dialogueArt atIndex:0];
+    [NSLayoutConstraint activateConstraints:@[
+        [dialogueArt.leadingAnchor constraintEqualToAnchor:_dialoguePanel.leadingAnchor],
+        [dialogueArt.trailingAnchor constraintEqualToAnchor:_dialoguePanel.trailingAnchor],
+        [dialogueArt.topAnchor constraintEqualToAnchor:_dialoguePanel.topAnchor],
+        [dialogueArt.bottomAnchor constraintEqualToAnchor:_dialoguePanel.bottomAnchor]]];
+    _dialoguePanel.backgroundColor=UIColor.clearColor;
+    UIImageView* battleArt=[[UIImageView alloc] initWithImage:_gameHudFrame.image];
+    battleArt.translatesAutoresizingMaskIntoConstraints=NO;
+    [_battlePanel insertSubview:battleArt atIndex:0];
+    [NSLayoutConstraint activateConstraints:@[
+        [battleArt.leadingAnchor constraintEqualToAnchor:_battlePanel.leadingAnchor],
+        [battleArt.trailingAnchor constraintEqualToAnchor:_battlePanel.trailingAnchor],
+        [battleArt.topAnchor constraintEqualToAnchor:_battlePanel.topAnchor],
+        [battleArt.bottomAnchor constraintEqualToAnchor:_battlePanel.bottomAnchor]]];
+    _battlePanel.backgroundColor=UIColor.clearColor;
+    // All icons are sourced from the original PNG atlas. Semantic assignment
+    // is native touch affordance; exact original HUD hit-region parity still
+    // requires the recovered 32-bit UI table, not invented geometry.
+    const std::array<std::pair<UIButton*,std::uint32_t>,10> mapped{{
+        {_moveButton,721},{_captureButton,639},{_transformButton,793},
+        {_attackButton,660},{_healButton,726},{_upgradeButton,1118},
+        {_endTurnButton,719},{_buildButton,454},{_deployButton,919},
+        {_undoButton,1076}}};
+    for(const auto& [button,identifier]:mapped) {
+        UIImage* icon=original_g1_ui_png(archive,identifier,identifier==719?60:52,49,1.0);
+        [button setImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                forState:UIControlStateNormal];
+        button.imageView.contentMode=UIViewContentModeScaleAspectFit;
+        button.contentHorizontalAlignment=UIControlContentHorizontalAlignmentCenter;
+        button.contentVerticalAlignment=UIControlContentVerticalAlignmentCenter;
+        // Buttons have no visible UIKit title, so the source icon is never
+        // clipped by an adjacent system-font word.
+        button.accessibilityIdentifier=[NSString stringWithFormat:@"g1-action-%u",identifier];
+    }
+    UIImage* menuImage=[original_g1_ui_png(archive,905,60,49,1.0)
+        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    [_menuButton setImage:menuImage forState:UIControlStateNormal];
+    [_menuButton setImage:menuImage forState:UIControlStateDisabled];
+    _menuButton.accessibilityIdentifier=@"g1-original-pause-menu";
+}
 - (NSString*)originalText:(std::uint16_t)identifier {
     return native_text(_text->at(identifier));
 }
@@ -613,30 +834,99 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (UIButton*)addCampaignButton:(NSString*)title action:(SEL)action {
     UIStackView* row=(UIStackView*)_campaignButtons.arrangedSubviews.lastObject;
-    if(!row || row.arrangedSubviews.count>=4) {
-        row=[UIStackView new];row.spacing=8;row.distribution=UIStackViewDistributionFillEqually;
+    const BOOL isSourceMenu=_campaignActionsMenuCenter.active;
+    if(!row || row.arrangedSubviews.count>=(isSourceMenu?g1::original_ui::menu_columns:4)) {
+        row=[UIStackView new];row.spacing=3;row.distribution=UIStackViewDistributionFillEqually;
         [_campaignButtons addArrangedSubview:row];
     }
-    UIButton* button=action_button(title,self,action);[row addArrangedSubview:button];return button;
+    const BOOL originalMenu=[_campaignCanvas originalFaceForMenuText:@"MAIN MENU"] &&
+        (_panelPurpose==NativePanel::startup || _panelPurpose==NativePanel::menu ||
+         _panelPurpose==NativePanel::mode_select ||
+         _panelPurpose==NativePanel::mission_select || _panelPurpose==NativePanel::settings ||
+         _panelPurpose==NativePanel::help || _panelPurpose==NativePanel::help_topic ||
+         _panelPurpose==NativePanel::credits ||
+         _panelPurpose==NativePanel::pause || _panelPurpose==NativePanel::arena ||
+         _panelPurpose==NativePanel::arena_opponent);
+    UIButton* button=nil;
+    if(originalMenu) {
+        G1OriginalMenuButton* original=[G1OriginalMenuButton new];
+        [original setTitle:title forState:UIControlStateNormal];
+        [original setTitleColor:[UIColor colorWithRed:0.94 green:0.22 blue:0.26 alpha:1]
+                        forState:UIControlStateNormal];
+        [original setTitleColor:[UIColor colorWithWhite:0.48 alpha:1]
+                        forState:UIControlStateDisabled];
+        original.titleLabel.font=[UIFont fontWithName:@"Menlo-Bold" size:11] ?: [UIFont boldSystemFontOfSize:11];
+        original.backgroundColor=UIColor.clearColor;
+        [original useOriginalFace:[_campaignCanvas originalFaceForMenuText:title]
+                             fallback:[_campaignCanvas originalSmallFaceForMenuText:title]];
+        [original.heightAnchor constraintEqualToConstant:29].active=YES;
+        button=original;
+        [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+    } else button=action_button(title,self,action);
+    [row addArrangedSubview:button];
+    // Source menus must not exceed the recovered 3-row artwork region.
+    if(originalMenu && _campaignButtons.arrangedSubviews.count>3)
+        NSAssert(NO,@"Original menu choices exceed the artwork's native three-row capacity");
+    return button;
 }
 
 - (void)updateCampaignLayout {
     if(_campaignPanel.hidden)return;
     const CGFloat width=_campaignScroll.bounds.size.width;
-    if(width>32) {
-        const auto height=std::max(_campaignScroll.bounds.size.height,[_campaignCanvas heightForWidth:width]);
-        if(std::abs(_campaignCanvasHeight.constant-height)>0.5)_campaignCanvasHeight.constant=height;
+    const CGFloat height=_campaignScroll.bounds.size.height;
+    if(width>32 && height>0) {
+        const BOOL originalMenu=_campaignActionsMenuCenter.active;
+        const CGFloat target=originalMenu ? height :
+            std::max(height,[_campaignCanvas heightForWidth:width]);
+        if(std::abs(_campaignCanvasHeight.constant-target)>0.5)_campaignCanvasHeight.constant=target;
+        // Every touch choice fits inside the untouched red source panel.
+        // Preserve original 480:320 art aspect, including on XR.
+        const auto art=g1::original_ui::fit(width,height);
+        const CGFloat actionsWidth=originalMenu ?
+            std::min(width-16,art.project(g1::original_ui::choices_region).width) : width-30;
+        if(std::abs(_campaignActionsWidth.constant-actionsWidth)>0.5)
+            _campaignActionsWidth.constant=actionsWidth;
+        if(originalMenu) {
+            const BOOL information=_panelPurpose==NativePanel::help_topic || _panelPurpose==NativePanel::credits;
+            _campaignActionsMenuCenter.constant=art.source_offset_from_center(information ?
+                g1::original_ui::information_action_center_y : g1::original_ui::choices_center_y);
+            _menuInfoCenterY.constant=art.source_offset_from_center(
+                g1::original_ui::information_text.y + g1::original_ui::information_text.height/2);
+            _menuInfoWidth.constant=std::min(width-16,art.project(g1::original_ui::information_text).width);
+            _menuInfoHeight.constant=art.project(g1::original_ui::information_text).height;
+        }
     }
 }
 
 - (void)showPanel:(NativePanel)purpose title:(NSString*)title body:(NSString*)body token:(std::uint64_t)token {
     const bool changed=_panelPurpose!=purpose || _panelToken!=token;
-    if(changed){_supportDisplay.invalidate();}
+    if(changed){_supportDisplay.invalidate();_presentationEpoch.invalidate();}
     _panelPurpose=purpose;_panelToken=token;
+    const BOOL sourceMenu=
+        purpose==NativePanel::startup || purpose==NativePanel::menu ||
+        purpose==NativePanel::mode_select ||
+        purpose==NativePanel::settings || purpose==NativePanel::help ||
+        purpose==NativePanel::help_topic || purpose==NativePanel::credits || purpose==NativePanel::pause ||
+        purpose==NativePanel::mission_select || purpose==NativePanel::arena ||
+        purpose==NativePanel::arena_opponent;
+    _campaignActionsNormalBottom.active=NO;
+    _campaignActionsMenuCenter.active=NO;
+    if(sourceMenu)_campaignActionsMenuCenter.active=YES;
+    else _campaignActionsNormalBottom.active=YES;
+    _campaignScroll.scrollEnabled=!sourceMenu;
+    const BOOL information=purpose==NativePanel::help_topic || purpose==NativePanel::credits;
+    _menuInfoText.hidden=!information;
+    _menuInfoText.text=information ? body : @"";
+    if(information && changed)[_menuInfoText setContentOffset:CGPointZero animated:NO];
+    // Source-space positions and information scroll limits are calculated
+    // by updateCampaignLayout after the original 480x320 image is fitted.
+    [_campaignCanvas setOriginalMenuArtworkVisible:sourceMenu];
+    [_campaignCanvas setDisplaysMenuDetails:sourceMenu && purpose==NativePanel::pause];
     _panelContinueButton=nil;
     _inputEdges=0;_resultsInputEdges=0;_simulationClock.reset();
     if(_session)_previousUnits=_session->units();
     _campaignPanel.hidden=NO;
+    _menuButton.hidden=YES;_gameHudFrame.hidden=YES;
     _commands.hidden=YES;_dialoguePanel.hidden=YES;_battlePanel.hidden=YES;
     [_campaignCanvas showTitle:title body:body token:token];
     if(changed)[_campaignScroll setContentOffset:CGPointZero animated:NO];
@@ -647,14 +937,20 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)maintainMenuMusic {
-    if(_failed || !_audio || UIApplication.sharedApplication.applicationState!=UIApplicationStateActive)return;
+    if(_failed || _openingVisible || !_audio ||
+       UIApplication.sharedApplication.applicationState!=UIApplicationStateActive)return;
     // The original main menu is a root even when entered from Pause. Arena
     // follows map list -> faction -> opponent; only opponent is excluded.
     static const g1::MenuMusicNode mainMenu{}, missionList{&mainMenu}, faction{&missionList};
     static const g1::MenuMusicNode enableSounds{}, pause{}, unitActions{}, opponent{&faction};
     const g1::MenuMusicNode* current=nullptr;
     switch(_panelPurpose) {
-    case NativePanel::startup: case NativePanel::menu: current=&mainMenu;break;
+    case NativePanel::startup: case NativePanel::menu:
+    case NativePanel::mode_select:
+    case NativePanel::settings: case NativePanel::help: case NativePanel::help_topic:
+    case NativePanel::credits:
+        current=&mainMenu;break;
+    case NativePanel::mission_select: current=&missionList;break;
     case NativePanel::arena: current=&faction;break;
     case NativePanel::arena_opponent: current=&opponent;break;
     case NativePanel::pause: current=&pause;break;
@@ -670,8 +966,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)hidePanel {
     _supportDisplay.invalidate();
+    _presentationEpoch.invalidate();
     _panelPurpose=NativePanel::none;_panelToken=0;_resultsInputEdges=0;
     _campaignPanel.hidden=YES;
+    _menuButton.hidden=NO;_gameHudFrame.hidden=NO;
+    _menuInfoText.hidden=YES;
     [_campaignCanvas resetPresentation];
     _inputEdges=0;_simulationClock.reset();_clockStarted=false;
     if(_session)_previousUnits=_session->units();
@@ -717,13 +1016,26 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         title:[self originalText:1169] body:body token:token];
     if([NSFileManager.defaultManager fileExistsAtPath:_sessionSavePath])
         [self addCampaignButton:[self originalText:771] action:@selector(continueCheckpoint)];
+    [self addCampaignButton:[self originalText:471] action:@selector(showModesMenu)];
+    [self addCampaignButton:[self originalText:468] action:@selector(openSettings)];
+    [self addCampaignButton:[self originalText:754] action:@selector(showHelpMenu)];
+    [self addCampaignButton:@"CREDITS" action:@selector(showCreditsMenu)];
+    if(_session && _campaign->state().gate==g1::CampaignControllerGate::idle)
+        [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
+}
+
+- (void)showModesMenu {
+    if(!_campaign)return;
+    const auto& profile=_campaign->profile();
+    NSString* body=[NSString stringWithFormat:@"%@: %d / %zu. %@",
+        [self originalText:617],profile.highest_unlocked[0]+1,
+        g1::campaign_mission_count(0),profile.completed[0] ? @"SHOWDOWN UNLOCKED" : @"SHOWDOWN LOCKED"];
+    [self showPanel:NativePanel::mode_select title:[self originalText:983]
+        body:body token:++_localPanelToken];
     [self addCampaignButton:[self originalText:617] action:@selector(chooseStoryCampaign)];
     [self addCampaignButton:[self originalText:1151] action:@selector(chooseShowdown)].enabled=profile.completed[0];
     [self addCampaignButton:[self originalText:1190] action:@selector(chooseArena)].enabled=profile.completed[1];
-    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
-    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
-    if(_session && _campaign->state().gate==g1::CampaignControllerGate::idle)
-        [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
+    [self addCampaignButton:@"Back" action:@selector(showProfileMenu)];
 }
 
 - (BOOL)retireCheckpoint {
@@ -788,43 +1100,81 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)chooseArena { if(_campaign && _campaign->profile().completed[1])[self chooseCampaign:2]; }
 
 - (void)chooseCampaign:(std::uint8_t)group {
-    if(!_campaign)return;
+    if(!_campaign || group>2)return;
+    _missionPickerGroup=group;
+    _missionPickerPage=0;
+    [self showMissionPicker];
+}
+- (void)showMissionPicker {
+    if(!_campaign || _missionPickerGroup>2)return;
+    const auto group=_missionPickerGroup;
     const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
-    const auto maximum=group==2 ? count-1 : std::min(count-1,_campaign->profile().highest_unlocked.at(group));
-    UIAlertController* menu=[UIAlertController alertControllerWithTitle:[self originalText:group==0 ? 617 : group==1 ? 1151 : 1190]
-        message:@"Choose an unlocked mission. A new mission replaces Continue when it starts."
-        preferredStyle:UIAlertControllerStyleActionSheet];
-    __weak G1ViewController* weakSelf=self;
-    for(std::int32_t index=0;index<=maximum;++index) {
-        NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2 ? 536 : 1242],index+1];
-        [menu addAction:[UIAlertAction actionWithTitle:label style:UIAlertActionStyleDefault
-            handler:^(UIAlertAction* action){(void)action;
-                if(group==2)[weakSelf chooseArenaFaction:index];
-                else [weakSelf startCampaign:group mission:index faction:0 opponent:1];}]];
+    const auto maximum=group==2 ? count-1 :
+        std::min(count-1,_campaign->profile().highest_unlocked.at(group));
+    const auto start=_missionPickerPage*g1::original_ui::mission_page_size;
+    if(start<0 || start>maximum)return;
+    NSString* title=[self originalText:group==0?617:group==1?1151:1190];
+    NSString* body=[NSString stringWithFormat:
+        @"Select an unlocked mission. Page %d of %d. Starting a mission replaces Continue only after the new session has installed.",
+        int(_missionPickerPage+1),int(g1::original_ui::mission_page_count(maximum+1))];
+    [self showPanel:NativePanel::mission_select title:title body:body token:++_localPanelToken];
+    for(std::int32_t index=start;index<=maximum &&
+        index<start+g1::original_ui::mission_page_size;++index) {
+        NSString* label=[NSString stringWithFormat:@"%@ %d",[self originalText:group==2?536:1242],index+1];
+        UIButton* button=[self addCampaignButton:label action:@selector(selectMissionFromButton:)];
+        button.tag=index;
     }
-    [menu addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-    menu.popoverPresentationController.sourceView=_campaignButtons;
-    menu.popoverPresentationController.sourceRect=_campaignButtons.bounds;
-    [self presentViewController:menu animated:YES completion:nil];
+    if(_missionPickerPage>0)[self addCampaignButton:@"Previous" action:@selector(previousMissionPage)];
+    if(start+g1::original_ui::mission_page_size<=maximum)[self addCampaignButton:@"Next" action:@selector(nextMissionPage)];
+    [self addCampaignButton:@"Back" action:@selector(showModesMenu)];
+}
+- (void)selectMissionFromButton:(UIButton*)button {
+    if(_panelPurpose!=NativePanel::mission_select || !button ||
+       _missionPickerGroup>2 || !_campaign)return;
+    const auto group=_missionPickerGroup;
+    const auto index=static_cast<std::int32_t>(button.tag);
+    const auto count=static_cast<std::int32_t>(g1::campaign_mission_count(group));
+    const auto maximum=group==2 ? count-1 :
+        std::min(count-1,_campaign->profile().highest_unlocked.at(group));
+    if(index<0 || index>maximum ||
+       index/g1::original_ui::mission_page_size!=_missionPickerPage)return;
+    if(group==2)[self chooseArenaFaction:index];
+    else [self startCampaign:group mission:index faction:0 opponent:1];
+}
+- (void)previousMissionPage {
+    if(_panelPurpose!=NativePanel::mission_select || _missionPickerPage<=0)return;
+    --_missionPickerPage;[self showMissionPicker];
+}
+- (void)nextMissionPage {
+    if(_panelPurpose!=NativePanel::mission_select || !_campaign)return;
+    const auto group=_missionPickerGroup;
+    if(group>2)return;
+    const auto maximum=group==2 ?
+        static_cast<std::int32_t>(g1::campaign_mission_count(2))-1 :
+        std::min(static_cast<std::int32_t>(g1::campaign_mission_count(group))-1,
+                 _campaign->profile().highest_unlocked.at(group));
+    if((_missionPickerPage+1)*g1::original_ui::mission_page_size>maximum)return;
+    ++_missionPickerPage;[self showMissionPicker];
 }
 
 - (void)chooseArenaFaction:(std::int32_t)index {
     _pendingArenaIndex=index;
-    [self showPanel:NativePanel::arena title:[self originalText:1190]
-        body:@"Choose player one's faction." token:++_localPanelToken];
+    [self showPanel:NativePanel::arena title:[self originalText:1022]
+        body:@"" token:++_localPanelToken];
     [self addCampaignButton:[self originalText:501] action:@selector(arenaAutobots)];
     [self addCampaignButton:[self originalText:1315] action:@selector(arenaDecepticons)];
-    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+    [self addCampaignButton:@"Back" action:@selector(showMissionPicker)];
 }
 
 - (void)chooseArenaOpponent:(std::int32_t)index faction:(std::uint8_t)faction {
     _pendingArenaIndex=index;_pendingArenaFaction=faction;
-    [self showPanel:NativePanel::arena_opponent title:[self originalText:1190]
-        body:@"Choose the other player." token:++_localPanelToken];
-    [self addCampaignButton:@"Computer" action:@selector(arenaComputer)];
+    [self showPanel:NativePanel::arena_opponent title:[self originalText:1313]
+        body:@"" token:++_localPanelToken];
+    [self addCampaignButton:[self originalText:580] action:@selector(arenaComputer)];
     [self addCampaignButton:[self originalText:690] action:@selector(arenaHuman)];
-    [self addCampaignButton:[self originalText:883] action:@selector(showProfileMenu)];
+    [self addCampaignButton:@"Back" action:@selector(returnToArenaFaction)];
 }
+- (void)returnToArenaFaction { [self chooseArenaFaction:_pendingArenaIndex]; }
 - (void)arenaAutobots { [self chooseArenaOpponent:_pendingArenaIndex faction:0]; }
 - (void)arenaDecepticons { [self chooseArenaOpponent:_pendingArenaIndex faction:1]; }
 - (void)arenaComputer { [self startCampaign:2 mission:_pendingArenaIndex faction:_pendingArenaFaction opponent:1]; }
@@ -876,27 +1226,145 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     [self addCampaignButton:[self originalText:1205] action:@selector(resumeGame)];
     if(_checkpointRetryRequired)[self addCampaignButton:@"Retry save" action:@selector(retryCheckpoint)];
     [self addCampaignButton:[self originalText:1169] action:@selector(showProfileMenu)];
-    [self addCampaignButton:[_audio musicEnabled] ? @"Music: On" : @"Music: Off" action:@selector(toggleMusic)];
-    [self addCampaignButton:[_audio soundEnabled] ? @"Sound: On" : @"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:@"Settings" action:@selector(openSettings)];
+    [self addCampaignButton:@"Help" action:@selector(showHelpMenu)];
 }
 
 - (void)resumeGame { if(_session && !_failed){[self hidePanel];[self refreshControls];} }
 - (void)retryCheckpoint {
     _checkpointRetryRequired=false;_checkpointRequested=true;[self saveCheckpoint];[self showPauseMenu];
 }
+- (void)updateDiagnosticsVisibility {
+    _fps.hidden=!_showDiagnostics;
+    _worldLegend.hidden=!_showDiagnostics;
+    _reportButton.hidden=!_showDiagnostics;
+    _resetButton.hidden=!_showDiagnostics;
+}
+
+- (void)openSettings {
+    _settingsFromPause=_panelPurpose==NativePanel::pause;
+    [self showSettingsMenu];
+}
+
+- (void)returnFromSettings {
+    if(_settingsFromPause && _session && !_failed)[self showPauseMenu];
+    else [self showProfileMenu];
+}
+
+- (void)showSettingsMenu {
+    NSString* body=[NSString stringWithFormat:
+        @"Classic preserves the original source textures. Modern applies the PC port's lossless Scale4x rule to eligible 2D robot/decorative sprites at native resolution. Original 3D materials, map atlas and font sheets remain untouched.\n\n%@  /  %@",
+        _graphicsModern?@"MODERN":@"CLASSIC",_showDiagnostics?@"DIAGNOSTICS ON":@"DIAGNOSTICS OFF"];
+    [self showPanel:NativePanel::settings title:[self originalText:468] body:body token:++_localPanelToken];
+    [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
+    [self addCampaignButton:[self originalText:[_audio musicEnabled]?495:1222] action:@selector(toggleMusic)];
+    [self addCampaignButton:[self originalText:[_audio soundEnabled]?855:923] action:@selector(toggleSound)];
+    [self addCampaignButton:[NSString stringWithFormat:@"Camera: %.2fx",_touchCameraSpeed]
+        action:@selector(cycleTouchCameraSpeed)];
+    [self addCampaignButton:_showDiagnostics?@"Diagnostics: On":@"Diagnostics: Off" action:@selector(toggleDiagnostics)];
+    if(_showDiagnostics)[self addCampaignButton:@"Export report" action:@selector(shareReport)];
+    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+}
+
+// The original iPhone text bank provides four real HELP topics (overview,
+// controls, modes and tips). Retain their exact source text rather than a
+// substitute instructions paragraph. This is native dispatch, not the old
+// ARM32 UI callback table (which still needs independent parity verification).
+- (void)showHelpMenu {
+    _informationReturnPanel=_panelPurpose;
+    [self showHelpIndex];
+}
+- (void)showHelpIndex {
+    [self showPanel:NativePanel::help title:[self originalText:754] body:@""
+        token:++_localPanelToken];
+    const std::array<std::uint16_t,4> tabs{{630,1181,983,1200}};
+    for(std::size_t i=0;i<tabs.size();++i) {
+        UIButton* choice=[self addCampaignButton:[self originalText:tabs[i]]
+            action:@selector(openOriginalHelpTopic:)];
+        choice.tag=static_cast<NSInteger>(i);
+    }
+    [self addCampaignButton:@"Back" action:@selector(backFromInformation)];
+}
+- (void)openOriginalHelpTopic:(UIButton*)choice {
+    if(_panelPurpose!=NativePanel::help || !choice || choice.tag<0 || choice.tag>=4)return;
+    const std::array<std::uint16_t,4> titles{{630,1181,983,1200}};
+    const std::array<std::uint16_t,4> bodies{{861,458,788,393}};
+    const std::size_t i=static_cast<std::size_t>(choice.tag);
+    [self showPanel:NativePanel::help_topic title:[self originalText:titles[i]]
+        body:[self originalText:bodies[i]] token:++_localPanelToken];
+    [self addCampaignButton:@"Back" action:@selector(showHelpIndex)];
+}
+
+- (void)showCreditsMenu {
+    _informationReturnPanel=_panelPurpose;
+    [self showPanel:NativePanel::credits title:@"CREDITS"
+        body:@"TRANSFORMERS G1: AWAKENING\n\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
+        token:++_localPanelToken];
+    [self addCampaignButton:@"Back" action:@selector(backFromInformation)];
+}
+
+- (void)backFromInformation {
+    const auto destination=_informationReturnPanel;
+    _informationReturnPanel=NativePanel::none;
+    switch(destination) {
+    case NativePanel::settings:[self showSettingsMenu];break;
+    case NativePanel::pause:[self showPauseMenu];break;
+    case NativePanel::mode_select:[self showModesMenu];break;
+    case NativePanel::mission_select:[self showMissionPicker];break;
+    case NativePanel::arena:[self chooseArenaFaction:_pendingArenaIndex];break;
+    case NativePanel::arena_opponent:[self returnToArenaFaction];break;
+    default:[self showProfileMenu];break;
+    }
+}
+
+- (void)cycleTouchCameraSpeed {
+    if(_panelPurpose!=NativePanel::settings)return;
+    const float next=_touchCameraSpeed<0.875F ? 1.0F :
+        _touchCameraSpeed<1.125F ? 1.25F :
+        _touchCameraSpeed<1.375F ? 1.5F : 0.75F;
+    _touchCameraSpeed=next;
+    [NSUserDefaults.standardUserDefaults setFloat:next forKey:@"G1TouchCameraSpeed"];
+    [self showSettingsMenu];
+}
+
+- (void)toggleGraphics {
+    const bool next=!_graphicsModern;
+    if(next) {
+        try {
+            [self primeModernTextures];
+        } catch(const std::exception& e) {
+            [self showPanel:NativePanel::settings title:@"Graphics could not be changed"
+                body:native_text(e.what()) token:++_localPanelToken];
+            [self addCampaignButton:@"Back" action:@selector(showSettingsMenu)];
+            return;
+        }
+    }
+    _graphicsModern=next;
+    [NSUserDefaults.standardUserDefaults setBool:next forKey:@"G1GraphicsModern"];
+    ++_contentGeneration;
+    [self showSettingsMenu];
+}
+
+- (void)toggleDiagnostics {
+    _showDiagnostics=!_showDiagnostics;
+    [NSUserDefaults.standardUserDefaults setBool:_showDiagnostics forKey:@"G1DiagnosticsEnabled"];
+    [self updateDiagnosticsVisibility];
+    [self showSettingsMenu];
+}
+
 - (void)toggleMusic {
     const BOOL enabled=![_audio musicEnabled];
     [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1MusicEnabled"];
     [_audio setMusicEnabled:enabled soundEnabled:[_audio soundEnabled]];
-    if(enabled && _panelPurpose==NativePanel::pause && _lastMapMusic)
+    if(enabled && _settingsFromPause && _lastMapMusic)
         [self dispatchAudio:*_lastMapMusic];
-    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+    [self showSettingsMenu];
 }
 - (void)toggleSound {
     const BOOL enabled=![_audio soundEnabled];
     [NSUserDefaults.standardUserDefaults setBool:enabled forKey:@"G1SoundEnabled"];
     [_audio setMusicEnabled:[_audio musicEnabled] soundEnabled:enabled];
-    if(_panelPurpose==NativePanel::pause)[self showPauseMenu];else [self showProfileMenu];
+    [self showSettingsMenu];
 }
 
 - (void)installSession:(std::unique_ptr<g1::GameSession>)session {
@@ -908,6 +1376,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     // repeat in a new session. Invalidate every old drawable callback before
     // replacing it, and clear UIKit caches before showing the new requests.
     ++_sceneRevision; ++_sessionInstalls;
+    _presentationEpoch.invalidate();
     _session = std::move(session);
     _title.text=[self originalText:715];
     _scene.reset(); _cameraPan.reset();
@@ -927,6 +1396,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _supportPresentation.reset(); _supportUnitDraws.clear(); _supportCursor.reset();
     _supportSavedCursor.reset(); _supportDisplay.invalidate();
     _supportSavedTitle=nil;
+    _supportTutorialRetryRequired=false;
     _presentedMessageIds.clear();
     _notice = nil; _noticeUntil = 0;
     _checkpointCommand=std::numeric_limits<std::size_t>::max();
@@ -945,6 +1415,38 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     }
     _loaded = true;
     _failed=false;_failure=nil;
+}
+
+
+- (void)primeModernTextures {
+    // This updates only derived host textures. The original archive,
+    // gameplay map, sprite geometry and shared RNG remain untouched.
+    if(!_renderer || !_scene || !_archive)return;
+    if(!_modernTextures)_modernTextures=[NSMutableDictionary new];
+    const auto cache=[&](std::uint32_t id,const g1::RgbaImage& image) {
+        if(image.width!=512 || image.height!=512)
+            throw g1::FormatError("Modern sprite source image differs from verified 512x512");
+        if(!_modernTextures[@(id)])
+            _modernTextures[@(id)]=_renderer->texture(g1::scale4x_rgba(image));
+    };
+    for(const auto& image:_scene->textures) {
+        const bool sprite=std::any_of(_scene->sprites.begin(),_scene->sprites.end(),[&](const auto& item) {
+            return item.resource.image_id==image.first;
+        });
+        if(sprite)cache(image.first,image.second);
+    }
+    for(const auto& decoration:_terrainSpriteDraws) {
+        const auto& resource=decoration.resource;
+        if(_modernTextures[@(resource.image_id)])continue;
+        const auto matches=_archive->find(resource.image_id,resource.resource_key);
+        if(matches.size()!=1)
+            throw g1::FormatError("Modern terrain decoration source is missing or ambiguous");
+        cache(resource.image_id,g1::decode_png(_archive->read(matches.front())));
+    }
+}
+- (id<MTLTexture>)spriteTexture:(std::uint32_t)resource {
+    if(_graphicsModern && _modernTextures[@(resource)])return _modernTextures[@(resource)];
+    return _textures[@(resource)];
 }
 
 - (void)rebuildScene:(BOOL)resetPlayback {
@@ -970,8 +1472,17 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         }
     }
     if (!_textures) _textures = [NSMutableDictionary new];
-    for (const auto& image : next->textures)
+    if (!_modernTextures) _modernTextures = [NSMutableDictionary new];
+    for (const auto& image : next->textures) {
         if (!_textures[@(image.first)]) _textures[@(image.first)] = _renderer->texture(image.second);
+        if(_graphicsModern && !_modernTextures[@(image.first)]) {
+            const bool sprite=std::any_of(next->sprites.begin(),next->sprites.end(),[&](const auto& item) {
+                return item.resource.image_id==image.first;
+            });
+            if(sprite && image.second.width==512 && image.second.height==512)
+                _modernTextures[@(image.first)]=_renderer->texture(g1::scale4x_rgba(image.second));
+        }
+    }
     if (!_white) _white = _renderer->texture({1,1,{255,255,255,255}});
 
     std::map<std::uint8_t,std::size_t> oldByType;
@@ -1206,6 +1717,12 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     throw g1::FormatError("Terrain sprite atlas dimensions differ from original512x512");
                 _textures[@(resource.image_id)]=_renderer->texture(image);
             }
+            if(_graphicsModern && !_modernTextures[@(resource.image_id)]) {
+                const auto image=g1::decode_png(read(resource.image_id,resource.resource_key));
+                if(image.width!=512 || image.height!=512)
+                    throw g1::FormatError("Modern decoration source is not a 512x512 atlas");
+                _modernTextures[@(resource.image_id)]=_renderer->texture(g1::scale4x_rgba(image));
+            }
             if(!_terrainSpriteMeshes.count(resource.descriptor_id)) {
                 const g1::AtlasDescriptor descriptor(read(resource.descriptor_id,resource.resource_key));
                 std::vector<std::shared_ptr<g1::MetalMesh>> frames;
@@ -1222,7 +1739,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     ++_contentGeneration;
 }
 
-- (void)dealloc { [_menuMusicTimer invalidate]; [[NSNotificationCenter defaultCenter] removeObserver:self]; }
+- (void)dealloc {
+    [_menuMusicTimer invalidate];
+    [_openingPlayer pause];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void)fail:(NSString*)message {
     _failed = true;
@@ -1243,11 +1764,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)inactive:(NSNotification*)notification {
     (void)notification;
+    if(_openingVisible)[_openingPlayer pause];
     _checkpointRequested=true;[self saveCheckpoint];
     _metalView.paused = YES;
     _clockStarted = false;
     _simulationClock.reset();
     _supportDisplay.invalidate();
+    _presentationEpoch.invalidate();
     _inputEdges = 0;
     if (_session) _previousUnits = _session->units();
     _frameStats.times.clear();
@@ -1256,6 +1779,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)active:(NSNotification*)notification {
     (void)notification;
+    if(_openingVisible)[_openingPlayer play];
+    _presentationEpoch.invalidate();
     _clockStarted = false;
     _simulationClock.reset();
     if (_session) _previousUnits = _session->units();
@@ -1273,6 +1798,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    if(_openingLayer)_openingLayer.frame=_openingView.bounds;
     [self updateCampaignLayout];
     UIScreen* screen = self.view.window.screen ?: UIScreen.mainScreen;
     // Allocate the render target at the attached display's native pixel scale,
@@ -1299,8 +1825,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         _session->focus_request() || _session->battle()) return;
     const CGPoint delta = [gesture translationInView:_metalView];
     const float scale = _camera.span / static_cast<float>(_metalView.bounds.size.height);
-    _camera.center_x -= static_cast<float>(delta.x) * scale;
-    _camera.center_z += static_cast<float>(delta.y) * scale / InspectionCamera::up_z;
+    _camera.center_x -= static_cast<float>(delta.x) * scale * _touchCameraSpeed;
+    _camera.center_z += static_cast<float>(delta.y) * scale * _touchCameraSpeed / InspectionCamera::up_z;
     ++_contentGeneration;
     [gesture setTranslation:CGPointZero inView:_metalView];
 }
@@ -1308,8 +1834,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)pinch:(UIPinchGestureRecognizer*)gesture {
     if (!_loaded || _typeListOpen || _panelPurpose!=NativePanel::none || _session->world_presentation() ||
         _session->mission().interaction_mode != 0 || _session->focus_request() || _session->battle()) return;
-    if (gesture.scale > 0)
-        _camera.span = std::clamp(_camera.span / static_cast<float>(gesture.scale),
+    if (std::isfinite(gesture.scale) && gesture.scale > 0)
+        _camera.span = std::clamp(_camera.span /
+                                  std::pow(static_cast<float>(gesture.scale),_touchCameraSpeed),
                                   _camera.base_span * 0.2F, _camera.base_span * 3.0F);
     gesture.scale = 1;
     ++_contentGeneration;
@@ -1593,8 +2120,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                         throw g1::FormatError("Missing pre-combat support sprite animation");
                     frame=sprite.descriptor.animations()[animation].front().frame_index;
                 }
-                snapshots.push_back({_spriteMeshes.at(i).at(frame),_textures[@(sprite.resource.image_id)],
-                    unit_model(_session->world(),unit),{{1,1,1,1}},true});
+                snapshots.push_back({_spriteMeshes.at(i).at(frame),[self spriteTexture:sprite.resource.image_id],
+                    unit_model(_session->world(),unit),{{1,1,1,1}},true,{},false,_graphicsModern});
             }
         }
         _supportSavedCursor=_returnCursor;
@@ -1616,6 +2143,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         if(!_supportPresentation->status().complete) {
             ++_supportSequences;[self showSupportHelper];
             _clockStarted=false;_simulationClock.reset();++_contentGeneration;
+            [self requestSupportTutorial];
         }
     }
     if(!_supportPresentation->status().complete)return;
@@ -1666,6 +2194,46 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     ++_contentGeneration;
 }
 
+- (void)requestSupportTutorial {
+    if(!_campaign || !_session || !_session->battle() || !_supportPresentation ||
+       _supportPresentation->status().complete)return;
+    const auto& pending=*_session->battle();
+    g1::SupportTutorialSlots owners{};
+    if(pending.exchange.support_units.size()>owners.size())
+        throw g1::FormatError("Support tutorial helper list exceeds original six slots");
+    for(std::size_t i=0;i<pending.exchange.support_units.size();++i)
+        owners[i]=_session->world().units.at(pending.exchange.support_units[i]).owner;
+    const auto player=_session->current_player();
+    const auto decision=g1::support_tutorial_entry(
+        _campaign->profile().support_tutorial_pending ? 1U : 0U,player,
+        _session->turn().controllers.at(player),owners);
+    if(!decision.request_message)return;
+    // Original code clears its profile flag before requesting this text.
+    // Native policy also persists that change atomically before the popup;
+    // a failed write keeps the pending battle and exposes an explicit retry.
+    const auto written=_campaign->consume_support_tutorial();
+    if(!written.succeeded) {
+        _supportTutorialRetryRequired=true;
+        [self showPanel:NativePanel::tutorial_save_error title:@"Tutorial progress could not be saved"
+            body:native_text(written.error) token:++_localPanelToken];
+        [self addCampaignButton:@"Retry save" action:@selector(retrySupportTutorial)];
+        return;
+    }
+    _supportTutorialRetryRequired=false;
+    _pendingMessageIds.push_back(g1::support_tutorial_text_resource);
+    ++_supportTutorialRequests;
+    [self showNextMessage];
+}
+
+- (void)retrySupportTutorial {
+    if(!_supportTutorialRetryRequired || _panelPurpose!=NativePanel::tutorial_save_error)return;
+    try {
+        [self hidePanel];
+        [self requestSupportTutorial];
+        [self refreshControls];
+    } catch(const std::exception& error) { [self fail:native_text(error.what())]; }
+}
+
 - (void)refreshControls {
     if (!_session || _failed) return;
     if(_panelPurpose!=NativePanel::none) {
@@ -1694,6 +2262,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     if (battle) {
         [self prepareBattle];
         _commands.hidden=YES;_dialoguePanel.hidden=YES;
+        // prepareBattle may have opened the original one-time explanation
+        // or a retryable profile-save error. Preserve that modal's ownership.
+        if(_panelPurpose!=NativePanel::none){_battlePanel.hidden=YES;return;}
         if(_supportPresentation && !_supportPresentation->status().complete) {
             _battlePanel.hidden=YES;_title.hidden=NO;
             _hint.hidden=YES;_worldLegend.hidden=YES;
@@ -1760,11 +2331,18 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     _buildButton.enabled=_session->selected_production_eligibility(g1::ProductionMode::ordinary)==g1::ProductionEligibility::allowed;
     _deployButton.enabled=_session->selected_production_eligibility(g1::ProductionMode::deploy)==g1::ProductionEligibility::allowed;
     _undoButton.enabled=_session->selected_can_undo();
+    // Upgrade cost is spoken by VoiceOver; never overprint the original icon.
     if(_session->selected()) {
         const auto& unit=_session->world().units.at(*_session->selected());
         const auto cost=g1::unit_spawn_cost(_session->world().unit_definitions.at(unit.type));
-        [_upgradeButton setTitle:[NSString stringWithFormat:@"Upgrade (%d)",int(cost)] forState:UIControlStateNormal];
-    } else [_upgradeButton setTitle:@"Upgrade" forState:UIControlStateNormal];
+        _upgradeButton.accessibilityValue=[NSString stringWithFormat:@"%d Energon",int(cost)];
+    } else _upgradeButton.accessibilityValue=nil;
+    update_original_action_state(_moveButton,_moveMode);
+    update_original_action_state(_attackButton,_attackMode);
+    update_original_action_state(_healButton,_healMode);
+    for(UIButton* button in @[_captureButton,_transformButton,_upgradeButton,_endTurnButton,
+                             _buildButton,_deployButton,_undoButton])
+        update_original_action_state(button,NO);
     if (_session->world().title_text_index)
         _title.text = native_text(_text->at(g1::script_text_id(*_session->world().title_text_index)));
 }
@@ -1821,6 +2399,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 - (void)beginProduction { [self showProductionTypes:g1::ProductionMode::ordinary]; }
 - (void)beginDeploy { [self showProductionTypes:g1::ProductionMode::deploy]; }
 - (void)cancelProduction {
+    _presentationEpoch.invalidate();
     _typeListOpen=false;_productionMode.reset();_productionType.reset();_productionPlacement.reset();
     _pendingDestination.reset();_rangeDirty=true;_clockStarted=false;_simulationClock.reset();
     [self refreshControls];
@@ -1854,7 +2433,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             handler:^(UIAlertAction* action){(void)action;[weakSelf cancelProduction];}]];
         choices.popoverPresentationController.sourceView=_commands;
         choices.popoverPresentationController.sourceRect=_commands.bounds;
-        _typeListOpen=true;_simulationClock.reset();
+        _typeListOpen=true;_simulationClock.reset();_presentationEpoch.invalidate();
         [self presentViewController:choices animated:YES completion:nil];
         choices.presentationController.delegate=self;
     } catch(const std::exception& e){[self fail:native_text(e.what())];}
@@ -1865,7 +2444,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     if(session!=_sessionInstalls || !_session || !_session->selected() ||
        producer>=_session->units().size() || *_session->selected()!=producer ||
        _session->unit_spawn_generation(producer)!=spawn)return;
-    _typeListOpen=false;_clockStarted=false;_simulationClock.reset();
+    _typeListOpen=false;_clockStarted=false;_simulationClock.reset();_presentationEpoch.invalidate();
     try {
         const auto candidates=_session->selected_production_candidates(mode);
         if(std::find(candidates.begin(),candidates.end(),type)==candidates.end())
@@ -2305,6 +2884,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     for (std::uint32_t n=0;n<steps;++n) {
         _previousUnits = _session->units();
         [self refreshControls];
+        if(_panelPurpose!=NativePanel::none)break;
         if (_session->battle()) {
             if(_supportPresentation && !_supportPresentation->status().complete) {
                 const auto status=_supportPresentation->status();
@@ -2395,7 +2975,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)recordPresentation:(double)time frame:(std::shared_ptr<const NativePresentedFrame>)frame {
-    if (!frame || frame->scene_revision != _sceneRevision) return;
+    if (!frame || frame->scene_revision != _sceneRevision ||
+        !_presentationEpoch.matches(frame->presentation_epoch)) return;
     if (_failed || _metalView.paused || time <= 0 || !std::isfinite(time)) return;
     if (!_frameStats.times.empty() && time <= _frameStats.times.back()) return;
     _frameStats.add(time);
@@ -2464,8 +3045,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     } catch (const std::exception& e) { [self fail:native_text(e.what())]; }
 }
 
-- (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision {
-    if(revision!=_sceneRevision){++_staleGpuErrors;return;}
+- (void)recordCommandFailure:(NSString*)message revision:(std::uint64_t)revision epoch:(std::uint64_t)epoch {
+    if(revision!=_sceneRevision || !_presentationEpoch.matches(epoch)){++_staleGpuErrors;return;}
     [self fail:message];
 }
 
@@ -2493,6 +3074,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
             frame->content_generation = _contentGeneration;
             frame->scene_revision = _sceneRevision;
             if(_session->battle())[self prepareBattle];
+            frame->presentation_epoch = _presentationEpoch.current();
             const bool support=_session->battle() && _supportPresentation &&
                 !_supportPresentation->status().complete;
             if (_session->battle() && !support) {
@@ -2546,8 +3128,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                 // presentation policy, not a claim of the full original draw tree.
                 for(const auto& decoration:_terrainSpriteDraws)
                     draws.push_back({_terrainSpriteMeshes.at(decoration.resource.descriptor_id).at(decoration.frame_index),
-                        _textures[@(decoration.resource.image_id)],
-                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true});
+                        [self spriteTexture:decoration.resource.image_id],
+                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true,{},false,_graphicsModern});
                 for(const auto& overlay:_worldOverlays)
                     draws.push_back({overlay.mesh,_white,camera,overlay.tint,false});
                 if(!support) {
@@ -2588,9 +3170,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     return pa[2] > pb[2];
                 });
                 for (const auto i : order) {
-                    const auto texture = _textures[@(_scene->sprites[i].resource.image_id)];
+                    const auto texture = [self spriteTexture:_scene->sprites[i].resource.image_id];
                     draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
-                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true});
+                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true,{},false,_graphicsModern});
                 }
                 }
                 _renderer->encode(command,pass,draws);
@@ -2637,7 +3219,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
                     NSString* reason = completed.error.localizedDescription ?: @"Metal command failed";
                     dispatch_async(dispatch_get_main_queue(),^{
                         delivery->failed=true;
-                        [weakSelf recordCommandFailure:reason revision:presentedFrame->scene_revision];
+                        [weakSelf recordCommandFailure:reason revision:presentedFrame->scene_revision
+                            epoch:presentedFrame->presentation_epoch];
                     });
                 } else if (completed.status == MTLCommandBufferStatusCompleted) {
                     dispatch_async(dispatch_get_main_queue(),^{
@@ -2655,6 +3238,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
 }
 
 - (void)shareReport {
+    if(self.presentedViewController)return;
     struct utsname system{};
     uname(&system);
     NSDictionary* info = NSBundle.mainBundle.infoDictionary;
@@ -2725,6 +3309,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"device": [NSString stringWithUTF8String:system.machine], @"ios": UIDevice.currentDevice.systemVersion,
         @"native_scene_loaded": @(_loaded), @"failure": _failure ?: NSNull.null,
         @"scene_revision":@(_sceneRevision),@"scene_rebuilds":@(_sceneRebuilds),
+        @"presentation_epoch":@(_presentationEpoch.current()),
         @"session_installs":@(_sessionInstalls),@"spawn_playback_resets":@(_spawnPlaybackResets),
         @"scene_sprite_asset_count":@(_scene ? _scene->sprites.size() : 0),
         @"scene_grid_resource":@(_scene ? _scene->world.grid_resource_id : 0),
@@ -2770,7 +3355,15 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"campaign_error":_campaignError ?: NSNull.null,
         @"campaign_profile_save_error":_campaign && !_campaign->state().save_error.empty() ?
             native_text(_campaign->state().save_error) : NSNull.null,
-        @"mode_menu_policy":@"Original Story/Showdown/Arena definitions and completion locks; native UIKit selection and results layout",
+        @"mode_menu_policy":@"Original Story/Showdown/Arena definitions, unlocks and results; native G1-art menu",
+        @"graphics_mode":_graphicsModern?@"Modern Scale4x":@"Classic Original",
+        @"new_native_intro_file":@"G1OpeningXR.mp4; AVPlayer; user film; tap-to-skip",
+        @"native_intro_active":@(_openingVisible),
+        @"touch_camera_sensitivity":@(_touchCameraSpeed),
+        @"installed_icon_source":@"Original user IPA iTunesArtwork, 512x512, PNG derivatives packaged outside source control",
+        @"modern_sprite_texture_cache_count":@(_modernTextures.count),
+        @"diagnostics_enabled":@(_showDiagnostics),
+        @"branding_policy":@"Original G1 menu background resource1002, iammrmikeman fan port credits; no Glu splash/blog/feedback screen; original archive retained byte-for-byte",
         @"simulation_step_ms": @(g1::SimulationClock::step_ms),
         @"simulation_ticks_total": @(_simulationTicks),
         @"clock_clamp_intervals_over1000ms": @(_clampedClockIntervals),
@@ -2796,8 +3389,16 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"support_frames_presented":@(_supportPresentedFrames),
         @"support_active":@(_supportPresentation && !_supportPresentation->status().complete),
         @"support_helper_slot":@(_supportPresentation ? int(_supportPresentation->status().slot) : -1),
+        @"support_tutorial_requests":@(_supportTutorialRequests),
+        @"support_tutorial_pending":_campaign ? @(_campaign->profile().support_tutorial_pending) : NSNull.null,
+        @"support_tutorial_save_retry_required":@(_supportTutorialRetryRequired),
+        @"original_title_font_slot":@([_title originalFontSlot]),
+        @"campaign_original_heading_font_slot":@([_campaignCanvas originalHeadingFontSlot]),
+        @"original_bitmap_panel_policy":@"Campaign/results headings use original slot0 or slot2 and combat names use slot2 only when a complete single-line glyph run fits; otherwise readable system text. Original palette retained; UIKit body and HUD layout are native.",
+        @"title_font_policy":@"Original keyed bitmap glyphs and measured spacing for supported single-line titles/support banners; native17-point nominal height and nearest sampling; existing UIKit fallback for uncovered text. Dialogue layout remains TextKit",
+        @"native_profile_format":@2,
         @"support_presentation":@"Original helper order, primary-name banner and keyed percentage artwork; separate effect ends at1680ms, cue hands off at2010ms; at most five helpers displayed without reducing six-helper combat",
-        @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original tutorial/camera/GPU parity remains unverified",
+        @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original one-time tutorial predicate/text, with native atomic profile persistence and drawn-message acknowledgement. Original camera/GPU parity remains unverified",
         @"battle_metal_frames_prepared": @(_battlePreparedFrames),
         @"battle_metal_frames_presented": @(_battlePresentedFrames),
         @"battle_queued_draws_in_presented_frames": @(_battleQueuedDrawsPresented),
@@ -2826,7 +3427,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
         @"random_seed": @(_randomSeed), @"units":unitState, @"sites":siteState,
         @"full_gameplay_implemented": @NO, @"full_campaign_verified": @NO,
         @"native_save_reload_verified": @NO,
-        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, battle/support GPU output fidelity and sustained60Hz validation; original first-use support tutorial, site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
+        @"remaining_scope": @"Physical iPhone XR/iOS17.5 playthrough, tutorial/lifecycle and battle/support GPU output fidelity and sustained60Hz validation; site/marker art, tactical camera and HUD/font fidelity, complete sound-event coverage and device audibility",
         @"measurement_scope": @"Positive monotonic Metal presentedTime samples from current native scene; not full-game performance"
     };
     NSError* error = nil;
@@ -2840,6 +3441,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, save_error
     }
     UIActivityViewController* sheet = [[UIActivityViewController alloc]
         initWithActivityItems:@[file] applicationActivities:nil];
+    // A share sheet hides gameplay just like Pause. Keep a pre-existing
+    // message/menu intact; active gameplay requires an explicit Resume when
+    // the sheet closes, so battles cannot finish unseen behind diagnostics.
+    if(_session && !_failed && _panelPurpose==NativePanel::none)[self openMenu];
     sheet.popoverPresentationController.sourceView = _reportButton;
     sheet.popoverPresentationController.sourceRect = _reportButton.bounds;
     [self presentViewController:sheet animated:YES completion:nil];

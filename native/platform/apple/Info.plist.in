@@ -2,14 +2,34 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
     <key>CFBundleDevelopmentRegion</key><string>en</string>
-    <key>CFBundleDisplayName</key><string>G1 Native Test</string>
+    <key>CFBundleDisplayName</key><string>G1 Awakening</string>
     <key>CFBundleExecutable</key><string>G1AwakeningNative</string>
     <key>CFBundleIdentifier</key><string>org.g1awakening.native.test</string>
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>G1AwakeningNative</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.6.0</string>
-    <key>CFBundleVersion</key><string>6</string>
+    <key>CFBundleShortVersionString</key><string>0.12.0</string>
+    <key>CFBundleVersion</key><string>12</string>
+    <!-- Names refer to original, user-supplied iTunesArtwork resized only
+         at packaging time. Do not add copyrighted artwork to Git history.
+         The application has NO asset catalog and therefore no false
+         CFBundleIconName pointing to missing compiled assets. -->
+    <key>CFBundleIcons</key>
+    <dict>
+        <key>CFBundlePrimaryIcon</key>
+        <dict>
+            <key>CFBundleIconFiles</key>
+            <array>
+                <string>Icon-60</string>
+                <string>Icon-60@2x</string>
+                <string>Icon-60@3x</string>
+                <string>Icon-Small-40</string>
+                <string>Icon-Small-40@2x</string>
+                <string>Icon-Small-40@3x</string>
+            </array>
+            <key>UIPrerenderedIcon</key><true/>
+        </dict>
+    </dict>
     <key>CFBundleSupportedPlatforms</key><array><string>iPhoneOS</string></array>
     <key>MinimumOSVersion</key><string>17.5</string>
     <key>UIDeviceFamily</key><array><integer>1</integer></array>
@@ -23,6 +43,6 @@
     <key>UILaunchScreen</key><dict/>
     <key>ITSAppUsesNonExemptEncryption</key><false/>
     <key>G1SourceCommit</key><string>@G1_SOURCE_COMMIT@</string>
-    <key>G1ArtifactKind</key><string>Native campaign integration test</string>
-    <key>G1FeatureScope</key><string>Native tactical gameplay, continuous turns, campaign and checkpoint restore, original support artwork and timing before animated M3G battles; full playthrough, original output fidelity and physical iPhone XR validation remain outstanding</string>
+    <key>G1ArtifactKind</key><string>Native original G1 Help and HUD recovery test</string>
+    <key>G1FeatureScope</key><string>Native complete campaign content, source G1 menu art and modern iPhone icon derived from original iTunesArtwork, saved sound/graphics/touch options, original 3D battle and support presentation, full native Story/Showdown/Arena logic with checkpoint restore. Full physical XR 17+29+Arena rendered playthrough and sustained device performance remain to be certified.</string>
 </dict></plist>
