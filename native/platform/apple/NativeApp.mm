@@ -361,7 +361,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     std::uint64_t _staleGpuErrors;
     std::uint8_t _lastMissionMode;
     bool _clockStarted, _loaded, _failed, _moveMode, _attackMode, _rangeDirty;
-    bool _graphicsModern, _showDiagnostics, _settingsFromPause;
+    bool _graphicsModern, _showDiagnostics, _settingsFromPause, _infoFromSettings;
+    float _touchCameraSpeed{1.0F};
     NSString* _failure;
     NSString* _notice;
     double _noticeUntil;
@@ -602,9 +603,13 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
         _audio = [[G1AppleAudio alloc] initWithArchive:archive];
         [NSUserDefaults.standardUserDefaults registerDefaults:@{
             @"G1MusicEnabled":@YES,@"G1SoundEnabled":@YES,
-            @"G1GraphicsModern":@NO,@"G1DiagnosticsEnabled":@NO}];
+            @"G1GraphicsModern":@NO,@"G1DiagnosticsEnabled":@NO,
+            @"G1TouchCameraSpeed":@1.0F}];
         _graphicsModern=[NSUserDefaults.standardUserDefaults boolForKey:@"G1GraphicsModern"];
         _showDiagnostics=[NSUserDefaults.standardUserDefaults boolForKey:@"G1DiagnosticsEnabled"];
+        const float storedSpeed=[NSUserDefaults.standardUserDefaults floatForKey:@"G1TouchCameraSpeed"];
+        _touchCameraSpeed=std::isfinite(storedSpeed) ?
+            std::clamp(storedSpeed,0.75F,1.5F) : 1.0F;
         [self updateDiagnosticsVisibility];
         [_audio setMusicEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1MusicEnabled"]
             soundEnabled:[NSUserDefaults.standardUserDefaults boolForKey:@"G1SoundEnabled"]];
@@ -977,25 +982,44 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
     [self addCampaignButton:_graphicsModern?@"Graphics: Modern":@"Graphics: Classic" action:@selector(toggleGraphics)];
     [self addCampaignButton:[_audio musicEnabled]?@"Music: On":@"Music: Off" action:@selector(toggleMusic)];
     [self addCampaignButton:[_audio soundEnabled]?@"Sound: On":@"Sound: Off" action:@selector(toggleSound)];
+    [self addCampaignButton:[NSString stringWithFormat:@"Camera: %.2fx",_touchCameraSpeed]
+        action:@selector(cycleTouchCameraSpeed)];
     [self addCampaignButton:_showDiagnostics?@"Diagnostics: On":@"Diagnostics: Off" action:@selector(toggleDiagnostics)];
     [self addCampaignButton:@"Export report" action:@selector(shareReport)];
     [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
 }
 
 - (void)showHelpMenu {
-    if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
+    _infoFromSettings=_panelPurpose==NativePanel::settings;
+    if(!_infoFromSettings)_settingsFromPause=_panelPurpose==NativePanel::pause;
     [self showPanel:NativePanel::help title:@"HELP"
         body:@"TAP a robot to select it. Choose MOVE then tap an available tile twice to confirm the route. ATTACK uses the target you tap. CAPTURE, TRANSFORM, REPAIR, UPGRADE and ACTIVATE use the displayed action buttons. END TURN advances to the enemy. Swipe the battlefield to pan, pinch to zoom, and use Reset view to frame the map.\n\nStory unlocks Showdown; Showdown unlocks Cybertron Arena. Pause with Menu; use Continue after relaunch to restore the last safe checkpoint."
         token:++_localPanelToken];
-    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+    [self addCampaignButton:@"Back" action:@selector(backFromInformation)];
 }
 
 - (void)showCreditsMenu {
-    if(_panelPurpose!=NativePanel::settings)_settingsFromPause=_panelPurpose==NativePanel::pause;
+    _infoFromSettings=_panelPurpose==NativePanel::settings;
+    if(!_infoFromSettings)_settingsFromPause=_panelPurpose==NativePanel::pause;
     [self showPanel:NativePanel::credits title:@"CREDITS"
         body:@"TRANSFORMERS G1: AWAKENING\n\nFaithful native ARM64 iOS port by iammrmikeman. Original game models, art, sound and campaign data are retained. Unofficial fan project. Transformers and the original game remain the property of their respective rights holders. No old online services, Glu blog or feedback links. The app starts directly in the G1 menu."
         token:++_localPanelToken];
-    [self addCampaignButton:@"Back" action:@selector(returnFromSettings)];
+    [self addCampaignButton:@"Back" action:@selector(backFromInformation)];
+}
+
+- (void)backFromInformation {
+    if(_infoFromSettings)[self showSettingsMenu];
+    else [self returnFromSettings];
+}
+
+- (void)cycleTouchCameraSpeed {
+    if(_panelPurpose!=NativePanel::settings)return;
+    const float next=_touchCameraSpeed<0.875F ? 1.0F :
+        _touchCameraSpeed<1.125F ? 1.25F :
+        _touchCameraSpeed<1.375F ? 1.5F : 0.75F;
+    _touchCameraSpeed=next;
+    [NSUserDefaults.standardUserDefaults setFloat:next forKey:@"G1TouchCameraSpeed"];
+    [self showSettingsMenu];
 }
 
 - (void)toggleGraphics {
@@ -1489,8 +1513,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
         _session->focus_request() || _session->battle()) return;
     const CGPoint delta = [gesture translationInView:_metalView];
     const float scale = _camera.span / static_cast<float>(_metalView.bounds.size.height);
-    _camera.center_x -= static_cast<float>(delta.x) * scale;
-    _camera.center_z += static_cast<float>(delta.y) * scale / InspectionCamera::up_z;
+    _camera.center_x -= static_cast<float>(delta.x) * scale * _touchCameraSpeed;
+    _camera.center_z += static_cast<float>(delta.y) * scale * _touchCameraSpeed / InspectionCamera::up_z;
     ++_contentGeneration;
     [gesture setTranslation:CGPointZero inView:_metalView];
 }
@@ -1498,8 +1522,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
 - (void)pinch:(UIPinchGestureRecognizer*)gesture {
     if (!_loaded || _typeListOpen || _panelPurpose!=NativePanel::none || _session->world_presentation() ||
         _session->mission().interaction_mode != 0 || _session->focus_request() || _session->battle()) return;
-    if (gesture.scale > 0)
-        _camera.span = std::clamp(_camera.span / static_cast<float>(gesture.scale),
+    if (std::isfinite(gesture.scale) && gesture.scale > 0)
+        _camera.span = std::clamp(_camera.span /
+                                  std::pow(static_cast<float>(gesture.scale),_touchCameraSpeed),
                                   _camera.base_span * 0.2F, _camera.base_span * 3.0F);
     gesture.scale = 1;
     ++_contentGeneration;
@@ -3013,6 +3038,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mission_se
             native_text(_campaign->state().save_error) : NSNull.null,
         @"mode_menu_policy":@"Original Story/Showdown/Arena definitions, unlocks and results; native G1-art menu",
         @"graphics_mode":_graphicsModern?@"Modern Scale4x":@"Classic Original",
+        @"touch_camera_sensitivity":@(_touchCameraSpeed),
+        @"installed_icon_source":@"Original user IPA iTunesArtwork, 512x512, PNG derivatives packaged outside source control",
         @"modern_sprite_texture_cache_count":@(_modernTextures.count),
         @"diagnostics_enabled":@(_showDiagnostics),
         @"branding_policy":@"Original G1 menu background resource1002, iammrmikeman fan port credits; no Glu splash/blog/feedback screen; original archive retained byte-for-byte",
