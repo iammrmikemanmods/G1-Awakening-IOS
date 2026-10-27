@@ -2329,6 +2329,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _title.hidden=!debugVisible; _hint.hidden=!debugVisible; _worldLegend.hidden=!debugVisible;
     if (battle) {
         [self prepareBattle];
+        _gameHudFrame.hidden=YES;  // Never composite the tactical strip underneath the battle plates.
         _commands.hidden=YES;_dialoguePanel.hidden=YES;
         // prepareBattle may have opened the original one-time explanation
         // or a retryable profile-save error. Preserve that modal's ownership.
