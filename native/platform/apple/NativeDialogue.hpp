@@ -11,6 +11,7 @@
 @interface G1DialogueCanvas : UIView
 - (void)resetPresentation;
 - (void)setOriginalText:(NSString*)text;
+- (void)setPresentationScale:(CGFloat)scale;
 - (void)showProgress:(const g1::DialogueProgress&)progress;
 - (g1::DialogueLayout)layoutFeedback;
 - (NSUInteger)drawnRevision;
@@ -55,6 +56,15 @@
     return self;
 }
 
+- (void)setPresentationScale:(CGFloat)scale {
+    const CGFloat points=std::max(CGFloat(8),11*scale);
+    if(std::abs(_font.pointSize-points)<0.05)return;
+    _font=[UIFont fontWithName:@"Menlo-Regular" size:points] ?: [UIFont systemFontOfSize:points];
+    _lineHeight=static_cast<NSInteger>(std::ceil(_font.lineHeight))+2;
+    _inkHeight=static_cast<NSInteger>(std::ceil(_font.ascender-_font.descender));
+    NSString* text=_originalText ?: @"";_originalText=nil;
+    [self setOriginalText:text];
+}
 - (void)setOriginalText:(NSString*)text {
     if ([_originalText isEqualToString:text]) return;
     _originalText = [text copy];

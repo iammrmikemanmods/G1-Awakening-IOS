@@ -2,6 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #include "g1/BitmapFont.hpp"
+#include "NativeAdaptiveUI.hpp"
 #include <algorithm>
 #include <cmath>
 #include <memory>
@@ -26,20 +27,21 @@
     self=[super init];
     if(self) {
         _assets=std::make_unique<g1::BitmapFontAssets>(g1::load_bitmap_font_assets(archive,slot));
-        const auto png=g1::encode_png(_assets->image);
-        UIImage* sheet=[UIImage imageWithData:[NSData dataWithBytes:png.data() length:png.size()]];
-        if(!sheet.CGImage)throw g1::FormatError("Native bitmap font sheet could not be created");
         _glyphImages=[NSMutableDictionary new];
         for(const auto& glyph:_assets->descriptor.glyphs()) {
-            // Preserve the original binary-search choice for duplicate IDs.
             if(_assets->descriptor.glyph(glyph.character)!=&glyph)continue;
-            CGImageRef crop=CGImageCreateWithImageInRect(sheet.CGImage,
-                CGRectMake(glyph.source_x,glyph.source_y,glyph.width,glyph.height));
-            if(!crop)throw g1::FormatError("Native bitmap font glyph crop failed");
-            UIImage* image=[UIImage imageWithCGImage:crop scale:1 orientation:UIImageOrientationUp];
-            CGImageRelease(crop);
-            if(!image)throw g1::FormatError("Native bitmap font glyph image failed");
-            _glyphImages[@(static_cast<std::uint32_t>(glyph.character))]=image;
+            if(!glyph.width || !glyph.height)continue;
+            // Upscale each glyph independently so adjacent letters can never
+            // leak into each other. Logical advance and crop metrics stay original.
+            const auto& sheet=_assets->image;
+            if(glyph.source_x+glyph.width>sheet.width || glyph.source_y+glyph.height>sheet.height)
+                throw g1::FormatError("Source glyph exceeds font sheet");
+            g1::RgbaImage crop;crop.width=glyph.width;crop.height=glyph.height;
+            crop.pixels.resize(std::size_t(crop.width)*crop.height*4);
+            for(std::uint32_t row=0;row<crop.height;++row)
+                std::copy_n(sheet.pixels.begin()+(std::size_t(glyph.source_y+row)*sheet.width+glyph.source_x)*4,
+                    crop.width*4,crop.pixels.begin()+std::size_t(row)*crop.width*4);
+            _glyphImages[@(static_cast<std::uint32_t>(glyph.character))]=g1::adaptive_ui::image(crop);
         }
     }
     return self;

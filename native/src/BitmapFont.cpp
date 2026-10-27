@@ -285,23 +285,37 @@ const std::array<BitmapFontBinding, 12>& bitmap_font_bindings() noexcept {
 
 BitmapFontAssets load_bitmap_font_assets(const Archive& archive, std::size_t font_slot) {
     if (font_slot >= bitmap_font_bindings().size()) throw FormatError("bitmap font slot is out of range");
-    if (font_slot != 0 && font_slot != 1 && font_slot != 2 && font_slot != 3 && font_slot != 11)
-        throw FormatError("PNG bitmap font image profile is not yet supported");
     const auto binding = bitmap_font_bindings()[font_slot];
     const auto properties = unique_resource(archive, binding.image_property_resource_id, 0xe179f4beU);
-    if (properties.size() != 24) throw FormatError("unsupported bitmap font image property record");
+    if (properties.size() != 24 && properties.size() != 32)
+        throw FormatError("unsupported bitmap font image property record");
     Reader reader(properties);
-    std::array<std::optional<std::uint32_t>, 3> fields;
+    std::array<std::optional<std::uint32_t>, 4> fields;
     while (!reader.finished()) {
         const auto property = reader.le32(), value = reader.le32();
-        const auto slot = property == 6 ? 0U : property == 9 ? 1U : property == 14 ? 2U : 3U;
+        const auto slot = property == 6 ? 0U : property == 9 ? 1U : property == 14 ? 2U : property == 16 ? 3U : 4U;
         if (slot == fields.size() || fields[slot]) throw FormatError("unsupported or repeated bitmap font image property");
         fields[slot] = value;
     }
-    if (!fields[0] || !fields[1] || !fields[2] || *fields[0] != 0xffffffffU || (*fields[2] >> 24U) != 2U)
+    if (!fields[0] || !fields[1] || !fields[2] || *fields[0] != 0xffffffffU || (*fields[2] >> 24U) != 2U ||
+        (fields[3] && *fields[3] != 1U))
         throw FormatError("unsupported bitmap font image source profile");
     const auto image_id = *fields[2] & 0x00ffffffU;
-    auto image = decode_font_bitmap(unique_resource(archive, image_id, 0xb717945fU), *fields[1]);
+    const auto bmp = archive.find(image_id, 0xb717945fU);
+    const auto png = archive.find(image_id, 0xb7178678U);
+    if(bmp.size()+png.size()!=1)throw FormatError("bitmap font image identity is ambiguous");
+    RgbaImage image;
+    if(!bmp.empty())image=decode_font_bitmap(archive.read(bmp.front()),*fields[1]);
+    else {
+        image=decode_png(archive.read(png.front()));
+        // Original property9 is an RGB transparency key, independent of the
+        // BMP/PNG container. Preserve existing source alpha for all other pixels.
+        for(std::size_t at=0;at<image.pixels.size();at+=4) {
+            const auto rgb=(std::uint32_t(image.pixels[at])<<16U)|
+                (std::uint32_t(image.pixels[at+1])<<8U)|image.pixels[at+2];
+            if(rgb==(*fields[1]&0xffffffU))image.pixels[at+3]=0;
+        }
+    }
     BitmapFontDescriptor descriptor(unique_resource(archive, binding.descriptor_resource_id, 0xf4e02223U), image.width, image.height);
     return {std::move(image), std::move(descriptor), image_id, font_slot};
 }
