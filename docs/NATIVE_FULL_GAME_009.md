@@ -85,3 +85,46 @@ demonstrated on physical hardware.
 
 Preserve 007 and 008 branches and their IPAs. Never overwrite the
 user's saved campaign or original IPA.
+
+
+## Verified build 009 / packaged candidate
+
+The **native app, tests, and Metal shaders compile**, and the strict
+original-data package has been assembled:
+
+| Item | Verified result |
+|---|---|
+| Apple/Linux CI | [Workflow 40428437855](https://github.com/iammrmikemanmods/G1-Awakening-IOS/actions/runs/40428437855) — **success** |
+| Native regression tests | 63/63 on Ubuntu and 63/63 on Apple ARM64 |
+| Hosted Metal probes | 14 tactical/support + 12 M3G, Apple Paravirtual GPU, synthetic pixels |
+| Original menu background | FGIB 1002 / `0xb7178678`, 480×320 PNG, original bytes |
+| Version and minimum iOS | 0.9.0 / build 9, minimum iOS 17.5 |
+| Full test IPA | `G1_Awakening_Native_Full_Game_Candidate_009.ipa` |
+| IPA byte length | **7,620,314** |
+| IPA SHA256 | `50319fce313046edab13de066df252aa55bbe4c8ff4d87d80888882fa692d1b7` |
+| Native ARM64 executable | 1,648,792 bytes |
+| Executable SHA256 | `b838fcb21cba84d02d492c4b6883e22f2d30696b1a1b79f3b5ce8f5502193bcc` |
+| Signed / device-tested | No / No (sign with Sideloadly) |
+
+Reviewed code commit: `bf3e6cc8f953e49e068a40886d6bbb902b73a098`, exact source
+tree: `14dbee478e9a84227dfc030143890551b8cfa0de`. GitHub's PR build compiled merge
+commit `b3372a08630f586e81b79935d01d9e5c2be2a52b`, with the **same Git tree**; its
+identity is embedded in the packaged `Info.plist`. This is distinct
+from the later evidence-only documentation commit.
+
+The IPA contains the native Apple ARM64 app, source `iphone.big`,
+exact original terrain static bytes, and license text. Its ZIP member
+inventory, checksums and bytes were verified against pinned originals.
+It excludes the original ARM32 executable and all compatibility
+runtimes. The previous native bundle ID is unchanged, preserving
+the install-over path when signed under the same identity.
+
+The tester's reported successful Mission 1 native run occurred on an
+earlier test build. **No one has yet verified a complete physically
+rendered Build 009 playthrough, post-landing camera/input fidelity,
+original UIKit menu pixels, audible complete soundtrack or sustained
+60 delivered fps on the XR**. The green CI run and already successful
+full headless gameplay pilots are not substitutes for those checks.
+
+The verified candidate IPA is available in the **G1 Awakening Port**
+ChatGPT Library folder. See `validation/NATIVE_FULL_GAME_009.json`.
