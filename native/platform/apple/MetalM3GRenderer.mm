@@ -268,14 +268,19 @@ std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload_asset(const M3GRenderAss
     for(const auto& entry:model.images) {
         const auto& image=entry.second;
         const std::size_t derivedBytes=std::size_t(image.width)*image.height*16;
+        bool upgraded=false;
         if(quality!=MaterialEnhancement::original && image.width<=1024 && image.height<=1024 &&
-           derivedBytes<=8*1024*1024-enhancedBytes) {
-            // GPU pixels only. Retain original source dimensions, Sprite3D
-            // crop rectangles, UVs, geometry, transforms and animation keys.
-            const auto enhanced=enhance_material(image,quality);
-            gpu->images.emplace(entry.first,impl_->texture(enhanced));
-            enhancedBytes+=derivedBytes;++gpu->enhanced_textures;
-        } else gpu->images.emplace(entry.first,impl_->texture(image));
+           derivedBytes<=12*1024*1024-enhancedBytes) {
+            // GPU pixels only. The 12MiB ceiling admits the original forest
+            // sky AND ground. Failed derived allocations retry source pixels.
+            // Source dimensions, Sprite3D crops and animation keys stay exact.
+            try {
+                const auto enhanced=enhance_material(image,quality);
+                gpu->images.emplace(entry.first,impl_->texture(enhanced));
+                enhancedBytes+=derivedBytes;++gpu->enhanced_textures;upgraded=true;
+            } catch(const std::exception&) { /* original allocation below */ }
+        }
+        if(!upgraded)gpu->images.emplace(entry.first,impl_->texture(image));
     }
     gpu->surfaces.reserve(model.surfaces.size());
     for(const auto& s:model.surfaces) {

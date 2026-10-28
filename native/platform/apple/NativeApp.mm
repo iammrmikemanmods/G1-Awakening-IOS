@@ -417,7 +417,9 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     std::map<std::uint8_t,std::shared_ptr<g1::MetalM3GModel>> _tacticalGpu;
     std::map<std::uint8_t,std::string> _tacticalErrors;
     std::map<std::size_t,CGRect> _tacticalHitBounds;
-    std::size_t _tacticalDrawn{},_tacticalFallback{},_battleEnhancedTextures{};
+    std::size_t _tacticalDrawn{};
+    std::size_t _tacticalFallback{};
+    std::size_t _battleEnhancedTextures{};
     g1::SimulationClock _simulationClock;
     std::optional<NativeCameraPan> _cameraPan;
     std::optional<g1::WorldCoordinate> _pendingDestination;
