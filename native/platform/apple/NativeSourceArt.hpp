@@ -6,8 +6,9 @@
 #include "g1/UIBitmap.hpp"
 #include "NativeAdaptiveUI.hpp"
 
-// Original FGIB PNG/BMP resources, decoded at runtime from the untouched user
-// archive. Nothing is resampled, redrawn, downloaded, or bundled separately.
+// Original FGIB PNG/BMP resources are decoded from the untouched owner archive.
+// The shared presentation layer may apply the optional source-hash-keyed clean
+// derivative pack; missing derivatives retain the original source fallback.
 namespace g1::source_art {
 inline UIImage* indexed_bmp(const Archive& archive,std::uint32_t resource,
                             std::uint32_t expected_width,std::uint32_t expected_height) {

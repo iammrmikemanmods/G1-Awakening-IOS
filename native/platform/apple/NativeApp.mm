@@ -1596,6 +1596,12 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     for (const auto& image : next->textures) {
         if (!_textures[@(image.first)]) _textures[@(image.first)] = _renderer->texture(image.second);
         if(_graphicsModern && !_modernTextures[@(image.first)]) {
+            // Persisted Modern mode must load the same terrain derivative at
+            // first launch/map change as the live graphics-toggle path.
+            if(image.first==next->terrain.atlas_resource_id) {
+                _modernTextures[@(image.first)]=_renderer->texture(g1::clean_terrain_or_source(image.second));
+                continue;
+            }
             const bool sprite=std::any_of(next->sprites.begin(),next->sprites.end(),[&](const auto& item) {
                 return item.resource.image_id==image.first;
             });
@@ -2321,7 +2327,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                     frame=sprite.descriptor.animations()[animation].front().frame_index;
                 }
                 snapshots.push_back({_spriteMeshes.at(i).at(frame),[self spriteTexture:sprite.resource.image_id],
-                    unit_model(_session->world(),unit),{{1,1,1,1}},true,{},false,_graphicsModern});
+                    unit_model(_session->world(),unit),{{1,1,1,1}},true,{},false,false});
             }
         }
         _supportSavedCursor=_returnCursor;
@@ -3564,7 +3570,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                 for(const auto& decoration:_terrainSpriteDraws)
                     draws.push_back({_terrainSpriteMeshes.at(decoration.resource.descriptor_id).at(decoration.frame_index),
                         [self spriteTexture:decoration.resource.image_id],
-                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true,{},false,_graphicsModern});
+                        g1::multiply_matrix(camera,decoration.model),{{1,1,1,1}},true,{},false,false});
                 for(const auto& overlay:_worldOverlays)
                     draws.push_back({overlay.mesh,_white,camera,overlay.tint,false});
                 if(!support) {
@@ -3697,7 +3703,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                         ++_tacticalFallback;
                         const auto texture = [self spriteTexture:_scene->sprites[i].resource.image_id];
                         draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
-                            g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true,{},false,_graphicsModern});
+                            g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true,{},false,false});
                     }
                 }
                 }
@@ -3941,7 +3947,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         @"original_title_font_slot":@([_title originalFontSlot]),
         @"campaign_original_heading_font_slot":@([_campaignCanvas originalHeadingFontSlot]),
         @"original_bitmap_panel_policy":@"Campaign/results headings use original slot0 or slot2 and combat names use slot2 only when a complete single-line glyph run fits; otherwise readable system text. Original palette retained; UIKit body and HUD layout are native.",
-        @"title_font_policy":@"Original keyed bitmap glyphs and measured spacing for supported single-line titles/support banners; native17-point nominal height and nearest sampling; existing UIKit fallback for uncovered text. Dialogue layout remains TextKit",
+        @"title_font_policy":@"Original keyed bitmap glyphs and measured spacing for supported single-line titles/support banners; native17-point nominal height and antialiased sampling; existing UIKit fallback for uncovered text. Dialogue layout remains TextKit",
         @"native_profile_format":@2,
         @"support_presentation":@"Original helper order, primary-name banner and keyed percentage artwork; separate effect ends at1680ms, cue hands off at2010ms; at most five helpers displayed without reducing six-helper combat",
         @"support_native_policy":@"320-unit logical height scaled to native drawable; wider horizontal field; nearest keyed bitmap sampling, inspection-camera focus and frozen pre-combat unit poses; first-present gate per helper. Original one-time tutorial predicate/text, with native atomic profile persistence and drawn-message acknowledgement. Original camera/GPU parity remains unverified",
