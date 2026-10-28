@@ -58,6 +58,9 @@ def reconstruction(source,scale,role):
     classes=np.where(sat<48,100+val.astype(np.int32)//24,(hue+4)//9%20)
     classes=np.where(val<24,200,classes)
     defs=[];paths=[]
+    # Curves own silhouettes; continuous source shading owns natural interiors.
+    # This avoids turning foliage into flat blobs or erasing non-linear UI glow.
+    curve_weight=np.full((h,w),0.42 if natural else 0.88,np.float32)
     # Start with continuous source colour so single-pixel logos/details are
     # retained when their region is too small to fit a stable curve.
     base_img=Image.fromarray(np.dstack((rgb,np.full((h,w),255,np.uint8)))).resize(target,Image.Resampling.BICUBIC)
@@ -78,6 +81,11 @@ def reconstruction(source,scale,role):
             # A colour plane reconstructs source shading without adding grain.
             xy=np.column_stack((xx+.5,yy+.5,np.ones(len(xx))))
             coef=np.linalg.lstsq(xy,values,rcond=None)[0]
+            residual=float(np.sqrt(np.mean((xy@coef-values)**2)))
+            if role=='ui' and area>=400 and residual>7:
+                curve_weight[yy,xx]=0.12
+            elif role=='character' and area>=150 and residual>12:
+                curve_weight[yy,xx]=0.55
             grad=coef[:2].mean(axis=1);length=np.linalg.norm(grad)
             gradient_id='g'+str(len(paths))
             if length>.05 and area>=8:
@@ -93,6 +101,9 @@ def reconstruction(source,scale,role):
     svg=f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}"><defs>'+''.join(defs)+f'</defs><image width="{w}" height="{h}" href="data:image/png;base64,{base_png}"/>'+''.join(paths)+'</svg>'
     raster=Image.open(io.BytesIO(cairosvg.svg2png(bytestring=svg.encode(),output_width=target[0],output_height=target[1]))).convert('RGBA')
     out=np.array(raster)
+    weight=cv2.resize(curve_weight,target,interpolation=cv2.INTER_LINEAR)[:,:,None]
+    base=np.asarray(base_img)[:,:,:3].astype(float)
+    out[:,:,:3]=np.rint(out[:,:,:3]*weight+base*(1-weight)).astype(np.uint8)
     aa=np.clip(cv2.resize(alpha,target,interpolation=cv2.INTER_CUBIC),0,1)
     if np.all((a[:,:,3]==0)|(a[:,:,3]==255)) and np.any(a[:,:,3]==0):
         contours,_=cv2.findContours(cv2.resize(np.uint8(alpha>0)*255,(w*2,h*2),interpolation=cv2.INTER_NEAREST),cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
