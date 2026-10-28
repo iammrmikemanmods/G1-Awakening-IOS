@@ -1,0 +1,133 @@
+name: Build016 Modern tactical presentation candidate
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [feature/adaptive-presentation-015]
+    paths: [buildwork/016/**, .github/workflows/modern-016.yml]
+permissions:
+  contents: read
+concurrency:
+  group: g1-modern-016-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-and-host:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feature/modern-tactical-016'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.publish.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Authenticate and apply presentation-only source
+        run: python3 buildwork/016/apply.py apply
+      - name: Linux assertion-enabled tests
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          cmake -S native -B build/host016 -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+          cmake --build build/host016 --parallel 2
+          ctest --test-dir build/host016 --output-on-failure --no-tests=error | tee artifacts/linux-tests.txt
+          grep -Eq '^100% tests passed(, 0 tests failed)? out of 70$' artifacts/linux-tests.txt
+      - name: Publish exact tested source to isolated branch
+        id: publish
+        run: python3 buildwork/016/apply.py publish
+      - name: Freeze committed source
+        run: |
+          git archive --format=tar.gz HEAD > artifacts/G1-Build016-reviewed-source.tar.gz
+          git rev-parse HEAD > artifacts/source-commit.txt
+          sha256sum artifacts/G1-Build016-reviewed-source.tar.gz > artifacts/source-archive.sha256
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: G1-Build016-reviewed-source
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+  apple-build-and-sign:
+    needs: source-and-host
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      G1_SOURCE_SHA: ${{ needs.source-and-host.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.source-and-host.outputs.source_sha }}
+          persist-credentials: false
+      - name: Compile iPhoneOS ARM64 universal candidate
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          xcodebuild -version | tee artifacts/xcode-version.txt
+          test "$(git rev-parse HEAD)" = "$G1_SOURCE_SHA"
+          cmake -S native -B build/iphone016 -G Ninja -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DG1_BUILD_APP=ON -DG1_SOURCE_COMMIT="$G1_SOURCE_SHA"
+          cmake --build build/iphone016 --parallel 2
+          python3 scripts/verify-native-app.py build/iphone016/G1AwakeningNative.app --out artifacts/unsigned-app-validation.json
+          for library in resources png vorbis metal; do
+            python3 scripts/verify-native-archive.py "build/iphone016/libg1_${library}.a" > "artifacts/native-${library}-objects.json"
+          done
+      - name: Compile exact M3G shader
+        run: |
+          set -euo pipefail
+          if ! xcrun --sdk iphoneos metal --version; then xcodebuild -downloadComponent metalToolchain; fi
+          python3 analysis_tools/m3g/extract_metal_shader.py --header native/platform/apple/MetalM3GShader.hpp --output artifacts/runtime-m3g-shader.metal
+          xcrun --sdk iphoneos metal -std=ios-metal2.4 -c artifacts/runtime-m3g-shader.metal -o artifacts/runtime-m3g-shader.air
+      - name: Apple assertion-enabled native tests
+        run: |
+          set -euo pipefail
+          cmake -S native -B build/mac016 -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+          cmake --build build/mac016 --parallel 2
+          ctest --test-dir build/mac016 -E '^(metal_offscreen_pixels|m3g_metal_offscreen_pixels|adaptive_supersampling_gpu_resolve)$' --output-on-failure --no-tests=error | tee artifacts/apple-tests.txt
+          grep -Eq '^100% tests passed(, 0 tests failed)? out of 70$' artifacts/apple-tests.txt
+      - name: GPU material upload, terrain-model depth and supersampling
+        run: |
+          set -euo pipefail
+          build/mac016/g1_metal_probe artifacts/metal.png > artifacts/metal-report.json
+          build/mac016/g1_m3g_metal_probe artifacts/m3g.png > artifacts/m3g-report.json
+          build/mac016/g1_adaptive_metal_probe > artifacts/supersampling-report.json
+          cat artifacts/metal-report.json artifacts/m3g-report.json artifacts/supersampling-report.json
+      - name: Sign verified standalone code for AppSync
+        run: |
+          set -euo pipefail
+          cp -R build/iphone016/G1AwakeningNative.app artifacts/G1AwakeningNative.app
+          mkdir -p input/standalone artifacts/G1AwakeningNative.app/Licenses
+          cp LICENSE artifacts/G1AwakeningNative.app/Licenses/Native-Port-MPL-2.0.txt
+          cp native/third_party/lodepng/LICENSE artifacts/G1AwakeningNative.app/Licenses/LodePNG-Zlib.txt
+          cp native/third_party/stb/LICENSE artifacts/G1AwakeningNative.app/Licenses/STB-MIT-Public-Domain.txt
+          cp docs/README_BUILD016_MEMORY_ZIP_POLICY.md artifacts/README_MEMORY_ZIP_POLICY.md
+          python3 - <<'PY'
+          import plistlib
+          from pathlib import Path
+          Path('input/entitlements.plist').write_bytes(plistlib.dumps({'application-identifier':'org.g1awakening.native.test','get-task-allow':True}))
+          PY
+          cp artifacts/G1AwakeningNative.app/G1AwakeningNative input/standalone/G1AwakeningNative
+          codesign --force --sign - --identifier org.g1awakening.native.test --timestamp=none --generate-entitlement-der --entitlements input/entitlements.plist input/standalone/G1AwakeningNative
+          codesign --verify --strict --verbose=2 input/standalone/G1AwakeningNative
+          codesign --display --entitlements :- input/standalone/G1AwakeningNative > artifacts/extracted-entitlements.plist
+          cp input/standalone/G1AwakeningNative artifacts/G1AwakeningNative.app/G1AwakeningNative
+          test ! -e artifacts/G1AwakeningNative.app/_CodeSignature/CodeResources
+          python3 scripts/verify-native-app.py artifacts/G1AwakeningNative.app --out artifacts/signed-app-validation.json
+          python3 - <<'PY'
+          import hashlib,json,os,plistlib
+          from pathlib import Path
+          root=Path('artifacts');app=root/'G1AwakeningNative.app'
+          info=plistlib.loads((app/'Info.plist').read_bytes())
+          assert info['CFBundleVersion']=='16' and info['MinimumOSVersion']=='15.0' and info['UIDeviceFamily']==[1,2]
+          assert info['G1SourceCommit']==os.environ['G1_SOURCE_SHA']
+          ent=plistlib.loads((root/'extracted-entitlements.plist').read_bytes())
+          assert ent=={'application-identifier':'org.g1awakening.native.test','get-task-allow':True}
+          record={'source_commit':os.environ['G1_SOURCE_SHA'],'signed_executable_sha256':hashlib.sha256((app/'G1AwakeningNative').read_bytes()).hexdigest(),'codesign_verified':True,'bundle_resources_sealed':False,'apple_developer_provisioned':False,'requires_appsync_unified':True,'original_assets_in_artifact':False,'physical_iphone_tested':False,'physical_ipad_tested':False}
+          (root/'Build016-signature.json').write_text(json.dumps(record,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: G1-Build016-Apple-code-and-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
