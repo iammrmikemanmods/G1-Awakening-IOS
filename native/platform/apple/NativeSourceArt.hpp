@@ -3,17 +3,18 @@
 #import <UIKit/UIKit.h>
 #include "g1/Archive.hpp"
 #include "g1/Image.hpp"
-#include "g1/IndexedBitmap.hpp"
+#include "g1/UIBitmap.hpp"
 #include "NativeAdaptiveUI.hpp"
 
-// Original FGIB PNG/BMP resources, decoded at runtime from the untouched user
-// archive. Nothing is resampled, redrawn, downloaded, or bundled separately.
+// Original FGIB PNG/BMP resources are decoded from the untouched owner archive.
+// The shared presentation layer may apply the optional source-hash-keyed clean
+// derivative pack; missing derivatives retain the original source fallback.
 namespace g1::source_art {
 inline UIImage* indexed_bmp(const Archive& archive,std::uint32_t resource,
                             std::uint32_t expected_width,std::uint32_t expected_height) {
     const auto ids=archive.find(resource,0xb717945fU);
     if(ids.size()!=1)throw FormatError("Source portrait BMP missing or ambiguous");
-    const auto bitmap=decode_indexed_bmp(archive.read(ids.front()),0x00ff00ffU);
+    const auto bitmap=decode_ui_bmp(archive.read(ids.front()),0x00ff00ffU);
     if(bitmap.width!=expected_width || bitmap.height!=expected_height)
         throw FormatError("Original portrait BMP size mismatch");
     const auto png=encode_png(bitmap);

@@ -31,7 +31,7 @@ g1::M3GRenderAsset mesh_asset(std::vector<g1::M3GSurface> surfaces) {
 }
 
 g1::RgbaImage render(id<MTLDevice> device,g1::MetalM3GRenderer& renderer,
-                    const g1::M3GRenderAsset& asset,float effective_alpha=1,bool modern=false,bool shared=false) {
+                    const g1::M3GRenderAsset& asset,float effective_alpha=1,bool modern=false,bool shared=false,float assembly_mix=-1) {
     auto gpu=modern?renderer.upload_modern(asset,g1::MaterialEnhancement::environment):renderer.upload(asset);
     if(modern) {
         if(!gpu->enhanced_texture_count())throw std::runtime_error("Modern GPU material upload did not run");
@@ -53,7 +53,8 @@ g1::RgbaImage render(id<MTLDevice> device,g1::MetalM3GRenderer& renderer,
     g1::M3GRenderInstance instance;instance.asset=&gpu->asset();instance.nodes=&nodes;
     instance.mesh_appearance_serials=&grouping;instance.sprite_appearance_identities=&grouping;
     g1::M3GRenderView view;view.viewport_pixels={{64,64}};
-    const auto frame=g1::prepare_m3g_frame({instance},view);
+    auto frame=g1::prepare_m3g_frame({instance},view);
+    if(assembly_mix>=0)for(auto& d:frame.draws){d.assembly_role=d.node_object==1?1:2;d.assembly_mix=assembly_mix;}
 
     MTLTextureDescriptor* colorDesc=[MTLTextureDescriptor
         texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:64 height:64 mipmapped:NO];
@@ -137,11 +138,30 @@ int main(int argc,char** argv) {
             pixel(independent,32,32,{{0,255,0,255}},"M3G ALWAYS test still writes independent depth");
 
             const auto enhanced=render(device,renderer,asset,1,true);
-            pixel(enhanced,8,8,{{255,0,0,255}},"Modern enhanced texture preserves UV corner");
-            pixel(enhanced,8,55,{{0,0,0,255}},"Modern enhancement preserves transparent corner");
+            pixel(enhanced,2,2,{{255,0,0,255}},"Modern enhanced texture preserves UV corner");
+            pixel(enhanced,2,60,{{0,0,0,255}},"Modern enhancement preserves transparent corner");
             const auto mixed=render(device,renderer,mesh_asset({quad(1,1,0,{{1,0,0,1}})}),1,false,true);
             pixel(mixed,8,32,{{0,255,0,255}},"Shared terrain occludes 3D model");
             pixel(mixed,55,32,{{255,0,0,255}},"3D model remains visible beside terrain");
+
+            // Complementary coverage must work even when texture REPLACE
+            // ignores the node alpha: never a vanished or doubled transition.
+            auto robot=quad(1,1,0,{{1,1,1,1}}),car=quad(2,1,0,{{1,1,1,1}});
+            robot.appearance.texture=g1::M3GTextureState{};robot.appearance.texture->function=228;
+            robot.appearance.texture->image_object=40;robot.appearance.texture->image_format=100;
+            car.appearance.texture=*robot.appearance.texture;car.appearance.texture->image_object=41;
+            auto assembly=mesh_asset({robot,car});
+            assembly.geometry.images.emplace(40,g1::RgbaImage{1,1,{255,0,0,255}});
+            assembly.geometry.images.emplace(41,g1::RgbaImage{1,1,{0,0,255,255}});
+            constexpr unsigned mask[16]={0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5};
+            for(float mix:{0.0F,.5F,1.0F}){
+                const auto result=render(device,renderer,assembly,1,false,false,mix);
+                for(unsigned y=20;y<24;++y)for(unsigned x=20;x<24;++x){
+                    bool vehicle=(mask[(y&3)*4+(x&3)]+.5F)/16<mix;
+                    pixel(result,x,y,vehicle?std::array<int,4>{{0,0,255,255}}:std::array<int,4>{{255,0,0,255}},
+                        "Rigid assembly complementary opaque coverage");
+                }
+            }
 
             asset.geometry.surfaces[0].appearance.blending=68;
             asset.geometry.surfaces[0].appearance.texture->function=228;

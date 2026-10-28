@@ -8,8 +8,8 @@
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>G1AwakeningNative</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.16.0</string>
-    <key>CFBundleVersion</key><string>16</string>
+    <key>CFBundleShortVersionString</key><string>0.17.0</string>
+    <key>CFBundleVersion</key><string>17</string>
     <!-- Names refer to original, user-supplied iTunesArtwork resized only
          at packaging time. Do not add copyrighted artwork to Git history.
          The application has NO asset catalog and therefore no false
@@ -44,7 +44,7 @@
     <key>ITSAppUsesNonExemptEncryption</key><false/>
     <key>G1SourceCommit</key><string>@G1_SOURCE_COMMIT@</string>
     <key>G1ArtifactKind</key><string>Native adaptive UI and supersampling development candidate</string>
-    <key>G1FeatureScope</key><string>Build016 development candidate: Modern-only original 3D tactical ready poses with preserved sprites during movement, transformation and unsupported forms; shared terrain depth; 35-degree Modern camera; modest GPU-only 2x battle environment, character and effect materials. Original game rules, animation clocks and saves unchanged. iOS 15.0 minimum. Physical-device fidelity, complete tactical 3D animation and runtime map extensions are not verified.</string>
+    <key>G1FeatureScope</key><string>Build017 development candidate: authored rigid-part tactical gait and reversible assembly transitions for supported original forms; original action clock owns completion. Source-derived curve/gradient texture pack in shared UI and Modern materials, linear Modern sampling, true-colour/padded UI BMP support. Not recovered original transformation clips or wholly native SVG rendering. iOS 15.0 minimum. Physical device validation and runtime exterior extensions outstanding.</string>
     <key>CFBundleIcons~ipad</key><dict><key>CFBundlePrimaryIcon</key><dict>
         <key>CFBundleIconFiles</key><array><string>Icon-76</string><string>Icon-76@2x</string><string>Icon-83.5@2x</string></array>
         <key>UIPrerenderedIcon</key><true/>
