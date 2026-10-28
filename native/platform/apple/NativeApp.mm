@@ -1545,11 +1545,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         if(image.width!=512 || image.height!=512)
             throw g1::FormatError("Modern sprite source image differs from verified 512x512");
         if(!_modernTextures[@(id)])
-            _modernTextures[@(id)]=_renderer->texture(g1::scale4x_rgba(image));
+            _modernTextures[@(id)]=_renderer->texture(g1::clean_sprite_or_source(image));
     };
     for(const auto& image:_scene->textures) {
         if(image.first==_scene->terrain.atlas_resource_id && !_modernTextures[@(image.first)])
-            _modernTextures[@(image.first)]=_renderer->texture(g1::scale4x_tiles(image.second,64,64));
+            _modernTextures[@(image.first)]=_renderer->texture(g1::clean_terrain_or_source(image.second));
         const bool sprite=std::any_of(_scene->sprites.begin(),_scene->sprites.end(),[&](const auto& item) {
             return item.resource.image_id==image.first;
         });
@@ -1600,7 +1600,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                 return item.resource.image_id==image.first;
             });
             if(sprite && image.second.width==512 && image.second.height==512)
-                _modernTextures[@(image.first)]=_renderer->texture(g1::scale4x_rgba(image.second));
+                _modernTextures[@(image.first)]=_renderer->texture(g1::clean_sprite_or_source(image.second));
         }
     }
     if (!_white) _white = _renderer->texture({1,1,{255,255,255,255}});
@@ -1841,7 +1841,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                 const auto image=g1::decode_png(read(resource.image_id,resource.resource_key));
                 if(image.width!=512 || image.height!=512)
                     throw g1::FormatError("Modern decoration source is not a 512x512 atlas");
-                _modernTextures[@(resource.image_id)]=_renderer->texture(g1::scale4x_rgba(image));
+                _modernTextures[@(resource.image_id)]=_renderer->texture(g1::clean_sprite_or_source(image));
             }
             if(!_terrainSpriteMeshes.count(resource.descriptor_id)) {
                 const g1::AtlasDescriptor descriptor(read(resource.descriptor_id,resource.resource_key));
@@ -3627,8 +3627,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                     const bool transforming=_session->unit_transform_waiting(index) ||
                         _session->transform_animation_pending(index)!=0;
                     bool replaced=false;
-                    if(g1::tactical_model_eligible(_graphicsModern,unit.active,moving,transforming,
-                       support || _renderMemoryPressure) && !_tacticalErrors.count(type)) {
+                    if(_graphicsModern && unit.active && !support && !_renderMemoryPressure && !_tacticalErrors.count(type)) {
                         try {
                             if(!_tacticalModels.count(type)) {
                                 auto model=std::make_unique<g1::TacticalModel>(*_archive,type);
@@ -3638,12 +3637,43 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                             const auto& model=*_tacticalModels.at(type);
                             const auto& world=_session->world();
                             const auto cell=world.grid.tile_at(unit.tile_x,unit.tile_y);
-                            if(cell<32 && model.supports(unit.form)) {
+                            if(cell<32 && model.supports(unit.form) &&
+                               (!moving || transforming || model.walking_supported(unit.form)) &&
+                               (!transforming || (model.supports(0)&&model.supports(1)))) {
                                 const float height=_terrainTables.at(world.style).at(cell).height_steps*0.32F;
+                                // Same simulation interpolation as the original sprites, but
+                                // a real tile-centred foot instead of the sprite billboard offset.
+                                float x=(unit.tile_x+0.5F)*0.32F+unit.offset_x*0.01F;
+                                float z=(unit.tile_y+0.5F)*0.32F+unit.offset_y*0.01F;
+                                if(index<_previousUnits.size() && _previousUnits[index].active &&
+                                   _previousUnits[index].form==unit.form) {
+                                    const auto& previous=_previousUnits[index];
+                                    const float px=(previous.tile_x+0.5F)*0.32F+previous.offset_x*0.01F;
+                                    const float pz=(previous.tile_y+0.5F)*0.32F+previous.offset_y*0.01F;
+                                    if(std::abs(x-px)<=0.64F && std::abs(z-pz)<=0.64F) {
+                                        const float a=_simulationClock.interpolation();
+                                        x=px+(x-px)*a;z=pz+(z-pz)*a;
+                                    }
+                                }
+                                g1::TacticalMotion motion;motion.walking=moving&&!transforming;
+                                motion.transforming=transforming;
+                                motion.stride_phase=g1::tactical_stride(x,z,unit.facing);
+                                motion.vehicle_fraction=unit.form;
+                                if(transforming) {
+                                    const auto raw=_animationTable.at(type)[8];
+                                    const int special=raw<128?int(raw):int(raw)-256;
+                                    if(_animationIds[i]==special && special>=0)
+                                        motion.vehicle_fraction=g1::transformation_fraction(
+                                            _scene->sprites[i].descriptor.animations().at(special),_animations[i]->state());
+                                    else if(_session->transform_animation_pending(index))
+                                        motion.vehicle_fraction=unit.form==0?1.0F:0.0F;
+                                    // Otherwise the normal target frame is being presented;
+                                    // original generation/receipt logic still owns completion.
+                                }
                                 auto gpu=_tacticalGpu.at(type);
                                 auto prepared=model.prepare(gpu->asset(),unit.form,unit.facing,
-                                    {{(unit.tile_x+0.5F)*0.32F,height+0.002F,(unit.tile_y+0.5F)*0.32F}},camera,
-                                    {{static_cast<std::uint32_t>(renderSize.width),static_cast<std::uint32_t>(renderSize.height)}});
+                                    {{x,height+0.002F,z}},camera,
+                                    {{static_cast<std::uint32_t>(renderSize.width),static_cast<std::uint32_t>(renderSize.height)}},motion);
                                 CGRect hit=CGRectNull;
                                 for(const auto& draw:prepared.draws)for(const auto& v:gpu->asset().geometry.surfaces.at(draw.geometry_index).vertices) {
                                     const auto p=transform(draw.metal_matrix,v.position);

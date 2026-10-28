@@ -56,6 +56,10 @@ struct M3GPreparedDraw {
     M3GMatrix metal_matrix;
     float effective_alpha{1};
     bool transparent{};
+    // Optional Modern procedural assembly coverage. Zero role preserves the
+    // exact original battle/UI rendering path. 1=robot, 2=vehicle.
+    std::uint8_t assembly_role{};
+    float assembly_mix{},assembly_highlight{};
     std::int32_t queue_key{},grouping_key{};
     M3GSprite3DProjection sprite_projection;
     // Sprite3D vertices are already in Metal clip space, with the recovered

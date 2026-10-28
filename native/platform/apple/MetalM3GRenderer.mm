@@ -1,5 +1,6 @@
 #include "MetalM3GRenderer.hpp"
 #include "MetalM3GShader.hpp"
+#include "CleanTextureStore.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -275,7 +276,8 @@ std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload_asset(const M3GRenderAss
             // sky AND ground. Failed derived allocations retry source pixels.
             // Source dimensions, Sprite3D crops and animation keys stay exact.
             try {
-                const auto enhanced=enhance_material(image,quality);
+                const auto cleaned=clean_texture(image,"material",2);
+                const auto enhanced=cleaned?*cleaned:enhance_material(image,quality);
                 gpu->images.emplace(entry.first,impl_->texture(enhanced));
                 enhancedBytes+=derivedBytes;++gpu->enhanced_textures;upgraded=true;
             } catch(const std::exception&) { /* original allocation below */ }
@@ -291,14 +293,20 @@ std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload_asset(const M3GRenderAss
             length:s.vertices.size()*sizeof(M3GVertex) options:MTLResourceStorageModeShared];
         if(!out.vertices)throw metal_error("M3G vertex allocation failed");
         out.texture=s.appearance.texture ? gpu->images.at(s.appearance.texture->image_object) : impl_->white_texture;
-        out.pipeline=impl_->pipeline(s.appearance);out.sampler=impl_->sampler(s.appearance.texture);out.depth=impl_->depth(s.appearance);
+        out.pipeline=impl_->pipeline(s.appearance);
+        auto sampled=s.appearance.texture;
+        if(quality!=MaterialEnhancement::original && sampled)sampled->image_filter=209;
+        out.sampler=impl_->sampler(sampled);out.depth=impl_->depth(s.appearance);
         gpu->vertex_count+=s.vertices.size();gpu->surfaces.push_back(std::move(out));
     }
     gpu->sprites.reserve(asset.sprites.size());
     for(const auto& source:asset.sprites) {
         MetalM3GModel::Impl::Sprite out;out.node_object=source.node_object;out.image_format=source.image_format;
         out.appearance=source.appearance;out.texture=gpu->images.at(source.image_object);
-        out.pipeline=impl_->pipeline(source.appearance);out.sampler=impl_->sampler(std::nullopt);
+        out.pipeline=impl_->pipeline(source.appearance);
+        std::optional<M3GTextureState> sampled;
+        if(quality!=MaterialEnhancement::original){sampled=M3GTextureState{};sampled->image_filter=209;sampled->wrap_s=240;sampled->wrap_t=240;}
+        out.sampler=impl_->sampler(sampled);
         out.depth=impl_->depth(source.appearance);gpu->sprites.push_back(std::move(out));
     }
     auto result=std::make_shared<MetalM3GModel>();result->impl_=std::move(gpu);return result;
@@ -370,6 +378,10 @@ void MetalM3GRenderer::encode_frame(id<MTLRenderCommandEncoder> encoder,
         require(finite(draw.metal_matrix) && std::isfinite(draw.effective_alpha) &&
                 draw.effective_alpha>=0 && draw.effective_alpha<=1,"invalid M3G prepared frame transform or alpha");
         Uniform uniform{};uniform.matrix=draw.metal_matrix;uniform.state[0]=draw.effective_alpha;
+        require(draw.assembly_role<=2 && std::isfinite(draw.assembly_mix) && draw.assembly_mix>=0 && draw.assembly_mix<=1 &&
+            std::isfinite(draw.assembly_highlight) && draw.assembly_highlight>=0 && draw.assembly_highlight<=0.35F,
+            "Invalid procedural assembly coverage");
+        uniform.state[1]=draw.assembly_role;uniform.state[2]=draw.assembly_mix;uniform.state[3]=draw.assembly_highlight;
         if(draw.kind==M3GDrawableKind::mesh) {
             require(draw.geometry_index<gpu.surfaces.size(),"M3G frame mesh index is invalid");
             const auto& source=gpu.surfaces[draw.geometry_index];

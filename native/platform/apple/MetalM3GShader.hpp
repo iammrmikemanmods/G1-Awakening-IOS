@@ -16,7 +16,7 @@ struct G1M3GVertex {
 struct G1M3GUniform {
     float4x4 matrix;
     float4 blend; // RGB texture blend color, alpha-test threshold.
-    float4 state; // Effective node alpha; remaining values reserved.
+    float4 state; // Node alpha, assembly role, coverage exchange, subtle highlight.
     uint4 flags;  // Texture function, source format, enabled, flat shading.
 };
 struct G1M3GOut {
@@ -42,6 +42,13 @@ vertex G1M3GOut g1_m3g_vertex(uint index [[vertex_id]],
 fragment float4 g1_m3g_fragment(G1M3GOut in [[stage_in]],
     constant G1M3GUniform& uniform [[buffer(0)]],
     texture2d<float> image [[texture(0)]],sampler image_sampler [[sampler(0)]]) {
+    if(uniform.state.y!=0) {
+        constexpr uint bayer[16]={0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5};
+        const uint2 p=uint2(in.position.xy);
+        const float cut=(float(bayer[(p.y&3)*4+(p.x&3)])+0.5f)/16.0f;
+        const bool vehicle=uniform.state.y>1.5f;
+        if(vehicle ? cut>=uniform.state.z : cut<uniform.state.z)discard_fragment();
+    }
     float4 color=in.color;
     if(uniform.flags.z!=0) {
         const float4 tex=image.sample(image_sampler,in.texcoord.xy/in.texcoord.w);
@@ -70,6 +77,7 @@ fragment float4 g1_m3g_fragment(G1M3GOut in [[stage_in]],
             break;
         }
     }
+    if(uniform.state.y!=0)color.rgb=mix(color.rgb,float3(0.65f,0.88f,1.0f),uniform.state.w);
     color=clamp(color,0.0f,1.0f);
     // Original compositing uses GEQUAL, so equality is retained.
     if(color.a<uniform.blend.a)discard_fragment();

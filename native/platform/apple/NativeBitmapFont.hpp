@@ -41,7 +41,7 @@
             for(std::uint32_t row=0;row<crop.height;++row)
                 std::copy_n(sheet.pixels.begin()+(std::size_t(glyph.source_y+row)*sheet.width+glyph.source_x)*4,
                     crop.width*4,crop.pixels.begin()+std::size_t(row)*crop.width*4);
-            _glyphImages[@(static_cast<std::uint32_t>(glyph.character))]=g1::adaptive_ui::image(crop);
+            _glyphImages[@(static_cast<std::uint32_t>(glyph.character))]=g1::adaptive_ui::image(crop,false);
         }
     }
     return self;
@@ -81,8 +81,8 @@
     const CGFloat y=rect.origin.y+std::max(CGFloat(0),(rect.size.height-size.height)/2);
     CGContextSaveGState(context);
     CGContextClipToRect(context,rect);
-    CGContextSetInterpolationQuality(context,kCGInterpolationNone);
-    CGContextSetShouldAntialias(context,false);
+    CGContextSetInterpolationQuality(context,kCGInterpolationHigh);
+    CGContextSetShouldAntialias(context,true);
     for(const auto& draw:_assets->descriptor.layout(characters)) {
         if(draw.width<=0 || draw.height<=0)continue;
         UIImage* glyph=_glyphImages[@(static_cast<std::uint32_t>(characters.at(draw.character_index)))];

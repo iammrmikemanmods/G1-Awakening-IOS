@@ -3,6 +3,7 @@
 #include "g1/AdaptivePresentation.hpp"
 #include "g1/TextureEnhancement.hpp"
 #include "g1/Image.hpp"
+#include "CleanTextureStore.hpp"
 
 // Presentation-only derived pixels. Original bytes stay in iphone.big;
 // both Classic and Modern use this same enhanced UI path.
@@ -25,8 +26,9 @@ inline CGRect aspect_fit(UIImage* image,CGRect rect) {
         rect.origin.y+(rect.size.height-image.size.height*scale)/2,
         image.size.width*scale,image.size.height*scale);
 }
-inline UIImage* image(const RgbaImage& original) {
-    const auto pixels=scale4x_rgba(original);
+inline UIImage* image(const RgbaImage& original,bool use_clean_pack=true) {
+    const auto clean=use_clean_pack?clean_texture(original,"ui",4):std::nullopt;
+    const auto pixels=clean?*clean:scale4x_rgba(original);
     const auto png=encode_png(pixels);
     UIImage* decoded=[UIImage imageWithData:[NSData dataWithBytes:png.data() length:png.size()]];
     if(!decoded.CGImage)throw FormatError("Enhanced source UI decode failed");
