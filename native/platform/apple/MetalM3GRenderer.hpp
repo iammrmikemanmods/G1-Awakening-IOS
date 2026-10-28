@@ -3,6 +3,7 @@
 #import <Metal/Metal.h>
 
 #include "g1/M3GRenderFrame.hpp"
+#include "g1/MaterialEnhancement.hpp"
 #include <memory>
 
 namespace g1 {
@@ -16,6 +17,7 @@ public:
     std::size_t vertex_count() const noexcept;
     std::size_t texture_count() const noexcept;
     std::size_t sprite_count() const noexcept;
+    std::size_t enhanced_texture_count() const noexcept;
     // Prepare frame instances using this retained immutable asset, so the
     // encoder can verify that a CPU plan refers to the uploaded geometry.
     const M3GRenderAsset& asset() const;
@@ -43,6 +45,7 @@ public:
 
     std::shared_ptr<MetalM3GModel> upload(const M3GStaticModel&);
     std::shared_ptr<MetalM3GModel> upload(const M3GRenderAsset&);
+    std::shared_ptr<MetalM3GModel> upload_modern(const M3GRenderAsset&,MaterialEnhancement);
     // A null pose uses authored matrices. A supplied pose must contain every
     // drawn mesh. These are model/world matrices; view_projection is already
     // the caller's Metal clip transform (depth0..1). No axis conversion occurs.
@@ -58,7 +61,8 @@ public:
         const std::vector<std::shared_ptr<MetalM3GModel>>&,
         const M3GPreparedFrame&);
 private:
-    std::shared_ptr<MetalM3GModel> upload_asset(const M3GRenderAsset&,bool legacy_static);
+    std::shared_ptr<MetalM3GModel> upload_asset(const M3GRenderAsset&,bool legacy_static,
+        MaterialEnhancement quality=MaterialEnhancement::original);
     struct Impl;
     std::unique_ptr<Impl> impl_;
 };

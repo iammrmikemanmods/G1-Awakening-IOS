@@ -1,4 +1,5 @@
 #include "MetalM3GRenderer.hpp"
+#include "MetalRenderer.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -30,8 +31,15 @@ g1::M3GRenderAsset mesh_asset(std::vector<g1::M3GSurface> surfaces) {
 }
 
 g1::RgbaImage render(id<MTLDevice> device,g1::MetalM3GRenderer& renderer,
-                    const g1::M3GRenderAsset& asset,float effective_alpha=1) {
-    auto gpu=renderer.upload(asset);
+                    const g1::M3GRenderAsset& asset,float effective_alpha=1,bool modern=false,bool shared=false) {
+    auto gpu=modern?renderer.upload_modern(asset,g1::MaterialEnhancement::environment):renderer.upload(asset);
+    if(modern) {
+        if(!gpu->enhanced_texture_count())throw std::runtime_error("Modern GPU material upload did not run");
+        for(const auto& [id,image]:asset.geometry.images)
+            if(gpu->asset().geometry.images.at(id).width!=image.width ||
+               gpu->asset().geometry.images.at(id).pixels!=image.pixels)
+                throw std::runtime_error("Modern enhancement changed source/crop identity");
+    }
     std::map<std::size_t,g1::M3GEvaluatedNode> nodes;
     std::map<std::size_t,std::int32_t> grouping;
     for(const auto& surface:asset.geometry.surfaces) {
@@ -66,6 +74,19 @@ g1::RgbaImage render(id<MTLDevice> device,g1::MetalM3GRenderer& renderer,
     id<MTLRenderCommandEncoder> encoder=[command renderCommandEncoderWithDescriptor:pass];
     if(!queue || !command || !encoder)throw std::runtime_error("M3G offscreen encoder allocation failed");
     const MTLViewport viewport{0,0,64,64,0,1};[encoder setViewport:viewport];
+    std::unique_ptr<g1::MetalRenderer> terrain;
+    std::shared_ptr<g1::MetalMesh> terrainMesh;
+    id<MTLTexture> terrainTexture=nil;
+    if(shared) {
+        terrain=std::make_unique<g1::MetalRenderer>(device);
+        std::vector<g1::SceneVertex> vertices;
+        const std::array<g1::SceneVertex,4> corners{{
+            {{{-1,1,0.25F,1}},{{0,0}}},{{{-1,-1,0.25F,1}},{{0,1}}},
+            {{{0,1,0.25F,1}},{{1,0}}},{{{0,-1,0.25F,1}},{{1,1}}}}};
+        for(auto index:{0,1,2,2,1,3})vertices.push_back(corners[index]);
+        terrainMesh=terrain->mesh(vertices);terrainTexture=terrain->texture({1,1,{0,255,0,255}});
+        terrain->encode_into(encoder,{{terrainMesh,terrainTexture,identity,{{1,1,1,1}},true}});
+    }
     renderer.encode_frame(encoder,{gpu},frame);[encoder endEncoding];
     [command commit];[command waitUntilCompleted];
     if(command.status!=MTLCommandBufferStatusCompleted)
@@ -114,6 +135,13 @@ int main(int argc,char** argv) {
             const auto independent=render(device,renderer,mesh_asset({quad(1,1,-0.75F,{{1,0,0,1}}),
                 always,quad(3,1,0,{{0,1,0,1}})}));
             pixel(independent,32,32,{{0,255,0,255}},"M3G ALWAYS test still writes independent depth");
+
+            const auto enhanced=render(device,renderer,asset,1,true);
+            pixel(enhanced,8,8,{{255,0,0,255}},"Modern enhanced texture preserves UV corner");
+            pixel(enhanced,8,55,{{0,0,0,255}},"Modern enhancement preserves transparent corner");
+            const auto mixed=render(device,renderer,mesh_asset({quad(1,1,0,{{1,0,0,1}})}),1,false,true);
+            pixel(mixed,8,32,{{0,255,0,255}},"Shared terrain occludes 3D model");
+            pixel(mixed,55,32,{{255,0,0,255}},"3D model remains visible beside terrain");
 
             asset.geometry.surfaces[0].appearance.blending=68;
             asset.geometry.surfaces[0].appearance.texture->function=228;

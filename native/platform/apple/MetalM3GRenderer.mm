@@ -107,7 +107,7 @@ struct MetalM3GModel::Impl {
     std::vector<Surface> surfaces;
     std::vector<Sprite> sprites;
     std::map<std::size_t,id<MTLTexture>> images;
-    std::size_t vertex_count{};
+    std::size_t vertex_count{}, enhanced_textures{};
 };
 
 struct MetalM3GRenderer::Impl {
@@ -219,6 +219,10 @@ MetalM3GRenderer::MetalM3GRenderer(id<MTLDevice> device,MTLPixelFormat color,MTL
     impl_->white_texture=impl_->texture(white);
 }
 MetalM3GRenderer::~MetalM3GRenderer()=default;
+std::size_t MetalM3GModel::enhanced_texture_count() const noexcept {return impl_?impl_->enhanced_textures:0;}
+std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload_modern(const M3GRenderAsset& asset,MaterialEnhancement quality) {
+    return upload_asset(asset,false,quality);
+}
 
 std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload(const M3GStaticModel& model) {
     validate(model);
@@ -229,7 +233,7 @@ std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload(const M3GStaticModel& mo
 std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload(const M3GRenderAsset& asset) {
     return upload_asset(asset,false);
 }
-std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload_asset(const M3GRenderAsset& asset,bool legacy_static) {
+std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload_asset(const M3GRenderAsset& asset,bool legacy_static,MaterialEnhancement quality) {
     const auto& model=asset.geometry;
     validate(model,!asset.sprites.empty());
     require(asset.sprites.size()<=65536,"M3G Sprite3D count exceeds renderer bound");
@@ -260,7 +264,19 @@ std::shared_ptr<MetalM3GModel> MetalM3GRenderer::upload_asset(const M3GRenderAss
     gpu->color_format=impl_->color_format;gpu->depth_format=impl_->depth_format;
     gpu->source=std::make_shared<const M3GRenderAsset>(asset);
     gpu->legacy_static=legacy_static;
-    for(const auto& entry:model.images)gpu->images.emplace(entry.first,impl_->texture(entry.second));
+    std::size_t enhancedBytes=0;
+    for(const auto& entry:model.images) {
+        const auto& image=entry.second;
+        const std::size_t derivedBytes=std::size_t(image.width)*image.height*16;
+        if(quality!=MaterialEnhancement::original && image.width<=1024 && image.height<=1024 &&
+           derivedBytes<=8*1024*1024-enhancedBytes) {
+            // GPU pixels only. Retain original source dimensions, Sprite3D
+            // crop rectangles, UVs, geometry, transforms and animation keys.
+            const auto enhanced=enhance_material(image,quality);
+            gpu->images.emplace(entry.first,impl_->texture(enhanced));
+            enhancedBytes+=derivedBytes;++gpu->enhanced_textures;
+        } else gpu->images.emplace(entry.first,impl_->texture(image));
+    }
     gpu->surfaces.reserve(model.surfaces.size());
     for(const auto& s:model.surfaces) {
         MetalM3GModel::Impl::Surface out;

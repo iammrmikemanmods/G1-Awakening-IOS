@@ -10,6 +10,7 @@
 #include "g1/ContactShadow.hpp"
 #include "g1/DamageAnchor.hpp"
 #include "g1/TileUpscale.hpp"
+#include "g1/TacticalModel.hpp"
 #include "MetalM3GRenderer.hpp"
 #include "g1/M3GBattlePresentation.hpp"
 #include "g1/AudioMaintenance.hpp"
@@ -70,8 +71,13 @@ std::array<float, 4> transform(const g1::Matrix4& matrix, std::array<float, 4> p
 // task; this view must not be used as evidence of original camera parity.
 struct InspectionCamera {
     float center_x{}, center_z{}, span{5}, base_span{5}, aspect{2};
-    static constexpr float up_y = 0.7071067811865476F;
-    static constexpr float up_z = -0.7071067811865476F;
+    float up_y=0.7071067811865476F,up_z=-0.7071067811865476F;
+    void set_modern(bool modern) noexcept {
+        // Presentation only: 35-degree elevation exposes faces/chests better
+        // than the original inspection camera. Classic keeps its prior view.
+        up_y=modern?0.81915204429F:0.7071067811865476F;
+        up_z=modern?-0.57357643635F:-0.7071067811865476F;
+    }
 
     void fit(const g1::MissionScene& scene, CGSize size) {
         if (size.width <= 0 || size.height <= 0) return;
@@ -407,6 +413,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     std::uint64_t _undoActions;
     g1::UnitAnimationTable _animationTable;
     std::vector<g1::Matrix4> _unitModels;
+    std::map<std::uint8_t,std::unique_ptr<g1::TacticalModel>> _tacticalModels;
+    std::map<std::uint8_t,std::shared_ptr<g1::MetalM3GModel>> _tacticalGpu;
+    std::map<std::uint8_t,std::string> _tacticalErrors;
+    std::map<std::size_t,CGRect> _tacticalHitBounds;
+    std::size_t _tacticalDrawn{},_tacticalFallback{},_battleEnhancedTextures{};
     g1::SimulationClock _simulationClock;
     std::optional<NativeCameraPan> _cameraPan;
     std::optional<g1::WorldCoordinate> _pendingDestination;
@@ -1439,6 +1450,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         }
     }
     _graphicsModern=next;
+    _camera.set_modern(next);
+    if(!next){_tacticalModels.clear();_tacticalGpu.clear();_tacticalHitBounds.clear();}
     [NSUserDefaults.standardUserDefaults setBool:next forKey:@"G1GraphicsModern"];
     ++_contentGeneration;
     [self showSettingsMenu];
@@ -1487,6 +1500,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _playbackSpawnGenerations.clear(); _playbackTransformGenerations.clear();
     _pendingTransformCompletions.clear();
     _spriteVertices.clear(); _spriteMeshes.clear(); _unitModels.clear();
+    _tacticalModels.clear();_tacticalGpu.clear();_tacticalErrors.clear();_tacticalHitBounds.clear();
     _inputEdges = 0; _inputCommand = std::numeric_limits<std::size_t>::max();
     _dialogueCommand = std::numeric_limits<std::size_t>::max();
     _lastMissionMode = 255; _lastSelection.reset();
@@ -1669,7 +1683,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     _inputEdges = 0;
     _dialogueCommand = std::numeric_limits<std::size_t>::max();
     if (mapChanged) {
-        _cameraPan.reset(); _camera.fit(*_scene,_metalView.bounds.size);
+        _cameraPan.reset(); _camera.set_modern(_graphicsModern); _camera.fit(*_scene,_metalView.bounds.size);
         _decorationTerrain.reset();_renderedTerrainGeneration=0;_renderedTerrainWorld=0;
         _terrainSpriteDraws.clear();
         _worldOverlaySignature.clear();
@@ -1905,7 +1919,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     if (!_scene || _panelPurpose!=NativePanel::none) return;
     if (_session && (_session->mission().gate == g1::MissionGate::camera ||
         _session->focus_request() || _session->battle())) return;
-    _camera.fit(*_scene,_metalView.bounds.size);
+    _camera.set_modern(_graphicsModern); _camera.fit(*_scene,_metalView.bounds.size);
     ++_contentGeneration;
 }
 
@@ -2006,7 +2020,7 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     const CGPoint delta = [gesture translationInView:_metalView];
     const float scale = _camera.span / static_cast<float>(_metalView.bounds.size.height);
     _camera.center_x -= static_cast<float>(delta.x) * scale * _touchCameraSpeed;
-    _camera.center_z += static_cast<float>(delta.y) * scale * _touchCameraSpeed / InspectionCamera::up_z;
+    _camera.center_z += static_cast<float>(delta.y) * scale * _touchCameraSpeed / _camera.up_z;
     ++_contentGeneration;
     [gesture setTranslation:CGPointZero inView:_metalView];
 }
@@ -2036,6 +2050,10 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
             const auto p=transform(matrix,vertex.position);
             const double x=(p[0]/p[3]*0.5+0.5)*size.width,y=(0.5-p[1]/p[3]*0.5)*size.height;
             bounds=CGRectUnion(bounds,CGRectMake(x,y,0.1,0.1));
+        }
+        if(_graphicsModern) {
+            const auto found=_tacticalHitBounds.find(i);
+            if(found!=_tacticalHitBounds.end())bounds=found->second;
         }
         if(!CGRectIsNull(bounds) && CGRectContainsPoint(CGRectInset(bounds,-padding,-padding),point)) {
             const double distance=std::hypot(point.x-CGRectGetMidX(bounds),point.y-CGRectGetMidY(bounds));
@@ -2335,7 +2353,14 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
     auto presentation=std::make_unique<g1::M3GBattlePresentation>(*_archive,std::move(request));
     std::vector<std::shared_ptr<g1::MetalM3GModel>> models;
     models.reserve(presentation->assets().size());
-    for (const auto& asset:presentation->assets()) models.push_back(_m3gRenderer->upload(asset.render));
+    _battleEnhancedTextures=0;
+    for (std::size_t i=0;i<presentation->assets().size();++i) {
+        const auto& asset=presentation->assets()[i];
+        const auto kind=i==0?g1::MaterialEnhancement::environment:i<3?
+            g1::MaterialEnhancement::character:g1::MaterialEnhancement::effect;
+        auto gpu=_graphicsModern?_m3gRenderer->upload_modern(asset.render,kind):_m3gRenderer->upload(asset.render);
+        _battleEnhancedTextures+=gpu->enhanced_texture_count();models.push_back(std::move(gpu));
+    }
     // Publish only a complete original-asset/GPU set. Allocation or unsupported
     // state failures preserve the pending gameplay token and stop visibly.
     _battleModels=std::move(models); _battlePresentation=std::move(presentation);
@@ -3516,6 +3541,8 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                 pass.depthAttachment.loadAction=MTLLoadActionClear;
                 pass.depthAttachment.clearDepth=1;
                 const auto camera = _camera.matrix();
+                _tacticalDrawn=0;_tacticalFallback=0;_tacticalHitBounds.clear();
+                std::vector<std::pair<std::shared_ptr<g1::MetalM3GModel>,g1::M3GPreparedFrame>> tacticalFrames;
                 std::vector<g1::MetalDraw> draws{
                     {_terrain,[self spriteTexture:_scene->terrain.atlas_resource_id],camera,{{1,1,1,1}},true}};
                 if(_scene->terrain.animated_surface && !_session->terrain_state())
@@ -3590,12 +3617,65 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
                     }
                 }
                 for (const auto i : order) {
-                    const auto texture = [self spriteTexture:_scene->sprites[i].resource.image_id];
-                    draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
-                        g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true,{},false,_graphicsModern});
+                    const auto index=_scene->sprites[i].unit_index;
+                    const auto& unit=_session->units().at(index);
+                    const auto type=_session->world().units.at(index).type;
+                    const bool moving=unit.offset_x!=0 || unit.offset_y!=0 ||
+                        (_session->moving() && (!_session->selected() || *_session->selected()==index));
+                    const bool transforming=_session->unit_transform_waiting(index) ||
+                        _session->transform_animation_pending(index)!=0;
+                    bool replaced=false;
+                    if(g1::tactical_model_eligible(_graphicsModern,unit.active,moving,transforming,
+                       support || _renderMemoryPressure) && !_tacticalErrors.count(type)) {
+                        try {
+                            if(!_tacticalModels.count(type)) {
+                                auto model=std::make_unique<g1::TacticalModel>(*_archive,type);
+                                auto gpu=_m3gRenderer->upload_modern(model->asset(),g1::MaterialEnhancement::character);
+                                _tacticalGpu.emplace(type,std::move(gpu));_tacticalModels.emplace(type,std::move(model));
+                            }
+                            const auto& model=*_tacticalModels.at(type);
+                            const auto& world=_session->world();
+                            const auto cell=world.grid.tile_at(unit.tile_x,unit.tile_y);
+                            if(cell<32 && model.supports(unit.form)) {
+                                const float height=_terrainTables.at(world.style).at(cell).height_steps*0.32F;
+                                auto gpu=_tacticalGpu.at(type);
+                                auto prepared=model.prepare(gpu->asset(),unit.form,unit.facing,
+                                    {{(unit.tile_x+0.5F)*0.32F,height+0.002F,(unit.tile_y+0.5F)*0.32F}},camera,
+                                    {{static_cast<std::uint32_t>(renderSize.width),static_cast<std::uint32_t>(renderSize.height)}});
+                                CGRect hit=CGRectNull;
+                                for(const auto& draw:prepared.draws)for(const auto& v:gpu->asset().geometry.surfaces.at(draw.geometry_index).vertices) {
+                                    const auto p=transform(draw.metal_matrix,v.position);
+                                    if(p[3]<=0.0001F || p[2]<0 || p[2]>p[3])continue;
+                                    const double px=(p[0]/p[3]*0.5+0.5)*view.bounds.size.width;
+                                    const double py=(0.5-p[1]/p[3]*0.5)*view.bounds.size.height;
+                                    hit=CGRectUnion(hit,CGRectMake(px,py,0.1,0.1));
+                                }
+                                if(!prepared.draws.empty()) {
+                                    if(!CGRectIsNull(hit))_tacticalHitBounds[i]=hit;
+                                    tacticalFrames.emplace_back(std::move(gpu),std::move(prepared));replaced=true;++_tacticalDrawn;
+                                }
+                            }
+                        } catch(const std::exception& error) {
+                            // Source sprite remains present on a model-specific
+                            // decode/allocation failure. Record it, never hide unit.
+                            _tacticalErrors[type]=error.what();
+                        }
+                    }
+                    if(!replaced) {
+                        ++_tacticalFallback;
+                        const auto texture = [self spriteTexture:_scene->sprites[i].resource.image_id];
+                        draws.push_back({_spriteMeshes[i][_animations[i]->current_frame()],texture,
+                            g1::multiply_matrix(camera,_unitModels[i]),{{1,1,1,1}},true,{},false,_graphicsModern});
+                    }
                 }
                 }
-                _renderer->encode(command,pass,draws);
+                id<MTLRenderCommandEncoder> tacticalEncoder=[command renderCommandEncoderWithDescriptor:pass];
+                if(!tacticalEncoder)throw g1::FormatError("Tactical shared encoder unavailable");
+                try {
+                    _renderer->encode_into(tacticalEncoder,draws);
+                    for(const auto& item:tacticalFrames)_m3gRenderer->encode_frame(tacticalEncoder,{item.first},item.second);
+                } catch(...) {[tacticalEncoder endEncoding];throw;}
+                [tacticalEncoder endEncoding];
                 if(!support && _panelPurpose==NativePanel::none && _preparedWorldToken && _session->world_presentation() &&
                    _session->world_presentation()->token==*_preparedWorldToken && [_title currentTextDrawn]) {
                     bool rosterReady=true;
@@ -3791,6 +3871,11 @@ enum class NativePanel { none, startup, pause, results, ending, menu, mode_selec
         @"touch_camera_sensitivity":@(_touchCameraSpeed),
         @"installed_icon_source":@"Original user IPA iTunesArtwork, 512x512, PNG derivatives packaged outside source control",
         @"modern_sprite_texture_cache_count":@(_modernTextures.count),
+        @"modern_tactical_models_uploaded":@(_tacticalGpu.size()),
+        @"modern_tactical_models_drawn":@(_tacticalDrawn),
+        @"modern_tactical_sprite_fallbacks":@(_tacticalFallback),
+        @"modern_tactical_model_errors":@(_tacticalErrors.size()),
+        @"modern_battle_enhanced_textures":@(_battleEnhancedTextures),
         @"diagnostics_enabled":@(_showDiagnostics),
         @"branding_policy":@"Original G1 menu background resource1002, iammrmikeman fan port credits; no Glu splash/blog/feedback screen; original archive retained byte-for-byte",
         @"simulation_step_ms": @(g1::SimulationClock::step_ms),
