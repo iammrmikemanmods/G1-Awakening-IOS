@@ -31,6 +31,8 @@ public:
     id<MTLTexture> texture(const RgbaImage&);
     void encode(id<MTLCommandBuffer>, MTLRenderPassDescriptor*,
                 const std::vector<MetalDraw>&);
+    // Shared terrain/3D-unit pass: caller owns encoder begin/end and depth.
+    void encode_into(id<MTLRenderCommandEncoder>,const std::vector<MetalDraw>&);
 private:
     id<MTLDevice> device_;
     id<MTLRenderPipelineState> pipeline_;

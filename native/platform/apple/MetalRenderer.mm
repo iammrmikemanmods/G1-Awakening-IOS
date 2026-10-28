@@ -130,13 +130,19 @@ void MetalRenderer::encode(id<MTLCommandBuffer> command, MTLRenderPassDescriptor
     id<MTLRenderCommandEncoder> encoder = [command renderCommandEncoderWithDescriptor:pass];
     if (!encoder) throw metal_error("Metal render encoder creation failed");
     encoder.label = @"G1 native scene";
+    try { encode_into(encoder,draws); } catch(...) { [encoder endEncoding]; throw; }
+    [encoder endEncoding];
+}
+void MetalRenderer::encode_into(id<MTLRenderCommandEncoder> encoder,const std::vector<MetalDraw>& draws) {
+    if(!encoder)throw metal_error("Shared scene encoder missing");
+    for(const auto& draw:draws)if(draw.mesh && draw.mesh->count && !draw.texture)
+        throw metal_error("draw texture is missing");
     [encoder setRenderPipelineState:pipeline_];
     // The recovered strip order is preserved. Culling is disabled in this
     // inspection renderer while original scene orientations are recovered.
     [encoder setCullMode:MTLCullModeNone];
     for (const auto& draw : draws) {
         if (!draw.mesh || draw.mesh->count == 0) continue;
-        if (!draw.texture) { [encoder endEncoding]; throw metal_error("draw texture is missing"); }
         const Uniform uniform{draw.matrix, draw.tint,{{draw.uv_offset[0],draw.uv_offset[1],0,0}}};
         [encoder setDepthStencilState:draw.screen_space ? depth_none_ :
             (draw.depth_write ? depth_write_ : depth_read_)];
@@ -146,6 +152,5 @@ void MetalRenderer::encode(id<MTLCommandBuffer> command, MTLRenderPassDescriptor
         [encoder setFragmentTexture:draw.texture atIndex:0];
         [encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:draw.mesh->count];
     }
-    [encoder endEncoding];
 }
 } // namespace g1
