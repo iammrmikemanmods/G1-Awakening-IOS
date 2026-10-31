@@ -14,17 +14,6 @@ Native ARM64 · Metal · Classic & Modern · iPhone & iPad
 
 **G1 Awakening iOS** reconstructs the original mobile game as a native 64-bit application, preserving its missions, characters, turn-based rules and bright Generation 1 identity. The runtime is C++/Objective-C++ with Metal rendering—not a packaged ARM32 emulator. It does not need a JIT session.
 
-> **Development preview.** The full packaged resource revision is **v0.17.0-r1**, previously called **017R1**. Earlier native gameplay was demonstrated on an iPhone XR; this exact package and its complete campaign still need device validation. Compiled minimum: **iOS/iPadOS 15.0**. [Status and limitations](docs/STATUS.md).
-
-## Get the game
-
-<!-- playable-release:start -->
-**Complete IPA filename: `G1-Awakening-iOS-v0.17.0-r1.ipa`** — 37.69 MB.
-
-**The complete IPA attachment is still pending.** The existing `v0.17.0-dev1` release contains source/native code only, not an installable game. Do not download a source ZIP expecting it to install. The verified complete package has been prepared under the public filename above; [release publication instructions](docs/PUBLISHING.md) cover uploading and checking it.
-<!-- playable-release:end -->
-
-The Home Screen name is **G1 Awakening**. The app's internal version remains **0.17.0 / build 17**; `r1` denotes the resource revision. Renaming the download does not change its signing, save identity or runtime. [Release details and checksum](docs/releases/v0.17.0-r1.md).
 
 ## Real iPhone XR captures
 
@@ -47,13 +36,10 @@ Four distinct views from the native iOS port: tactical play, story dialogue, the
 | Rendering | Native-resolution scene | Default supersampling request with resource/thermal fallbacks |
 | Shadows | Original-style presentation | Added soft contact shadows, not complete directional/self-shadowing |
 
-The development runtime includes Story, Showdown and Arena flows, tactical actions, original-data battles, Tech Specs, sound/music paths and checkpoint saving. Authored transformations are approximations; unsupported states can fall back to sprites. Automated tests do not replace a rendered full-campaign playthrough.
-
-The visual target is **bright, faithful G1 HD-2D**: clean mechanical UI, readable Transformers, restrained grass, blue water and vivid faction colours. No heavy fog, invented wear or generic replacement art. Individual source masters, mappings and seam checks—not concept boards—form the remaster library.
 
 ## Installation
 
-Use a complete IPA and an installer/signing route compatible with your exact device and OS. None lowers the game's compiled minimum.
+Use a complete IPA and an installer/signing route compatible with your exact device and OS.
 
 | Route | Important distinction |
 | --- | --- |
@@ -63,17 +49,6 @@ Use a complete IPA and an installer/signing route compatible with your exact dev
 
 ### [Read the step-by-step installation guide](docs/INSTALL.md)
 
-Back up saves before upgrading. Keep the same signing identity/installer where possible. **Do not uninstall to troubleshoot an update**; local saves may be removed.
-
-## Source, releases and ongoing work
-
-[Exact Build 017 runtime source](https://github.com/iammrmikemanmods/G1-Awakening-IOS/tree/be203a911bc26313615ea450758413e5c9cf6462) · [Development PR #13](https://github.com/iammrmikemanmods/G1-Awakening-IOS/pull/13) · [Build instructions](docs/BUILDING.md)
-
-`main` still contains an earlier engine checkpoint plus this public-facing documentation. Updating the front page did not merge the unverified development stack. Use the pinned source when reproducing the current package. The release Source ZIP additionally contains the 017R1 packaging/recovery work.
-
-The Block 1 art checkpoint contains **72 review-pending candidates** in a separate package; it is not all included in v0.17.0-r1. Visual terrain extensions remain proposals, not larger playable maps. The original navigation, objectives, collision and saves must stay intact.
-
-[Roadmap](docs/ROADMAP.md): finish original UI/HUD/effects; polish each character's motion; finish the faithful asset library; integrate detailed visual exteriors; expand physical-device testing. Legacy iOS 7–14 and other Apple platforms are goals, not current compatibility claims.
 
 ## Testing and contributions
 
