@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "note": "Existing on-device screenshots only. Near-duplicate IMG_3148 omitted; the intro still and original-PC video are not being advertised as gameplay captures.",
+  "captures": [
+    {"file":"docs/media/xr-dialogue.webp","source_filename":"IMG_3147.png","source_sha256":"9e869b3f7b23af3fdb57011a5e48fa8699090a0bba37b614541165916bd4ac12","export_sha256":"6e043243754ee9ae769f86905895e14c5add4b640603ef111cfbbd7c1933dd6f","source_dimensions":[1792,828],"export_dimensions":[480,222],"caption":"Mission 1 dialogue","capture_type":"native_device","device":"iPhone XR","build":"earlier UI-restoration checkpoint; associated with Build 012","latest_release_capture":false,"edits":["proportional downsample","WebP compression"],"retouched":false},
+    {"file":"docs/media/xr-pause.webp","source_filename":"IMG_3150.png","source_sha256":"5faf3a330fd8975389260cb16d9192943f838fc215197e853f6cbcafaa77c684","export_sha256":"e4d50077a3d44d2f0199a0c2f9611b86b5aac5bf485c838a2c303fd3bb7db02a","source_dimensions":[1792,828],"export_dimensions":[480,222],"caption":"Pause menu over the tactical map","capture_type":"native_device","device":"iPhone XR","build":"earlier UI-restoration checkpoint; associated with Build 012","latest_release_capture":false,"edits":["proportional downsample","WebP compression"],"retouched":false}
+  ]
+}

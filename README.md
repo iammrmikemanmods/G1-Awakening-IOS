@@ -2,91 +2,91 @@
 
 # Transformers: G1 Awakening — iOS
 
-### A native return to the original G1 tactical adventure.
+### The original G1 tactical adventure, rebuilt for iPhone and iPad.
 
-**Restoration and modernization by [iammrmikeman](https://github.com/iammrmikemanmods)**
+**Native restoration and modernization by [iammrmikeman](https://github.com/iammrmikemanmods)**
 
-Native ARM64 · Metal rendering · iPhone & iPad · Classic & Modern
+Native ARM64 · Metal · Classic & Modern · iPhone & iPad
 
-[Releases](https://github.com/iammrmikemanmods/G1-Awakening-IOS/releases) · [Install](docs/INSTALL.md) · [Source](https://github.com/iammrmikemanmods/G1-Awakening-IOS/tree/be203a911bc26313615ea450758413e5c9cf6462) · [Roadmap](docs/ROADMAP.md) · [Report a bug](https://github.com/iammrmikemanmods/G1-Awakening-IOS/issues/new/choose)
+[Releases](https://github.com/iammrmikemanmods/G1-Awakening-IOS/releases) · [Install](docs/INSTALL.md) · [Screenshots](docs/SCREENSHOTS.md) · [Source](https://github.com/iammrmikemanmods/G1-Awakening-IOS/tree/be203a911bc26313615ea450758413e5c9cf6462) · [Roadmap](docs/ROADMAP.md)
 
 </div>
 
----
+**G1 Awakening iOS** reconstructs the original mobile game as a native 64-bit application, preserving its missions, characters, turn-based rules and bright Generation 1 identity. The runtime is C++/Objective-C++ with Metal rendering—not a packaged ARM32 emulator. It does not need a JIT session.
 
-**G1 Awakening iOS** reconstructs the original mobile game as a native 64-bit application, with a modern presentation layer built around its original missions, characters, tactical rules and artwork. The goal is to bring the game back to current devices without losing its bright Generation 1 identity.
+> **Development preview.** The full packaged resource revision is **v0.17.0-r1**, previously called **017R1**. Earlier native gameplay was demonstrated on an iPhone XR; this exact package and its complete campaign still need device validation. Compiled minimum: **iOS/iPadOS 15.0**. [Status and limitations](docs/STATUS.md).
 
-The application compiles C++ and Objective-C++ to ARM64 and renders through Metal. It is **not a packaged ARM32 emulator**, and the game runtime does not require JIT. Original game data is used separately from the new engine source.
+## Get the game
 
-> **Development preview, not a finished release.** Earlier builds have been shown running on a physical iPhone XR. The latest packaged candidate is **017R1**, a resource update to Build 017. Its full campaign, installation routes and final artwork are not yet certified on-device. The compiled minimum is **iOS/iPadOS 15.0**, not iOS 7. See [compatibility and evidence](docs/STATUS.md).
+<!-- playable-release:start -->
+**Complete IPA filename: `G1-Awakening-iOS-v0.17.0-r1.ipa`** — 37.69 MB.
 
-## See it running
+**The complete IPA attachment is still pending.** The existing `v0.17.0-dev1` release contains source/native code only, not an installable game. Do not download a source ZIP expecting it to install. The verified complete package has been prepared under the public filename above; [release publication instructions](docs/PUBLISHING.md) cover uploading and checking it.
+<!-- playable-release:end -->
 
-These are **real screenshots supplied from the iPhone XR**, from the earlier UI-restoration checkpoint identified in the project as Build 012. They are not concept art, simulator mockups or proof of the latest remaster. The visible old layout defects have not been retouched.
+The Home Screen name is **G1 Awakening**. The app's internal version remains **0.17.0 / build 17**; `r1` denotes the resource revision. Renaming the download does not change its signing, save identity or runtime. [Release details and checksum](docs/releases/v0.17.0-r1.md).
 
-| Original-menu restoration | Mission 1 on the tactical map |
+## Real iPhone XR captures
+
+Four distinct views from the native iOS port: tactical play, story dialogue, the main menu and the pause menu. These are supplied **earlier UI-restoration captures**, associated with Build 012—not current-remaster promotional renders. Old layout defects are visible and have not been painted out.
+
+| Mission 1 — tactical map | Mission 1 — Bumblebee dialogue |
 | :---: | :---: |
-| ![Earlier native iPhone XR capture of the restored G1 main menu](docs/media/xr-menu.webp) | ![Earlier native iPhone XR capture of Mission 1 tactical gameplay](docs/media/xr-gameplay.webp) |
+| [![Native XR tactical gameplay](docs/media/xr-gameplay.webp)](docs/media/xr-gameplay.webp) | [![Native XR mission dialogue](docs/media/xr-dialogue.webp)](docs/media/xr-dialogue.webp) |
 
-[Capture provenance and screenshot policy](docs/SCREENSHOTS.md)
+| Restored original main menu | Pause menu over the live map |
+| :---: | :---: |
+| [![Native XR main menu](docs/media/xr-menu.webp)](docs/media/xr-menu.webp) | [![Native XR pause menu](docs/media/xr-pause.webp)](docs/media/xr-pause.webp) |
+
+[Open the gallery and capture provenance](docs/SCREENSHOTS.md). Current-build combat, transformation, Tech Specs and later-mission captures are still needed. Original-PC footage, generated art boards and CPU previews are not labelled as iOS gameplay.
 
 ## Classic identity. Modern presentation.
 
 | System | Classic | Modern |
 | --- | --- | --- |
-| Tactical gameplay | Original mission and turn rules | The same rules; no visual-mode gameplay advantage |
+| Gameplay | Original mission and turn rules | The same rules and saves |
 | Interface | Shared adaptive HUD and installed UI remasters | The same shared UI improvements |
-| Tactical Transformers | Original sprite presentation | Original 3D models for supported states, with authored walking/transformation presentation |
-| World artwork | Original world materials | Installed source-mapped texture replacements; full art pass is ongoing |
-| Rendering | Native-resolution scene rendering | Supersampling requested by default, with device/resource fallbacks |
-| Shadows | Original-style presentation | Additional soft contact shadows; not complete directional/self-shadowing |
+| Tactical Transformers | Original sprites | Supported original 3D forms with authored walking/transformation presentation |
+| World artwork | Original materials | Installed source-mapped replacement textures; full art pass ongoing |
+| Rendering | Native-resolution scene | Default supersampling request with resource/thermal fallbacks |
+| Shadows | Original-style presentation | Added soft contact shadows, not complete directional/self-shadowing |
 
-The current engine includes Story, Showdown and Arena flows, tactical actions, original-data battle scenes, Tech Specs, music/sound paths and checkpoint saving. Automated campaign tests are not a substitute for a complete rendered device playthrough.
+The development runtime includes Story, Showdown and Arena flows, tactical actions, original-data battles, Tech Specs, sound/music paths and checkpoint saving. Authored transformations are approximations; unsupported states can fall back to sprites. Automated tests do not replace a rendered full-campaign playthrough.
 
-Modern mode aims for **clean, bright G1 HD-2D**: readable Transformers, restrained ground detail, crisp mechanical UI, blue water and vivid faction colours. It is not a gloomy remake with heavy fog, invented wear or a different art direction. The new artwork is produced as individual mapped assets with editable masters and seam checks—not flattened concept boards.
+The visual target is **bright, faithful G1 HD-2D**: clean mechanical UI, readable Transformers, restrained grass, blue water and vivid faction colours. No heavy fog, invented wear or generic replacement art. Individual source masters, mappings and seam checks—not concept boards—form the remaster library.
 
-## Downloads and source
+## Installation
 
-**Start with the [Releases page](https://github.com/iammrmikemanmods/G1-Awakening-IOS/releases).** Read the asset descriptions before downloading: a source ZIP or native-code artifact is **not** a complete installable IPA. Any release marked source-only requires separately supplied original game resources.
+Use a complete IPA and an installer/signing route compatible with your exact device and OS. None lowers the game's compiled minimum.
 
-| Item | What it means |
+| Route | Important distinction |
 | --- | --- |
-| **017R1 packaged candidate** | Version 0.17.0 / build 17, with a new intro and the completed Pass01 resource replacements. A complete package is identified by its filename and SHA-256 in the [release register](docs/RELEASES.md). |
-| **Build 017 source** | [Exact compiled commit `be203a9`](https://github.com/iammrmikemanmods/G1-Awakening-IOS/tree/be203a911bc26313615ea450758413e5c9cf6462); [development PR #13](https://github.com/iammrmikemanmods/G1-Awakening-IOS/pull/13). |
-| **Block 1 asset checkpoint** | 72 individual asset candidates in a separate source-art package. Review pending; not all included in 017R1. |
+| **TrollStore** | Standard TrollStore supports only specific OS builds; stock iOS 17.5.1 is not one of them. TrollStore Lite is a separate jailbreak-dependent route. |
+| **AppSync Unified + Filza** | Requires an already working compatible jailbreak/bootstrap and AppSync package. The IPA retains an ad-hoc signature. |
+| **Sideloadly** | Re-sign/provision the complete IPA with an Apple ID on Windows/macOS. This exact release route is not yet device-verified. |
 
-**The root `main` engine source still represents an earlier checkpoint.** This front page has been updated without silently merging the development stack. Use the pinned Build 017 source above when reproducing that candidate. [Build instructions](docs/BUILDING.md) explain the distinction.
+### [Read the step-by-step installation guide](docs/INSTALL.md)
 
-## Installation options
+Back up saves before upgrading. Keep the same signing identity/installer where possible. **Do not uninstall to troubleshoot an update**; local saves may be removed.
 
-A complete IPA, compatible device and an appropriate installation/signing method are required. None of the tools below changes the game's compiled OS requirement.
+## Source, releases and ongoing work
 
-| Method | Suitable setup | Read first |
-| --- | --- | --- |
-| **TrollStore** | A device/OS combination supported by standard TrollStore, also running iOS 15+ | Standard TrollStore does **not** support stock iOS 17.5.1. TrollStore Lite is a separate jailbreak-dependent route. |
-| **AppSync Unified + Filza** | An already jailbroken device with a compatible AppSync package and Filza | The supplied AppSync candidate uses an ad-hoc executable signature, not Apple provisioning. |
-| **Sideloadly** | Windows or macOS, an Apple ID and a compatible device | Re-sign the complete IPA. This exact 017R1 route remains unverified; do not treat the AppSync filename as stock-iOS signing. |
+[Exact Build 017 runtime source](https://github.com/iammrmikemanmods/G1-Awakening-IOS/tree/be203a911bc26313615ea450758413e5c9cf6462) · [Development PR #13](https://github.com/iammrmikemanmods/G1-Awakening-IOS/pull/13) · [Build instructions](docs/BUILDING.md)
 
-### [Follow the step-by-step installation guide](docs/INSTALL.md)
+`main` still contains an earlier engine checkpoint plus this public-facing documentation. Updating the front page did not merge the unverified development stack. Use the pinned source when reproducing the current package. The release Source ZIP additionally contains the 017R1 packaging/recovery work.
 
-Back up saves before updating. Keep the same installer/signing identity when possible. **Do not uninstall the game just to troubleshoot an update**—that can remove its local data.
+The Block 1 art checkpoint contains **72 review-pending candidates** in a separate package; it is not all included in v0.17.0-r1. Visual terrain extensions remain proposals, not larger playable maps. The original navigation, objectives, collision and saves must stay intact.
 
-## What comes next
+[Roadmap](docs/ROADMAP.md): finish original UI/HUD/effects; polish each character's motion; finish the faithful asset library; integrate detailed visual exteriors; expand physical-device testing. Legacy iOS 7–14 and other Apple platforms are goals, not current compatibility claims.
 
-The priorities are full original UI/HUD/effect parity; per-character motion and transformation polish; a complete faithful asset library; and coherent visual terrain extensions using native scenery. Extensions must leave the original playable map, collision, objectives and saves unchanged.
+## Testing and contributions
 
-[The roadmap](docs/ROADMAP.md) separates implemented systems, art candidates and future work. Legacy iOS 7–14 support and broader Apple-hardware support are goals, not current compatibility claims. There is no promised completion date.
-
-## Help test and contribute
-
-Useful reports include the exact IPA/resource revision, iPhone/iPad model, iOS version, installation method, graphics mode, mission and reproduction steps. Attach a screenshot or short recording where possible; redact personal information and signing credentials.
-
-[Report a bug](https://github.com/iammrmikemanmods/G1-Awakening-IOS/issues/new/choose) · [Read the source/build guide](docs/BUILDING.md) · [Review known limitations](docs/STATUS.md)
+[Report a bug](https://github.com/iammrmikemanmods/G1-Awakening-IOS/issues/new/choose) with the exact IPA/resource revision, device, OS, installer, graphics mode, mission and reproduction steps. Include a screenshot or short recording where useful. Remove private account information, passwords and signing tokens.
 
 ## Credits and licensing
 
-Project direction, port and remaster work: **iammrmikeman**. Original game, characters, artwork and music belong to their respective rights holders. This is an independent fan preservation project, not an official Hasbro or Glu release.
+Project direction, port and remaster work: **iammrmikeman**. Original game, characters, artwork and music belong to their respective rights holders. Independent fan preservation project; not an official Hasbro or Glu release.
 
-New project code is covered by the repository's [MPL-2.0 licence](LICENSE); bundled third-party components keep their own licences. That licence does **not** relicense the original game data, trademarks, music or screenshots. Supply your own legitimately obtained source-game resources; do not upload game dumps, credentials or private saves in issues.
+New project code uses [MPL-2.0](LICENSE); third-party components retain their licences. This does not relicense original assets, music, trademarks or screenshots. Do not post game dumps, credentials or private saves in issues.
 
-<sub>Project page updated 31 October 2026. Historical engineering notes are preserved in <a href="docs/history/README-before-public-page.md">the previous README</a>.</sub>
+<sub>Updated 31 October 2026. Earlier engineering notes: <a href="docs/history/README-before-public-page.md">archived README</a>.</sub>
