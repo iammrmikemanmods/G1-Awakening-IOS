@@ -1,0 +1,28 @@
+{
+  "capture_provenance": "User provided native iPhone XR screenshots, previously identified in the project as Build012. Exact screenshot build number is not visibly embedded.",
+  "not_current_release_proof": true,
+  "records": [
+    {
+      "path": "docs/media/xr-menu.webp",
+      "source_file": "IMG_3145.png",
+      "source_sha256": "34ddbfd683bc673437c4f042ca71caa1787a38959ce093a7b49d471b4743cd94",
+      "source_dimensions": [1792, 828],
+      "published_dimensions": [640, 296],
+      "published_sha256": "a103ac71a4e27f6fa8a82515fe9607aa13831f5dc03d4a29e7ab497c5ac3c34b",
+      "caption": "Original-menu restoration in earlier Build012 device test; not current layout certification.",
+      "treatment": "Resized and WebP-compressed only; no crop, retouch, generated content or graphical overlay.",
+      "git_blob_sha": "e23f970746b46336e208c94739b45e88e5478cfb"
+    },
+    {
+      "path": "docs/media/xr-gameplay.webp",
+      "source_file": "IMG_3149.png",
+      "source_sha256": "2f2bea59b9c5877483b956a60996aeb40f6c689ec3c03f1f99e1231db786b315",
+      "source_dimensions": [1792, 828],
+      "published_dimensions": [640, 296],
+      "published_sha256": "29e1656a26d1c1bd80f9a628a842a20486d579f3f94c5ea88f46a2094495a3c3",
+      "caption": "Mission1 tactical view in earlier Build012 device test; visible layout/art defects are retained.",
+      "treatment": "Resized and WebP-compressed only; no crop, retouch, generated content or graphical overlay.",
+      "git_blob_sha": "f8b2164d7a4c38e3bb99eb51d6f146ef2182f91b"
+    }
+  ]
+}

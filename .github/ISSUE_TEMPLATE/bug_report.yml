@@ -1,0 +1,55 @@
+name: Game or installation problem
+description: Report a reproducible install, gameplay, rendering, audio or save issue.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Please read docs/INSTALL.md and docs/STATUS.md. Do not attach game dumps, private saves, signing credentials, account passwords or personal information."
+  - type: input
+    id: package
+    attributes:
+      label: Build and resource revision
+      description: Include the IPA filename; 017R1 still reports 0.17.0/build17 in app metadata.
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and exact iOS/iPadOS version
+    validations:
+      required: true
+  - type: dropdown
+    id: installer
+    attributes:
+      label: Installation method
+      options:
+        - AppSync Unified + Filza
+        - Standard TrollStore
+        - TrollStore Lite
+        - Sideloadly
+        - Xcode / other (describe below)
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Graphics mode
+      options:
+        - Classic
+        - Modern
+        - Both
+        - Cannot reach settings
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps, expected behavior and actual behavior
+      description: Include the mission, selected unit and action when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots, recording and sanitized error/crash log
+      description: Remove Apple IDs, serial numbers, signing tokens and personal data before attaching logs.

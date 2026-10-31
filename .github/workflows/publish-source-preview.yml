@@ -1,0 +1,35 @@
+name: Publish pinned Build017 source preview
+on:
+  push:
+    branches: [main]
+    paths: [docs/releases/publication-request.json]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: g1-source-preview-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'iammrmikemanmods/G1-Awakening-IOS' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Check out publication tooling
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          path: publication
+          persist-credentials: false
+      - name: Check out exact historical native source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: be203a911bc26313615ea450758413e5c9cf6462
+          path: source
+          persist-credentials: false
+      - name: Validate and publish source/code-only prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 publication/scripts/publish-source-preview.py

@@ -1,0 +1,11 @@
+{
+  "request": "Create an explicitly source/native-code-only development prerelease",
+  "repository": "iammrmikemanmods/G1-Awakening-IOS",
+  "tag": "v0.17.0-dev1",
+  "source_commit": "be203a911bc26313615ea450758413e5c9cf6462",
+  "native_code_artifact_id": 12792373727,
+  "native_code_artifact_sha256": "445617609b17d14a996c81d8d7f3b15511f3ec558a77374081f2443b163846e7",
+  "original_game_resources_included": false,
+  "full_ipa_uploaded": false,
+  "change_repository_visibility": false
+}
