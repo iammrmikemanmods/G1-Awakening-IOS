@@ -30,10 +30,6 @@ The Home Screen name is **G1 Awakening**. The app's internal version remains **0
 
 Four distinct views from the native iOS port: tactical play, story dialogue, the main menu and the pause menu. These are supplied **earlier UI-restoration captures**, associated with Build 012—not current-remaster promotional renders. Old layout defects are visible and have not been painted out.
 
-| Mission 1 — tactical map | Mission 1 — Bumblebee dialogue |
-| :---: | :---: |
-| [![Native XR tactical gameplay](docs/media/xr-gameplay.webp)](docs/media/xr-gameplay.webp) | [![Native XR mission dialogue](docs/media/xr-dialogue.webp)](docs/media/xr-dialogue.webp) |
-
 | Restored original main menu | Pause menu over the live map |
 | :---: | :---: |
 | [![Native XR main menu](docs/media/xr-menu.webp)](docs/media/xr-menu.webp) | [![Native XR pause menu](docs/media/xr-pause.webp)](docs/media/xr-pause.webp) |
