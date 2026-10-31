@@ -2,6 +2,8 @@
 
 The source-only `v0.17.0-dev1` release is not the game installer. The complete package has been verified locally and renamed **G1-Awakening-iOS-v0.17.0-r1.ipa**. It is byte-identical to the prior 017R1 AppSync package. Repository visibility and the release upload are separate checks.
 
+The latest repository metadata check on 31 October 2026 reports **public** visibility. The complete IPA attachment is still pending; no public installer upload is claimed.
+
 ## Public release identity
 
 - Release: **G1 Awakening for iOS — v0.17.0-r1 · Development Preview**.
@@ -22,24 +24,26 @@ Local verification, without network writes:
 python publish_release.py
 ```
 
-For an already public repository:
+For the public repository:
 
 ```sh
 python publish_release.py --publish
 ```
 
-For this private repository, ONLY after reviewing all history/branches/Actions logs for public exposure:
+Only if the repository is private again, and after reviewing all history/branches/Actions logs for exposure:
 
 ```sh
 python publish_release.py --publish --make-public
 ```
 
-`--make-public` exposes the whole repository, not merely its release page. It requires administration access. The publisher verifies local file hashes/ZIPs/app identity, pins the tag, creates or resumes a draft, uploads all three attachments, verifies remote sizes and SHA-256 digests, then changes visibility when explicitly requested and publishes as a prerelease. Existing conflicting attachments or tags stop publication; it does not clobber, force-push, change the engine or delete prior releases.
+`--make-public` exposes the whole repository, not merely its release page. It requires administration access. The publisher verifies local file hashes/ZIPs/app identity, pins the tag, creates or resumes a draft, uploads all three attachments, verifies remote sizes and SHA-256 digests, then publishes as a prerelease. It changes visibility only when explicitly requested. Existing conflicting attachments or tags stop publication; it does not clobber, force-push, change the engine or delete prior releases.
 
-Do not publish an empty/source-only release under the installer title. Do not use a `sandbox:` URL as a GitHub download link. Successful publication must be verified using the actual release assets and anonymous public access.
+After successful publication it updates the README's marked download block with the real IPA URL. A documentation write conflict is reported separately; it does not falsely undo a published release. The kit's tests simulate GitHub responses and are not evidence that the upload has already happened.
+
+Do not publish an empty/source-only release under the installer title. Do not use a `sandbox:` URL as a GitHub download link. Successful publication must be verified using the actual release assets and public access.
 
 Official reference: [release upload](https://cli.github.com/manual/gh_release_upload), [release creation](https://cli.github.com/manual/gh_release_create), [release editing](https://cli.github.com/manual/gh_release_edit), [asset digests](https://docs.github.com/en/rest/releases/assets).
 
 ## Manual equivalent
 
-Create a draft tagged `v0.17.0-r1` at the pinned source commit, use the [release notes](releases/v0.17.0-r1.md), attach the IPA, matching source and checksum file, verify the uploaded hashes, mark it as a development prerelease, and publish. A private repository still needs a deliberate visibility change before uninvited visitors can access it.
+Create a draft tagged `v0.17.0-r1` at the pinned source commit, use the [release notes](releases/v0.17.0-r1.md), attach the IPA, matching source and checksum file, verify the uploaded hashes, mark it as a development prerelease, and publish. A private repository also needs a deliberate visibility change before uninvited visitors can access it.
