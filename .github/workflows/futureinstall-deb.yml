@@ -1,4 +1,4 @@
-name: FutureInstall CI preparation (macOS)
+name: FutureInstall v0.3.1 process-diagnostics fix (macOS)
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
       - '.github/workflows/futureinstall-deb.yml'
       - 'ci/futureinstall/source.part*'
       - 'ci/futureinstall/v030_source_payload.b64'
+      - 'ci/futureinstall/patch_v031.py'
   workflow_dispatch:
 
 permissions:
@@ -30,6 +31,7 @@ jobs:
           echo '8056eedda1d9cb8699490139d8aa2bce9dcf7e27450a1f4d6238a6142904f6a0  ci/futureinstall/source.tar.xz' | shasum -a 256 -c -
           tar -xJf ci/futureinstall/source.tar.xz -C ci/futureinstall/workdir
           cd ci/futureinstall/workdir
+          python3 ../patch_v031.py .
           python3 tests/validate_source.py
 
       - name: Install Theos and iOS SDK on cloud Mac
@@ -74,7 +76,7 @@ jobs:
       - name: Upload compiled .deb and SHA-256 (experimental; not on-device verified)
         uses: actions/upload-artifact@v4
         with:
-          name: FutureInstall-v0.3.0-rootless-CI-UNVERIFIED
+          name: FutureInstall-v0.3.1-rootless-CI-UNVERIFIED
           path: |
             ci/futureinstall/workdir/packages/*.deb
             ci/futureinstall/workdir/BUILD_SHA256.txt
