@@ -1,0 +1,78 @@
+name: FutureInstall v0.2.0 rootless .deb (macOS)
+
+on:
+  push:
+    branches:
+      - ci/futureinstall-deb-build-2026-11-01
+    paths:
+      - '.github/workflows/futureinstall-deb.yml'
+      - 'ci/futureinstall/source.part*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Checkout dedicated CI branch
+        uses: actions/checkout@v4
+
+      - name: Reconstruct and verify exact v0.2.0 source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci/futureinstall/workdir
+          test "$(find ci/futureinstall -maxdepth 1 -name 'source.part*' | wc -l | tr -d ' ')" = 6
+          cat ci/futureinstall/source.part{00,01,02,03,04,05} | tr -d '\n\r' | base64 -D > ci/futureinstall/source.tar.xz
+          echo '31e56d1299decd38bb90cf28ac60db3a80300672b70fe42ea37674edf5a8b387  ci/futureinstall/source.tar.xz' | shasum -a 256 -c -
+          tar -xJf ci/futureinstall/source.tar.xz -C ci/futureinstall/workdir
+          cd ci/futureinstall/workdir
+          python3 tests/validate_source.py
+
+      - name: Install Theos and iOS SDK on cloud Mac
+        uses: waruhachi/theos-action@v2.6.3
+        with:
+          theos-src: theos/theos
+          theos-branch: master
+          sdks-src: theos/sdks
+          sdks-branch: master
+          remotelog: 'false'
+          libgcuniversal: 'false'
+          altlist: 'false'
+          comet: 'false'
+          orion: 'false'
+
+      - name: Confirm Debian packaging tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v dpkg-deb >/dev/null 2>&1; then brew install dpkg; fi
+          command -v dpkg-deb
+
+      - name: Compile real rootless arm64 and arm64e binaries and create .deb
+        working-directory: ci/futureinstall/workdir
+        shell: bash
+        run: |
+          set -euo pipefail
+          make clean package FINALPACKAGE=1
+
+      - name: Check Debian metadata, payload, Mach-O slices, injection filters and Settings bundle
+        working-directory: ci/futureinstall/workdir
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tests/validate_deb.py packages/*.deb
+          shasum -a 256 packages/*.deb | tee BUILD_SHA256.txt
+
+      - name: Upload compiled .deb and SHA-256 (experimental; not on-device verified)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FutureInstall-v0.2.0-rootless-CI-UNVERIFIED
+          path: |
+            ci/futureinstall/workdir/packages/*.deb
+            ci/futureinstall/workdir/BUILD_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
