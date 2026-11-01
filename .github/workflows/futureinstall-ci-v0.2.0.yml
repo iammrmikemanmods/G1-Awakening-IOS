@@ -1,0 +1,84 @@
+name: FutureInstall - macOS rootless .deb build
+on:
+  push:
+    branches: [futureinstall-ci-v0.2.0-20261101]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: futureinstall-ci-v0.2.0
+  cancel-in-progress: false
+jobs:
+  rootless-deb:
+    if: github.ref == 'refs/heads/futureinstall-ci-v0.2.0-20261101'
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - name: Checkout isolated build branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify source integrity and extract
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive='FutureInstall-CI/FutureInstall-v0.2.0-build-source.tar.xz'
+          expected='5dbfe45b03ab51bb699f7e341485ac480049ff04671e95a4faf3149011d2d5de'
+          actual="$(shasum -a 256 "$archive" | awk '{print $1}')"
+          test "$actual" = "$expected" || { echo 'Source archive SHA256 mismatch' >&2; exit 1; }
+          mkdir -p FutureInstall-CI/sources FutureInstall-CI/evidence
+          tar -xJf "$archive" -C FutureInstall-CI/sources
+          test -s FutureInstall-CI/sources/Tweak.xm
+          test -s FutureInstall-CI/sources/FIPolicy.h
+          test -s FutureInstall-CI/sources/README_MEMORY_ZIP_POLICY.md
+          printf 'Source SHA-256 verified: %s\n' "$actual" | tee FutureInstall-CI/evidence/source-verification.txt
+      - name: Compile and run native compatibility-policy tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          clang -std=c11 -Wall -Wextra -Werror -pedantic FutureInstall-CI/sources/tests/test_policy.c -o "$RUNNER_TEMP/futureinstall-policy"
+          "$RUNNER_TEMP/futureinstall-policy" | tee FutureInstall-CI/evidence/policy-test.txt
+      - name: Install Theos and iOS SDK
+        uses: waruhachi/theos-action@v2.6.3
+        with:
+          theos-src: theos/theos
+          theos-branch: master
+          sdks-src: theos/sdks
+          sdks-branch: master
+          remotelog: 'false'
+          libgcuniversal: 'false'
+          altlist: 'false'
+          comet: 'false'
+          orion: 'false'
+      - name: Ensure Debian packaging tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew install dpkg fakeroot
+          command -v dpkg-deb
+          command -v lipo
+      - name: Compile genuine rootless arm64e .deb
+        shell: bash
+        run: |
+          set -euo pipefail
+          make -C FutureInstall-CI/sources clean package FINALPACKAGE=1
+          ls -lah FutureInstall-CI/sources/packages
+      - name: Validate compiled binaries and rootless payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 FutureInstall-CI/sources/tests/validate_deb.py FutureInstall-CI/sources/packages/*.deb | tee FutureInstall-CI/evidence/package-verification.txt
+          shasum -a 256 FutureInstall-CI/sources/packages/*.deb | tee FutureInstall-CI/evidence/deb-sha256.txt
+      - name: Upload validated .deb and evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: FutureInstall-v0.2.0-ROOTLESS-UNTESTED-ON-DEVICE
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            FutureInstall-CI/sources/packages/*.deb
+            FutureInstall-CI/evidence/*.txt
+      - name: Record device-runtime validation boundary
+        shell: bash
+        run: |
+          echo 'Build success means rootless Mach-O/package verification only; iOS 17.5.1 device compatibility and iOS 26 app execution remain unverified.' >> "$GITHUB_STEP_SUMMARY"
