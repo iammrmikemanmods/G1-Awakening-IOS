@@ -61,7 +61,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          make -C FutureInstall-CI/sources clean package FINALPACKAGE=1
+          make -C FutureInstall-CI/sources clean package FINALPACKAGE=1 TARGET=iphone:clang:16.5:17.0
           ls -lah FutureInstall-CI/sources/packages
       - name: Validate compiled binaries and rootless payload
         shell: bash
