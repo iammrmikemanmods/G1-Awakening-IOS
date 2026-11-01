@@ -57,7 +57,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          make clean package FINALPACKAGE=1
+          # Cloud SDK has Preferences headers but no linkable private framework.
+          # Settings loads Preferences.framework itself; resolve those bundle symbols there.
+          make clean package FINALPACKAGE=1 \
+            FutureInstallPrefs_PRIVATE_FRAMEWORKS= \
+            FutureInstallPrefs_LDFLAGS='-Wl,-undefined,dynamic_lookup'
 
       - name: Check Debian metadata, payload, Mach-O slices, injection filters and Settings bundle
         working-directory: ci/futureinstall/workdir
